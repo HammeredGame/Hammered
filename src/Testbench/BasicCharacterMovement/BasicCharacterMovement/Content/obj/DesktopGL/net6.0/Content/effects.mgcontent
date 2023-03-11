@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/Testbench/BasicCharacterMovement/BasicCharacterMovement/Content/effects.fx</SourceFile>
+  <SourceTime>2023-03-02T16:31:01.5047933+01:00</SourceTime>
+  <DestFile>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/Testbench/BasicCharacterMovement/BasicCharacterMovement/Content/bin/DesktopGL/Content/effects.xnb</DestFile>
+  <DestTime>2023-03-11T18:39:20.8662883+01:00</DestTime>
+  <Importer>EffectImporter</Importer>
+  <ImporterTime>2022-07-26T13:44:56+02:00</ImporterTime>
+  <Processor>EffectProcessor</Processor>
+  <ProcessorTime>2022-07-26T13:44:56+02:00</ProcessorTime>
+  <Parameters>
+    <Key>DebugMode</Key>
+    <Value>Auto</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>

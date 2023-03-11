@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "HjRD24gl4QFj5Qf9xiihF1FuRiiMCdnzsQqn+yQgPHiKtgRK+Shjv7ugcaIQOVA7Q52w1OwpeeJ1COFUHK1SpA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\siddh\\Desktop\\ETH_Main\\SS2023\\GPL\\GitLabRepo\\gamelab2023-rapture-team2\\src\\Testbench\\BasicCharacterMovement\\BasicCharacterMovement\\BasicCharacterMovement.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\siddh\\.nuget\\packages\\monogame.content.builder.task\\3.8.1.303\\monogame.content.builder.task.3.8.1.303.nupkg.sha512",
+    "C:\\Users\\siddh\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.1.303\\monogame.framework.desktopgl.3.8.1.303.nupkg.sha512"
+  ],
+  "logs": []
+}
