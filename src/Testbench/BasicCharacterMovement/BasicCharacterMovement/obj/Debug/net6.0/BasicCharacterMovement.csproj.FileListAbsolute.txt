@@ -26,3 +26,4 @@ C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\
 C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\src\Testbench\BasicCharacterMovement\BasicCharacterMovement\obj\Debug\net6.0\BasicCharacterMovement.genruntimeconfig.cache
 C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\src\Testbench\BasicCharacterMovement\BasicCharacterMovement\obj\Debug\net6.0\ref\BasicCharacterMovement.dll
 C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\src\Testbench\BasicCharacterMovement\BasicCharacterMovement\bin\Debug\net6.0\Content\effects.xnb
+C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\src\Testbench\BasicCharacterMovement\BasicCharacterMovement\bin\Debug\net6.0\Content\placeholder_character2.xnb

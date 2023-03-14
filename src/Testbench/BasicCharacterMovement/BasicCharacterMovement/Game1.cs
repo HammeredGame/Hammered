@@ -12,7 +12,8 @@ namespace BasicCharacterMovement
         private Effect _effect;
 
         Matrix projection;
-        Player p;
+        Player _player;
+        Camera _camera;
 
         public Game1()
         {
@@ -20,7 +21,8 @@ namespace BasicCharacterMovement
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            p = new Player(Vector3.Zero);
+            _camera = new Camera(Vector3.Zero);
+            _player = new Player(Vector3.Zero);
         }
 
         protected override void Initialize()
@@ -43,7 +45,7 @@ namespace BasicCharacterMovement
             _device = _graphics.GraphicsDevice;
             _effect = Content.Load<Effect>("effects");
 
-            p.loadContent(Content, _effect);
+            _player.loadContent(Content, _effect);
 
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, _device.Viewport.AspectRatio, 0.2f, 500.0f);
         }
@@ -54,7 +56,10 @@ namespace BasicCharacterMovement
                 Exit();
 
             // TODO: Add your update logic here
-            p.update(gameTime);
+            _camera.update(gameTime);
+
+            Viewport viewport = this.GraphicsDevice.Viewport;
+            _player.update(gameTime, _camera.getViewMatrix(), projection, viewport);
 
             base.Update(gameTime);
         }
@@ -64,7 +69,7 @@ namespace BasicCharacterMovement
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            p.draw(projection);
+            _player.draw(_camera.getViewMatrix(), projection);
 
             base.Draw(gameTime);
         }

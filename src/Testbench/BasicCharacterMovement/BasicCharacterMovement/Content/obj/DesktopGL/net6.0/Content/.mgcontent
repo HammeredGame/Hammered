@@ -5,10 +5,12 @@
   <Config />
   <SourceFiles>
     <File>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/Testbench/BasicCharacterMovement/BasicCharacterMovement/Content/effects.fx</File>
+    <File>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/Testbench/BasicCharacterMovement/BasicCharacterMovement/Content/placeholder_character2.fbx</File>
     <File>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/Testbench/BasicCharacterMovement/BasicCharacterMovement/Content/placeholder_cube.fbx</File>
     <File>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/Testbench/BasicCharacterMovement/BasicCharacterMovement/Content/temp_floor.fbx</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
