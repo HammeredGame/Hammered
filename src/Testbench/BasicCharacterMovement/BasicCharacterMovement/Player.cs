@@ -19,17 +19,11 @@ namespace BasicCharacterMovement
         //Matrix view;
 
         private Vector3 _lightDirection = new Vector3(3, -2, 5);
-        //private Vector3 _focusPoint = Vector3.Zero;
-        //private Vector3 _cameraOffset = new Vector3(0f, 20f, 20f);
         private Vector3 _characterPosition = new Vector3(0, 0, 0);
         private Quaternion _characterRotation = Quaternion.Identity;
-        //private Vector3 rotatedOffset;
 
         public Player(Vector3 position)
         {
-            //rotatedOffset = Vector3.Transform(_cameraOffset, Matrix.CreateRotationY(MathHelper.PiOver2 * 0.5f));
-            //view = Matrix.CreateLookAt(rotatedOffset, _focusPoint, Vector3.Up);
-            //view = Matrix.CreateLookAt(new Vector3(0, -14.1759f, 10f), new Vector3(0, 0, 0), Vector3.Up);
             _lightDirection.Normalize();
         }
 
