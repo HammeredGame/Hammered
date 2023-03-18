@@ -18,11 +18,14 @@ namespace HammeredGame
         public float scale;
         public Texture2D tex;
 
-        private float hammerSpeed = 0.25f;
+        private float hammerSpeed = 0.1f;
         private Vector3 hammer_vel;
         private Vector3 _lightDirection = new Vector3(3, -2, 5);
 
         private bool hammerDropped = false;
+        private bool hammerEnroute = false;
+        private Vector3 dropPos = Vector3.Zero;
+        private Vector3 targetPos = Vector3.Zero;
 
         Input inp;
         Camera activeCamera;
@@ -44,23 +47,24 @@ namespace HammeredGame
 
         public override void Update(GameTime gameTime)
         {
-            Vector3 oldPos = _hammerPosition;
+            //Vector3 oldPos = _hammerPosition;
 
-            if (!hammerDropped)
+            if (!hammerDropped && !hammerEnroute)
             {
                 this._hammerPosition = this._player.GetPosition();
             }
 
             // Keyboard input
-            if (inp.KeyDown(Keys.E))
+            if (!hammerDropped && inp.KeyDown(Keys.E))
             {
                 this.hammerDropped = true;
+                this.dropPos = this._hammerPosition;
             }
 
             if (hammerDropped && inp.KeyDown(Keys.Q))
             {
-                this.hammerDropped = false;
-                this._hammerPosition = this._player.GetPosition();
+                //this.targetPos = this._player.GetPosition();
+                this.hammerEnroute = true;
             }
 
             //GamePad Control
@@ -72,8 +76,18 @@ namespace HammeredGame
                 }
                 if (inp.ButtonPress(Buttons.B))
                 {
+                    //this.targetPos = this._player.GetPosition();
+                    this.hammerEnroute = true;
+                }
+            }
+
+            if (this.hammerEnroute && this.hammerDropped)
+            {
+                this._hammerPosition += this.hammerSpeed * (this._player.GetPosition() - this._hammerPosition);
+                if ((this._hammerPosition - this._player.GetPosition()).Length() < 0.5f)
+                {
                     this.hammerDropped = false;
-                    this._hammerPosition = this._player.GetPosition();
+                    this.hammerEnroute = false;
                 }
             }
         }
