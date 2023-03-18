@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "tYqkEDu9GZ4F5dehzv3N+lipRhkNNQ8WUbdY7jJRRPnJs1fd9OjSG+c3haZYvexuLfXi5Ve8Z0fXTG6uQYJTyw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\siddh\\Desktop\\ETH_Main\\SS2023\\GPL\\GitLabRepo\\gamelab2023-rapture-team2\\src\\HammeredGame\\HammeredGame\\HammeredGame.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\siddh\\.nuget\\packages\\monogame.content.builder.task\\3.8.1.303\\monogame.content.builder.task.3.8.1.303.nupkg.sha512",
+    "C:\\Users\\siddh\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.1.303\\monogame.framework.desktopgl.3.8.1.303.nupkg.sha512"
+  ],
+  "logs": []
+}
