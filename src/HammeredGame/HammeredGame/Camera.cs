@@ -25,7 +25,7 @@ namespace HammeredGame
         Input inp;                                  // Input class for camera controls
 
         private Vector3 _focusPoint = Vector3.Zero;
-        private Vector3 _cameraOffset_default = new Vector3(30f, -50f, -60f);
+        private Vector3 _cameraOffset_default = new Vector3(50f, -60f, -50f);
         private Vector3 _cameraOffset_alt1 = new Vector3(-50f, -50f, -30f);
         private Vector3 _cameraOffset_alt2 = new Vector3(-30f, -50f, 60f);
         private Vector3 _cameraOffset_alt3 = new Vector3(50f, -50f, 30f);
