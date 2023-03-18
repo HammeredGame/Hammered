@@ -51,3 +51,5 @@ C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\
 C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\src\HammeredGame\HammeredGame\obj\Debug\net6.0\HammeredGame.pdb
 C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\src\HammeredGame\HammeredGame\obj\Debug\net6.0\HammeredGame.genruntimeconfig.cache
 C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\src\HammeredGame\HammeredGame\obj\Debug\net6.0\ref\HammeredGame.dll
+C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\src\HammeredGame\HammeredGame\bin\Debug\net6.0\Content\temp_hammer.xnb
+C:\Users\siddh\Desktop\ETH_Main\SS2023\GPL\GitLabRepo\gamelab2023-rapture-team2\src\HammeredGame\HammeredGame\bin\Debug\net6.0\Content\temp_floor.xnb

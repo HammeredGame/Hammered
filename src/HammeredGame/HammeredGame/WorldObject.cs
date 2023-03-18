@@ -47,7 +47,7 @@ namespace HammeredGame
 
             Matrix rotationMatrix = Matrix.CreateFromQuaternion(rotation);
             Matrix translationMatrix = Matrix.CreateTranslation(position);
-            Matrix scaleMatrix = Matrix.CreateScale(scale, scale, scale);
+            Matrix scaleMatrix = Matrix.CreateScale(scale, 0.01f * scale, scale);
 
             Matrix world = rotationMatrix * translationMatrix * scaleMatrix;
 

@@ -32,6 +32,7 @@ namespace HammeredGame
 
         // 3D Objects and other related stuff
         private Player _player;
+        private Hammer _hammer;
         private Texture2D playerTex;
         private WorldObject _ground;
         private List<GameObject> gameObjects;
@@ -81,10 +82,11 @@ namespace HammeredGame
         {
             playerTex = Content.Load<Texture2D>("Temp");
             _player = new Player(Content.Load<Model>("character_test"), Vector3.Zero, 1.5f, inp, _camera, playerTex);
-            _ground = new WorldObject(Content.Load<Model>("dummy_floor"), new Vector3(0, 1f, 0), 5f, inp, _camera, playerTex);
+            _hammer = new Hammer(Content.Load<Model>("temp_hammer"), Vector3.Zero, 1.5f, _player, inp, _camera, null);
+            _ground = new WorldObject(Content.Load<Model>("temp_floor"), new Vector3(0, 20f, 0), 25f, inp, _camera, playerTex);
 
 
-            gameObjects = new List<GameObject> { _player, _ground };
+            gameObjects = new List<GameObject> { _player, _hammer, _ground };
         }
 
         protected override void Update(GameTime gameTime)
