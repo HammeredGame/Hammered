@@ -6,9 +6,13 @@
   <SourceFiles>
     <File>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/HammeredGame/HammeredGame/Content/character_test.fbx</File>
     <File>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/HammeredGame/HammeredGame/Content/dummy_floor.fbx</File>
+    <File>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/HammeredGame/HammeredGame/Content/temp_floor.fbx</File>
+    <File>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/HammeredGame/HammeredGame/Content/temp_hammer.fbx</File>
     <File>C:/Users/siddh/Desktop/ETH_Main/SS2023/GPL/GitLabRepo/gamelab2023-rapture-team2/src/HammeredGame/HammeredGame/Content/Temp.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
