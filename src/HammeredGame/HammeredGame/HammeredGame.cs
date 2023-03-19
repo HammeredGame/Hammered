@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ImGuiNET;
+using ImMonoGame.Thing;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
@@ -37,6 +39,9 @@ namespace HammeredGame
         private WorldObject _ground;
         private List<GameObject> gameObjects;
 
+        // ImGui renderer and list of UIs to render
+        private ImGuiRenderer _imGuiRenderer;
+        private List<IImGui> UIEntities = new List<IImGui>();
 
         public HammeredGame()
         {
@@ -57,7 +62,6 @@ namespace HammeredGame
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             gpu = GraphicsDevice;
             PresentationParameters pp = gpu.PresentationParameters;
             _spriteBatch = new SpriteBatch(gpu);
@@ -72,8 +76,12 @@ namespace HammeredGame
 
             //_player = new Player(Content.Load<Model>("placeholder_character2"), Vector3.Zero, 1.0f, inp, _camera);
             _camera = new Camera(gpu, Vector3.Down, inp);
-            
+
             Window.Title = "HAMMERED";
+
+            // Initialize ImGui's internal renderer and build the font atlas
+            _imGuiRenderer = new ImGuiRenderer(this);
+            _imGuiRenderer.RebuildFontAtlas();
 
             base.Initialize();
         }
@@ -85,8 +93,10 @@ namespace HammeredGame
             _hammer = new Hammer(Content.Load<Model>("temp_hammer"), Vector3.Zero, 1.5f, _player, inp, _camera, null);
             _ground = new WorldObject(Content.Load<Model>("temp_floor"), new Vector3(0, 20f, 0), 25f, inp, _camera, playerTex);
 
-
             gameObjects = new List<GameObject> { _player, _hammer, _ground };
+
+            // for now, add a temporary UI with the Player class debug info
+            UIEntities.Add(_player);
         }
 
         protected override void Update(GameTime gameTime)
@@ -137,6 +147,23 @@ namespace HammeredGame
             _spriteBatch.End();
 
             base.Draw(gameTime);
+
+#if DEBUG
+            // == Draw debug UI on top of all rendered base.
+            // Code adapted from ImMonoGame example code.
+            // Begin by calling BeforeLayout
+            _imGuiRenderer.BeforeLayout(gameTime);
+
+            // Draw each of our entities
+            foreach (var UIEntity in UIEntities)
+            {
+                if (UIEntity != null)
+                    UIEntity.UI();
+            }
+
+            // Call AfterLayout to finish.
+            _imGuiRenderer.AfterLayout();
+#endif
         }
     }
 }

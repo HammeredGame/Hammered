@@ -2,10 +2,12 @@
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using System;
+using ImMonoGame.Thing;
+using ImGuiNET;
 
 namespace HammeredGame
 {
-    class Player : GameObject
+    class Player : GameObject, IImGui
     {
         public Model model;
 
@@ -173,6 +175,18 @@ namespace HammeredGame
         public Quaternion GetRotation()
         {
             return _characterRotation;
+        }
+
+        public void UI()
+        {
+            ImGui.SetNextWindowBgAlpha(0.3f);
+            ImGui.Begin("Player Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
+
+            var numericPos = _characterPosition.ToNumerics();
+            ImGui.InputFloat3("Position", ref numericPos);
+            _characterPosition = numericPos;
+
+            ImGui.End();
         }
     }
 }
