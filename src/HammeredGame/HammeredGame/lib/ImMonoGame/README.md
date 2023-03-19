@@ -1,3 +1,9 @@
+Modified for GPL FS 2023 under the MIT license:
+- Removed ImGuiDemo.cs, imGuiComponent class
+- Replaced ImGuiEntity class with IImGui interface 
+
+---
+
 # ImMonoGame
 a small lightweight library for ImGui.Net and MonoGame, with a basic UI Entity/Object type system. Reccomended for use when debugging projects.
 

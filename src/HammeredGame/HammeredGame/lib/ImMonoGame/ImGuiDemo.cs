@@ -5,7 +5,7 @@ using Num = System.Numerics;
 
 namespace ImMonoGame
 {
-    public class ImGuiDemo : ImGuiEntity
+    public class ImGuiDemo : IImGuiUI
     {
         private IntPtr _imGuiTexture;
         public ImGuiDemo(IntPtr imGuiTexture)
@@ -17,7 +17,7 @@ namespace ImMonoGame
         private bool show_another_window = false;
         private Num.Vector3 clear_color = new Num.Vector3(114f / 255f, 144f / 255f, 154f / 255f);
         private byte[] _textBuffer = new byte[100];
-        public override void UI()
+        public void UI()
         {
             // 1.Show a simple window
             // Tip: if we don't call ImGui.Begin()/ImGui.End() the widgets appears in a window automatically called "Debug"
