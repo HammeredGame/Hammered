@@ -183,7 +183,7 @@ namespace HammeredGame
             ImGui.Begin("Player Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
 
             var numericPos = _characterPosition.ToNumerics();
-            ImGui.InputFloat3("Position", ref numericPos);
+            ImGui.DragFloat3("Position", ref numericPos);
             _characterPosition = numericPos;
 
             ImGui.End();
