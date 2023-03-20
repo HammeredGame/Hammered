@@ -11,111 +11,131 @@ namespace HammeredGame
 {
     class Hammer : GameObject
     {
-        public Model model;
-
-        public Vector3 _hammerPosition;
-        public Quaternion _hammerRotation;
-        public float scale;
-        public Texture2D tex;
-
+        // Hammer specific variables
         private float hammerSpeed = 0.1f;
-        private Vector3 hammer_vel;
-        private Vector3 _lightDirection = new Vector3(3, -2, 5);
-
         private bool hammerDropped = false;
         private bool hammerEnroute = false;
         private Vector3 dropPos = Vector3.Zero;
         private Vector3 targetPos = Vector3.Zero;
 
+        private List<GameObject> activeLevelObstacles;
+
         Input inp;
         Camera activeCamera;
         Player _player;
 
-        public Hammer(Model model, Vector3 pos, float scale, Player p, Input inp, Camera cam, Texture2D t)
+        public Hammer(Model model, Vector3 pos, float scale, Player p, Input inp, Camera cam, Texture2D t, List<GameObject> alo)
         {
             this.model = model;
-            this._hammerPosition = pos;
+            this.position = pos;
             this.scale = scale;
-            this._hammerRotation = Quaternion.Identity;
+            this.rotation = Quaternion.Identity;
 
-            _lightDirection.Normalize();
             this.inp = inp;
             this.activeCamera = cam;
             this.tex = t;
             this._player = p;
+            this.activeLevelObstacles = alo;
         }
 
+        // Update function (called every tick)
         public override void Update(GameTime gameTime)
         {
-            //Vector3 oldPos = _hammerPosition;
-
+            // Ensure hammer follows/sticks with the player,
+            // if hammer has not yet been dropped / if hammer is not being called back
             if (!hammerDropped && !hammerEnroute)
             {
-                this._hammerPosition = this._player.GetPosition();
+                this.position = this._player.GetPosition();
             }
 
-            // Keyboard input
+            // Keyboard input (E - drop hammer, Q - Call back hammer)
+            // Hammer Drop Mechanic
             if (!hammerDropped && inp.KeyDown(Keys.E))
             {
+                // Set boolean to indacte hammer is dropped
                 this.hammerDropped = true;
-                this.dropPos = this._hammerPosition;
+                // Set drop position
+                this.dropPos = this.position;
             }
 
+            // Hammer Call Back Mechanic
+            // Call back only possible if hammer has already been dropped
+            // Otherwise 'Q' does nothing
             if (hammerDropped && inp.KeyDown(Keys.Q))
             {
-                //this.targetPos = this._player.GetPosition();
+                // Trigger hammer movement - hammer is enroute
                 this.hammerEnroute = true;
             }
 
-            //GamePad Control
+            // GamePad Control (A - Hammer drop, B - Hammer call back)
+            // Same functionality as with above keyboard check
             if (inp.gp.IsConnected)
             {
                 if (inp.ButtonPress(Buttons.A))
                 {
                     this.hammerDropped = true;
+                    this.dropPos = this.position;
                 }
                 if (inp.ButtonPress(Buttons.B))
                 {
-                    //this.targetPos = this._player.GetPosition();
                     this.hammerEnroute = true;
                 }
             }
 
+            // If hammer is called back (successfully), update its position
+            // and handle interactions along the way - ending once the hammer is back with player
+            // TODO: this is currently just the hammer's position being updated with very naive collision checking
+            // This is where the path finding should take place - so this will need to change for improved hammer mechanics
             if (this.hammerEnroute && this.hammerDropped)
             {
-                this._hammerPosition += this.hammerSpeed * (this._player.GetPosition() - this._hammerPosition);
-                if ((this._hammerPosition - this._player.GetPosition()).Length() < 0.5f)
+                // Update position
+                this.position += this.hammerSpeed * (this._player.GetPosition() - this.position);
+                
+                // If position is close enough to player, end its traversal
+                if ((this.position - this._player.GetPosition()).Length() < 0.5f)
                 {
                     this.hammerDropped = false;
                     this.hammerEnroute = false;
                 }
+
+                // Check for any collisions along the way
+                BoundingBox currbbox = this.GetBounds();
+                foreach (GameObject gO in activeLevelObstacles)
+                {
+                    if (gO != null && !gO.destroyed)
+                    {
+                        BoundingBox checkbbox = gO.GetBounds();
+                        if (currbbox.Intersects(checkbbox))
+                        {
+                            // If hit obstacle - destroy it
+                            gO.destroyed = true;
+                        }
+                    }
+                }
             }
         }
 
+        // get position and rotation of the object - extract the scale, rotation, and translation matrices
+        // get world matrix and then call draw model to draw the mesh on screen
+        // TODO: Something's wrong here - this should be a function that could be common for all objects
         public override void Draw(Matrix view, Matrix projection)
         {
             //if (!hammerDropped) return;
 
-            Vector3 position = GetPosition();
-            Quaternion rotation = GetRotation();
+            Vector3 pos = this.GetPosition();
+            Quaternion rot = this.GetRotation();
 
-            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rotation);
-            Matrix translationMatrix = Matrix.CreateTranslation(position);
+            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
+            Matrix translationMatrix = Matrix.CreateTranslation(pos);
+            // The scales seem to be off when importing the meshes into Monogame
+            // Shouldn't need to be doing these magic transformations here
             Matrix scaleMatrix = Matrix.CreateScale(scale, 0.5f * scale, scale);
 
+            // Issue is probably in the order of matrix multiplication here - need to modify
             Matrix world = rotationMatrix * translationMatrix * scaleMatrix;
 
+            // Given the above calculations are correct, we draw the model/mesh
             DrawModel(model, world, view, projection, tex);
-        }
-
-        public Vector3 GetPosition()
-        {
-            return _hammerPosition;
-        }
-
-        public Quaternion GetRotation()
-        {
-            return _hammerRotation;
         }
     }
 }
