@@ -4,47 +4,45 @@ using Microsoft.Xna.Framework;
 using System;
 using ImMonoGame.Thing;
 using ImGuiNET;
+using System.Collections.Generic;
 
 namespace HammeredGame
 {
     class Player : GameObject, IImGui
     {
-        public Model model;
-
-        public Vector3 _characterPosition;
-        public Quaternion _characterRotation;
-        public float scale;
-        public Texture2D tex;
-
+        // Private variables specific to the player class
         private float baseSpeed = 0.25f;
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
-        private Vector3 _lightDirection = new Vector3(3, -2, 5);
+        private List<GameObject> activeLevelObstacles;
 
         Input inp;
         Camera activeCamera;
 
-        public Player(Model model, Vector3 pos, float scale, Input inp, Camera cam, Texture2D t)
+        // Initialize player class
+        public Player(Model model, Vector3 pos, float scale, Input inp, Camera cam, Texture2D t, List<GameObject> alo)
         {
             this.model = model;
-            this._characterPosition = pos;
+            this.position = pos;
             this.scale = scale;
-            this._characterRotation = Quaternion.Identity;
+            this.rotation = Quaternion.Identity;
 
-            _lightDirection.Normalize();
             this.inp = inp;
             this.activeCamera = cam;
             this.tex = t;
+            this.activeLevelObstacles = alo;
         }
 
+        // Update (called every tick)
         public override void Update(GameTime gameTime)
         {
-            Vector3 oldPos = _characterPosition;
+            Vector3 oldPos = this.position;
             bool moveDirty = false;
 
+            // Get forward direction
             Vector3 forwardDirectionFromCamera = Vector3.Normalize(Vector3.Multiply(activeCamera.target - activeCamera.pos, new Vector3(1, 0, 1)));
 
-            // Keyboard input
+            // Keyboard input (W - forward, S - back, A - left, D - right)
             if (inp.KeyDown(Keys.W))
             {
                 player_vel += forwardDirectionFromCamera;
@@ -57,16 +55,16 @@ namespace HammeredGame
             }
             if (inp.KeyDown(Keys.A))
             {
-                player_vel += -Vector3.Cross(forwardDirectionFromCamera, Vector3.Down); // should be up, but the game is vertically flipped right now
+                player_vel += -Vector3.Cross(forwardDirectionFromCamera, Vector3.Up);
                 moveDirty = true;
             }
             if (inp.KeyDown(Keys.D))
             {
-                player_vel += Vector3.Cross(forwardDirectionFromCamera, Vector3.Down);
+                player_vel += Vector3.Cross(forwardDirectionFromCamera, Vector3.Up);
                 moveDirty = true;
             }
 
-            // GamePad Control
+            // GamePad Control (if controller is connected) - Left stick controls motion of player
             float MovePad_UpDown = 0;
             float MovePad_LeftRight = 0;
             if (inp.gp.IsConnected)
@@ -75,11 +73,14 @@ namespace HammeredGame
                 MovePad_UpDown = inp.gp.ThumbSticks.Left.Y;
                 if ((MovePad_UpDown < -Input.DEADZONE) || (MovePad_UpDown > Input.DEADZONE) || (MovePad_LeftRight < -Input.DEADZONE) || (MovePad_LeftRight > Input.DEADZONE))
                 {
-                    player_vel.X = (MovePad_LeftRight * activeCamera.view.Right.X + MovePad_UpDown * activeCamera.view.Forward.X) * baseControllerSpeed; // left-right_control * right_from_camera + up-down_control * forward_from_camera
-                    player_vel.Z = (MovePad_LeftRight * activeCamera.view.Right.Z + MovePad_UpDown * activeCamera.view.Forward.Z) * baseControllerSpeed; // use this formala along x and z motions for character movement
+                    //player_vel.X = (MovePad_LeftRight * activeCamera.view.Right.X + MovePad_UpDown * activeCamera.view.Forward.X) * baseControllerSpeed; // left-right_control * right_from_camera + up-down_control * forward_from_camera
+                    //player_vel.Z = (MovePad_LeftRight * activeCamera.view.Right.Z + MovePad_UpDown * activeCamera.view.Forward.Z) * baseControllerSpeed; // use this formala along x and z motions for character movement
+                    player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera) * baseControllerSpeed;
                     moveDirty = true;
                 }
             }
+
+            // If there was movement, normalize speed and edit rotation of character model
             if (moveDirty)
             {
 
@@ -88,12 +89,12 @@ namespace HammeredGame
                 player_vel.Normalize();
                 player_vel *= baseSpeed;
 
-                _characterPosition += player_vel;
+                this.position += player_vel;
 
                 // At this point, also rotate the player to the direction of movement
-                Vector3 lookDirection = _characterPosition - oldPos;
+                Vector3 lookDirection = this.position - oldPos;
                 float angle = (float)Math.Atan2(lookDirection.X, lookDirection.Z);
-                _characterRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
+                this.rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
             } else
             {
                 // No new keypresses or controller interactions this round, so
@@ -101,7 +102,7 @@ namespace HammeredGame
                 player_vel.X *= 0.5f;
                 player_vel.Z *= 0.5f;
 
-                _characterPosition += player_vel;
+                this.position += player_vel;
             }
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
@@ -151,30 +152,52 @@ namespace HammeredGame
             //_characterRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
             #endregion
 
+            // Obstacle collision detection - will be modified/removed later
+            // Check for any obstacles in the current level
+            if (activeLevelObstacles == null) return;
+            BoundingBox currbbox = this.GetBounds();
+            foreach (GameObject gO in activeLevelObstacles)
+            {
+                // Very very basic collision detection
+                // Check for collisions by checking for bounding box intersections
+                if (gO != null && !gO.destroyed)
+                {
+                    BoundingBox checkbbox = gO.GetBounds();
+                    if (currbbox.Intersects(checkbbox))
+                    {
+                        // If there is an intersection with an obstacle, reset movement
+                        this.position = oldPos;
+                    }
+                }
+            }
+
+            // For the purposes of the functional minimum
+            // Temporary BOUNDS to clamp player position within the bounds of the test terrain/ground
+            // TODO: Ideally, this will be dynamically determined by the current active level's bounds
+            // (determined within the xml / dynamic bounds detection ?)
+            this.position = Vector3.Clamp(this.position, new Vector3(-30f, 0f, -30f), new Vector3(30f, 0f, 30f));
+
         }
 
+        // get position and rotation of the object - extract the scale, rotation, and translation matrices
+        // get world matrix and then call draw model to draw the mesh on screen
+        // TODO: Something's wrong here - this should be a function that could be common for all objects
         public override void Draw(Matrix view, Matrix projection)
         {
-            Vector3 position = GetPosition();
-            Quaternion rotation = GetRotation();
+            Vector3 pos = this.GetPosition();
+            Quaternion rot = this.GetRotation();
 
-            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rotation);
-            Matrix translationMatrix = Matrix.CreateTranslation(position);
+            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
+            Matrix translationMatrix = Matrix.CreateTranslation(pos);
+            // The scales seem to be off when importing the meshes into Monogame
+            // Shouldn't need to be doing these magic transformations here
             Matrix scaleMatrix = Matrix.CreateScale(scale, 2 * scale, scale);
 
+            // Issue is probably in the order of matrix multiplication here - need to modify
             Matrix world = rotationMatrix * translationMatrix * scaleMatrix;
 
+            // Given the above calculations are correct, we draw the model/mesh
             DrawModel(model, world, view, projection, tex);
-        }
-
-        public Vector3 GetPosition()
-        {
-            return _characterPosition;
-        }
-
-        public Quaternion GetRotation()
-        {
-            return _characterRotation;
         }
 
         public void UI()
@@ -182,9 +205,9 @@ namespace HammeredGame
             ImGui.SetNextWindowBgAlpha(0.3f);
             ImGui.Begin("Player Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
 
-            var numericPos = _characterPosition.ToNumerics();
+            var numericPos = this.position.ToNumerics();
             ImGui.DragFloat3("Position", ref numericPos);
-            _characterPosition = numericPos;
+            this.position = numericPos;
 
             ImGui.End();
         }

@@ -10,26 +10,16 @@ namespace HammeredGame
 {
     class WorldObject : GameObject
     {
-        public Model model;
-
-        public Vector3 _modelpos;
-        public Quaternion _modelrot;
-        public float scale;
-        public Texture2D tex;
-
-        private Vector3 _lightDirection = new Vector3(3, -2, 5);
-
         Input inp;
         Camera activeCamera;
 
         public WorldObject(Model model, Vector3 pos, float scale, Input inp, Camera cam, Texture2D t)
         {
             this.model = model;
-            this._modelpos = pos;
+            this.position = pos;
             this.scale = scale;
-            this._modelrot = Quaternion.Identity;
+            this.rotation = Quaternion.Identity;
 
-            _lightDirection.Normalize();
             this.inp = inp;
             this.activeCamera = cam;
             this.tex = t;
@@ -40,28 +30,25 @@ namespace HammeredGame
             // Do nothing (for now)
         }
 
+        // get position and rotation of the object - extract the scale, rotation, and translation matrices
+        // get world matrix and then call draw model to draw the mesh on screen
+        // TODO: Something's wrong here - this should be a function that could be common for all objects
         public override void Draw(Matrix view, Matrix projection)
         {
-            Vector3 position = GetPosition();
-            Quaternion rotation = GetRotation();
+            Vector3 pos = this.GetPosition();
+            Quaternion rot = this.GetRotation();
 
-            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rotation);
-            Matrix translationMatrix = Matrix.CreateTranslation(position);
+            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
+            Matrix translationMatrix = Matrix.CreateTranslation(pos);
+            // The scales seem to be off when importing the meshes into Monogame
+            // Shouldn't need to be doing these magic transformations here
             Matrix scaleMatrix = Matrix.CreateScale(scale, 0.01f * scale, scale);
-
+            
+            // Issue is probably in the order of matrix multiplication here - need to modify
             Matrix world = rotationMatrix * translationMatrix * scaleMatrix;
 
+            // Given the above calculations are correct, we draw the model/mesh
             DrawModel(model, world, view, projection, tex);
-        }
-
-        public Vector3 GetPosition()
-        {
-            return _modelpos;
-        }
-
-        public Quaternion GetRotation()
-        {
-            return _modelrot;
         }
     }
 }
