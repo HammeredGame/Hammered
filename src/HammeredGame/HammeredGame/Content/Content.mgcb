@@ -25,8 +25,8 @@
 /processorParam:PremultiplyVertexColors=True
 /processorParam:ResizeTexturesToPowerOfTwo=False
 /processorParam:RotationX=0
-/processorParam:RotationY=0
-/processorParam:RotationZ=0
+/processorParam:RotationY=90
+/processorParam:RotationZ=90
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
@@ -51,7 +51,26 @@
 /processorParam:TextureFormat=Compressed
 /build:dummy_floor.fbx
 
-#begin temp_floor.fbx
+#begin temp_floor_flat.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=90
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:temp_floor_flat.fbx
+
+#begin temp_floor_small.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -65,10 +84,67 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=2
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:temp_floor_small.fbx
+
+#begin temp_floor_smaller.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:temp_floor_smaller.fbx
+
+#begin temp_floor.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=90
+/processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:temp_floor.fbx
+
+#begin temp_hammer_mod.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=90
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:temp_hammer_mod.fbx
 
 #begin temp_hammer.fbx
 /importer:FbxImporter

@@ -155,14 +155,35 @@ namespace HammeredGame
             // Obstacle collision detection - will be modified/removed later
             // Check for any obstacles in the current level
             if (activeLevelObstacles == null) return;
-            BoundingBox currbbox = this.GetBounds();
+
+            Vector3 pos = this.GetPosition();
+            Quaternion rot = this.GetRotation();
+
+            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
+            Matrix translationMatrix = Matrix.CreateTranslation(pos);
+            Matrix scaleMatrix = Matrix.CreateScale(scale, scale, scale);
+
+            // Construct world matrix
+            Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
+
+            BoundingBox currbbox = this.GetBounds(world);
             foreach (GameObject gO in activeLevelObstacles)
             {
+                Vector3 gOpos = this.GetPosition();
+                Quaternion gOrot = this.GetRotation();
+
+                Matrix gOrotationMatrix = Matrix.CreateFromQuaternion(gOrot);
+                Matrix gOtranslationMatrix = Matrix.CreateTranslation(gOpos);
+                Matrix gOscaleMatrix = Matrix.CreateScale(gO.scale, gO.scale, gO.scale);
+
+                // Construct world matrix
+                Matrix gOworld = gOscaleMatrix * gOrotationMatrix * gOtranslationMatrix;
+
                 // Very very basic collision detection
                 // Check for collisions by checking for bounding box intersections
                 if (gO != null && !gO.destroyed)
                 {
-                    BoundingBox checkbbox = gO.GetBounds();
+                    BoundingBox checkbbox = gO.GetBounds(gOworld);
                     if (currbbox.Intersects(checkbbox))
                     {
                         // If there is an intersection with an obstacle, reset movement
@@ -175,7 +196,7 @@ namespace HammeredGame
             // Temporary BOUNDS to clamp player position within the bounds of the test terrain/ground
             // TODO: Ideally, this will be dynamically determined by the current active level's bounds
             // (determined within the xml / dynamic bounds detection ?)
-            this.position = Vector3.Clamp(this.position, new Vector3(-30f, 0f, -30f), new Vector3(30f, 0f, 30f));
+            //this.position = Vector3.Clamp(this.position, new Vector3(-30f, 0f, -30f), new Vector3(30f, 0f, 30f));
 
         }
 
@@ -189,12 +210,10 @@ namespace HammeredGame
 
             Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
             Matrix translationMatrix = Matrix.CreateTranslation(pos);
-            // The scales seem to be off when importing the meshes into Monogame
-            // Shouldn't need to be doing these magic transformations here
-            Matrix scaleMatrix = Matrix.CreateScale(scale, 2 * scale, scale);
+            Matrix scaleMatrix = Matrix.CreateScale(scale, scale, scale);
 
-            // Issue is probably in the order of matrix multiplication here - need to modify
-            Matrix world = rotationMatrix * translationMatrix * scaleMatrix;
+            // Construct world matrix
+            Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
 
             // Given the above calculations are correct, we draw the model/mesh
             DrawModel(model, world, view, projection, tex);
