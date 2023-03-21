@@ -99,19 +99,19 @@ namespace HammeredGame
                 }
 
                 // Check for any collisions along the way
-                BoundingBox currbbox = this.GetBounds();
-                foreach (GameObject gO in activeLevelObstacles)
-                {
-                    if (gO != null && !gO.destroyed)
-                    {
-                        BoundingBox checkbbox = gO.GetBounds();
-                        if (currbbox.Intersects(checkbbox))
-                        {
-                            // If hit obstacle - destroy it
-                            gO.destroyed = true;
-                        }
-                    }
-                }
+                //BoundingBox currbbox = this.GetBounds();
+                //foreach (GameObject gO in activeLevelObstacles)
+                //{
+                //    if (gO != null && !gO.destroyed)
+                //    {
+                //        BoundingBox checkbbox = gO.GetBounds();
+                //        if (currbbox.Intersects(checkbbox))
+                //        {
+                //            // If hit obstacle - destroy it
+                //            gO.destroyed = true;
+                //        }
+                //    }
+                //}
             }
         }
 
@@ -127,12 +127,10 @@ namespace HammeredGame
 
             Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
             Matrix translationMatrix = Matrix.CreateTranslation(pos);
-            // The scales seem to be off when importing the meshes into Monogame
-            // Shouldn't need to be doing these magic transformations here
-            Matrix scaleMatrix = Matrix.CreateScale(scale, 0.5f * scale, scale);
+            Matrix scaleMatrix = Matrix.CreateScale(scale, scale, scale);
 
-            // Issue is probably in the order of matrix multiplication here - need to modify
-            Matrix world = rotationMatrix * translationMatrix * scaleMatrix;
+            // Construct world matrix
+            Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
 
             // Given the above calculations are correct, we draw the model/mesh
             DrawModel(model, world, view, projection, tex);

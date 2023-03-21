@@ -34,14 +34,15 @@ namespace HammeredGame
 
         public override void Draw(Matrix view, Matrix projection)
         {
-            Vector3 position = this.GetPosition();
-            Quaternion rotation = this.GetRotation();
+            Vector3 pos = this.GetPosition();
+            Quaternion rot = this.GetRotation();
 
-            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rotation);
-            Matrix translationMatrix = Matrix.CreateTranslation(position);
+            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
+            Matrix translationMatrix = Matrix.CreateTranslation(pos);
             Matrix scaleMatrix = Matrix.CreateScale(scale, scale, scale);
 
-            Matrix world = rotationMatrix * translationMatrix * scaleMatrix;
+            // Construct world matrix
+            Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
 
             DrawModel(model, world, view, projection, tex);
         }

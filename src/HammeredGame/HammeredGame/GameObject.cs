@@ -29,13 +29,16 @@ namespace HammeredGame
         // Common method to draw 3D models
         public void DrawModel(Model model, Matrix world, Matrix view, Matrix projection, Texture2D? tex)
         {
+            Matrix[] meshTransforms = new Matrix[model.Bones.Count];
+            model.CopyAbsoluteBoneTransformsTo(meshTransforms);
+
             foreach (ModelMesh mesh in model.Meshes)
             {
                 // Set the effect class for each mesh part in the model
                 // This is most likely where we attach shaders to the model/mesh
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.World = world;
+                    effect.World = meshTransforms[mesh.ParentBone.Index] * world;
                     effect.View = view;
                     effect.Projection = projection;
 
@@ -60,8 +63,10 @@ namespace HammeredGame
         // Method to get bounding box for the mesh - for basic collision detection
         // Probably not going to be necessary for later iterations
         // (once we bring in an external library to handle collisions)
-        public BoundingBox GetBounds()
+        public BoundingBox GetBounds(Matrix worldTransform)
         {
+            worldTransform *= this.model.Bones[0].Transform;
+
             Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
             Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
@@ -79,7 +84,8 @@ namespace HammeredGame
 
                     for (int i = 0; i < vertexDataSize; i += vertexStride / sizeof(float))
                     {
-                        Vector3 vertex = this.position + new Vector3(vertexData[i], vertexData[i + 1], vertexData[i + 2]);
+                        //Vector3 vertex = new Vector3(vertexData[i], vertexData[i + 1], vertexData[i + 2]);
+                        Vector3 vertex = Vector3.Transform(new Vector3(vertexData[i], vertexData[i + 1], vertexData[i + 2]), worldTransform);
                         min = Vector3.Min(min, vertex);
                         max = Vector3.Max(max, vertex);
                     }

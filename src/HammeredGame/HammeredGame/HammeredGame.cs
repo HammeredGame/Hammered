@@ -97,20 +97,21 @@ namespace HammeredGame
             // Load Texture
             playerTex = Content.Load<Texture2D>("Temp");
 
-            // Load obstacles for testing (TEMPORARY - after xml parsing and incorporating better collision detection, this should change)
-            Obstacle Obstacle1 = new Obstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 0f, 10f), 1.5f, inp, _camera, null);
-            Obstacle Obstacle2 = new Obstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 0f, -10f), 1.5f, inp, _camera, null);
-            Obstacle Obstacle3 = new Obstacle(Content.Load<Model>("test_obstacle"), new Vector3(5f, 0f, -5f), 1.5f, inp, _camera, null);
+            //(TEMPORARY - after xml parsing and incorporating better collision detection, all of this should change)
+            // Load obstacles for testing
+            Obstacle Obstacle1 = new Obstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, inp, _camera, null);
+            Obstacle Obstacle2 = new Obstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, inp, _camera, null);
+            Obstacle Obstacle3 = new Obstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, inp, _camera, null);
             levelObstacles = new List<GameObject> { Obstacle1, Obstacle2, Obstacle3 };
 
             // Load and initialize player character
-            _player = new Player(Content.Load<Model>("character_test"), Vector3.Zero, 1.5f, inp, _camera, playerTex, levelObstacles);
+            _player = new Player(Content.Load<Model>("character_test"), Vector3.Zero, 0.03f, inp, _camera, playerTex, levelObstacles);
 
             // Load and initialize hammer object
-            _hammer = new Hammer(Content.Load<Model>("temp_hammer"), Vector3.Zero, 1.5f, _player, inp, _camera, null, levelObstacles);
+            _hammer = new Hammer(Content.Load<Model>("temp_hammer_mod"), Vector3.Zero, 0.03f, _player, inp, _camera, null, levelObstacles);
 
             // Load and initialize the terrain/ground
-            _ground = new WorldObject(Content.Load<Model>("temp_floor"), new Vector3(0, -10f, 0), 25f, inp, _camera, playerTex);
+            _ground = new WorldObject(Content.Load<Model>("temp_floor"), new Vector3(0, -10f, 0), 0.03f, inp, _camera, playerTex);
 
             // Initialize list of gameobjects for drawing
             gameObjects = new List<GameObject> { _player, _hammer, _ground, Obstacle1, Obstacle2, Obstacle3 };
