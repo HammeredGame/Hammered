@@ -5,12 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImMonoGame.Thing;
+using ImGuiNET;
 
 namespace HammeredGame.Classes.GameObjects
 {
     public class EnvironmentObject : GameObject
     {
-        protected bool visible = true;
+        
         public EnvironmentObject(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
             : base (model, pos, scale, cam, t)
         {
@@ -19,16 +21,6 @@ namespace HammeredGame.Classes.GameObjects
         public override void Update(GameTime gameTime)
         {
             // Do nothing (for now)
-        }
-
-        public bool isVisible()
-        {
-            return this.visible;
-        }
-
-        public void setVisible(bool vis)
-        {
-            this.visible = vis;
         }
 
         public virtual void hitByHammer(Hammer hammer) { }

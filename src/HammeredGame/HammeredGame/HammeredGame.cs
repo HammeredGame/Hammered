@@ -1,8 +1,10 @@
 ﻿using HammeredGame.Classes;
 using HammeredGame.Classes.GameObjects;
 using HammeredGame.Classes.GameObjects.EnvironmentObjects;
+using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs;
+using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -35,11 +37,15 @@ namespace HammeredGame
         Rectangle screenRect;
 
         // 3D Objects and other related stuff (Class refactoring required)
+        private SpriteFont _font;
+
         private Player _player;
         private Hammer _hammer;
         private Texture2D playerTex;
         private Floor _ground;
         private List<GameObject> gameObjects;
+
+        private Key _key;
 
         static public List<EnvironmentObject> activeLevelObstacles;
 
@@ -103,12 +109,15 @@ namespace HammeredGame
             // Load Texture
             playerTex = Content.Load<Texture2D>("Temp");
 
+            _font = Content.Load<SpriteFont>("temp_font");
+
             //(TEMPORARY - after xml parsing and incorporating better collision detection, all of this should change)
             // Load obstacles for testing
-            EnvironmentObject Obstacle1 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
-            EnvironmentObject Obstacle2 = new PressurePlate(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null, Obstacle1);
+            EnvironmentObject Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
+            _key = new Key(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null, (Door)Obstacle1);
+            //EnvironmentObject Obstacle2 = new Key(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null, (Door)Obstacle1);
             EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
-            activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, Obstacle2, Obstacle3 };
+            activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, _key, Obstacle3 };
 
             // Load and initialize player character
             _player = new Player(Content.Load<Model>("character_test"), Vector3.Zero, 0.03f, inp, _camera, playerTex);
@@ -120,7 +129,7 @@ namespace HammeredGame
             _ground = new Floor(Content.Load<Model>("temp_floor"), new Vector3(0, -10f, 0), 0.03f, _camera, playerTex);
 
             // Initialize list of gameobjects for drawing
-            gameObjects = new List<GameObject> { _player, _hammer, _ground, Obstacle1, Obstacle2, Obstacle3 };
+            gameObjects = new List<GameObject> { _player, _hammer, _ground, Obstacle1, _key, Obstacle3 };
 
             // for now, add a temporary UI with the Player class debug info
             UIEntities.Add(_player);
@@ -152,7 +161,7 @@ namespace HammeredGame
         // to ensure we are correctly drawing in 3D space
         void Set3DStates()
         {
-            gpu.BlendState = BlendState.NonPremultiplied; // Potentially needs to be modified depending on our textures
+            gpu.BlendState = BlendState.AlphaBlend; // Potentially needs to be modified depending on our textures
             gpu.DepthStencilState = DepthStencilState.Default; // Ensure we are using depth buffer (Z-buffer) for 3D
             if (gpu.RasterizerState.CullMode == CullMode.None)
             {
@@ -180,8 +189,12 @@ namespace HammeredGame
 
             // Draw MainTarget to BackBuffer
             gpu.SetRenderTarget(null);
-            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
             _spriteBatch.Draw(MainTarget, desktopRect, Color.White);
+            if (_key.isKeyPickedUp())
+            {
+                _spriteBatch.DrawString(_font, "KEY PICKED UP!", new Vector2(25, 25), Color.Red);
+            }
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -190,6 +203,7 @@ namespace HammeredGame
             // == Draw debug UI on top of all rendered base.
             // Code adapted from ImMonoGame example code.
             // Begin by calling BeforeLayout
+
             _imGuiRenderer.BeforeLayout(gameTime);
 
             // Draw each of our entities
