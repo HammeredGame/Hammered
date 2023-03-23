@@ -43,16 +43,6 @@ namespace HammeredGame.Classes
             this.visible = vis;
         }
 
-        public bool isVisible()
-        {
-            return this.visible;
-        }
-
-        public void setVisible(bool vis)
-        {
-            this.visible = vis;
-        }
-
         public abstract void Update(GameTime gameTime);
 
         // get position and rotation of the object - extract the scale, rotation, and translation matrices

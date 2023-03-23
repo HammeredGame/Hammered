@@ -74,21 +74,23 @@ namespace HammeredGame.Classes.GameObjects
             // and handle interactions along the way - ending once the hammer is back with player
             // TODO: this is currently just the hammer's position being updated with very naive collision checking
             // This is where the path finding should take place - so this will need to change for improved hammer mechanics
-            if (hammerEnroute && hammerDropped)
+            if (hammerDropped)
             {
-                // Update position
-                position += hammerSpeed * (_player.GetPosition() - position);
-
-                // If position is close enough to player, end its traversal
-                if ((position - _player.GetPosition()).Length() < 0.5f)
+                if (hammerEnroute)
                 {
-                    hammerDropped = false;
-                    hammerEnroute = false;
-                }
+                    // Update position
+                    position += hammerSpeed * (_player.GetPosition() - position);
 
+                    // If position is close enough to player, end its traversal
+                    if ((position - _player.GetPosition()).Length() < 0.5f)
+                    {
+                        hammerDropped = false;
+                        hammerEnroute = false;
+                    }
+                }
+                
                 // Check for any collisions along the way
                 BoundingBox hammerbbox = this.GetBounds();
-                List<EnvironmentObject> hitObjects = new List<EnvironmentObject>();
                 foreach(EnvironmentObject gO in HammeredGame.activeLevelObstacles)
                 {
                     if (gO != null && gO.isVisible())
@@ -97,11 +99,19 @@ namespace HammeredGame.Classes.GameObjects
                         if (hammerbbox.Intersects(objectbbox))
                         {
                             gO.hitByHammer(this);
-                            hitObjects.Add(gO);
+                        }
+                        else
+                        {
+                            gO.notHitByHammer(this);
                         }
                     }
                 }
             }
+        }
+
+        public bool isEnroute()
+        {
+            return this.hammerEnroute;
         }
 
         public void setEnroute(bool enroute)
