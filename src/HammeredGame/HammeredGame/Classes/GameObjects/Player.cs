@@ -6,37 +6,30 @@ using ImMonoGame.Thing;
 using ImGuiNET;
 using System.Collections.Generic;
 
-namespace HammeredGame
+namespace HammeredGame.Classes.GameObjects
 {
-    class Player : GameObject, IImGui
+    public class Player : GameObject, IImGui
     {
         // Private variables specific to the player class
-        private float baseSpeed = 0.25f;
+        private float baseSpeed = 0.5f;
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
-        private List<GameObject> activeLevelObstacles;
+
+        public Vector3 oldPos;
 
         Input inp;
-        Camera activeCamera;
 
         // Initialize player class
-        public Player(Model model, Vector3 pos, float scale, Input inp, Camera cam, Texture2D t, List<GameObject> alo)
+        public Player(Model model, Vector3 pos, float scale, Input inp, Camera cam, Texture2D t)
+            : base(model, pos, scale, cam, t)
         {
-            this.model = model;
-            this.position = pos;
-            this.scale = scale;
-            this.rotation = Quaternion.Identity;
-
             this.inp = inp;
-            this.activeCamera = cam;
-            this.tex = t;
-            this.activeLevelObstacles = alo;
         }
 
         // Update (called every tick)
         public override void Update(GameTime gameTime)
         {
-            Vector3 oldPos = this.position;
+            this.oldPos = this.position;
             bool moveDirty = false;
 
             // Get forward direction
@@ -71,7 +64,7 @@ namespace HammeredGame
             {
                 MovePad_LeftRight = inp.gp.ThumbSticks.Left.X;
                 MovePad_UpDown = inp.gp.ThumbSticks.Left.Y;
-                if ((MovePad_UpDown < -Input.DEADZONE) || (MovePad_UpDown > Input.DEADZONE) || (MovePad_LeftRight < -Input.DEADZONE) || (MovePad_LeftRight > Input.DEADZONE))
+                if (MovePad_UpDown < -Input.DEADZONE || MovePad_UpDown > Input.DEADZONE || MovePad_LeftRight < -Input.DEADZONE || MovePad_LeftRight > Input.DEADZONE)
                 {
                     //player_vel.X = (MovePad_LeftRight * activeCamera.view.Right.X + MovePad_UpDown * activeCamera.view.Forward.X) * baseControllerSpeed; // left-right_control * right_from_camera + up-down_control * forward_from_camera
                     //player_vel.Z = (MovePad_LeftRight * activeCamera.view.Right.Z + MovePad_UpDown * activeCamera.view.Forward.Z) * baseControllerSpeed; // use this formala along x and z motions for character movement
@@ -89,20 +82,21 @@ namespace HammeredGame
                 player_vel.Normalize();
                 player_vel *= baseSpeed;
 
-                this.position += player_vel;
+                position += player_vel;
 
                 // At this point, also rotate the player to the direction of movement
-                Vector3 lookDirection = this.position - oldPos;
+                Vector3 lookDirection = position - oldPos;
                 float angle = (float)Math.Atan2(lookDirection.X, lookDirection.Z);
-                this.rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
-            } else
+                rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
+            }
+            else
             {
                 // No new keypresses or controller interactions this round, so
                 // apply a gradual slowdown to any previous velocity
                 player_vel.X *= 0.5f;
                 player_vel.Z *= 0.5f;
 
-                this.position += player_vel;
+                position += player_vel;
             }
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
@@ -154,40 +148,22 @@ namespace HammeredGame
 
             // Obstacle collision detection - will be modified/removed later
             // Check for any obstacles in the current level
-            if (activeLevelObstacles == null) return;
-
-            Vector3 pos = this.GetPosition();
-            Quaternion rot = this.GetRotation();
-
-            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
-            Matrix translationMatrix = Matrix.CreateTranslation(pos);
-            Matrix scaleMatrix = Matrix.CreateScale(scale, scale, scale);
-
-            // Construct world matrix
-            Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
-
-            BoundingBox currbbox = this.GetBounds(world);
-            foreach (GameObject gO in activeLevelObstacles)
+            BoundingBox currbbox = GetBounds();
+            foreach (EnvironmentObject gO in HammeredGame.activeLevelObstacles)
             {
-                Vector3 gOpos = this.GetPosition();
-                Quaternion gOrot = this.GetRotation();
-
-                Matrix gOrotationMatrix = Matrix.CreateFromQuaternion(gOrot);
-                Matrix gOtranslationMatrix = Matrix.CreateTranslation(gOpos);
-                Matrix gOscaleMatrix = Matrix.CreateScale(gO.scale, gO.scale, gO.scale);
-
-                // Construct world matrix
-                Matrix gOworld = gOscaleMatrix * gOrotationMatrix * gOtranslationMatrix;
-
                 // Very very basic collision detection
                 // Check for collisions by checking for bounding box intersections
-                if (gO != null && !gO.destroyed)
+                if (gO != null && gO.isVisible())
                 {
-                    BoundingBox checkbbox = gO.GetBounds(gOworld);
+                    BoundingBox checkbbox = gO.GetBounds();
                     if (currbbox.Intersects(checkbbox))
                     {
                         // If there is an intersection with an obstacle, reset movement
-                        this.position = oldPos;
+                        gO.hitByPlayer(this);
+                    }
+                    else
+                    {
+                        gO.notHitByPlayer(this);
                     }
                 }
             }
@@ -200,33 +176,14 @@ namespace HammeredGame
 
         }
 
-        // get position and rotation of the object - extract the scale, rotation, and translation matrices
-        // get world matrix and then call draw model to draw the mesh on screen
-        // TODO: Something's wrong here - this should be a function that could be common for all objects
-        public override void Draw(Matrix view, Matrix projection)
-        {
-            Vector3 pos = this.GetPosition();
-            Quaternion rot = this.GetRotation();
-
-            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
-            Matrix translationMatrix = Matrix.CreateTranslation(pos);
-            Matrix scaleMatrix = Matrix.CreateScale(scale, scale, scale);
-
-            // Construct world matrix
-            Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
-
-            // Given the above calculations are correct, we draw the model/mesh
-            DrawModel(model, world, view, projection, tex);
-        }
-
         public void UI()
         {
             ImGui.SetNextWindowBgAlpha(0.3f);
             ImGui.Begin("Player Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
 
-            var numericPos = this.position.ToNumerics();
+            var numericPos = position.ToNumerics();
             ImGui.DragFloat3("Position", ref numericPos);
-            this.position = numericPos;
+            position = numericPos;
 
             ImGui.End();
         }

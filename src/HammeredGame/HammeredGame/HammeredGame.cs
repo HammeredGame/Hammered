@@ -1,4 +1,9 @@
-﻿using ImGuiNET;
+﻿using HammeredGame.Classes;
+using HammeredGame.Classes.GameObjects;
+using HammeredGame.Classes.GameObjects.EnvironmentObjects;
+using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
+using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs;
+using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -33,9 +38,10 @@ namespace HammeredGame
         private Player _player;
         private Hammer _hammer;
         private Texture2D playerTex;
-        private WorldObject _ground;
+        private Floor _ground;
         private List<GameObject> gameObjects;
-        private List<GameObject> levelObstacles;
+
+        static public List<EnvironmentObject> activeLevelObstacles;
 
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer _imGuiRenderer;
@@ -99,19 +105,19 @@ namespace HammeredGame
 
             //(TEMPORARY - after xml parsing and incorporating better collision detection, all of this should change)
             // Load obstacles for testing
-            Obstacle Obstacle1 = new Obstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, inp, _camera, null);
-            Obstacle Obstacle2 = new Obstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, inp, _camera, null);
-            Obstacle Obstacle3 = new Obstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, inp, _camera, null);
-            levelObstacles = new List<GameObject> { Obstacle1, Obstacle2, Obstacle3 };
+            EnvironmentObject Obstacle1 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
+            EnvironmentObject Obstacle2 = new PressurePlate(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null, Obstacle1);
+            EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+            activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, Obstacle2, Obstacle3 };
 
             // Load and initialize player character
-            _player = new Player(Content.Load<Model>("character_test"), Vector3.Zero, 0.03f, inp, _camera, playerTex, levelObstacles);
+            _player = new Player(Content.Load<Model>("character_test"), Vector3.Zero, 0.03f, inp, _camera, playerTex);
 
             // Load and initialize hammer object
-            _hammer = new Hammer(Content.Load<Model>("temp_hammer_mod"), Vector3.Zero, 0.03f, _player, inp, _camera, null, levelObstacles);
+            _hammer = new Hammer(Content.Load<Model>("temp_hammer_mod"), Vector3.Zero, 0.03f, _player, inp, _camera, null);
 
             // Load and initialize the terrain/ground
-            _ground = new WorldObject(Content.Load<Model>("temp_floor"), new Vector3(0, -10f, 0), 0.03f, inp, _camera, playerTex);
+            _ground = new Floor(Content.Load<Model>("temp_floor"), new Vector3(0, -10f, 0), 0.03f, _camera, playerTex);
 
             // Initialize list of gameobjects for drawing
             gameObjects = new List<GameObject> { _player, _hammer, _ground, Obstacle1, Obstacle2, Obstacle3 };

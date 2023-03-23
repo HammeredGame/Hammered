@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HammeredGame
 {
-    internal class Input
+    public class Input
     {
         // Adapted from AlienScribble Making 3D Games with MonoGame playlist:https://www.youtube.com/playlist?list=PLG6XrMFqMJUBOPVTJrGJnIDDHHF1HTETc
         
