@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HammeredGame
 {
-    internal class Camera
+    public class Camera
     {
         public const float FAR_PLANE = 500;
         public Vector3 pos, target;                 // Camera position and target

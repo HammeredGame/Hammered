@@ -6,11 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame
+namespace HammeredGame.Classes
 {
     public abstract class GameObject
     {
-
         // Common variables for any object in the game (will be modified as we develop further)
         public Model model;
         public Vector3 position;
@@ -19,16 +18,35 @@ namespace HammeredGame
 
         public Texture2D tex;
 
+        public Camera activeCamera;
+
         // Change/remove once we modify how collisions / obstacles work
         public bool destroyed = false;
 
+        public GameObject(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
+        {
+            this.model = model;
+            this.position = pos;
+            this.rotation = Quaternion.Identity;
+            this.scale = scale;
+            this.activeCamera = cam;
+            this.tex = t;
+        }
+
         public abstract void Update(GameTime gameTime);
 
-        public abstract void Draw(Matrix view, Matrix projection);
+        // get position and rotation of the object - extract the scale, rotation, and translation matrices
+        // get world matrix and then call draw model to draw the mesh on screen
+        public virtual void Draw(Matrix view, Matrix projection)
+        {
+            DrawModel(model, view, projection, tex);
+        }
 
         // Common method to draw 3D models
-        public void DrawModel(Model model, Matrix world, Matrix view, Matrix projection, Texture2D? tex)
+        public void DrawModel(Model model, Matrix view, Matrix projection, Texture2D tex)
         {
+            Matrix world = getWorldMatrix();
+
             Matrix[] meshTransforms = new Matrix[model.Bones.Count];
             model.CopyAbsoluteBoneTransformsTo(meshTransforms);
 
@@ -63,29 +81,34 @@ namespace HammeredGame
         // Method to get bounding box for the mesh - for basic collision detection
         // Probably not going to be necessary for later iterations
         // (once we bring in an external library to handle collisions)
-        public BoundingBox GetBounds(Matrix worldTransform)
+        public BoundingBox GetBounds()
         {
-            worldTransform *= this.model.Bones[0].Transform;
+            Matrix world = getWorldMatrix();
+            Matrix[] boneTransforms = new Matrix[model.Bones.Count];
+            model.CopyAbsoluteBoneTransformsTo(boneTransforms);
 
             Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
             Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
             // Get bounding box min/max from each mesh part's vertices
-            foreach (ModelMesh mesh in this.model.Meshes)
+            foreach (ModelMesh mesh in model.Meshes)
             {
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
                 {
+                    // Get mesh transform with respect to world
+                    Matrix meshTransform = boneTransforms[mesh.ParentBone.Index] * world;
+
                     int vertexStride = meshPart.VertexBuffer.VertexDeclaration.VertexStride;
                     int vertexBufferSize = meshPart.NumVertices * vertexStride;
 
                     int vertexDataSize = vertexBufferSize / sizeof(float);
                     float[] vertexData = new float[vertexDataSize];
-                    meshPart.VertexBuffer.GetData<float>(vertexData);
+                    meshPart.VertexBuffer.GetData(vertexData);
 
                     for (int i = 0; i < vertexDataSize; i += vertexStride / sizeof(float))
                     {
                         //Vector3 vertex = new Vector3(vertexData[i], vertexData[i + 1], vertexData[i + 2]);
-                        Vector3 vertex = Vector3.Transform(new Vector3(vertexData[i], vertexData[i + 1], vertexData[i + 2]), worldTransform);
+                        Vector3 vertex = Vector3.Transform(new Vector3(vertexData[i], vertexData[i + 1], vertexData[i + 2]), meshTransform);
                         min = Vector3.Min(min, vertex);
                         max = Vector3.Max(max, vertex);
                     }
@@ -95,16 +118,30 @@ namespace HammeredGame
             return new BoundingBox(min, max);
         }
 
+        public Matrix getWorldMatrix()
+        {
+            Vector3 pos = GetPosition();
+            Quaternion rot = GetRotation();
+
+            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
+            Matrix translationMatrix = Matrix.CreateTranslation(pos);
+            Matrix scaleMatrix = Matrix.CreateScale(scale);
+
+            // Construct world matrix
+            Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
+            return world;
+        }
+
         // Getter function for game object position
         public Vector3 GetPosition()
         {
-            return this.position;
+            return position;
         }
 
         // Getter function for game object rotation
         public Quaternion GetRotation()
         {
-            return this.rotation;
+            return rotation;
         }
     }
 }
