@@ -127,6 +127,13 @@
 /processorParam:TextureFormat=Compressed
 /build:temp_floor.fbx
 
+#begin temp_font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:temp_font.spritefont
+
 #begin temp_hammer_mod.fbx
 /importer:FbxImporter
 /processor:ModelProcessor

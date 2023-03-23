@@ -14,18 +14,24 @@ namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.C
         /* Provisionally 
         */
         private Door _correspondingDoor;
+        private bool _keyPickedUp = false;
+
         public Key(Model model, Vector3 pos, float scale, Camera cam, Texture2D t, Door correspondingDoor)
             : base(model, pos, scale, cam, t)
         {
             _correspondingDoor = correspondingDoor;
         }
 
+        public bool isKeyPickedUp() { return _keyPickedUp; }
+
         public override void hitByPlayer(Player player)
         {
             //this.activateTrigger();
             _correspondingDoor.setKeyFound(true);
             this.setVisible(false);
+            _keyPickedUp=true;
         }
 
     }
 }
+

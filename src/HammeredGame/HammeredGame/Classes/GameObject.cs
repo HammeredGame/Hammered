@@ -21,7 +21,8 @@ namespace HammeredGame.Classes
         public Camera activeCamera;
 
         // Change/remove once we modify how collisions / obstacles work
-        public bool visible = false;
+        public bool destroyed = false;
+        protected bool visible = true;
 
         public GameObject(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
         {
@@ -32,6 +33,16 @@ namespace HammeredGame.Classes
             this.activeCamera = cam;
             this.tex = t;
         }
+        public bool isVisible()
+        {
+            return this.visible;
+        }
+
+        public void setVisible(bool vis)
+        {
+            this.visible = vis;
+        }
+
         public bool isVisible()
         {
             return this.visible;
