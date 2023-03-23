@@ -30,7 +30,8 @@ namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs
 
         public override void hitByHammer(Hammer hammer)
         {
-            visible = false;
+            if (hammer.isEnroute())
+                visible = false;
             //HammeredGame.activeLevelObstacles.Remove(this);
         }
     }

@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Linq;
 //using System.Numerics;
 
 namespace HammeredGame
@@ -48,6 +49,9 @@ namespace HammeredGame
         private Key _key;
 
         static public List<EnvironmentObject> activeLevelObstacles;
+
+        // SCENE TEST VARIABLES
+        private int testObstaclesCombo = 1;
 
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer _imGuiRenderer;
@@ -112,13 +116,6 @@ namespace HammeredGame
             _font = Content.Load<SpriteFont>("temp_font");
 
             //(TEMPORARY - after xml parsing and incorporating better collision detection, all of this should change)
-            // Load obstacles for testing
-            EnvironmentObject Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
-            _key = new Key(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null, (Door)Obstacle1);
-            //EnvironmentObject Obstacle2 = new Key(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null, (Door)Obstacle1);
-            EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
-            activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, _key, Obstacle3 };
-
             // Load and initialize player character
             _player = new Player(Content.Load<Model>("character_test"), Vector3.Zero, 0.03f, inp, _camera, playerTex);
 
@@ -126,10 +123,49 @@ namespace HammeredGame
             _hammer = new Hammer(Content.Load<Model>("temp_hammer_mod"), Vector3.Zero, 0.03f, _player, inp, _camera, null);
 
             // Load and initialize the terrain/ground
-            _ground = new Floor(Content.Load<Model>("temp_floor"), new Vector3(0, -10f, 0), 0.03f, _camera, playerTex);
+            _ground = new Floor(Content.Load<Model>("temp_floor_flat"), new Vector3(0, -10f, 0), 0.1f, _camera, playerTex);
 
             // Initialize list of gameobjects for drawing
-            gameObjects = new List<GameObject> { _player, _hammer, _ground, Obstacle1, _key, Obstacle3 };
+            gameObjects = new List<GameObject> { _player, _hammer, _ground };
+
+            // Load obstacles for testing
+            switch (testObstaclesCombo)
+            {
+                case 0:
+                    {
+                        EnvironmentObject Obstacle1 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle2 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+                        activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, Obstacle2, Obstacle3 };
+                        break;
+                    }
+                case 1:
+                    {
+                        EnvironmentObject Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle2 = new PressurePlate(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 4f, 10f), 0.02f, _camera, null, Obstacle1);
+                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+                        activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, Obstacle2, Obstacle3 };
+                        break;
+                    }
+                case 2:
+                    {
+                        EnvironmentObject Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
+                        _key = new Key(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null, (Door)Obstacle1);
+                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+                        activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, _key, Obstacle3 };
+                        break;
+                    }
+                default:
+                    {
+                        EnvironmentObject Obstacle1 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle2 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+                        activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, Obstacle2, Obstacle3 };
+                        break;
+                    }
+            }
+
+            gameObjects.AddRange(activeLevelObstacles);
 
             // for now, add a temporary UI with the Player class debug info
             UIEntities.Add(_player);
@@ -188,7 +224,7 @@ namespace HammeredGame
             gpu.SetRenderTarget(null);
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
             _spriteBatch.Draw(MainTarget, desktopRect, Color.White);
-            if (_key.isKeyPickedUp())
+            if (_key != null &&_key.isKeyPickedUp())
             {
                 _spriteBatch.DrawString(_font, "KEY PICKED UP!", new Vector2(25, 25), Color.Red);
             }
