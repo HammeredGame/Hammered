@@ -31,6 +31,7 @@ namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.Unbre
             {
                 this.setVisible(false);
             }
+            base.hitByPlayer(player);
         }
     }
 }
