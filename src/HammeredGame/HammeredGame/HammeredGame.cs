@@ -1,8 +1,10 @@
 ﻿using HammeredGame.Classes;
 using HammeredGame.Classes.GameObjects;
 using HammeredGame.Classes.GameObjects.EnvironmentObjects;
+using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs;
+using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -105,8 +107,8 @@ namespace HammeredGame
 
             //(TEMPORARY - after xml parsing and incorporating better collision detection, all of this should change)
             // Load obstacles for testing
-            EnvironmentObject Obstacle1 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
-            EnvironmentObject Obstacle2 = new PressurePlate(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null, Obstacle1);
+            Door Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
+            EnvironmentObject Obstacle2 = new Key(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null, Obstacle1);
             EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
             activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, Obstacle2, Obstacle3 };
 
@@ -172,10 +174,7 @@ namespace HammeredGame
             // Render all the scene objects (given that they are not destroyed)
             foreach (GameObject gameObject in gameObjects)
             {
-                if (!gameObject.destroyed)
-                {
-                    gameObject.Draw(_camera.view, _camera.proj);
-                }
+                gameObject.Draw(_camera.view, _camera.proj);
             }
 
             // Draw MainTarget to BackBuffer

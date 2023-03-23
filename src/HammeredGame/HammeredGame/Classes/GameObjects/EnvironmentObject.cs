@@ -21,15 +21,6 @@ namespace HammeredGame.Classes.GameObjects
             // Do nothing (for now)
         }
 
-        public bool isVisible()
-        {
-            return this.visible;
-        }
-
-        public void setVisible(bool vis)
-        {
-            this.visible = vis;
-        }
 
         public virtual void hitByHammer(Hammer hammer) { }
 
