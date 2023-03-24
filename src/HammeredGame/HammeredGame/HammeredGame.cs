@@ -82,7 +82,7 @@ namespace HammeredGame
             PresentationParameters pp = gpu.PresentationParameters;
             _spriteBatch = new SpriteBatch(gpu);
 
-            // Set Render Target to SCREENWIDTH x SCREENHEIGHT 
+            // Set Render Target to SCREENWIDTH x SCREENHEIGHT
             MainTarget = new RenderTarget2D(gpu, SCREENWIDTH, SCREENHEIGHT, false, pp.BackBufferFormat, DepthFormat.Depth24);
             screenW = MainTarget.Width;
             screenH = MainTarget.Height;
@@ -107,7 +107,7 @@ namespace HammeredGame
 
         protected override void LoadContent()
         {
-            // The structure of the content of this function might change 
+            // The structure of the content of this function might change
             // depending on how we structure our classes/hierarchy (how we want to load things into the scene)
             // Most likely: will be replaced with XML parsing here
 
@@ -278,7 +278,7 @@ namespace HammeredGame
             ImGui.SetNextWindowBgAlpha(0.3f);
             ImGui.SetNextWindowPos(new System.Numerics.Vector2(50, 150));
             ImGui.Begin("Scene Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
-            
+
             var numericScene = testObstaclesCombo;
             ImGui.DragInt("Scene", ref numericScene, 0.1f, 0, 3);
             testObstaclesCombo = numericScene;
