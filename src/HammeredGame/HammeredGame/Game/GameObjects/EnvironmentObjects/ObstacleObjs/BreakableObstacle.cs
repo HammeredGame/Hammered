@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs
+namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
 {
-    public class ImmovableInteractable : ObstacleObject
+    public class BreakableObstacle : ObstacleObject
     {
-        // Any Unbreakable Obstacle specific variables go here
+        // Any Obstacle specific variables go here
 
-        public ImmovableInteractable(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
+        public BreakableObstacle(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
             : base(model, pos, scale, cam, t)
         {
         }
@@ -26,6 +26,13 @@ namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs
         {
             if (visible)
                 base.Draw(view, projection);
+        }
+
+        public override void hitByHammer(Hammer hammer)
+        {
+            if (hammer.isEnroute())
+                visible = false;
+            //HammeredGame.activeLevelObstacles.Remove(this);
         }
     }
 }

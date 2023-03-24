@@ -1,11 +1,11 @@
-﻿using HammeredGame.Classes;
-using HammeredGame.Classes.GameObjects;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
+﻿using HammeredGame.Game;
+using HammeredGame.Game.GameObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace HammeredGame
 {
-    public class HammeredGame : Game, IImGui
+    public class HammeredGame : Microsoft.Xna.Framework.Game, IImGui
     {
         // DISPLAY VARIABLES
         const int SCREENWIDTH = 1280;

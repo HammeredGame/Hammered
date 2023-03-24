@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame.Classes.GameObjects.EnvironmentObjects
+namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
     class Floor : EnvironmentObject
     {
