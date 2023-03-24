@@ -52,7 +52,7 @@ namespace HammeredGame
         static public List<EnvironmentObject> activeLevelObstacles;
 
         // SCENE TEST VARIABLES
-        private int testObstaclesCombo = 3;
+        private int testObstaclesCombo = 0;
 
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer _imGuiRenderer;

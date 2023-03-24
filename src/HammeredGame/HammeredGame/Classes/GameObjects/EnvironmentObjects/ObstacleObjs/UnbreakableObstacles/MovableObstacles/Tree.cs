@@ -31,7 +31,7 @@ namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.Unbre
                 setTreeFallen(true);
                 Vector3 fallDirection = hammer.position - hammer.oldPos;
                 fallDirection.Normalize();
-                this.rotation += Quaternion.CreateFromAxisAngle(Vector3.Cross(Vector3.Up, fallDirection), MathHelper.ToRadians(90));
+                this.rotation *= Quaternion.CreateFromAxisAngle(Vector3.Cross(Vector3.Up, fallDirection), MathHelper.ToRadians(90));
                 //this.position += new Vector3(0.0f, 20.0f, 0.0f);
                 //System.Diagnostics.Debug.WriteLine(Vector3.UnitZ);
                 
