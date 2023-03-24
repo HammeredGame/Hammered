@@ -18,7 +18,7 @@ namespace HammeredGame.Classes
 
         public Texture2D tex;
 
-        public Matrix additionalTransformation = Matrix.Identity;
+        //public Matrix additionalTransformation = Matrix.Identity;
 
         public Camera activeCamera;
 
@@ -140,7 +140,7 @@ namespace HammeredGame.Classes
             Matrix scaleMatrix = Matrix.CreateScale(scale);
 
             // Construct world matrix
-            Matrix world = scaleMatrix * rotationMatrix * translationMatrix * additionalTransformation;
+            Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
             return world;
         }
 
