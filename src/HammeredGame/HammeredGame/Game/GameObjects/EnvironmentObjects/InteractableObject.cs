@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame.Classes.GameObjects.EnvironmentObjects
+namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
-    public class ObstacleObject : EnvironmentObject
+    class InteractableObject : EnvironmentObject
     {
-        // Any Obstacle specific variables go here
+        // Any Interactable specific variables go here
 
-        public ObstacleObject(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
+        public InteractableObject(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
             : base(model, pos, scale, cam, t)
         {
         }
@@ -21,11 +21,5 @@ namespace HammeredGame.Classes.GameObjects.EnvironmentObjects
         {
             // Do nothing (for now)
         }
-
-        public override void hitByPlayer(Player player)
-        {
-            player.position = player.oldPos;
-        }
     }
 }
-

@@ -6,7 +6,7 @@ using ImMonoGame.Thing;
 using ImGuiNET;
 using System.Collections.Generic;
 
-namespace HammeredGame.Classes.GameObjects
+namespace HammeredGame.Game.GameObjects
 {
     public class Player : GameObject, IImGui
     {

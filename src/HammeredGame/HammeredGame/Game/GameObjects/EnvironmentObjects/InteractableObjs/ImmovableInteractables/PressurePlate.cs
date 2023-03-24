@@ -1,4 +1,4 @@
-﻿using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs;
+﻿using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
+namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
 {
     public class PressurePlate : ImmovableInteractable
     {

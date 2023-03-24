@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame.Classes.GameObjects
+namespace HammeredGame.Game.GameObjects
 {
     public class Hammer : GameObject
     {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using ImMonoGame.Thing;
 using ImGuiNET;
 
-namespace HammeredGame.Classes.GameObjects
+namespace HammeredGame.Game.GameObjects
 {
     public class EnvironmentObject : GameObject
     {

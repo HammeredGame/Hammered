@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs
+namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
 {
-    public class UnbreakableObstacle : ObstacleObject
+    public class CollectibleInteractable : ObstacleObject
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public UnbreakableObstacle(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
+        public CollectibleInteractable(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
             : base(model, pos, scale, cam, t)
         {
         }
@@ -26,12 +26,6 @@ namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs
         {
             if (visible)
                 base.Draw(view, projection);
-        }
-
-        public override void hitByHammer(Hammer hammer)
-        {
-            hammer.setEnroute(false);
-            hammer.position = hammer.oldPos;
         }
     }
 }

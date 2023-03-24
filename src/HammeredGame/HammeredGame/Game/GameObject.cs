@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame.Classes
+namespace HammeredGame.Game
 {
     public abstract class GameObject
     {

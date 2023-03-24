@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame
+namespace HammeredGame.Game
 {
     public class Camera
     {
