@@ -5,6 +5,7 @@ using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.Colle
 using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs;
 using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -16,7 +17,7 @@ using System.Linq;
 
 namespace HammeredGame
 {
-    public class HammeredGame : Game
+    public class HammeredGame : Game, IImGui
     {
         // DISPLAY VARIABLES
         const int SCREENWIDTH = 1280;
@@ -51,7 +52,7 @@ namespace HammeredGame
         static public List<EnvironmentObject> activeLevelObstacles;
 
         // SCENE TEST VARIABLES
-        private int testObstaclesCombo = 1;
+        private int testObstaclesCombo = 3;
 
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer _imGuiRenderer;
@@ -110,6 +111,11 @@ namespace HammeredGame
             // depending on how we structure our classes/hierarchy (how we want to load things into the scene)
             // Most likely: will be replaced with XML parsing here
 
+            initializeLevel();
+        }
+
+        private void initializeLevel()
+        {
             // Load Texture
             playerTex = Content.Load<Texture2D>("Temp");
 
@@ -120,7 +126,7 @@ namespace HammeredGame
             _player = new Player(Content.Load<Model>("character_test"), Vector3.Zero, 0.03f, inp, _camera, playerTex);
 
             // Load and initialize hammer object
-            _hammer = new Hammer(Content.Load<Model>("temp_hammer_mod"), Vector3.Zero, 0.03f, _player, inp, _camera, null);
+            _hammer = new Hammer(Content.Load<Model>("temp_hammer2"), Vector3.Zero, 0.02f, _player, inp, _camera, null);
 
             // Load and initialize the terrain/ground
             _ground = new Floor(Content.Load<Model>("temp_floor_flat"), new Vector3(0, -10f, 0), 0.1f, _camera, playerTex);
@@ -142,7 +148,7 @@ namespace HammeredGame
                 case 1:
                     {
                         EnvironmentObject Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
-                        EnvironmentObject Obstacle2 = new PressurePlate(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 4f, 10f), 0.02f, _camera, null, Obstacle1);
+                        EnvironmentObject Obstacle2 = new PressurePlate(Content.Load<Model>("temp_pressureplate2"), new Vector3(-10f, 0f, 10f), 0.02f, _camera, null, Obstacle1);
                         EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
                         activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, Obstacle2, Obstacle3 };
                         break;
@@ -150,9 +156,17 @@ namespace HammeredGame
                 case 2:
                     {
                         EnvironmentObject Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
-                        _key = new Key(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null, (Door)Obstacle1);
+                        _key = new Key(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.01f, _camera, null, (Door)Obstacle1);
                         EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
                         activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, _key, Obstacle3 };
+                        break;
+                    }
+                case 3:
+                    {
+                        EnvironmentObject Obstacle1 = new Tree(Content.Load<Model>("temp_tree2"), new Vector3(10f, 1f, -30f), 0.05f, _camera, null);
+                        EnvironmentObject Obstacle2 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 0f, 10f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+                        activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, Obstacle2, Obstacle3 };
                         break;
                     }
                 default:
@@ -169,6 +183,7 @@ namespace HammeredGame
 
             // for now, add a temporary UI with the Player class debug info
             UIEntities.Add(_player);
+            UIEntities.Add(this);
         }
 
         protected override void Update(GameTime gameTime)
@@ -177,6 +192,13 @@ namespace HammeredGame
             inp.Update();
             // Check for exit input
             if (inp.back_down || inp.KeyDown(Keys.Escape)) Exit();
+
+            if (inp.KeyDown(Keys.R))
+            {
+                UIEntities.Remove(_player);
+                UIEntities.Remove(this);
+                initializeLevel();
+            }
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             //    Exit();
 
@@ -226,7 +248,7 @@ namespace HammeredGame
             _spriteBatch.Draw(MainTarget, desktopRect, Color.White);
             if (_key != null &&_key.isKeyPickedUp())
             {
-                _spriteBatch.DrawString(_font, "KEY PICKED UP!", new Vector2(25, 25), Color.Red);
+                _spriteBatch.DrawString(_font, "KEY PICKED UP!", new Vector2(100, 100), Color.Red);
             }
             _spriteBatch.End();
 
@@ -249,6 +271,19 @@ namespace HammeredGame
             // Call AfterLayout to finish.
             _imGuiRenderer.AfterLayout();
 #endif
+        }
+
+        public void UI()
+        {
+            ImGui.SetNextWindowBgAlpha(0.3f);
+            ImGui.SetNextWindowPos(new System.Numerics.Vector2(50, 150));
+            ImGui.Begin("Scene Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
+            
+            var numericScene = testObstaclesCombo;
+            ImGui.DragInt("Scene", ref numericScene, 0.1f, 0, 3);
+            testObstaclesCombo = numericScene;
+
+            ImGui.End();
         }
     }
 }
