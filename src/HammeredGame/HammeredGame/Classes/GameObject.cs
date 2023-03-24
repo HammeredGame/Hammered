@@ -18,6 +18,8 @@ namespace HammeredGame.Classes
 
         public Texture2D tex;
 
+        public Matrix additionalTransformation = Matrix.Identity;
+
         public Camera activeCamera;
 
         // Change/remove once we modify how collisions / obstacles work
@@ -138,7 +140,7 @@ namespace HammeredGame.Classes
             Matrix scaleMatrix = Matrix.CreateScale(scale);
 
             // Construct world matrix
-            Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
+            Matrix world = scaleMatrix * rotationMatrix * translationMatrix * additionalTransformation;
             return world;
         }
 

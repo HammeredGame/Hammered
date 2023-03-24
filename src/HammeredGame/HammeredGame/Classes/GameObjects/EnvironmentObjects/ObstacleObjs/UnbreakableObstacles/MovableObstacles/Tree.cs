@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,44 @@ using System.Threading.Tasks;
 
 namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles
 {
-    internal class Tree
+    public class Tree : MovableObstacle
     {
+        // Any Unbreakable Obstacle specific variables go here
+        private bool _treeFallen;
+
+        public Tree(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
+            : base(model, pos, scale, cam, t)
+        {
+            _treeFallen = false;
+        }
+
+        public void setTreeFallen(bool treeFallen)
+        {
+            _treeFallen = treeFallen;
+        }
+
+        public override void hitByHammer(Hammer hammer)
+        {
+            if (!_treeFallen)
+            {
+                setTreeFallen(true);
+                Vector3 fallDirection = hammer.position - hammer.oldPos;
+                fallDirection.Normalize();
+                this.rotation += Quaternion.CreateFromAxisAngle(Vector3.Cross(Vector3.Up, fallDirection), MathHelper.ToRadians(90));
+                //this.position += new Vector3(0.0f, 20.0f, 0.0f);
+                //System.Diagnostics.Debug.WriteLine(Vector3.UnitZ);
+                
+                //System.Diagnostics.Debug.WriteLine(Vector3.Cross(Vector3.Up, fallDirection));
+                //this.additionalTransformation = Matrix.CreateTranslation(Vector3.Zero) * rotationMatrix; // * Matrix.CreateTranslation(this.position);
+            }
+        }
+
+        public override void hitByPlayer(Player player)
+        {
+            if (!_treeFallen) 
+            {
+                base.hitByPlayer(player);
+            }
+        }
     }
 }
