@@ -12,25 +12,24 @@ namespace HammeredGame.Game.GameObjects
 {
     /// <summary>
     /// The <c>Hammer</c> class defines the properties and interactions specific to the core "Hammer" mechanic of the game.
-    ///
+    /// <para/>
     /// In addition to base <c>GameObject</c> properties, the hammer also has the following properties defined:
     /// - speed of the hammer (how fast it will travel, when called back to the player character -> <code>float hammerSpeed</code>
     /// - the current state of the hammer with respect to the keyboard/gamepad input + context within the scene -> <code>HammerState _hammerState</code>
     ///     -- follow the player character -> <code>HammerState.WithCharacter</code>
     ///     -- hammer is dropped (it will stay in the dropped location until called back to player) -> <code>HammerState.Dropped</code>
     ///     -- hammer is called back and must find its way back to the player  -> <code>HammerState.Enroute</code>
-    ///
+    /// <para/>
     /// An additional variable holding the hammer's position in the previous frame/tick is also provided -> <code>Vector3 oldPos</code>.
     /// This variable, along with the hammer state, helps in determining contextual interactions with certain other objects that may be in the scene.
     /// <example>
     /// Determining the falling direction of a tree or blocking the hammer if an unbreakable obstacle is in the way)
     /// </example>
-    ///
+    /// <para/>
     /// This class also has access to an instance of the <c>Player</c> class, mainly for the purpose of path finding, by keeping track of the position
     /// of the player within the level.
     /// </summary>
     ///
-
     /// <remark>
     /// TODO: Improved path finding - technical achievement of the game!
     /// </remark>
@@ -45,30 +44,30 @@ namespace HammeredGame.Game.GameObjects
 
         // Hammer specific variables
         private float hammerSpeed = 0.1f;
-        private HammerState _hammerState;
+        private HammerState hammerState;
 
-        public Vector3 oldPos { get; private set; }
+        public Vector3 OldPosition { get; private set; }
 
-        private Input inp;
-        private Player _player;
+        private readonly Input input;
+        private readonly Player player;
 
         public Hammer(Model model, Vector3 pos, float scale, Texture2D t, Input inp, Player p)
             : base(model, pos, scale, t)
         {
-            this.inp = inp;
-            _player = p;
+            this.input = inp;
+            player = p;
         }
 
         // Update function (called every tick)
         public override void Update(GameTime gameTime)
         {
-            oldPos = this.Position;
+            OldPosition = this.Position;
 
             // Ensure hammer follows/sticks with the player,
             // if hammer has not yet been dropped / if hammer is not being called back
-            if (_hammerState == HammerState.WithCharacter)
+            if (hammerState == HammerState.WithCharacter)
             {
-                Position = _player.GetPosition();
+                Position = player.GetPosition();
             }
 
             // Get the input via keyboard or gamepad
@@ -80,17 +79,17 @@ namespace HammeredGame.Game.GameObjects
             /// TODO: this is currently just the hammer's position being updated with very naive collision checking
             /// This is most likely where the path finding should take place - so this will need to change for improved hammer mechanics
             /// </remark>
-            if (_hammerState != HammerState.WithCharacter)
+            if (hammerState != HammerState.WithCharacter)
             {
-                if (_hammerState == HammerState.Enroute)
+                if (hammerState == HammerState.Enroute)
                 {
                     // Update position
-                    Position += hammerSpeed * (_player.GetPosition() - Position);
+                    Position += hammerSpeed * (player.GetPosition() - Position);
 
                     // If position is close enough to player, end its traversal
-                    if ((Position - _player.GetPosition()).Length() < 0.5f)
+                    if ((Position - player.GetPosition()).Length() < 0.5f)
                     {
-                        _hammerState = HammerState.WithCharacter;
+                        hammerState = HammerState.WithCharacter;
                     }
 
                     this.ComputeBounds();
@@ -120,18 +119,18 @@ namespace HammeredGame.Game.GameObjects
         {
             // Keyboard input (E - drop hammer, Q - Call back hammer)
             // Hammer Drop Mechanic
-            if (_hammerState == HammerState.WithCharacter && inp.KeyDown(Keys.E))
+            if (hammerState == HammerState.WithCharacter && input.KeyDown(Keys.E))
             {
-                _hammerState = HammerState.Dropped;
+                hammerState = HammerState.Dropped;
                 this.ComputeBounds();
             }
 
             // Hammer Call Back Mechanic
             // Call back only possible if hammer has already been dropped
             // Otherwise 'Q' does nothing
-            if (_hammerState == HammerState.Dropped && inp.KeyDown(Keys.Q))
+            if (hammerState == HammerState.Dropped && input.KeyDown(Keys.Q))
             {
-                _hammerState = HammerState.Enroute;
+                hammerState = HammerState.Enroute;
             }
         }
 
@@ -139,28 +138,28 @@ namespace HammeredGame.Game.GameObjects
         {
             // GamePad Control (A - Hammer drop, B - Hammer call back)
             // Same functionality as with above keyboard check
-            if (inp.GamePadState.IsConnected)
+            if (input.GamePadState.IsConnected)
             {
-                if (_hammerState == HammerState.WithCharacter && inp.ButtonPress(Buttons.A))
+                if (hammerState == HammerState.WithCharacter && input.ButtonPress(Buttons.A))
                 {
-                    _hammerState = HammerState.Dropped;
+                    hammerState = HammerState.Dropped;
                     this.ComputeBounds();
                 }
-                if (_hammerState == HammerState.Dropped && inp.ButtonPress(Buttons.B))
+                if (hammerState == HammerState.Dropped && input.ButtonPress(Buttons.B))
                 {
-                    _hammerState = HammerState.Enroute;
+                    hammerState = HammerState.Enroute;
                 }
             }
         }
 
-        public bool isEnroute()
+        public bool IsEnroute()
         {
-            return (_hammerState == HammerState.Enroute);
+            return hammerState == HammerState.Enroute;
         }
 
-        public void setState(HammerState newState)
+        public void SetState(HammerState newState)
         {
-            _hammerState = newState;
+            hammerState = newState;
         }
     }
 }
