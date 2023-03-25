@@ -8,12 +8,12 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame
+namespace HammeredGame.Core
 {
-    internal class Input
+    public class Input
     {
         // Adapted from AlienScribble Making 3D Games with MonoGame playlist:https://www.youtube.com/playlist?list=PLG6XrMFqMJUBOPVTJrGJnIDDHHF1HTETc
-        
+
         // Deadzone = amount of movement of the controller stick before it will be recognized as valid movement
         public const float DEADZONE = 0.12f;
 
@@ -45,19 +45,19 @@ namespace HammeredGame
         public Input(PresentationParameters pp, RenderTarget2D target)
         {
             // Set screen space variables according to the presentation parameters and render target
-            screenScaleX = 1.0f / ((float)pp.BackBufferWidth / (float)target.Width);
-            screenScaleY = 1.0f / ((float)pp.BackBufferHeight / (float)target.Height);
+            screenScaleX = 1.0f / (pp.BackBufferWidth / (float)target.Width);
+            screenScaleY = 1.0f / (pp.BackBufferHeight / (float)target.Height);
         }
 
         // <----- Quick Input functions for convenience ---->
         // KeyPress - function to check if given key k is pressed (not held down)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool KeyPress(Keys k) { if (kb.IsKeyDown(k) && oldkb.IsKeyUp(k)) return true; return false; }
-        
+
         // KeyDown - function to check if given key k is held down
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool KeyDown(Keys k) { if (kb.IsKeyDown(k)) return true; return false; }
-        
+
         // ButtonPress - function to check if given gamepad button is pressed
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ButtonPress(Buttons button) { if (gp.IsButtonDown(button) && oldgp.IsButtonUp(button)) return true; return false; }
@@ -80,20 +80,20 @@ namespace HammeredGame
             if (kb.IsKeyDown(Keys.LeftShift) || kb.IsKeyDown(Keys.RightShift)) shift_down = true;
             if (kb.IsKeyDown(Keys.LeftControl) || kb.IsKeyDown(Keys.RightControl)) ctrl_down = true;
             if (kb.IsKeyDown(Keys.LeftAlt) || kb.IsKeyDown(Keys.RightAlt)) alt_down = true;
-            if ((shift_down) && (!old_shift_down)) shift_press = true;
-            if ((ctrl_down) && (!old_ctrl_down)) ctrl_press = true;
-            if ((alt_down) && (!old_alt_down)) alt_press = true;
+            if (shift_down && !old_shift_down) shift_press = true;
+            if (ctrl_down && !old_ctrl_down) ctrl_press = true;
+            if (alt_down && !old_alt_down) alt_press = true;
 
             // Set Mouse boolean values according to input
-            mouseV = new Vector2((float)ms.Position.X * screenScaleX, (float)ms.Position.Y * screenScaleY);
+            mouseV = new Vector2(ms.Position.X * screenScaleX, ms.Position.Y * screenScaleY);
             mouseX = (int)mouseV.X; mouseY = (int)mouseV.Y; mouseP = new Point(mouseX, mouseY);
             leftClick = midClick = rightClick = leftDown = midDown = rightDown = false;
             if (ms.LeftButton == ButtonDown) leftDown = true;
             if (ms.MiddleButton == ButtonDown) midDown = true;
             if (ms.RightButton == ButtonDown) rightDown = true;
-            if ((leftDown) && (oldms.LeftButton == ButtonUp)) leftClick = true;
-            if ((midDown) && (oldms.MiddleButton == ButtonUp)) midClick = true;
-            if ((rightDown) && (oldms.RightButton == ButtonUp)) rightClick = true;
+            if (leftDown && oldms.LeftButton == ButtonUp) leftClick = true;
+            if (midDown && oldms.MiddleButton == ButtonUp) midClick = true;
+            if (rightDown && oldms.RightButton == ButtonUp) rightClick = true;
 
             // Set GamePad boolean values according to input
             A_down = B_down = X_down = Y_down = RB_down = LB_down = start_down = back_down = leftStick_down = rightStick_down = false;
