@@ -12,23 +12,23 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     public class Tree : MovableObstacle
     {
         // Any Unbreakable Obstacle specific variables go here
-        private bool _treeFallen;
+        private bool treeFallen;
 
         public Tree(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
         {
-            _treeFallen = false;
+            treeFallen = false;
         }
 
-        public void setTreeFallen(bool treeFallen)
+        public void SetTreeFallen(bool treeFallen)
         {
-            _treeFallen = treeFallen;
+            this.treeFallen = treeFallen;
         }
 
         public override void TouchingHammer(Hammer hammer)
         {
-            if (!_treeFallen)
+            if (!treeFallen)
             {
-                setTreeFallen(true);
+                SetTreeFallen(true);
                 Vector3 fallDirection = hammer.Position - hammer.OldPosition;
                 fallDirection.Normalize();
                 this.Rotation *= Quaternion.CreateFromAxisAngle(Vector3.Cross(Vector3.Up, fallDirection), MathHelper.ToRadians(90));
@@ -42,7 +42,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         public override void TouchingPlayer(Player player)
         {
-            if (!_treeFallen) 
+            if (!treeFallen)
             {
                 base.TouchingPlayer(player);
             }
@@ -55,7 +55,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         public override void NotTouchingPlayer(Player player)
         {
-            if (_treeFallen)
+            if (treeFallen)
             {
                 //System.Diagnostics.Debug.WriteLine("OFF TREE");
                 player.OnTree = false;
