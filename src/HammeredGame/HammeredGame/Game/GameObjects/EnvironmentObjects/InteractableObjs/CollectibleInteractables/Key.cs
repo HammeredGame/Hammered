@@ -19,7 +19,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
 
         public bool IsPickedUp() => keyPickedUp;
 
-        public override void hitByPlayer(Player player)
+        public override void TouchingPlayer(Player player)
         {
             //this.activateTrigger();
             correspondingDoor.SetKeyFound(true);

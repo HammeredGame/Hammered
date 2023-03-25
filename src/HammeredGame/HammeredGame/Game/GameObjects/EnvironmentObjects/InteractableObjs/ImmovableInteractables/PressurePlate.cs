@@ -33,24 +33,24 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             triggerObject.SetVisible(false);
         }
 
-        public override void hitByPlayer(Player player)
+        public override void TouchingPlayer(Player player)
         {
             //this.activateTrigger();
             playerOn = true;
         }
 
-        public override void notHitByPlayer(Player player)
+        public override void NotTouchingPlayer(Player player)
         {
             playerOn = false;
         }
 
-        public override void hitByHammer(Hammer hammer)
+        public override void TouchingHammer(Hammer hammer)
         {
             //this.activateTrigger();
             hammerOn = true;
         }
 
-        public override void notHitByHammer(Hammer hammer)
+        public override void NotTouchingHammer(Hammer hammer)
         {
             hammerOn = false;
         }

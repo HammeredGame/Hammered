@@ -24,7 +24,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             _treeFallen = treeFallen;
         }
 
-        public override void hitByHammer(Hammer hammer)
+        public override void TouchingHammer(Hammer hammer)
         {
             if (!_treeFallen)
             {
@@ -40,11 +40,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
         }
 
-        public override void hitByPlayer(Player player)
+        public override void TouchingPlayer(Player player)
         {
             if (!_treeFallen) 
             {
-                base.hitByPlayer(player);
+                base.TouchingPlayer(player);
             }
             else
             {
@@ -53,7 +53,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
         }
 
-        public override void notHitByPlayer(Player player)
+        public override void NotTouchingPlayer(Player player)
         {
             if (_treeFallen)
             {

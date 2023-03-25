@@ -21,7 +21,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
             // Do nothing (for now)
         }
 
-        public override void hitByHammer(Hammer hammer)
+        public override void TouchingHammer(Hammer hammer)
         {
             if (hammer.isEnroute())
                 Visible = false;

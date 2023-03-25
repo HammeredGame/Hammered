@@ -18,13 +18,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.keyFound = keyFound;
         }
 
-        public override void hitByPlayer(Player player)
+        public override void TouchingPlayer(Player player)
         {
             if (keyFound)
             {
                 this.SetVisible(false);
             }
-            base.hitByPlayer(player);
+            base.TouchingPlayer(player);
         }
     }
 }

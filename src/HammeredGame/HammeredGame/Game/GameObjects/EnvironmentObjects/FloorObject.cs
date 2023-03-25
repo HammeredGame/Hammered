@@ -18,7 +18,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 
         public FloorObject(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
         {
-            isGround = true;
+            IsGround = true;
         }
 
         public override void Update(GameTime gameTime)

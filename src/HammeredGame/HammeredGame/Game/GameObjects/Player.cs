@@ -127,13 +127,13 @@ namespace HammeredGame.Game.GameObjects
                         // trigger the hitByPlayer function of that gameobject
                         if (this.BoundingBox.Intersects(gO.BoundingBox))
                         {
-                            gO.hitByPlayer(this);
+                            gO.TouchingPlayer(this);
                             // TEMPORARY: if the player is not on tree
                             // and intersects with water (onGround returns if the player has hit a groundobject,
                             // currently water is the only ground object being considered for collisions),
                             // then set player back to old position
                             // There might be a better solution to this
-                            if (gO.isGround && !this.OnTree)
+                            if (gO.IsGround && !this.OnTree)
                             {
                                 //System.Diagnostics.Debug.WriteLine(this.oldPos + " -> " + this.position);
                                 this.Position = this.PreviousPosition;
@@ -142,7 +142,7 @@ namespace HammeredGame.Game.GameObjects
                         }
                         else
                         {
-                            gO.notHitByPlayer(this);
+                            gO.NotTouchingPlayer(this);
                         }
                     }
                 }

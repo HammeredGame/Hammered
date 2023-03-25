@@ -21,7 +21,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
             // Do nothing (for now)
         }
 
-        public override void hitByPlayer(Player player)
+        public override void TouchingPlayer(Player player)
         {
             player.Position = player.PreviousPosition;
         }

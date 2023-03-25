@@ -12,7 +12,7 @@ namespace HammeredGame.Game.GameObjects
 {
     public class EnvironmentObject : GameObject
     {
-        public bool isGround = false;
+        public bool IsGround = false;
         public EnvironmentObject(Model model, Vector3 pos, float scale, Texture2D t)
             : base (model, pos, scale, t)
         {
@@ -24,12 +24,28 @@ namespace HammeredGame.Game.GameObjects
         }
 
 
-        public virtual void hitByHammer(Hammer hammer) { }
+        /// <summary>
+        /// Called on game updates if the object is colliding with the global hammer object.
+        /// </summary>
+        /// <param name="hammer"></param>
+        public virtual void TouchingHammer(Hammer hammer) { }
 
-        public virtual void notHitByHammer(Hammer hammer) { }
+        /// <summary>
+        /// Called on game updates if the object is not colliding with the global hammer object.
+        /// </summary>
+        /// <param name="hammer"></param>
+        public virtual void NotTouchingHammer(Hammer hammer) { }
 
-        public virtual void hitByPlayer(Player player) { }
+        /// <summary>
+        /// Called on game updates if the object is colliding with the global player object.
+        /// </summary>
+        /// <param name="player"></param>
+        public virtual void TouchingPlayer(Player player) { }
 
-        public virtual void notHitByPlayer(Player player) { }
+        /// <summary>
+        /// Called on game updates if the object is not colliding with the global player object.
+        /// </summary>
+        /// <param name="player"></param>
+        public virtual void NotTouchingPlayer(Player player) { }
     }
 }
