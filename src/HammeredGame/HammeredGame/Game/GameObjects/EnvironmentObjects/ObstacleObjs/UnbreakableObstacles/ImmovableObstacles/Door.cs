@@ -1,32 +1,26 @@
-﻿using ImGuiNET;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles
 {
     public class Door : ImmovableObstacle
     {
         // Any Unbreakable Obstacle specific variables go here
-        private bool _keyFound;
+        private bool keyFound;
 
         public Door(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
         {
-            _keyFound = false;
+            keyFound = false;
         }
 
-        public void setKeyFound(bool keyFound)
+        public void SetKeyFound(bool keyFound)
         {
-            _keyFound = keyFound;
+            this.keyFound = keyFound;
         }
 
         public override void hitByPlayer(Player player)
         {
-            if (_keyFound)
+            if (keyFound)
             {
                 this.setVisible(false);
             }
