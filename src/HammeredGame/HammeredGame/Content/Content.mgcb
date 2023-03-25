@@ -57,6 +57,12 @@
 #begin level1.xml
 /copy:level1.xml
 
+#begin level2.xml
+/copy:level2.xml
+
+#begin level3.xml
+/copy:level3.xml
+
 #begin temp_floor_flat.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
