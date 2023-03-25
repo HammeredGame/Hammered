@@ -16,5 +16,11 @@ namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.Unbre
             : base(model, pos, scale, cam, t)
         {
         }
+
+        public override void Update(GameTime gameTime)
+        {
+            this.computeBounds();
+            base.Update(gameTime);
+        }
     }
 }

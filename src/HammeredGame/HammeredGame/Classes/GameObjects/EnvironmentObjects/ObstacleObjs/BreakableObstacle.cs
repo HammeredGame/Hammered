@@ -22,12 +22,6 @@ namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs
             // Do nothing (for now)
         }
 
-        public override void Draw(Matrix view, Matrix projection)
-        {
-            if (visible)
-                base.Draw(view, projection);
-        }
-
         public override void hitByHammer(Hammer hammer)
         {
             if (hammer.isEnroute())

@@ -18,12 +18,11 @@ namespace HammeredGame.Classes
 
         public Texture2D tex;
 
-        //public Matrix additionalTransformation = Matrix.Identity;
-
         public Camera activeCamera;
 
-        // Change/remove once we modify how collisions / obstacles work
-        public bool destroyed = false;
+        public BoundingBox boundingBox { get; private set; }
+
+        // Change/remove once we modify how collisions / obstacles work (?)
         protected bool visible = true;
 
         public GameObject(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
@@ -34,6 +33,8 @@ namespace HammeredGame.Classes
             this.scale = scale;
             this.activeCamera = cam;
             this.tex = t;
+
+            this.computeBounds();
         }
         public bool isVisible()
         {
@@ -51,7 +52,8 @@ namespace HammeredGame.Classes
         // get world matrix and then call draw model to draw the mesh on screen
         public virtual void Draw(Matrix view, Matrix projection)
         {
-            DrawModel(model, view, projection, tex);
+            if (this.isVisible())
+                DrawModel(model, view, projection, tex);
         }
 
         // Common method to draw 3D models
@@ -93,7 +95,7 @@ namespace HammeredGame.Classes
         // Method to get bounding box for the mesh - for basic collision detection
         // Probably not going to be necessary for later iterations
         // (once we bring in an external library to handle collisions)
-        public BoundingBox GetBounds()
+        public void computeBounds()
         {
             Matrix world = getWorldMatrix();
             Matrix[] boneTransforms = new Matrix[model.Bones.Count];
@@ -127,9 +129,12 @@ namespace HammeredGame.Classes
                 }
             }
 
-            return new BoundingBox(min, max);
+            this.boundingBox = new BoundingBox(min, max);
         }
 
+
+        // Get the world matrix for the object's current position in the world
+        // Mainly used for drawing
         public Matrix getWorldMatrix()
         {
             Vector3 pos = GetPosition();
