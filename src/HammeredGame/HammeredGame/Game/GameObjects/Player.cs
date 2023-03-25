@@ -1,17 +1,16 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
-using System;
-using ImMonoGame.Thing;
+﻿using HammeredGame.Core;
 using ImGuiNET;
-using System.Collections.Generic;
-using HammeredGame.Core;
+using ImMonoGame.Thing;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace HammeredGame.Game.GameObjects
 {
     /// <summary>
     /// The <c>Player</c> class represents the playable character in the game. TODO: Should the class be renamed to 'Character' instead?
-    ///
+    /// <para />
     /// The character is the main medium through which (whom?) the player can initiate interactions in the game.
     /// The player interacts with the character with the use of the keyboard or a controller.
     /// The actions the player can make with the character are:
@@ -20,11 +19,11 @@ namespace HammeredGame.Game.GameObjects
     /// </summary>
     /// <remarks>
     /// Documentation: The <c>Player</c> instance will be mentioned as "character" in the following code.
-    ///
+    /// <para />
     /// REMINDER (class tree): GameObject -> Player
-    ///
+    /// <para />
     /// TODO: Should the class be renamed to 'Character' instead?
-    ///
+    /// <para />
     /// Possible extension:
     /// <c>Hammer</c> instance be attached to a <c>Player</c> instance?
     /// This may allow multi-player capabilities or more complex puzzle-solving in the future
@@ -37,22 +36,22 @@ namespace HammeredGame.Game.GameObjects
     {
         // Private variables specific to the player class
         private float baseSpeed = 0.5f;
+
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
 
-        public Vector3 oldPos;
-
-        public Camera activeCamera;
+        public Vector3 PreviousPosition;
 
         // TEMPORARY (FOR TESTING)
-        public bool onTree = false;
+        public bool OnTree = false;
 
-        Input inp;
+        private readonly Input input;
+        private readonly Camera activeCamera;
 
         // Initialize player class
         public Player(Model model, Vector3 pos, float scale, Texture2D t, Input inp, Camera cam) : base(model, pos, scale, t)
         {
-            this.inp = inp;
+            this.input = inp;
             this.activeCamera = cam;
         }
 
@@ -62,19 +61,21 @@ namespace HammeredGame.Game.GameObjects
             ///<value>
             /// The variable <c>moveDirty</c> indicates whether there has been any input from the player
             /// with the intent to move the character.
-            ///
+            /// <para />
             /// <remarks> Generally, "dirty flags" are used to indicate that some data has changed </remarks>
             ///</value>
             bool moveDirty = false;
 
-            // Get forward direction
+            // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
+            // "forward" from the current camera perspective. Calculated by projecting the vector of
+            // the current camera position to the player position, onto the ground, and normalising it.
             Vector3 forwardDirectionFromCamera = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
 
             // Handling input from keyboard.
             moveDirty = this.KeyboardInput(forwardDirectionFromCamera);
 
             // Handling input from gamepad.
-            if (inp.GamePadState.IsConnected)
+            if (input.GamePadState.IsConnected)
             {
                 moveDirty = moveDirty || GamepadInput(forwardDirectionFromCamera);
             }
@@ -88,7 +89,7 @@ namespace HammeredGame.Game.GameObjects
                 // Memorizing this state has multiple uses, including:
                 // a) velocity direction computation (current - old)
                 // b) reverting to the previous position in case of an unwanted state (e.g. character cannot enter water)
-                this.oldPos = this.position;
+                this.PreviousPosition = this.position;
 
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
                 // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
@@ -98,7 +99,7 @@ namespace HammeredGame.Game.GameObjects
                 position += player_vel;
 
                 // At this point, also rotate the player to the direction of movement
-                Vector3 lookDirection = position - oldPos; lookDirection.Normalize(); // Normalizing for good measure.
+                Vector3 lookDirection = position - PreviousPosition; lookDirection.Normalize(); // Normalizing for good measure.
                 ///<remark>
                 /// The "angle" variable and the subsequent "rotation" variable below
                 /// currently handle rotations in the xz plane.
@@ -118,7 +119,6 @@ namespace HammeredGame.Game.GameObjects
                     // Check for collisions by checking for bounding box intersections
                     if (gO != null && gO.isVisible())
                     {
-
                         // We only care for the bounding box of the character if there *is* an obstacle in the scene.
                         // Otherwise it is wasted computational time.
                         this.computeBounds();
@@ -133,10 +133,10 @@ namespace HammeredGame.Game.GameObjects
                             // currently water is the only ground object being considered for collisions),
                             // then set player back to old position
                             // There might be a better solution to this
-                            if (gO.isGround && !this.onTree)
+                            if (gO.isGround && !this.OnTree)
                             {
                                 //System.Diagnostics.Debug.WriteLine(this.oldPos + " -> " + this.position);
-                                this.position = this.oldPos;
+                                this.position = this.PreviousPosition;
                                 //this.position = Vector3.Zero;
                             }
                         }
@@ -163,7 +163,9 @@ namespace HammeredGame.Game.GameObjects
             }
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
+
             #region TEMPORARY_MOUSE_BASED_ROTATION
+
             //MouseState mouseState = Mouse.GetState();
             //Vector2 mousePos = new Vector2(mouseState.X, mouseState.Y);
 
@@ -207,7 +209,8 @@ namespace HammeredGame.Game.GameObjects
             ////float newAngle = (float)Math.Acos(Vector3.Dot(charDirection, newDirection));
 
             //_characterRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
-            #endregion
+
+            #endregion TEMPORARY_MOUSE_BASED_ROTATION
 
             ///<remarks>
             /// This is a temporary measure which works for the rectangular map included in the tutorial level of the functional minimum.
@@ -218,7 +221,6 @@ namespace HammeredGame.Game.GameObjects
             /// TODO: Remember to change the clamping values to match the final tutorial level that will be constructed.
             ///</remarks>
             this.position = Vector3.Clamp(this.position, new Vector3(-60f, -60f, -60f), new Vector3(60f, 60f, 60f));
-
         }
 
         private bool KeyboardInput(Vector3 forwardDirectionFromCamera)
@@ -228,39 +230,36 @@ namespace HammeredGame.Game.GameObjects
 
             bool moveDirty = false;
 
-            if (inp.KeyDown(Keys.W))
+            if (input.KeyDown(Keys.W))
             {
                 this.player_vel += forwardDirectionFromCamera;
                 moveDirty = true;
             }
-            if (inp.KeyDown(Keys.S))
+            if (input.KeyDown(Keys.S))
             {
                 this.player_vel += -forwardDirectionFromCamera;
                 moveDirty = true;
             }
-            if (inp.KeyDown(Keys.A))
+            if (input.KeyDown(Keys.A))
             {
                 this.player_vel += -Vector3.Cross(forwardDirectionFromCamera, Vector3.Up);
                 moveDirty = true;
             }
-            if (inp.KeyDown(Keys.D))
+            if (input.KeyDown(Keys.D))
             {
                 this.player_vel += Vector3.Cross(forwardDirectionFromCamera, Vector3.Up);
                 moveDirty = true;
             }
 
             return moveDirty;
-
         }
 
         private bool GamepadInput(Vector3 forwardDirectionFromCamera)
         {
             bool moveDirty = false;
 
-            float MovePad_UpDown = 0;
-            float MovePad_LeftRight = 0;
-            MovePad_LeftRight = inp.GamePadState.ThumbSticks.Left.X;
-            MovePad_UpDown = inp.GamePadState.ThumbSticks.Left.Y;
+            float MovePad_LeftRight = input.GamePadState.ThumbSticks.Left.X;
+            float MovePad_UpDown = input.GamePadState.ThumbSticks.Left.Y;
             if (MovePad_UpDown < -Input.DEADZONE || MovePad_UpDown > Input.DEADZONE || MovePad_LeftRight < -Input.DEADZONE || MovePad_LeftRight > Input.DEADZONE)
             {
                 player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera) * baseControllerSpeed;

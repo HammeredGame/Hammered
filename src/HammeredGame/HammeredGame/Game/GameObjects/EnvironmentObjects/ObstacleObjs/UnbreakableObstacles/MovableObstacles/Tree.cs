@@ -48,7 +48,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
             else
             {
-                player.onTree = true;
+                player.OnTree = true;
                 player.position.Y = this.boundingBox.Max.Y; //- this.boundingBox.Min.Y;
             }
         }
@@ -58,7 +58,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             if (_treeFallen)
             {
                 //System.Diagnostics.Debug.WriteLine("OFF TREE");
-                player.onTree = false;
+                player.OnTree = false;
                 player.position.Y = 0.0f;
             }
         }
