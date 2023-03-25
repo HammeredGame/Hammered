@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
 
-namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
+namespace HammeredGame.Game.GameObjects.EnvironmentObjects.GroundObjects
 {
     class Ground : FloorObject
     {
