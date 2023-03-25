@@ -24,6 +24,11 @@ namespace HammeredGame.Game
     /// 
     /// For collision detection, each <c>GameObject</c> has bounding box attached -> <code>BoundingBox boundingBox</code> variable.
     /// </summary>
+    /// 
+
+    ///<remarks>
+    /// TODO: Add "class_skeleton_class_diagram.jpg" to game files
+    /// </remarks>
     public abstract class GameObject
     {
         // Common variables for any object in the game (will be modified as we develop further)
@@ -35,12 +40,11 @@ namespace HammeredGame.Game
         public Texture2D tex;
         public BoundingBox boundingBox { get; private set; }
 
-        // Change/remove once we modify how collisions / obstacles work (?)
-        /// <summary>
+        /// <value>
         ///  The "flag" variable <code>bool visible</code> is used to indicate the state in which the <c>GameObject</c>
         ///  instance is in.
         ///  If its value is true, then the instance will be drawn on the screen (utilizing the <code>DrawModel()</code> function)
-        /// </summary>
+        /// </value>
         protected bool visible = true;
 
         public GameObject(Model model, Vector3 pos, float scale, Texture2D t)
