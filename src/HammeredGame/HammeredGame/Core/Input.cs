@@ -1,46 +1,67 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HammeredGame.Core
 {
+    /// <summary>
+    /// Adapted from AlienScribble Making 3D Games with MonoGame playlist:
+    /// https://www.youtube.com/playlist?list=PLG6XrMFqMJUBOPVTJrGJnIDDHHF1HTETc
+    /// <para />
+    /// This file contains basic primitives for input handling.
+    /// </summary>
     public class Input
     {
-        // Adapted from AlienScribble Making 3D Games with MonoGame playlist:https://www.youtube.com/playlist?list=PLG6XrMFqMJUBOPVTJrGJnIDDHHF1HTETc
-
-        // Deadzone = amount of movement of the controller stick before it will be recognized as valid movement
+        // Deadzone = amount of movement of the controller stick before it will be recognized as
+        // valid movement
         public const float DEADZONE = 0.12f;
 
         public const ButtonState ButtonUp = ButtonState.Released;
         public const ButtonState ButtonDown = ButtonState.Pressed;
 
-        // Keyboard states and booleans
-        public KeyboardState kb, oldkb;
-        public bool shift_down, ctrl_down, alt_down;
-        public bool shift_press, ctrl_press, alt_press;
-        public bool old_shift_down, old_ctrl_down, old_alt_down;
+        // Keyboard states. We maintain one previous keyboard state to detect the moment of key press.
+        public KeyboardState KeyboardState;
+        private KeyboardState oldkb;
 
-        // Mouse states and booleans
-        public MouseState ms, oldms;
-        public bool leftClick, midClick, rightClick;
-        public bool leftDown, midDown, rightDown;
-        public int mouseX, mouseY;
-        public Vector2 mouseV;
-        public Point mouseP;
+        // Booleans for held modifier keys.
+        public bool SHIFT_DOWN, CTRL_DOWN, ALT_DOWN;
+
+        // Booleans for modifier keys that got pressed down in this tick. (Was not pressed previously).
+        // We keep one previous state here as well to detect the moment of press.
+        public bool SHIFT_PRESS, CTRL_PRESS, ALT_PRESS;
+
+        private bool old_shift_down, old_ctrl_down, old_alt_down;
+
+        // Mouse states. We maintain one previous mouse state to detect the moment of click.
+        public MouseState MouseState;
+        private MouseState oldms;
+
+        // Booleans for held mouse clicks.
+        public bool LEFT_DOWN, MIDDLE_DOWN, RIGHT_DOWN;
+
+        // Booleans for mouse clicks that got pressed down in this tick. (Was not pressed previously).
+        public bool LEFT_CLICK, MIDDLE_CLICK, RIGHT_CLICK;
+
+        // Mouse positions. MouseV and MouseP are convenience wrappers for MOUSE_X and MOUSE_Y.
+        public int MOUSE_X, MOUSE_Y;
+
+        public Vector2 MouseV;
+        public Point MouseP;
 
         // Gamepad states and booleans
-        public GamePadState gp, oldgp;
-        public bool A_down, B_down, X_down, Y_down, RB_down, LB_down, start_down, back_down, leftStick_down, rightStick_down;
-        public bool A_press, B_press, X_press, Y_press, RB_press, LB_press, start_press, back_press, leftStick_press, rightStick_press;
+        public GamePadState GamePadState;
+        private GamePadState oldgp;
+
+        // Booleans for held (DOWN) and pressed moment (PRESS)
+        public bool A_DOWN, B_DOWN, X_DOWN, Y_DOWN, RB_DOWN, LB_DOWN, START_DOWN, BACK_DOWN, LEFTSTICK_DOWN, RIGHTSTICK_DOWN;
+
+        public bool A_PRESS, B_PRESS, X_PRESS, Y_PRESS, RB_PRESS, LB_PRESS, START_PRESS, BACK_PRESS, LEFTSTICK_PRESS, RIGHSTICK_PRESS;
 
         // Screen space variables
-        float screenScaleX, screenScaleY;
+        private readonly float screenScaleX;
+
+        private readonly float screenScaleY;
 
         public Input(PresentationParameters pp, RenderTarget2D target)
         {
@@ -50,64 +71,94 @@ namespace HammeredGame.Core
         }
 
         // <----- Quick Input functions for convenience ---->
-        // KeyPress - function to check if given key k is pressed (not held down)
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool KeyPress(Keys k) { if (kb.IsKeyDown(k) && oldkb.IsKeyUp(k)) return true; return false; }
 
-        // KeyDown - function to check if given key k is held down
+        /// <summary>
+        /// KeyPress - function to check if given key k is pressed (not held down)
+        /// </summary>
+        /// <param name="k"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool KeyDown(Keys k) { if (kb.IsKeyDown(k)) return true; return false; }
+        public bool KeyPress(Keys k)
+        {
+            return KeyboardState.IsKeyDown(k) && oldkb.IsKeyUp(k);
+        }
 
-        // ButtonPress - function to check if given gamepad button is pressed
+        /// <summary>
+        /// KeyDown - function to check if given key k is held down
+        /// </summary>
+        /// <param name="k"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ButtonPress(Buttons button) { if (gp.IsButtonDown(button) && oldgp.IsButtonUp(button)) return true; return false; }
+        public bool KeyDown(Keys k)
+        {
+            return KeyboardState.IsKeyDown(k);
+        }
 
-        // ButtonPress - function to check if given gamepad button is held down
+        /// <summary>
+        /// ButtonPress - function to check if given gamepad button is pressed
+        /// </summary>
+        /// <param name="button"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ButtonHeld(Buttons button) { if (gp.IsButtonDown(button)) return true; return false; }
+        public bool ButtonPress(Buttons button)
+        {
+            return GamePadState.IsButtonDown(button) && oldgp.IsButtonUp(button);
+        }
 
-        // Update
+        /// <summary>
+        /// ButtonPress - function to check if given gamepad button is held down
+        /// </summary>
+        /// <param name="button"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ButtonHeld(Buttons button)
+        { if (GamePadState.IsButtonDown(button)) return true; return false; }
+
+        /// <summary>
+        /// Update the internal variables for keyboard, gamepad, and mouse current states.
+        /// Then update the numerous public booleans for the new state of input.
+        /// </summary>
         public void Update()
         {
-            old_alt_down = alt_down; old_shift_down = shift_down; old_ctrl_down = ctrl_down;
-            oldkb = kb; oldms = ms; oldgp = gp;
+            old_alt_down = ALT_DOWN; old_shift_down = SHIFT_DOWN; old_ctrl_down = CTRL_DOWN;
+            oldkb = KeyboardState; oldms = MouseState; oldgp = GamePadState;
 
             // Get the different states
-            kb = Keyboard.GetState(); ms = Mouse.GetState(); gp = GamePad.GetState(0);
+            KeyboardState = Keyboard.GetState(); MouseState = Mouse.GetState(); GamePadState = GamePad.GetState(0);
 
             // Set Keyboard boolean values according to input
-            shift_down = shift_press = ctrl_down = ctrl_press = alt_down = alt_press = false;
-            if (kb.IsKeyDown(Keys.LeftShift) || kb.IsKeyDown(Keys.RightShift)) shift_down = true;
-            if (kb.IsKeyDown(Keys.LeftControl) || kb.IsKeyDown(Keys.RightControl)) ctrl_down = true;
-            if (kb.IsKeyDown(Keys.LeftAlt) || kb.IsKeyDown(Keys.RightAlt)) alt_down = true;
-            if (shift_down && !old_shift_down) shift_press = true;
-            if (ctrl_down && !old_ctrl_down) ctrl_press = true;
-            if (alt_down && !old_alt_down) alt_press = true;
+            SHIFT_DOWN = SHIFT_PRESS = CTRL_DOWN = CTRL_PRESS = ALT_DOWN = ALT_PRESS = false;
+            if (KeyboardState.IsKeyDown(Keys.LeftShift) || KeyboardState.IsKeyDown(Keys.RightShift)) SHIFT_DOWN = true;
+            if (KeyboardState.IsKeyDown(Keys.LeftControl) || KeyboardState.IsKeyDown(Keys.RightControl)) CTRL_DOWN = true;
+            if (KeyboardState.IsKeyDown(Keys.LeftAlt) || KeyboardState.IsKeyDown(Keys.RightAlt)) ALT_DOWN = true;
+            if (SHIFT_DOWN && !old_shift_down) SHIFT_PRESS = true;
+            if (CTRL_DOWN && !old_ctrl_down) CTRL_PRESS = true;
+            if (ALT_DOWN && !old_alt_down) ALT_PRESS = true;
 
             // Set Mouse boolean values according to input
-            mouseV = new Vector2(ms.Position.X * screenScaleX, ms.Position.Y * screenScaleY);
-            mouseX = (int)mouseV.X; mouseY = (int)mouseV.Y; mouseP = new Point(mouseX, mouseY);
-            leftClick = midClick = rightClick = leftDown = midDown = rightDown = false;
-            if (ms.LeftButton == ButtonDown) leftDown = true;
-            if (ms.MiddleButton == ButtonDown) midDown = true;
-            if (ms.RightButton == ButtonDown) rightDown = true;
-            if (leftDown && oldms.LeftButton == ButtonUp) leftClick = true;
-            if (midDown && oldms.MiddleButton == ButtonUp) midClick = true;
-            if (rightDown && oldms.RightButton == ButtonUp) rightClick = true;
+            MouseV = new Vector2(MouseState.Position.X * screenScaleX, MouseState.Position.Y * screenScaleY);
+            MOUSE_X = (int)MouseV.X; MOUSE_Y = (int)MouseV.Y; MouseP = new Point(MOUSE_X, MOUSE_Y);
+            LEFT_CLICK = MIDDLE_CLICK = RIGHT_CLICK = LEFT_DOWN = MIDDLE_DOWN = RIGHT_DOWN = false;
+            if (MouseState.LeftButton == ButtonDown) LEFT_DOWN = true;
+            if (MouseState.MiddleButton == ButtonDown) MIDDLE_DOWN = true;
+            if (MouseState.RightButton == ButtonDown) RIGHT_DOWN = true;
+            if (LEFT_DOWN && oldms.LeftButton == ButtonUp) LEFT_CLICK = true;
+            if (MIDDLE_DOWN && oldms.MiddleButton == ButtonUp) MIDDLE_CLICK = true;
+            if (RIGHT_DOWN && oldms.RightButton == ButtonUp) RIGHT_CLICK = true;
 
             // Set GamePad boolean values according to input
-            A_down = B_down = X_down = Y_down = RB_down = LB_down = start_down = back_down = leftStick_down = rightStick_down = false;
-            A_press = B_press = X_press = Y_press = RB_press = LB_press = start_press = back_press = leftStick_press = rightStick_press = false;
-            if (gp.Buttons.A == ButtonState.Pressed) { A_down = true; if (gp.Buttons.A == ButtonState.Released) A_press = true; }
-            if (gp.Buttons.B == ButtonState.Pressed) { B_down = true; if (gp.Buttons.B == ButtonState.Released) B_press = true; }
-            if (gp.Buttons.X == ButtonState.Pressed) { X_down = true; if (gp.Buttons.X == ButtonState.Released) X_press = true; }
-            if (gp.Buttons.Y == ButtonState.Pressed) { Y_down = true; if (gp.Buttons.Y == ButtonState.Released) Y_press = true; }
-            if (gp.Buttons.RightShoulder == ButtonState.Pressed) { RB_down = true; if (gp.Buttons.RightShoulder == ButtonState.Released) RB_press = true; }
-            if (gp.Buttons.LeftShoulder == ButtonState.Pressed) { LB_down = true; if (gp.Buttons.LeftShoulder == ButtonState.Released) LB_press = true; }
-            if (gp.Buttons.Back == ButtonState.Pressed) { back_down = true; if (gp.Buttons.Back == ButtonState.Released) back_press = true; }
-            if (gp.Buttons.Start == ButtonState.Pressed) { start_down = true; if (gp.Buttons.Start == ButtonState.Released) start_press = true; }
-            if (gp.Buttons.LeftStick == ButtonState.Pressed) { leftStick_down = true; if (gp.Buttons.LeftStick == ButtonState.Released) leftStick_press = true; }
-            if (gp.Buttons.RightStick == ButtonState.Pressed) { rightStick_down = true; if (gp.Buttons.RightStick == ButtonState.Released) rightStick_press = true; }
+            A_DOWN = B_DOWN = X_DOWN = Y_DOWN = RB_DOWN = LB_DOWN = START_DOWN = BACK_DOWN = LEFTSTICK_DOWN = RIGHTSTICK_DOWN = false;
+            A_PRESS = B_PRESS = X_PRESS = Y_PRESS = RB_PRESS = LB_PRESS = START_PRESS = BACK_PRESS = LEFTSTICK_PRESS = RIGHSTICK_PRESS = false;
+            if (GamePadState.Buttons.A == ButtonState.Pressed) { A_DOWN = true; if (GamePadState.Buttons.A == ButtonState.Released) A_PRESS = true; }
+            if (GamePadState.Buttons.B == ButtonState.Pressed) { B_DOWN = true; if (GamePadState.Buttons.B == ButtonState.Released) B_PRESS = true; }
+            if (GamePadState.Buttons.X == ButtonState.Pressed) { X_DOWN = true; if (GamePadState.Buttons.X == ButtonState.Released) X_PRESS = true; }
+            if (GamePadState.Buttons.Y == ButtonState.Pressed) { Y_DOWN = true; if (GamePadState.Buttons.Y == ButtonState.Released) Y_PRESS = true; }
+            if (GamePadState.Buttons.RightShoulder == ButtonState.Pressed) { RB_DOWN = true; if (GamePadState.Buttons.RightShoulder == ButtonState.Released) RB_PRESS = true; }
+            if (GamePadState.Buttons.LeftShoulder == ButtonState.Pressed) { LB_DOWN = true; if (GamePadState.Buttons.LeftShoulder == ButtonState.Released) LB_PRESS = true; }
+            if (GamePadState.Buttons.Back == ButtonState.Pressed) { BACK_DOWN = true; if (GamePadState.Buttons.Back == ButtonState.Released) BACK_PRESS = true; }
+            if (GamePadState.Buttons.Start == ButtonState.Pressed) { START_DOWN = true; if (GamePadState.Buttons.Start == ButtonState.Released) START_PRESS = true; }
+            if (GamePadState.Buttons.LeftStick == ButtonState.Pressed) { LEFTSTICK_DOWN = true; if (GamePadState.Buttons.LeftStick == ButtonState.Released) LEFTSTICK_PRESS = true; }
+            if (GamePadState.Buttons.RightStick == ButtonState.Pressed) { RIGHTSTICK_DOWN = true; if (GamePadState.Buttons.RightStick == ButtonState.Released) RIGHSTICK_PRESS = true; }
         }
     }
 }

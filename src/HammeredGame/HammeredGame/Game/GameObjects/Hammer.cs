@@ -139,7 +139,7 @@ namespace HammeredGame.Game.GameObjects
         {
             // GamePad Control (A - Hammer drop, B - Hammer call back)
             // Same functionality as with above keyboard check
-            if (inp.gp.IsConnected)
+            if (inp.GamePadState.IsConnected)
             {
                 if (_hammerState == HammerState.WithCharacter && inp.ButtonPress(Buttons.A))
                 {
