@@ -22,7 +22,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         public override void hitByPlayer(Player player)
         {
             //this.activateTrigger();
-            correspondingDoor.setKeyFound(true);
+            correspondingDoor.SetKeyFound(true);
             this.setVisible(false);
             keyPickedUp = true;
         }
