@@ -29,7 +29,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             if (!_treeFallen)
             {
                 setTreeFallen(true);
-                Vector3 fallDirection = hammer.Position - hammer.oldPos;
+                Vector3 fallDirection = hammer.Position - hammer.OldPosition;
                 fallDirection.Normalize();
                 this.Rotation *= Quaternion.CreateFromAxisAngle(Vector3.Cross(Vector3.Up, fallDirection), MathHelper.ToRadians(90));
                 //this.position += new Vector3(0.0f, 20.0f, 0.0f);

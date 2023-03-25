@@ -23,8 +23,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
 
         public override void TouchingHammer(Hammer hammer)
         {
-            hammer.setState(Hammer.HammerState.Dropped);
-            hammer.Position = hammer.oldPos;
+            hammer.SetState(Hammer.HammerState.Dropped);
+            hammer.Position = hammer.OldPosition;
         }
     }
 }
