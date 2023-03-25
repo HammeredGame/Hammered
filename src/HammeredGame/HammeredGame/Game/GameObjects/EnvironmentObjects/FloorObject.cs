@@ -10,7 +10,7 @@ using ImGuiNET;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game;
 
-namespace HammeredGame.Classes.GameObjects.EnvironmentObjects
+namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
     class FloorObject : EnvironmentObject, IImGui
     {
