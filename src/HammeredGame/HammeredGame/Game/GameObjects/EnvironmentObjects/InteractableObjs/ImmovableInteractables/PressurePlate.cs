@@ -1,19 +1,14 @@
-﻿using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
 {
     public class PressurePlate : ImmovableInteractable
     {
-        private EnvironmentObject triggerObject;
+        private readonly EnvironmentObject triggerObject;
         private bool playerOn, hammerOn;
-        public PressurePlate(Model model, Vector3 pos, float scale, Texture2D t, EnvironmentObject triggerObject) : 
+
+        public PressurePlate(Model model, Vector3 pos, float scale, Texture2D t, EnvironmentObject triggerObject) :
             base(model, pos, scale, t)
         {
             this.triggerObject = triggerObject;
@@ -31,10 +26,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             {
                 triggerObject.setVisible(true);
             }
-
         }
 
-        private void activateTrigger()
+        private void ActivateTrigger()
         {
             triggerObject.setVisible(false);
         }
