@@ -5,14 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImMonoGame.Thing;
+using ImGuiNET;
 
-namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs
+namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.GroundObjects
 {
-    public class CollectibleInteractable : ObstacleObject
+    class Water : FloorObject
     {
-        // Any Unbreakable Obstacle specific variables go here
-
-        public CollectibleInteractable(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
+        public Water(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
             : base(model, pos, scale, cam, t)
         {
         }

@@ -17,6 +17,9 @@ namespace HammeredGame.Classes.GameObjects
 
         public Vector3 oldPos;
 
+        // TEMPORARY (FOR TESTING)
+        public bool onTree = false;
+
         Input inp;
 
         // Initialize player class
@@ -29,12 +32,12 @@ namespace HammeredGame.Classes.GameObjects
         // Update (called every tick)
         public override void Update(GameTime gameTime)
         {
-            this.oldPos = this.position;
             bool moveDirty = false;
 
             // Get forward direction
             Vector3 forwardDirectionFromCamera = Vector3.Normalize(Vector3.Multiply(activeCamera.target - activeCamera.pos, new Vector3(1, 0, 1)));
 
+            // Adjust player velocity based on input
             // Keyboard input (W - forward, S - back, A - left, D - right)
             if (inp.KeyDown(Keys.W))
             {
@@ -66,16 +69,17 @@ namespace HammeredGame.Classes.GameObjects
                 MovePad_UpDown = inp.gp.ThumbSticks.Left.Y;
                 if (MovePad_UpDown < -Input.DEADZONE || MovePad_UpDown > Input.DEADZONE || MovePad_LeftRight < -Input.DEADZONE || MovePad_LeftRight > Input.DEADZONE)
                 {
-                    //player_vel.X = (MovePad_LeftRight * activeCamera.view.Right.X + MovePad_UpDown * activeCamera.view.Forward.X) * baseControllerSpeed; // left-right_control * right_from_camera + up-down_control * forward_from_camera
-                    //player_vel.Z = (MovePad_LeftRight * activeCamera.view.Right.Z + MovePad_UpDown * activeCamera.view.Forward.Z) * baseControllerSpeed; // use this formala along x and z motions for character movement
                     player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera) * baseControllerSpeed;
                     moveDirty = true;
                 }
             }
 
             // If there was movement, normalize speed and edit rotation of character model
+            // Also account for collisions
             if (moveDirty)
             {
+                // Set the player's old position (as of previous tick)
+                this.oldPos = this.position;
 
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
                 // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
@@ -88,15 +92,53 @@ namespace HammeredGame.Classes.GameObjects
                 Vector3 lookDirection = position - oldPos;
                 float angle = (float)Math.Atan2(lookDirection.X, lookDirection.Z);
                 rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
+
+                this.computeBounds();
+
+                // Obstacle collision detection - will be modified/removed later
+                // Check for any obstacles in the current level, only if player has moved
+                //BoundingBox currbbox = GetBounds();
+                foreach (EnvironmentObject gO in HammeredGame.activeLevelObstacles)
+                {
+                    // Very very basic collision detection
+                    // Check for collisions by checking for bounding box intersections
+                    if (gO != null && gO.isVisible())
+                    {
+                        // If the player intersects with another game object
+                        // trigger the hitByPlayer function of that gameobject
+                        //BoundingBox checkbbox = gO.GetBounds();
+                        this.computeBounds();
+                        if (this.boundingBox.Intersects(gO.boundingBox))
+                        {
+                            // If there is an intersection with an obstacle, reset movement
+                            gO.hitByPlayer(this);
+                            // TEMPORARY: if the player is not on tree
+                            // and intersects with water (onGround returns if the player has hit a groundobject,
+                            // currently water is the only ground object being considered for collisions),
+                            // then set player back to old position
+                            // There might be a better solution to this
+                            if (gO.isGround && !this.onTree)
+                            {
+                                //System.Diagnostics.Debug.WriteLine(this.oldPos + " -> " + this.position);
+                                this.position = this.oldPos;
+                                //this.position = Vector3.Zero;
+                            }
+                        }
+                        else
+                        {
+                            gO.notHitByPlayer(this);
+                        }
+                    }
+                }
             }
             else
             {
                 // No new keypresses or controller interactions this round, so
                 // apply a gradual slowdown to any previous velocity
-                player_vel.X *= 0.5f;
-                player_vel.Z *= 0.5f;
+                //player_vel.X *= 0.5f;
+                //player_vel.Z *= 0.5f;
 
-                position += player_vel;
+                //position += player_vel;
             }
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
@@ -145,28 +187,6 @@ namespace HammeredGame.Classes.GameObjects
 
             //_characterRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
             #endregion
-
-            // Obstacle collision detection - will be modified/removed later
-            // Check for any obstacles in the current level
-            BoundingBox currbbox = GetBounds();
-            foreach (EnvironmentObject gO in HammeredGame.activeLevelObstacles)
-            {
-                // Very very basic collision detection
-                // Check for collisions by checking for bounding box intersections
-                if (gO != null && gO.isVisible())
-                {
-                    BoundingBox checkbbox = gO.GetBounds();
-                    if (currbbox.Intersects(checkbbox))
-                    {
-                        // If there is an intersection with an obstacle, reset movement
-                        gO.hitByPlayer(this);
-                    }
-                    else
-                    {
-                        gO.notHitByPlayer(this);
-                    }
-                }
-            }
 
             // For the purposes of the functional minimum
             // Temporary BOUNDS to clamp player position within the bounds of the test terrain/ground

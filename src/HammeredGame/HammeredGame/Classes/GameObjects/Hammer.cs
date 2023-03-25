@@ -45,6 +45,7 @@ namespace HammeredGame.Classes.GameObjects
             {
                 // Set boolean to indacte hammer is dropped
                 hammerDropped = true;
+                this.computeBounds();
             }
 
             // Hammer Call Back Mechanic
@@ -63,6 +64,7 @@ namespace HammeredGame.Classes.GameObjects
                 if (inp.ButtonPress(Buttons.A))
                 {
                     hammerDropped = true;
+                    this.computeBounds();
                 }
                 if (inp.ButtonPress(Buttons.B))
                 {
@@ -87,16 +89,18 @@ namespace HammeredGame.Classes.GameObjects
                         hammerDropped = false;
                         hammerEnroute = false;
                     }
+
+                    this.computeBounds();
                 }
                 
                 // Check for any collisions along the way
-                BoundingBox hammerbbox = this.GetBounds();
+                //BoundingBox hammerbbox = this.GetBounds();
                 foreach(EnvironmentObject gO in HammeredGame.activeLevelObstacles)
                 {
                     if (gO != null && gO.isVisible())
                     {
-                        BoundingBox objectbbox = gO.GetBounds();
-                        if (hammerbbox.Intersects(objectbbox))
+                        //BoundingBox objectbbox = gO.GetBounds();
+                        if (this.boundingBox.Intersects(gO.boundingBox))
                         {
                             gO.hitByHammer(this);
                         }
