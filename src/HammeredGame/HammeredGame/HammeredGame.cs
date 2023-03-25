@@ -1,12 +1,12 @@
-﻿using HammeredGame.Classes;
-using HammeredGame.Classes.GameObjects;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.GroundObjects;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
+﻿using HammeredGame.Core;
+using HammeredGame.Game;
+using HammeredGame.Game.GameObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace HammeredGame
 {
-    public class HammeredGame : Game, IImGui
+    public class HammeredGame : Microsoft.Xna.Framework.Game, IImGui
     {
         // DISPLAY VARIABLES
         const int SCREENWIDTH = 1280;
@@ -84,7 +84,7 @@ namespace HammeredGame
             PresentationParameters pp = gpu.PresentationParameters;
             _spriteBatch = new SpriteBatch(gpu);
 
-            // Set Render Target to SCREENWIDTH x SCREENHEIGHT 
+            // Set Render Target to SCREENWIDTH x SCREENHEIGHT
             MainTarget = new RenderTarget2D(gpu, SCREENWIDTH, SCREENHEIGHT, false, pp.BackBufferFormat, DepthFormat.Depth24);
             screenW = MainTarget.Width;
             screenH = MainTarget.Height;
@@ -95,7 +95,7 @@ namespace HammeredGame
             inp = new Input(pp, MainTarget);
 
             // Initialize Camera class
-            _camera = new Camera(gpu, Vector3.Up, inp);
+            _camera = new Camera(gpu, Vector3.Zero, Vector3.Up, inp);
 
             // Set title for game window
             Window.Title = "HAMMERED";
@@ -109,7 +109,7 @@ namespace HammeredGame
 
         protected override void LoadContent()
         {
-            // The structure of the content of this function might change 
+            // The structure of the content of this function might change
             // depending on how we structure our classes/hierarchy (how we want to load things into the scene)
             // Most likely: will be replaced with XML parsing here
 
@@ -250,7 +250,7 @@ namespace HammeredGame
             // Render all the scene objects (given that they are not destroyed)
             foreach (GameObject gameObject in gameObjects)
             {
-                gameObject.Draw(_camera.view, _camera.proj);
+                gameObject.Draw(_camera.ViewMatrix, _camera.ProjMatrix);
             }
 
             // Draw MainTarget to BackBuffer
@@ -289,7 +289,7 @@ namespace HammeredGame
             ImGui.SetNextWindowBgAlpha(0.3f);
             ImGui.SetNextWindowPos(new System.Numerics.Vector2(50, 150));
             ImGui.Begin("Scene Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
-            
+
             var numericScene = testObstaclesCombo;
             ImGui.DragInt("Scene", ref numericScene, 0.1f, 0, 3);
             testObstaclesCombo = numericScene;
