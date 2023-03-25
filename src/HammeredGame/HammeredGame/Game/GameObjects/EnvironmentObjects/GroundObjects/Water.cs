@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ImMonoGame.Thing;
 using ImGuiNET;
-using HammeredGame.Game.GameObjects.EnvironmentObjects
+using HammeredGame.Game.GameObjects.EnvironmentObjects;
 using HammeredGame.Game;
 
 namespace HammeredGame.Classes.GameObjects.EnvironmentObjects.GroundObjects
