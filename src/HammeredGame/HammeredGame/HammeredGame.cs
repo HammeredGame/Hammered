@@ -1,7 +1,7 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game;
 using HammeredGame.Game.GameObjects;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.GroundObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using ImGuiNET;
 using ImMonoGame.Thing;

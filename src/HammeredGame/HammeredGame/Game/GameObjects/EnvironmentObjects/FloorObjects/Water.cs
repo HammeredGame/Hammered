@@ -10,7 +10,7 @@ using ImGuiNET;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
 using HammeredGame.Game;
 
-namespace HammeredGame.Game.GameObjects.EnvironmentObjects.GroundObjects
+namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
     class Water : FloorObject
     {
