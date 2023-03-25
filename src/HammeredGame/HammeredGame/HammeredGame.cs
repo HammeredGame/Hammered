@@ -127,30 +127,34 @@ namespace HammeredGame
         /// <param name="levelToLoad"></param>
         private void InitializeLevel(int levelToLoad)
         {
+            // Clear the UI list to get a clean state with no duplicates
             UIEntities.Clear();
-            var levCon = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml");
 
-            _camera = levCon.GetCamera(gpu, inp);
+            XMLLevelLoader levelLoader = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml");
 
-            gameObjects = levCon.GetGameObjects(Content, inp, _camera);
+            _camera = levelLoader.GetCamera(gpu, inp);
+            gameObjects = levelLoader.GetGameObjects(Content, inp, _camera);
 
             foreach (GameObject entity in gameObjects)
             {
-                var imGuiAble = entity as IImGui;
-                if (imGuiAble != null)
+                // Add all level objects with an associated UI to the list of UIs to draw in Draw()
+                if (entity is IImGui imGuiAble)
                 {
                     UIEntities.Add(imGuiAble);
                 }
 
+                // All objects that the player can collide with (for now, this is everything but
+                // Ground) needs to be stored in activeLevelObstacles, which the Player class checks
+                // for collision against.
+                // TODO: this needs to change to a different implementation when collision detection changes.
                 var envAble = entity as EnvironmentObject;
-                if (envAble != null)
+                if (envAble != null && entity is not Ground)
                 {
-                    if (entity is not Ground)
-                    {
-                        activeLevelObstacles.Add(envAble);
-                    }
+                    activeLevelObstacles.Add(envAble);
                 }
             }
+
+            // The Game object itself (this class) also has an UI
             UIEntities.Add(this);
         }
 
