@@ -1,9 +1,8 @@
-﻿using HammeredGame.Classes.GameObjects.EnvironmentObjects.GroundObjects;
-using HammeredGame.Core;
+﻿using HammeredGame.Core;
 using HammeredGame.Game;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.GroundObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs;
@@ -54,7 +53,7 @@ namespace HammeredGame
 
         private Key _key;
 
-        static public List<EnvironmentObject> activeLevelObstacles;
+        static public List<EnvironmentObject> activeLevelObstacles = new List<EnvironmentObject>();
 
         // SCENE TEST VARIABLES
         private int testObstaclesCombo = 3;
@@ -115,8 +114,34 @@ namespace HammeredGame
             // The structure of the content of this function might change
             // depending on how we structure our classes/hierarchy (how we want to load things into the scene)
             // Most likely: will be replaced with XML parsing here
+            _font = Content.Load<SpriteFont>("temp_font");
 
-            initializeLevel();
+            var levCon = new XMLLevelLoader("level1.xml");
+
+            _camera = levCon.GetCamera(gpu, inp);
+
+            gameObjects = levCon.GetGameObjects(Content, inp, _camera);
+
+            foreach (GameObject entity in gameObjects)
+            {
+                var imGuiAble = entity as IImGui;
+                if (imGuiAble != null)
+                {
+                    UIEntities.Add(imGuiAble);
+                }
+
+                var envAble = entity as EnvironmentObject;
+                if (envAble != null)
+                {
+                    if (entity is not Ground)
+                    {
+                        activeLevelObstacles.Add(envAble);
+                    }
+                }
+            }
+            UIEntities.Add(this);
+
+            //initializeLevel();
         }
 
         private void initializeLevel()
@@ -128,10 +153,10 @@ namespace HammeredGame
 
             //(TEMPORARY - after xml parsing and incorporating better collision detection, all of this should change)
             // Load and initialize player character
-            _player = new Player(Content.Load<Model>("character_3"), Vector3.Zero, 0.03f, inp, playerTex, _camera);
+            _player = new Player(Content.Load<Model>("character_3"), Vector3.Zero, 0.03f, playerTex, inp, _camera);
 
             // Load and initialize hammer object
-            _hammer = new Hammer(Content.Load<Model>("temp_hammer2"), Vector3.Zero, 0.02f, _player, inp, null);
+            _hammer = new Hammer(Content.Load<Model>("temp_hammer2"), Vector3.Zero, 0.02f, null, inp, _player);
 
             // Load and initialize the terrain/ground
             _ground = new Ground(Content.Load<Model>("temp_floor_with_biggerhole"), new Vector3(0, 0f, 0), 0.02f,  null);
@@ -291,12 +316,12 @@ namespace HammeredGame
         {
             ImGui.SetNextWindowBgAlpha(0.3f);
             ImGui.SetNextWindowPos(new System.Numerics.Vector2(50, 150));
-            ImGui.Begin("Scene Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
+            ImGui.Begin("Hammered", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
 
-            var numericScene = testObstaclesCombo;
-            ImGui.DragInt("Scene", ref numericScene, 0.1f, 0, 3);
-            testObstaclesCombo = numericScene;
-
+            ImGui.DragInt("Scene", ref testObstaclesCombo, 0.1f, 0, 3);
+            ImGui.Text($"Camera Coordinates: {_camera.Position.ToString()}");
+            ImGui.Text($"Camera Focus: {_camera.Target.ToString()}");
+            ImGui.Text($"Loaded objects: {gameObjects.Count().ToString()}");
             ImGui.End();
         }
     }

@@ -42,6 +42,14 @@ namespace HammeredGame.Game
             unit_direction = ViewMatrix.Forward; unit_direction.Normalize();
         }
 
+        public void SetStaticPositions(Vector3 cameraPos1, Vector3 cameraPos2, Vector3 cameraPos3, Vector3 cameraPos4)
+        {
+            this.cameraPos1 = cameraPos1;
+            this.cameraPos2 = cameraPos2;
+            this.cameraPos3 = cameraPos3;
+            this.cameraPos4 = cameraPos4;
+        }
+
         /// <summary>
         /// Move camera given a movement vector (Not really required for a static camera, but
         /// leaving this here in case we want any sort of moving camera functionality at any point)

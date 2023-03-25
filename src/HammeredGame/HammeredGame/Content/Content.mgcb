@@ -51,6 +51,9 @@
 /processorParam:TextureFormat=Compressed
 /build:character_test.fbx
 
+#begin level1.xml
+/copy:level1.xml
+
 #begin temp_floor_flat.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
