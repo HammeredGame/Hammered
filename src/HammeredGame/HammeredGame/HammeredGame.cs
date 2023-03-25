@@ -45,6 +45,8 @@ namespace HammeredGame
 
         static public List<EnvironmentObject> ActiveLevelObstacles = new();
 
+        private Player player;
+
         // SCENE TEST VARIABLES
         private int testObstaclesCombo = 3;
 
@@ -129,6 +131,11 @@ namespace HammeredGame
             ActiveLevelObstacles.Clear();
             foreach (GameObject entity in gameObjects)
             {
+                // Store a reference to the player since it's a little important
+                if (entity is Player p) {
+                    player = p;
+                }
+
                 // Add all level objects with an associated UI to the list of UIs to draw in Draw()
                 if (entity is IImGui imGuiAble)
                 {
@@ -146,7 +153,9 @@ namespace HammeredGame
                 }
             }
 
-            // The Game object itself (this class) also has an UI
+            // The camera and the Game object itself (this class) have an UI, neither of them
+            // are in the GameObject list
+            uiEntities.Add(camera);
             uiEntities.Add(this);
         }
 
@@ -176,7 +185,7 @@ namespace HammeredGame
             }
 
             // Update camera
-            camera.UpdateCamera();
+            camera.UpdateCamera(player);
 
             base.Update(gameTime);
         }
@@ -255,8 +264,6 @@ namespace HammeredGame
             ImGui.Begin("Hammered", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
 
             ImGui.DragInt("Scene", ref testObstaclesCombo, 0.1f, 0, 3);
-            ImGui.Text($"Camera Coordinates: {camera.Position.ToString()}");
-            ImGui.Text($"Camera Focus: {camera.Target.ToString()}");
             ImGui.Text($"Loaded objects: {gameObjects.Count().ToString()}");
 
             ImGui.End();
