@@ -23,7 +23,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 
         public override void hitByPlayer(Player player)
         {
-            player.position = player.oldPos;
+            player.position = player.PreviousPosition;
         }
     }
 }
