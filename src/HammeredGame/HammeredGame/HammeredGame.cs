@@ -126,6 +126,7 @@ namespace HammeredGame
             camera = levelLoader.GetCamera(gpu, input);
             gameObjects = levelLoader.GetGameObjects(Content, input, camera);
 
+            ActiveLevelObstacles.Clear();
             foreach (GameObject entity in gameObjects)
             {
                 // Add all level objects with an associated UI to the list of UIs to draw in Draw()
@@ -257,6 +258,7 @@ namespace HammeredGame
             ImGui.Text($"Camera Coordinates: {camera.Position.ToString()}");
             ImGui.Text($"Camera Focus: {camera.Target.ToString()}");
             ImGui.Text($"Loaded objects: {gameObjects.Count().ToString()}");
+
             ImGui.End();
         }
     }
