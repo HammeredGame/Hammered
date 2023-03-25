@@ -163,7 +163,7 @@ namespace HammeredGame
             // Update input
             inp.Update();
             // Check for exit input
-            if (inp.back_down || inp.KeyDown(Keys.Escape)) Exit();
+            if (inp.BACK_DOWN || inp.KeyDown(Keys.Escape)) Exit();
 
             if (inp.ButtonPress(Buttons.Y) || inp.KeyDown(Keys.R))
             {

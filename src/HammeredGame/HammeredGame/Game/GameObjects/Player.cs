@@ -74,7 +74,7 @@ namespace HammeredGame.Game.GameObjects
             moveDirty = this.KeyboardInput(forwardDirectionFromCamera);
 
             // Handling input from gamepad.
-            if (inp.gp.IsConnected)
+            if (inp.GamePadState.IsConnected)
             {
                 moveDirty = moveDirty || GamepadInput(forwardDirectionFromCamera);
             }
@@ -259,8 +259,8 @@ namespace HammeredGame.Game.GameObjects
 
             float MovePad_UpDown = 0;
             float MovePad_LeftRight = 0;
-            MovePad_LeftRight = inp.gp.ThumbSticks.Left.X;
-            MovePad_UpDown = inp.gp.ThumbSticks.Left.Y;
+            MovePad_LeftRight = inp.GamePadState.ThumbSticks.Left.X;
+            MovePad_UpDown = inp.GamePadState.ThumbSticks.Left.Y;
             if (MovePad_UpDown < -Input.DEADZONE || MovePad_UpDown > Input.DEADZONE || MovePad_LeftRight < -Input.DEADZONE || MovePad_LeftRight > Input.DEADZONE)
             {
                 player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera) * baseControllerSpeed;
