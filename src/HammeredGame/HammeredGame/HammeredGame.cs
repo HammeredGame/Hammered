@@ -206,7 +206,7 @@ namespace HammeredGame
             // Check for exit input
             if (inp.back_down || inp.KeyDown(Keys.Escape)) Exit();
 
-            if (inp.KeyDown(Keys.R))
+            if (inp.ButtonPress(Buttons.Y) || inp.KeyDown(Keys.R))
             {
                 UIEntities.Remove(_player);
                 UIEntities.Remove(_water);

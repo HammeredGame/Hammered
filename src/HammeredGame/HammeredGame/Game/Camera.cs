@@ -72,19 +72,19 @@ namespace HammeredGame.Game
         public void UpdateCamera()
         {
             #region TEMPORARY_CAMERA_CONTROLS
-            if (inp.KeyDown(Keys.D1))
+            if (inp.ButtonPress(Buttons.DPadUp) || inp.KeyDown(Keys.D1))
             {
                 Position = cameraPos1;
             }
-            if (inp.KeyDown(Keys.D2))
+            if (inp.ButtonPress(Buttons.DPadLeft) || inp.KeyDown(Keys.D2))
             {
                 Position = cameraPos2;
             }
-            if (inp.KeyDown(Keys.D3))
+            if (inp.ButtonPress(Buttons.DPadDown) || inp.KeyDown(Keys.D3))
             {
                 Position = cameraPos3;
             }
-            if (inp.KeyDown(Keys.D4))
+            if (inp.ButtonPress(Buttons.DPadRight) || inp.KeyDown(Keys.D4))
             {
                 Position = cameraPos4;
             }
