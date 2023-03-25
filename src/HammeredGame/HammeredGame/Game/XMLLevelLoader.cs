@@ -100,8 +100,8 @@ namespace HammeredGame.Game
             // follows the player closely for one level, the current approach leaves more freedom.
             var staticPositions = (from vecs in cameraElement.Descendants("position")
                                    where vecs.Attribute("type").Value == "vec3"
-                                   select vecs).Select(v => (Vector3) typeToParserMap["vec3"](v.Value)).ToList();
-            cameraInstance.SetStaticPositions(staticPositions[0], staticPositions[1], staticPositions[2], staticPositions[3]);
+                                   select vecs).Select(v => (Vector3) typeToParserMap["vec3"](v.Value)).ToArray();
+            cameraInstance.SetStaticPositions(staticPositions);
 
             return cameraInstance;
         }
