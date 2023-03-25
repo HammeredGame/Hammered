@@ -13,8 +13,8 @@ namespace HammeredGame.Game.GameObjects
     public class EnvironmentObject : GameObject
     {
         public bool isGround = false;
-        public EnvironmentObject(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
-            : base (model, pos, scale, cam, t)
+        public EnvironmentObject(Model model, Vector3 pos, float scale, Texture2D t)
+            : base (model, pos, scale, t)
         {
         }
 

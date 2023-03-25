@@ -8,6 +8,22 @@ using System.Threading.Tasks;
 
 namespace HammeredGame.Game
 {
+    /// <summary>
+    /// The <c>GameObject</c> class encompasses all the visual components the player is going to encounter during their playthrough.
+    /// The specific behaviours (either individual or inter-object) are to be defined in the respective subclasses
+    /// (see the "class_skeleton_class_diagram.jpg" for a thorough class tree on the subclasses)
+    /// 
+    /// Any 3D object/shape in a geometric space can be uniquely defined by its:
+    /// - (base) geometry -> <code>Model model</code> variable
+    /// - the affine transformation applied to it:
+    ///     -- translation -> <code>Vector3 position</code> variable
+    ///     -- rotation -> <code>Quaternion rotation</code> variable
+    ///     -- scaling -> <code>float scale</code> 
+    ///     
+    /// In addition, a shape (as defined above) may be cosmetically enhanced with a (.png) texture -> <code>Texture2D tex</code> variable.
+    /// 
+    /// For collision detection, each <c>GameObject</c> has bounding box attached -> <code>BoundingBox boundingBox</code> variable.
+    /// </summary>
     public abstract class GameObject
     {
         // Common variables for any object in the game (will be modified as we develop further)
@@ -17,21 +33,22 @@ namespace HammeredGame.Game
         public float scale;
 
         public Texture2D tex;
-
-        public Camera activeCamera;
-
         public BoundingBox boundingBox { get; private set; }
 
         // Change/remove once we modify how collisions / obstacles work (?)
+        /// <summary>
+        ///  The "flag" variable <code>bool visible</code> is used to indicate the state in which the <c>GameObject</c>
+        ///  instance is in.
+        ///  If its value is true, then the instance will be drawn on the screen (utilizing the <code>DrawModel()</code> function)
+        /// </summary>
         protected bool visible = true;
 
-        public GameObject(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
+        public GameObject(Model model, Vector3 pos, float scale, Texture2D t)
         {
             this.model = model;
             this.position = pos;
             this.rotation = Quaternion.Identity;
             this.scale = scale;
-            this.activeCamera = cam;
             this.tex = t;
 
             this.computeBounds();
@@ -145,6 +162,17 @@ namespace HammeredGame.Game
             Matrix scaleMatrix = Matrix.CreateScale(scale);
 
             // Construct world matrix
+            // Be careful! Order matters!
+            // The transformations in this framework are applied FROM LEFT TO RIGHT
+            // (in contrast with how it is done in mathematical notation).
+            ///<example>
+            /// Provided the transformation standard affine transformation matrices: Translation (T), Rotation (R) and Scaling (S)
+            /// if we wish to apply the transformation: R -> T-> S on a vector
+            /// we would express it in mathematical notation as STR,
+            /// but as R * T * S in MonoGame (and OpenGL).
+            ///</example>
+
+            // World matrix = S -> R -> T
             Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
             return world;
         }

@@ -12,8 +12,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public CollectibleInteractable(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
-            : base(model, pos, scale, cam, t)
+        public CollectibleInteractable(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
         {
         }
 

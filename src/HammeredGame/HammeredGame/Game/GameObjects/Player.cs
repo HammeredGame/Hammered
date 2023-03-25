@@ -18,16 +18,18 @@ namespace HammeredGame.Game.GameObjects
 
         public Vector3 oldPos;
 
+        public Camera activeCamera;
+
         // TEMPORARY (FOR TESTING)
         public bool onTree = false;
 
         Input inp;
 
         // Initialize player class
-        public Player(Model model, Vector3 pos, float scale, Input inp, Camera cam, Texture2D t)
-            : base(model, pos, scale, cam, t)
+        public Player(Model model, Vector3 pos, float scale, Input inp, Texture2D t, Camera cam) : base(model, pos, scale, t)
         {
             this.inp = inp;
+            this.activeCamera = cam;
         }
 
         // Update (called every tick)

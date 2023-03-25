@@ -11,8 +11,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
     class Ground : FloorObject
     {
-        public Ground(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
-            : base(model, pos, scale, cam, t)
+        public Ground(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
         {
         }
 
