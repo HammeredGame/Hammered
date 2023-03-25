@@ -1,13 +1,8 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game;
 using HammeredGame.Game.GameObjects;
-using HammeredGame.Game.GameObjects.EnvironmentObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.GroundObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -23,51 +18,46 @@ namespace HammeredGame
     public class HammeredGame : Microsoft.Xna.Framework.Game, IImGui
     {
         // DISPLAY VARIABLES
-        const int SCREENWIDTH = 1280;
-        const int SCREENHEIGHT = 720;
-        private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
+        public const int SCREENWIDTH = 1280;
+        public const int SCREENHEIGHT = 720;
+
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
         private GraphicsDevice gpu;
-        static public int screenW, screenH;
-        Camera _camera;
+        public int ScreenW, ScreenH;
+        private Camera camera;
 
         // INPUT and other related stuff
-        Input inp;
+        private Input input;
 
         // RENDER TARGET
-        RenderTarget2D MainTarget;
+        private RenderTarget2D mainRenderTarget;
 
         // RECTANGLES (need to modify to allow modifiable resolutions, etc.)
-        Rectangle desktopRect;
-        Rectangle screenRect;
+        private Rectangle desktopRect;
+        private Rectangle screenRect;
 
-        // 3D Objects and other related stuff (Class refactoring required)
-        private SpriteFont _font;
+        private SpriteFont tempFont;
 
-        private Player _player;
-        private Hammer _hammer;
-        private Texture2D playerTex;
-        private FloorObject _ground;
-        private FloorObject _water;
         private List<GameObject> gameObjects;
 
-        private Key _key;
+        private Key key;
 
-        static public List<EnvironmentObject> activeLevelObstacles = new List<EnvironmentObject>();
+        static public List<EnvironmentObject> ActiveLevelObstacles = new();
 
         // SCENE TEST VARIABLES
         private int testObstaclesCombo = 3;
 
         // ImGui renderer and list of UIs to render
-        private ImGuiRenderer _imGuiRenderer;
-        private List<IImGui> UIEntities = new List<IImGui>();
+        private ImGuiRenderer imGuiRenderer;
+        private readonly List<IImGui> uiEntities = new();
 
         public HammeredGame()
         {
             // Get width and height of desktop and set the graphics device settings
             int desktop_width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 10;
             int desktop_height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 10;
-            _graphics = new GraphicsDeviceManager(this)
+            graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferWidth = desktop_width,
                 PreferredBackBufferHeight = desktop_height,
@@ -84,37 +74,38 @@ namespace HammeredGame
         {
             gpu = GraphicsDevice;
             PresentationParameters pp = gpu.PresentationParameters;
-            _spriteBatch = new SpriteBatch(gpu);
+            spriteBatch = new SpriteBatch(gpu);
 
             // Set Render Target to SCREENWIDTH x SCREENHEIGHT
-            MainTarget = new RenderTarget2D(gpu, SCREENWIDTH, SCREENHEIGHT, false, pp.BackBufferFormat, DepthFormat.Depth24);
-            screenW = MainTarget.Width;
-            screenH = MainTarget.Height;
+            mainRenderTarget = new RenderTarget2D(gpu, SCREENWIDTH, SCREENHEIGHT, false, pp.BackBufferFormat, DepthFormat.Depth24);
+            ScreenW = mainRenderTarget.Width;
+            ScreenH = mainRenderTarget.Height;
             desktopRect = new Rectangle(0, 0, pp.BackBufferWidth, pp.BackBufferHeight);
-            screenRect = new Rectangle(0, 0, screenW, screenH);
+            screenRect = new Rectangle(0, 0, ScreenW, ScreenH);
 
             // Initialize Input class
-            inp = new Input(pp, MainTarget);
+            input = new Input(pp, mainRenderTarget);
 
             // Initialize Camera class
-            _camera = new Camera(gpu, Vector3.Zero, Vector3.Up, inp);
+            camera = new Camera(gpu, Vector3.Zero, Vector3.Up, input);
 
             // Set title for game window
             Window.Title = "HAMMERED";
 
-            // Initialize ImGui's internal renderer and build the font atlas
-            _imGuiRenderer = new ImGuiRenderer(this);
-            _imGuiRenderer.RebuildFontAtlas();
+            // Initialize ImGui's internal renderer and build its font atlas
+            imGuiRenderer = new ImGuiRenderer(this);
+            imGuiRenderer.RebuildFontAtlas();
 
             base.Initialize();
         }
 
+        /// <summary>
+        /// Called once when loading the game. Load all assets here since it is expensive to load
+        /// them on demand when we need it in e.g. Update() or Draw().
+        /// </summary>
         protected override void LoadContent()
         {
-            // The structure of the content of this function might change
-            // depending on how we structure our classes/hierarchy (how we want to load things into the scene)
-            // Most likely: will be replaced with XML parsing here
-            _font = Content.Load<SpriteFont>("temp_font");
+            tempFont = Content.Load<SpriteFont>("temp_font");
 
             InitializeLevel(0);
         }
@@ -128,19 +119,19 @@ namespace HammeredGame
         private void InitializeLevel(int levelToLoad)
         {
             // Clear the UI list to get a clean state with no duplicates
-            UIEntities.Clear();
+            uiEntities.Clear();
 
             XMLLevelLoader levelLoader = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml");
 
-            _camera = levelLoader.GetCamera(gpu, inp);
-            gameObjects = levelLoader.GetGameObjects(Content, inp, _camera);
+            camera = levelLoader.GetCamera(gpu, input);
+            gameObjects = levelLoader.GetGameObjects(Content, input, camera);
 
             foreach (GameObject entity in gameObjects)
             {
                 // Add all level objects with an associated UI to the list of UIs to draw in Draw()
                 if (entity is IImGui imGuiAble)
                 {
-                    UIEntities.Add(imGuiAble);
+                    uiEntities.Add(imGuiAble);
                 }
 
                 // All objects that the player can collide with (for now, this is everything but
@@ -150,26 +141,28 @@ namespace HammeredGame
                 var envAble = entity as EnvironmentObject;
                 if (envAble != null && entity is not Ground)
                 {
-                    activeLevelObstacles.Add(envAble);
+                    ActiveLevelObstacles.Add(envAble);
                 }
             }
 
             // The Game object itself (this class) also has an UI
-            UIEntities.Add(this);
+            uiEntities.Add(this);
         }
 
+        /// <summary>
+        /// Called on every game update loop. The interval at this function is called is not
+        /// constant, so use the gameTime argument to make sure speeds appear natural.
+        /// </summary>
+        /// <param name="gameTime"></param>
         protected override void Update(GameTime gameTime)
         {
             // Update input
-            inp.Update();
+            input.Update();
             // Check for exit input
-            if (inp.BACK_DOWN || inp.KeyDown(Keys.Escape)) Exit();
+            if (input.BACK_DOWN || input.KeyDown(Keys.Escape)) Exit();
 
-            if (inp.ButtonPress(Buttons.Y) || inp.KeyDown(Keys.R))
+            if (input.ButtonPress(Buttons.Y) || input.KeyDown(Keys.R))
             {
-                UIEntities.Remove(_player);
-                UIEntities.Remove(_water);
-                UIEntities.Remove(this);
                 InitializeLevel(testObstaclesCombo);
             }
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -182,14 +175,17 @@ namespace HammeredGame
             }
 
             // Update camera
-            _camera.UpdateCamera();
+            camera.UpdateCamera();
 
             base.Update(gameTime);
         }
 
-        // Adapted from AlienScribble Make 3D Games with Monogame playlist: https://www.youtube.com/playlist?list=PLG6XrMFqMJUBOPVTJrGJnIDDHHF1HTETc
-        // To set state variables within graphics device back to default (in case they are changed at any point)
-        // to ensure we are correctly drawing in 3D space
+        /// <summary>
+        /// Adapted from AlienScribble Make 3D Games with Monogame playlist: https://www.youtube.com/playlist?list=PLG6XrMFqMJUBOPVTJrGJnIDDHHF1HTETc
+        /// <para/>
+        /// To set state variables within graphics device back to default (in case they are changed
+        /// at any point) to ensure we are correctly drawing in 3D space
+        /// </summary>
         void Set3DStates()
         {
             gpu.BlendState = BlendState.AlphaBlend; // Potentially needs to be modified depending on our textures
@@ -202,28 +198,33 @@ namespace HammeredGame
             }
         }
 
+        /// <summary>
+        /// Called on each game loop after Update(). Should not contain expensive computation but
+        /// rather just rendering and drawing to the GPU.
+        /// </summary>
+        /// <param name="gameTime"></param>
         protected override void Draw(GameTime gameTime)
         {
             // Set the Render Target for drawing
-            gpu.SetRenderTarget(MainTarget);
+            gpu.SetRenderTarget(mainRenderTarget);
             gpu.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.AliceBlue, 1.0f, 0);
             Set3DStates();
 
             // Render all the scene objects (given that they are not destroyed)
             foreach (GameObject gameObject in gameObjects)
             {
-                gameObject.Draw(_camera.ViewMatrix, _camera.ProjMatrix);
+                gameObject.Draw(camera.ViewMatrix, camera.ProjMatrix);
             }
 
             // Draw MainTarget to BackBuffer
             gpu.SetRenderTarget(null);
-            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
-            _spriteBatch.Draw(MainTarget, desktopRect, Color.White);
-            if (_key != null &&_key.isKeyPickedUp())
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
+            spriteBatch.Draw(mainRenderTarget, desktopRect, Color.White);
+            if (key != null &&key.isKeyPickedUp())
             {
-                _spriteBatch.DrawString(_font, "KEY PICKED UP!", new Vector2(100, 100), Color.Red);
+                spriteBatch.DrawString(tempFont, "KEY PICKED UP!", new Vector2(100, 100), Color.Red);
             }
-            _spriteBatch.End();
+            spriteBatch.End();
 
             base.Draw(gameTime);
 
@@ -232,17 +233,17 @@ namespace HammeredGame
             // Code adapted from ImMonoGame example code.
             // Begin by calling BeforeLayout
 
-            _imGuiRenderer.BeforeLayout(gameTime);
+            imGuiRenderer.BeforeLayout(gameTime);
 
             // Draw each of our entities
-            foreach (var UIEntity in UIEntities)
+            foreach (var UIEntity in uiEntities)
             {
                 if (UIEntity != null)
                     UIEntity.UI();
             }
 
             // Call AfterLayout to finish.
-            _imGuiRenderer.AfterLayout();
+            imGuiRenderer.AfterLayout();
 #endif
         }
 
@@ -253,8 +254,8 @@ namespace HammeredGame
             ImGui.Begin("Hammered", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
 
             ImGui.DragInt("Scene", ref testObstaclesCombo, 0.1f, 0, 3);
-            ImGui.Text($"Camera Coordinates: {_camera.Position.ToString()}");
-            ImGui.Text($"Camera Focus: {_camera.Target.ToString()}");
+            ImGui.Text($"Camera Coordinates: {camera.Position.ToString()}");
+            ImGui.Text($"Camera Focus: {camera.Target.ToString()}");
             ImGui.Text($"Loaded objects: {gameObjects.Count().ToString()}");
             ImGui.End();
         }

@@ -112,7 +112,7 @@ namespace HammeredGame.Game.GameObjects
                 // is recomputed inside the "foreach" loop
 
                 // Obstacle collision detection - will be modified/removed later
-                foreach (EnvironmentObject gO in HammeredGame.activeLevelObstacles)
+                foreach (EnvironmentObject gO in HammeredGame.ActiveLevelObstacles)
                 {
                     // Very very basic collision detection
                     // Check for collisions by checking for bounding box intersections

@@ -98,7 +98,7 @@ namespace HammeredGame.Game.GameObjects
 
                 // Check for any collisions along the way
                 //BoundingBox hammerbbox = this.GetBounds();
-                foreach(EnvironmentObject gO in HammeredGame.activeLevelObstacles)
+                foreach(EnvironmentObject gO in HammeredGame.ActiveLevelObstacles)
                 {
                     if (gO != null && gO.isVisible())
                     {
