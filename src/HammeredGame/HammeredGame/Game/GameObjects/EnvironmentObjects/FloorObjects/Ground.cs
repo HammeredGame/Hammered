@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HammeredGame.Classes.GameObjects.EnvironmentObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
-    class Floor : FloorObject
+    class Ground : FloorObject
     {
-        public Floor(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
+        public Ground(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
             : base(model, pos, scale, cam, t)
         {
         }
