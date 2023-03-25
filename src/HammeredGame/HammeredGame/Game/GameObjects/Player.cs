@@ -5,6 +5,7 @@ using System;
 using ImMonoGame.Thing;
 using ImGuiNET;
 using System.Collections.Generic;
+using HammeredGame.Core;
 
 namespace HammeredGame.Game.GameObjects
 {
