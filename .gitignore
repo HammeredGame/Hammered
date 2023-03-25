@@ -213,3 +213,4 @@ project.lock.json
 
 *.Cache
 *.mgcontent
+imgui.ini
