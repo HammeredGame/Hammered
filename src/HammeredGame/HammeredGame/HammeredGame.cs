@@ -220,7 +220,7 @@ namespace HammeredGame
             gpu.SetRenderTarget(null);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
             spriteBatch.Draw(mainRenderTarget, desktopRect, Color.White);
-            if (key != null &&key.isKeyPickedUp())
+            if (key != null &&key.IsPickedUp())
             {
                 spriteBatch.DrawString(tempFont, "KEY PICKED UP!", new Vector2(100, 100), Color.Red);
             }
