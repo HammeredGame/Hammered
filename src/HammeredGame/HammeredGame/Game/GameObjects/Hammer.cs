@@ -12,27 +12,27 @@ namespace HammeredGame.Game.GameObjects
 {
     /// <summary>
     /// The <c>Hammer</c> class defines the properties and interactions specific to the core "Hammer" mechanic of the game.
-    /// 
+    ///
     /// In addition to base <c>GameObject</c> properties, the hammer also has the following properties defined:
     /// - speed of the hammer (how fast it will travel, when called back to the player character -> <code>float hammerSpeed</code>
     /// - the current state of the hammer with respect to the keyboard/gamepad input + context within the scene -> <code>HammerState _hammerState</code>
     ///     -- follow the player character -> <code>HammerState.WithCharacter</code>
     ///     -- hammer is dropped (it will stay in the dropped location until called back to player) -> <code>HammerState.Dropped</code>
-    ///     -- hammer is called back and must find its way back to the player  -> <code>HammerState.Enroute</code> 
-    ///     
+    ///     -- hammer is called back and must find its way back to the player  -> <code>HammerState.Enroute</code>
+    ///
     /// An additional variable holding the hammer's position in the previous frame/tick is also provided -> <code>Vector3 oldPos</code>.
     /// This variable, along with the hammer state, helps in determining contextual interactions with certain other objects that may be in the scene.
     /// <example>
     /// Determining the falling direction of a tree or blocking the hammer if an unbreakable obstacle is in the way)
     /// </example>
-    /// 
+    ///
     /// This class also has access to an instance of the <c>Player</c> class, mainly for the purpose of path finding, by keeping track of the position
     /// of the player within the level.
     /// </summary>
     ///
 
     /// <remark>
-    /// TODO: Improved path finding - technical achievement of the game! 
+    /// TODO: Improved path finding - technical achievement of the game!
     /// </remark>
     public class Hammer : GameObject
     {
@@ -52,7 +52,7 @@ namespace HammeredGame.Game.GameObjects
         private Input inp;
         private Player _player;
 
-        public Hammer(Model model, Vector3 pos, float scale, Player p, Input inp, Texture2D t)
+        public Hammer(Model model, Vector3 pos, float scale, Texture2D t, Input inp, Player p)
             : base(model, pos, scale, t)
         {
             this.inp = inp;
@@ -63,7 +63,7 @@ namespace HammeredGame.Game.GameObjects
         public override void Update(GameTime gameTime)
         {
             oldPos = this.position;
-            
+
             // Ensure hammer follows/sticks with the player,
             // if hammer has not yet been dropped / if hammer is not being called back
             if (_hammerState == HammerState.WithCharacter)
@@ -72,7 +72,7 @@ namespace HammeredGame.Game.GameObjects
             }
 
             // Get the input via keyboard or gamepad
-            KeyboardInput(); GamePadInput();            
+            KeyboardInput(); GamePadInput();
 
             // If hammer is called back (successfully), update its position
             // and handle interactions along the way - ending once the hammer is back with player
@@ -95,7 +95,7 @@ namespace HammeredGame.Game.GameObjects
 
                     this.computeBounds();
                 }
-                
+
                 // Check for any collisions along the way
                 //BoundingBox hammerbbox = this.GetBounds();
                 foreach(EnvironmentObject gO in HammeredGame.activeLevelObstacles)

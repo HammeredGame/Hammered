@@ -11,22 +11,20 @@ namespace HammeredGame.Game.GameObjects
 {
     /// <summary>
     /// The <c>Player</c> class represents the playable character in the game. TODO: Should the class be renamed to 'Character' instead?
-    /// 
+    ///
     /// The character is the main medium through which (whom?) the player can initiate interactions in the game.
     /// The player interacts with the character with the use of the keyboard or a controller.
     /// The actions the player can make with the character are:
     /// - Movement along the 3D space (capability to move along the height dimension is dependent on the environment)
     /// - Change the state of the hammer (for details see <c>Hammer</c> in "Hammer.cs" file)
     /// </summary>
-
-
     /// <remarks>
     /// Documentation: The <c>Player</c> instance will be mentioned as "character" in the following code.
-    /// 
+    ///
     /// REMINDER (class tree): GameObject -> Player
-    /// 
+    ///
     /// TODO: Should the class be renamed to 'Character' instead?
-    /// 
+    ///
     /// Possible extension:
     /// <c>Hammer</c> instance be attached to a <c>Player</c> instance?
     /// This may allow multi-player capabilities or more complex puzzle-solving in the future
@@ -52,7 +50,7 @@ namespace HammeredGame.Game.GameObjects
         Input inp;
 
         // Initialize player class
-        public Player(Model model, Vector3 pos, float scale, Input inp, Texture2D t, Camera cam) : base(model, pos, scale, t)
+        public Player(Model model, Vector3 pos, float scale, Texture2D t, Input inp, Camera cam) : base(model, pos, scale, t)
         {
             this.inp = inp;
             this.activeCamera = cam;
@@ -64,7 +62,7 @@ namespace HammeredGame.Game.GameObjects
             ///<value>
             /// The variable <c>moveDirty</c> indicates whether there has been any input from the player
             /// with the intent to move the character.
-            /// 
+            ///
             /// <remarks> Generally, "dirty flags" are used to indicate that some data has changed </remarks>
             ///</value>
             bool moveDirty = false;
@@ -107,7 +105,7 @@ namespace HammeredGame.Game.GameObjects
                 /// There might be a need to decide whether the character rotation should account for slopes
                 /// <example>When walking up an inclined piece of land, the character might be facing upwards.</example>
                 ///</remark>
-                float angle = (float)Math.Atan2(lookDirection.X, lookDirection.Z); 
+                float angle = (float)Math.Atan2(lookDirection.X, lookDirection.Z);
                 rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
 
                 // The bounding box of the character when they move (translated and/or rotated AABB)
@@ -120,7 +118,7 @@ namespace HammeredGame.Game.GameObjects
                     // Check for collisions by checking for bounding box intersections
                     if (gO != null && gO.isVisible())
                     {
-                      
+
                         // We only care for the bounding box of the character if there *is* an obstacle in the scene.
                         // Otherwise it is wasted computational time.
                         this.computeBounds();
@@ -215,7 +213,7 @@ namespace HammeredGame.Game.GameObjects
             /// This is a temporary measure which works for the rectangular map included in the tutorial level of the functional minimum.
             /// To capture map boundaries in an arbitrarily shaped world (e.g. island),
             /// the need to integrate an (external) physics library for precise bounding checks arises.
-            /// 
+            ///
             /// TODO: Integrate an (external) physics library in the project.
             /// TODO: Remember to change the clamping values to match the final tutorial level that will be constructed.
             ///</remarks>
