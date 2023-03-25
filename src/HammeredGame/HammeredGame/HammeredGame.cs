@@ -94,7 +94,7 @@ namespace HammeredGame
             inp = new Input(pp, MainTarget);
 
             // Initialize Camera class
-            _camera = new Camera(gpu, Vector3.Up, inp);
+            _camera = new Camera(gpu, Vector3.Zero, Vector3.Up, inp);
 
             // Set title for game window
             Window.Title = "HAMMERED";
@@ -240,7 +240,7 @@ namespace HammeredGame
             // Render all the scene objects (given that they are not destroyed)
             foreach (GameObject gameObject in gameObjects)
             {
-                gameObject.Draw(_camera.view, _camera.proj);
+                gameObject.Draw(_camera.ViewMatrix, _camera.ProjMatrix);
             }
 
             // Draw MainTarget to BackBuffer
