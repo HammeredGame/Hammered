@@ -14,8 +14,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         // Any Unbreakable Obstacle specific variables go here
         private bool _treeFallen;
 
-        public Tree(Model model, Vector3 pos, float scale, Camera cam, Texture2D t)
-            : base(model, pos, scale, cam, t)
+        public Tree(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
         {
             _treeFallen = false;
         }

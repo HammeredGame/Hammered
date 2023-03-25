@@ -20,6 +20,7 @@ using System.Linq;
 
 namespace HammeredGame
 {
+
     public class HammeredGame : Microsoft.Xna.Framework.Game, IImGui
     {
         // DISPLAY VARIABLES
@@ -127,15 +128,15 @@ namespace HammeredGame
 
             //(TEMPORARY - after xml parsing and incorporating better collision detection, all of this should change)
             // Load and initialize player character
-            _player = new Player(Content.Load<Model>("character_3"), Vector3.Zero, 0.03f, inp, _camera, playerTex);
+            _player = new Player(Content.Load<Model>("character_3"), Vector3.Zero, 0.03f, inp, playerTex, _camera);
 
             // Load and initialize hammer object
-            _hammer = new Hammer(Content.Load<Model>("temp_hammer2"), Vector3.Zero, 0.02f, _player, inp, _camera, null);
+            _hammer = new Hammer(Content.Load<Model>("temp_hammer2"), Vector3.Zero, 0.02f, _player, inp, null);
 
             // Load and initialize the terrain/ground
-            _ground = new Ground(Content.Load<Model>("temp_floor_with_biggerhole"), new Vector3(0, 0f, 0), 0.02f, _camera, null);
+            _ground = new Ground(Content.Load<Model>("temp_floor_with_biggerhole"), new Vector3(0, 0f, 0), 0.02f,  null);
 
-            _water = new Water(Content.Load<Model>("test_water_bigger"), new Vector3(5.0f, 0.0f, -80.0f), 0.03f, _camera, null);
+            _water = new Water(Content.Load<Model>("test_water_bigger"), new Vector3(5.0f, 0.0f, -80.0f), 0.03f, null);
 
             // Initialize list of gameobjects for drawing
             gameObjects = new List<GameObject> { _player, _hammer, _ground, _water };
@@ -146,45 +147,45 @@ namespace HammeredGame
                 case 0:
                     {
                         // 2 breakable objects and 1 unbreakable object
-                        EnvironmentObject Obstacle1 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
-                        EnvironmentObject Obstacle2 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null);
-                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle1 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, null);
+                        EnvironmentObject Obstacle2 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, null);
+                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, null);
                         activeLevelObstacles = new List<EnvironmentObject> { _water, Obstacle1, Obstacle2, Obstacle3 };
                         break;
                     }
                 case 1:
                     {
                         // 1 Door, 1 Pressure plate, 1 unbreakable object
-                        EnvironmentObject Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
-                        EnvironmentObject Obstacle2 = new PressurePlate(Content.Load<Model>("temp_pressureplate2"), new Vector3(-10f, 0f, 10f), 0.02f, _camera, null, Obstacle1);
-                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, null);
+                        EnvironmentObject Obstacle2 = new PressurePlate(Content.Load<Model>("temp_pressureplate2"), new Vector3(-10f, 0f, 10f), 0.02f, null, Obstacle1);
+                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, null);
                         activeLevelObstacles = new List<EnvironmentObject> { _water, Obstacle1, Obstacle2, Obstacle3 };
                         break;
                     }
                 case 2:
                     {
                         // 1 Door, 1 Key, 1 Unbreakable object
-                        EnvironmentObject Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
-                        _key = new Key(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.01f, _camera, null, (Door)Obstacle1);
-                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle1 = new Door(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, null);
+                        _key = new Key(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.01f, null, (Door)Obstacle1);
+                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, null);
                         activeLevelObstacles = new List<EnvironmentObject> { _water, Obstacle1, _key, Obstacle3 };
                         break;
                     }
                 case 3:
                     {
                         // 1 Tree, 1 breakable, 1 unbreakable
-                        EnvironmentObject Obstacle1 = new Tree(Content.Load<Model>("temp_tree2"), new Vector3(-32f, 1.0f, -20f), 0.04f, _camera, null);
-                        EnvironmentObject Obstacle2 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 0f, 10f), 0.02f, _camera, null);
-                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle1 = new Tree(Content.Load<Model>("temp_tree2"), new Vector3(-32f, 1.0f, -20f), 0.04f, null);
+                        EnvironmentObject Obstacle2 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 0f, 10f), 0.02f, null);
+                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, null);
                         activeLevelObstacles = new List<EnvironmentObject> { Obstacle1, Obstacle2, Obstacle3, _water };
                         break;
                     }
                 default:
                     {
                         // Default = Scene 0
-                        EnvironmentObject Obstacle1 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, _camera, null);
-                        EnvironmentObject Obstacle2 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, _camera, null);
-                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, _camera, null);
+                        EnvironmentObject Obstacle1 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(10f, 1f, -30f), 0.02f, null);
+                        EnvironmentObject Obstacle2 = new BreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(-10f, 1f, 10f), 0.02f, null);
+                        EnvironmentObject Obstacle3 = new UnbreakableObstacle(Content.Load<Model>("test_obstacle"), new Vector3(20f, 1f, -10f), 0.02f, null);
                         activeLevelObstacles = new List<EnvironmentObject> { _water, Obstacle1, Obstacle2, Obstacle3 };
                         break;
                     }

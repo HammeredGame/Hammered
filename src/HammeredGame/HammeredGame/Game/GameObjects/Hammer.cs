@@ -22,8 +22,8 @@ namespace HammeredGame.Game.GameObjects
         Input inp;
         Player _player;
 
-        public Hammer(Model model, Vector3 pos, float scale, Player p, Input inp, Camera cam, Texture2D t)
-            : base(model, pos, scale, cam, t)
+        public Hammer(Model model, Vector3 pos, float scale, Player p, Input inp, Texture2D t)
+            : base(model, pos, scale, t)
         {
             this.inp = inp;
             _player = p;

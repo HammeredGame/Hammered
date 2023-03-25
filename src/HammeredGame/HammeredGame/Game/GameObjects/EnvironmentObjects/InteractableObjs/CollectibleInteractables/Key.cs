@@ -16,8 +16,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         private Door _correspondingDoor;
         private bool _keyPickedUp = false;
 
-        public Key(Model model, Vector3 pos, float scale, Camera cam, Texture2D t, Door correspondingDoor)
-            : base(model, pos, scale, cam, t)
+        public Key(Model model, Vector3 pos, float scale, Texture2D t, Door correspondingDoor) :
+            base(model, pos, scale, t)
         {
             _correspondingDoor = correspondingDoor;
         }
