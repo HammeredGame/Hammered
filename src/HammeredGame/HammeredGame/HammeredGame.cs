@@ -116,7 +116,13 @@ namespace HammeredGame
             // Most likely: will be replaced with XML parsing here
             _font = Content.Load<SpriteFont>("temp_font");
 
-            var levCon = new XMLLevelLoader("level1.xml");
+            InitializeLevel(0);
+        }
+
+        private void InitializeLevel(int levelToLoad)
+        {
+            UIEntities.Clear();
+            var levCon = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml");
 
             _camera = levCon.GetCamera(gpu, inp);
 
@@ -140,12 +146,8 @@ namespace HammeredGame
                 }
             }
             UIEntities.Add(this);
+            return;
 
-            //initializeLevel();
-        }
-
-        private void initializeLevel()
-        {
             // Load Texture
             playerTex = Content.Load<Texture2D>("Temp");
 
@@ -236,7 +238,7 @@ namespace HammeredGame
                 UIEntities.Remove(_player);
                 UIEntities.Remove(_water);
                 UIEntities.Remove(this);
-                initializeLevel();
+                InitializeLevel(testObstaclesCombo);
             }
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             //    Exit();

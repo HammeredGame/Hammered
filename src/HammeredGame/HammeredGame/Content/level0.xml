@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<level name="tutorial1">
+<level name="tutorial0">
 	<camera type="static">
 		<position type="vec3">50 60 -50</position>
 		<position type="vec3">-50 60 -50</position>
@@ -47,22 +47,17 @@
 		<rotation type="quaternion">0 0 0 0</rotation>
 		<scale type="float">0.03</scale>
 	</object>
-
-
-	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="door1">
+	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.BreakableObstacle">
 		<model>test_obstacle</model>
 		<position type="vec3">10 1 -30</position>
 		<rotation type="quaternion">0 0 0 0</rotation>
 		<scale type="float">0.02</scale>
 	</object>
-	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate">
-		<model>temp_pressureplate2</model>
+	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.BreakableObstacle">
+		<model>test_obstacle</model>
 		<position type="vec3">-10 1 10</position>
 		<rotation type="quaternion">0 0 0 0</rotation>
 		<scale type="float">0.02</scale>
-		<other_constructor_args>
-			<arg object_ref_id="door1" />
-		</other_constructor_args>
 	</object>
 	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacle">
 		<model>test_obstacle</model>
