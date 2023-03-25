@@ -51,6 +51,9 @@
 /processorParam:TextureFormat=Compressed
 /build:character_test.fbx
 
+#begin level0.xml
+/copy:level0.xml
+
 #begin level1.xml
 /copy:level1.xml
 
