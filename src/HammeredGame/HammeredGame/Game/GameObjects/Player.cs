@@ -34,7 +34,7 @@ namespace HammeredGame.Game.GameObjects
             bool moveDirty = false;
 
             // Get forward direction
-            Vector3 forwardDirectionFromCamera = Vector3.Normalize(Vector3.Multiply(activeCamera.target - activeCamera.pos, new Vector3(1, 0, 1)));
+            Vector3 forwardDirectionFromCamera = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
 
             // Keyboard input (W - forward, S - back, A - left, D - right)
             if (inp.KeyDown(Keys.W))
