@@ -90,7 +90,7 @@ namespace HammeredGame.Game
             }
             #endregion
 
-            // UpdateTarget(level.pos);
+            UpdateTarget(Target); // UpdateTarget(level.pos);
         }
     }
 }
