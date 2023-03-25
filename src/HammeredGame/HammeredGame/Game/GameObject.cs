@@ -22,7 +22,9 @@ namespace HammeredGame.Game
     ///     
     /// In addition, a shape (as defined above) may be cosmetically enhanced with a (.png) texture -> <code>Texture2D tex</code> variable.
     /// 
-    /// For collision detection, each <c>GameObject</c> has bounding box attached -> <code>BoundingBox boundingBox</code> variable.
+    /// For collision detection, each <c>GameObject</c> has bounding box attached
+    /// -> <code>BoundingBox boundingBox</code> variable.
+    /// <remark>To be exact the current implementation supports an "Axis-Aligned Bounding Box" or "AABB" for short)</remark>
     /// </summary>
     /// 
 
