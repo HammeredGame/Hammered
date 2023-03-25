@@ -105,11 +105,11 @@ namespace HammeredGame.Game.GameObjects
                         //BoundingBox objectbbox = gO.GetBounds();
                         if (this.BoundingBox.Intersects(gO.BoundingBox))
                         {
-                            gO.hitByHammer(this);
+                            gO.TouchingHammer(this);
                         }
                         else
                         {
-                            gO.notHitByHammer(this);
+                            gO.NotTouchingHammer(this);
                         }
                     }
                 }
