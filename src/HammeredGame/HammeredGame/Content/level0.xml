@@ -11,7 +11,7 @@
 	<object type="HammeredGame.Game.GameObjects.Player" id="player1">
 		<model>character_3</model>
 		<position type="vec3">0 0 0</position>
-		<rotation type="quaternion">0 0 0 0</rotation>
+		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.03</scale>
 		<texture type="texture2d">Temp</texture>
 		<!-- The following are passed strictly in order to the constructor.
@@ -28,7 +28,7 @@
 	<object type="HammeredGame.Game.GameObjects.Hammer">
 		<model>temp_hammer2</model>
 		<position type="vec3">0 0 0</position>
-		<rotation type="quaternion">0 0 0 0</rotation>
+		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.02</scale>
 		<other_constructor_args>
 			<arg object_ref_id="input" />
@@ -38,32 +38,32 @@
 	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground">
 		<model>temp_floor_with_biggerhole</model>
 		<position type="vec3">0 0 0</position>
-		<rotation type="quaternion">0 0 0 0</rotation>
+		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.02</scale>
 	</object>
 	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
 		<model>test_water_bigger</model>
 		<position type="vec3">5 0 -80</position>
-		<rotation type="quaternion">0 0 0 0</rotation>
+		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.03</scale>
 	</object>
 
 	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.BreakableObstacle">
 		<model>test_obstacle</model>
 		<position type="vec3">10 1 -30</position>
-		<rotation type="quaternion">0 0 0 0</rotation>
+		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.02</scale>
 	</object>
 	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.BreakableObstacle">
 		<model>test_obstacle</model>
 		<position type="vec3">-10 1 10</position>
-		<rotation type="quaternion">0 0 0 0</rotation>
+		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.02</scale>
 	</object>
 	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacle">
 		<model>test_obstacle</model>
 		<position type="vec3">20 1 -10</position>
-		<rotation type="quaternion">0 0 0 0</rotation>
+		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.02</scale>
 	</object>
 </level>
