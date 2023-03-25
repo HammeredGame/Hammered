@@ -30,9 +30,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
             ImGui.SetNextWindowBgAlpha(0.3f);
             ImGui.Begin("Ground Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
 
-            var numericPos = position.ToNumerics();
+            var numericPos = Position.ToNumerics();
             ImGui.DragFloat3("Position", ref numericPos);
-            position = numericPos;
+            Position = numericPos;
 
             ImGui.End();
         }

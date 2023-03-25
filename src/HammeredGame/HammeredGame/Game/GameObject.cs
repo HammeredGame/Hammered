@@ -12,61 +12,61 @@ namespace HammeredGame.Game
     /// The <c>GameObject</c> class encompasses all the visual components the player is going to encounter during their playthrough.
     /// The specific behaviours (either individual or inter-object) are to be defined in the respective subclasses
     /// (see the "class_skeleton_class_diagram.jpg" for a thorough class tree on the subclasses)
-    /// 
+    /// <para />
     /// Any 3D object/shape in a geometric space can be uniquely defined by its:
     /// - (base) geometry -> <code>Model model</code> variable
     /// - the affine transformation applied to it:
     ///     -- translation -> <code>Vector3 position</code> variable
     ///     -- rotation -> <code>Quaternion rotation</code> variable
-    ///     -- scaling -> <code>float scale</code> 
-    ///     
+    ///     -- scaling -> <code>float scale</code>
+    /// <para />
     /// In addition, a shape (as defined above) may be cosmetically enhanced with a (.png) texture -> <code>Texture2D tex</code> variable.
-    /// 
+    /// <para />
     /// For collision detection, each <c>GameObject</c> has bounding box attached
     /// -> <code>BoundingBox boundingBox</code> variable.
     /// <remark>To be exact the current implementation supports an "Axis-Aligned Bounding Box" or "AABB" for short)</remark>
     /// </summary>
-    /// 
-
-    ///<remarks>
+    ///
+    /// <remarks>
     /// TODO: Add "class_skeleton_class_diagram.jpg" to game files
     /// </remarks>
     public abstract class GameObject
     {
         // Common variables for any object in the game (will be modified as we develop further)
-        public Model model;
-        public Vector3 position;
-        public Quaternion rotation;
-        public float scale;
+        public Model Model;
+        public Vector3 Position;
+        public Quaternion Rotation;
+        public float Scale;
 
-        public Texture2D tex;
-        public BoundingBox boundingBox { get; private set; }
+        public Texture2D Texture;
+        public BoundingBox BoundingBox { get; private set; }
 
-        /// <value>
+        /// <summary>
         ///  The "flag" variable <code>bool visible</code> is used to indicate the state in which the <c>GameObject</c>
         ///  instance is in.
         ///  If its value is true, then the instance will be drawn on the screen (utilizing the <code>DrawModel()</code> function)
-        /// </value>
-        protected bool visible = true;
+        /// </summary>
+        protected bool Visible = true;
 
-        public GameObject(Model model, Vector3 pos, float scale, Texture2D t)
+        protected GameObject(Model model, Vector3 pos, float scale, Texture2D t)
         {
-            this.model = model;
-            this.position = pos;
-            this.rotation = Quaternion.Identity;
-            this.scale = scale;
-            this.tex = t;
+            this.Model = model;
+            this.Position = pos;
+            this.Rotation = Quaternion.Identity;
+            this.Scale = scale;
+            this.Texture = t;
 
-            this.computeBounds();
-        }
-        public bool isVisible()
-        {
-            return this.visible;
+            this.ComputeBounds();
         }
 
-        public void setVisible(bool vis)
+        public bool IsVisible()
         {
-            this.visible = vis;
+            return this.Visible;
+        }
+
+        public void SetVisible(bool vis)
+        {
+            this.Visible = vis;
         }
 
         public abstract void Update(GameTime gameTime);
@@ -75,14 +75,20 @@ namespace HammeredGame.Game
         // get world matrix and then call draw model to draw the mesh on screen
         public virtual void Draw(Matrix view, Matrix projection)
         {
-            if (this.isVisible())
-                DrawModel(model, view, projection, tex);
+            if (this.IsVisible())
+                DrawModel(Model, view, projection, Texture);
         }
 
-        // Common method to draw 3D models
+        /// <summary>
+        /// Common method to draw 3D models
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="view"></param>
+        /// <param name="projection"></param>
+        /// <param name="tex"></param>
         public void DrawModel(Model model, Matrix view, Matrix projection, Texture2D tex)
         {
-            Matrix world = getWorldMatrix();
+            Matrix world = GetWorldMatrix();
 
             Matrix[] meshTransforms = new Matrix[model.Bones.Count];
             model.CopyAbsoluteBoneTransformsTo(meshTransforms);
@@ -115,20 +121,22 @@ namespace HammeredGame.Game
             }
         }
 
-        // Method to get bounding box for the mesh - for basic collision detection
-        // Probably not going to be necessary for later iterations
-        // (once we bring in an external library to handle collisions)
-        public void computeBounds()
+        /// <summary>
+        /// Method to get bounding box for the mesh - for basic collision detection
+        /// Probably not going to be necessary for later iterations
+        /// (once we bring in an external library to handle collisions)
+        /// </summary>
+        public void ComputeBounds()
         {
-            Matrix world = getWorldMatrix();
-            Matrix[] boneTransforms = new Matrix[model.Bones.Count];
-            model.CopyAbsoluteBoneTransformsTo(boneTransforms);
+            Matrix world = GetWorldMatrix();
+            Matrix[] boneTransforms = new Matrix[Model.Bones.Count];
+            Model.CopyAbsoluteBoneTransformsTo(boneTransforms);
 
             Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
             Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
             // Get bounding box min/max from each mesh part's vertices
-            foreach (ModelMesh mesh in model.Meshes)
+            foreach (ModelMesh mesh in Model.Meshes)
             {
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
                 {
@@ -152,20 +160,22 @@ namespace HammeredGame.Game
                 }
             }
 
-            this.boundingBox = new BoundingBox(min, max);
+            this.BoundingBox = new BoundingBox(min, max);
         }
 
 
-        // Get the world matrix for the object's current position in the world
-        // Mainly used for drawing
-        public Matrix getWorldMatrix()
+        /// <summary>
+        /// Get the world matrix for the object's current position in the world. Mainly used for drawing.
+        /// </summary>
+        /// <returns></returns>
+        public Matrix GetWorldMatrix()
         {
             Vector3 pos = GetPosition();
             Quaternion rot = GetRotation();
 
             Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
             Matrix translationMatrix = Matrix.CreateTranslation(pos);
-            Matrix scaleMatrix = Matrix.CreateScale(scale);
+            Matrix scaleMatrix = Matrix.CreateScale(Scale);
 
             // Construct world matrix
             // Be careful! Order matters!
@@ -183,16 +193,22 @@ namespace HammeredGame.Game
             return world;
         }
 
-        // Getter function for game object position
+        /// <summary>
+        /// Getter function for game object position
+        /// </summary>
+        /// <returns></returns>
         public Vector3 GetPosition()
         {
-            return position;
+            return Position;
         }
 
-        // Getter function for game object rotation
+        /// <summary>
+        /// Getter function for game object rotation
+        /// </summary>
+        /// <returns></returns>
         public Quaternion GetRotation()
         {
-            return rotation;
+            return Rotation;
         }
     }
 }

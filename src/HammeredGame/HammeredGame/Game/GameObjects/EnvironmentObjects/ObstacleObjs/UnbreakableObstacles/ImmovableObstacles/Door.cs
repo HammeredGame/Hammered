@@ -22,7 +22,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         {
             if (keyFound)
             {
-                this.setVisible(false);
+                this.SetVisible(false);
             }
             base.hitByPlayer(player);
         }

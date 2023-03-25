@@ -20,17 +20,17 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //triggerObject.setVisible(true);
             if (playerOn || hammerOn)
             {
-                triggerObject.setVisible(false);
+                triggerObject.SetVisible(false);
             }
             else
             {
-                triggerObject.setVisible(true);
+                triggerObject.SetVisible(true);
             }
         }
 
         private void ActivateTrigger()
         {
-            triggerObject.setVisible(false);
+            triggerObject.SetVisible(false);
         }
 
         public override void hitByPlayer(Player player)

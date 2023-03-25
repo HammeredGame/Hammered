@@ -205,10 +205,10 @@ namespace HammeredGame.Game
                 GameObject instance = (GameObject)Activator.CreateInstance(t, args:arguments.ToArray());
 
                 // Rotation is not part of the constructor but is a public field, so we set it after creation
-                instance.rotation = (Quaternion)typeToParserMap["quaternion"](obj.Descendants("rotation").Single().Value);
+                instance.Rotation = (Quaternion)typeToParserMap["quaternion"](obj.Descendants("rotation").Single().Value);
 
                 // Visibility is also not part of the constructor
-                instance.setVisible((bool)typeToParserMap["boolean"](obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true"));
+                instance.SetVisible((bool)typeToParserMap["boolean"](obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true"));
 
                 // If the object was named, then store its ID for future reference
                 if (obj.Attribute("id") != null)

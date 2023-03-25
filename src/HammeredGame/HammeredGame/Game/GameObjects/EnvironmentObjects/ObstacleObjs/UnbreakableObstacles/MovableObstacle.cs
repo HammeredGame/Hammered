@@ -18,7 +18,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         public override void Update(GameTime gameTime)
         {
-            this.computeBounds();
+            this.ComputeBounds();
             base.Update(gameTime);
         }
     }

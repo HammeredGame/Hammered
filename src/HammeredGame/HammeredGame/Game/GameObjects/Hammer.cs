@@ -62,13 +62,13 @@ namespace HammeredGame.Game.GameObjects
         // Update function (called every tick)
         public override void Update(GameTime gameTime)
         {
-            oldPos = this.position;
+            oldPos = this.Position;
 
             // Ensure hammer follows/sticks with the player,
             // if hammer has not yet been dropped / if hammer is not being called back
             if (_hammerState == HammerState.WithCharacter)
             {
-                position = _player.GetPosition();
+                Position = _player.GetPosition();
             }
 
             // Get the input via keyboard or gamepad
@@ -85,25 +85,25 @@ namespace HammeredGame.Game.GameObjects
                 if (_hammerState == HammerState.Enroute)
                 {
                     // Update position
-                    position += hammerSpeed * (_player.GetPosition() - position);
+                    Position += hammerSpeed * (_player.GetPosition() - Position);
 
                     // If position is close enough to player, end its traversal
-                    if ((position - _player.GetPosition()).Length() < 0.5f)
+                    if ((Position - _player.GetPosition()).Length() < 0.5f)
                     {
                         _hammerState = HammerState.WithCharacter;
                     }
 
-                    this.computeBounds();
+                    this.ComputeBounds();
                 }
 
                 // Check for any collisions along the way
                 //BoundingBox hammerbbox = this.GetBounds();
                 foreach(EnvironmentObject gO in HammeredGame.ActiveLevelObstacles)
                 {
-                    if (gO != null && gO.isVisible())
+                    if (gO != null && gO.IsVisible())
                     {
                         //BoundingBox objectbbox = gO.GetBounds();
-                        if (this.boundingBox.Intersects(gO.boundingBox))
+                        if (this.BoundingBox.Intersects(gO.BoundingBox))
                         {
                             gO.hitByHammer(this);
                         }
@@ -123,7 +123,7 @@ namespace HammeredGame.Game.GameObjects
             if (_hammerState == HammerState.WithCharacter && inp.KeyDown(Keys.E))
             {
                 _hammerState = HammerState.Dropped;
-                this.computeBounds();
+                this.ComputeBounds();
             }
 
             // Hammer Call Back Mechanic
@@ -144,7 +144,7 @@ namespace HammeredGame.Game.GameObjects
                 if (_hammerState == HammerState.WithCharacter && inp.ButtonPress(Buttons.A))
                 {
                     _hammerState = HammerState.Dropped;
-                    this.computeBounds();
+                    this.ComputeBounds();
                 }
                 if (_hammerState == HammerState.Dropped && inp.ButtonPress(Buttons.B))
                 {
