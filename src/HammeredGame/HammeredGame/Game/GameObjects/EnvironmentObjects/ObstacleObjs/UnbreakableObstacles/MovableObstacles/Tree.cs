@@ -29,9 +29,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             if (!_treeFallen)
             {
                 setTreeFallen(true);
-                Vector3 fallDirection = hammer.position - hammer.oldPos;
+                Vector3 fallDirection = hammer.Position - hammer.oldPos;
                 fallDirection.Normalize();
-                this.rotation *= Quaternion.CreateFromAxisAngle(Vector3.Cross(Vector3.Up, fallDirection), MathHelper.ToRadians(90));
+                this.Rotation *= Quaternion.CreateFromAxisAngle(Vector3.Cross(Vector3.Up, fallDirection), MathHelper.ToRadians(90));
                 //this.position += new Vector3(0.0f, 20.0f, 0.0f);
                 //System.Diagnostics.Debug.WriteLine(Vector3.UnitZ);
 
@@ -49,7 +49,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             else
             {
                 player.OnTree = true;
-                player.position.Y = this.boundingBox.Max.Y; //- this.boundingBox.Min.Y;
+                player.Position.Y = this.BoundingBox.Max.Y; //- this.boundingBox.Min.Y;
             }
         }
 
@@ -59,7 +59,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 //System.Diagnostics.Debug.WriteLine("OFF TREE");
                 player.OnTree = false;
-                player.position.Y = 0.0f;
+                player.Position.Y = 0.0f;
             }
         }
     }

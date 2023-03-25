@@ -89,17 +89,17 @@ namespace HammeredGame.Game.GameObjects
                 // Memorizing this state has multiple uses, including:
                 // a) velocity direction computation (current - old)
                 // b) reverting to the previous position in case of an unwanted state (e.g. character cannot enter water)
-                this.PreviousPosition = this.position;
+                this.PreviousPosition = this.Position;
 
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
                 // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
                 player_vel.Normalize();
                 player_vel *= baseSpeed;
 
-                position += player_vel;
+                Position += player_vel;
 
                 // At this point, also rotate the player to the direction of movement
-                Vector3 lookDirection = position - PreviousPosition; lookDirection.Normalize(); // Normalizing for good measure.
+                Vector3 lookDirection = Position - PreviousPosition; lookDirection.Normalize(); // Normalizing for good measure.
                 ///<remark>
                 /// The "angle" variable and the subsequent "rotation" variable below
                 /// currently handle rotations in the xz plane.
@@ -107,7 +107,7 @@ namespace HammeredGame.Game.GameObjects
                 /// <example>When walking up an inclined piece of land, the character might be facing upwards.</example>
                 ///</remark>
                 float angle = (float)Math.Atan2(lookDirection.X, lookDirection.Z);
-                rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
+                Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
 
                 // The bounding box of the character when they move (translated and/or rotated AABB)
                 // is recomputed inside the "foreach" loop
@@ -117,15 +117,15 @@ namespace HammeredGame.Game.GameObjects
                 {
                     // Very very basic collision detection
                     // Check for collisions by checking for bounding box intersections
-                    if (gO != null && gO.isVisible())
+                    if (gO != null && gO.IsVisible())
                     {
                         // We only care for the bounding box of the character if there *is* an obstacle in the scene.
                         // Otherwise it is wasted computational time.
-                        this.computeBounds();
+                        this.ComputeBounds();
 
                         // If the player intersects with another game object
                         // trigger the hitByPlayer function of that gameobject
-                        if (this.boundingBox.Intersects(gO.boundingBox))
+                        if (this.BoundingBox.Intersects(gO.BoundingBox))
                         {
                             gO.hitByPlayer(this);
                             // TEMPORARY: if the player is not on tree
@@ -136,7 +136,7 @@ namespace HammeredGame.Game.GameObjects
                             if (gO.isGround && !this.OnTree)
                             {
                                 //System.Diagnostics.Debug.WriteLine(this.oldPos + " -> " + this.position);
-                                this.position = this.PreviousPosition;
+                                this.Position = this.PreviousPosition;
                                 //this.position = Vector3.Zero;
                             }
                         }
@@ -220,7 +220,7 @@ namespace HammeredGame.Game.GameObjects
             /// TODO: Integrate an (external) physics library in the project.
             /// TODO: Remember to change the clamping values to match the final tutorial level that will be constructed.
             ///</remarks>
-            this.position = Vector3.Clamp(this.position, new Vector3(-60f, -60f, -60f), new Vector3(60f, 60f, 60f));
+            this.Position = Vector3.Clamp(this.Position, new Vector3(-60f, -60f, -60f), new Vector3(60f, 60f, 60f));
         }
 
         private bool KeyboardInput(Vector3 forwardDirectionFromCamera)
@@ -274,9 +274,9 @@ namespace HammeredGame.Game.GameObjects
             ImGui.SetNextWindowBgAlpha(0.3f);
             ImGui.Begin("Player Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
 
-            var numericPos = position.ToNumerics();
+            var numericPos = Position.ToNumerics();
             ImGui.DragFloat3("Position", ref numericPos);
-            position = numericPos;
+            Position = numericPos;
 
             ImGui.End();
         }

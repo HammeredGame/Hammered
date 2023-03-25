@@ -23,7 +23,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         {
             //this.activateTrigger();
             correspondingDoor.SetKeyFound(true);
-            this.setVisible(false);
+            this.SetVisible(false);
             keyPickedUp = true;
         }
     }

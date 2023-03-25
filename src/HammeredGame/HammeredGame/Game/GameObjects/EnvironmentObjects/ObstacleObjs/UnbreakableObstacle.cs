@@ -24,7 +24,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
         public override void hitByHammer(Hammer hammer)
         {
             hammer.setState(Hammer.HammerState.Dropped);
-            hammer.position = hammer.oldPos;
+            hammer.Position = hammer.oldPos;
         }
     }
 }
