@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -44,6 +45,7 @@ namespace HammeredGame.Game.GameObjects
 
         // TEMPORARY (FOR TESTING)
         public bool OnTree = false;
+        public bool ReachedGoal = false;
 
         private readonly Input input;
         private readonly Camera activeCamera;
@@ -275,6 +277,12 @@ namespace HammeredGame.Game.GameObjects
 
             ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
+
+            // FOR THE PURPOSES OF THE DEMO, we indicate whether the puzzle is solved here
+            if (this.ReachedGoal)
+            {
+                ImGui.Text("PUZZLE SOLVED!! \nPress R on keyboard or Y on controller to reload level");
+            }
 
             ImGui.End();
         }

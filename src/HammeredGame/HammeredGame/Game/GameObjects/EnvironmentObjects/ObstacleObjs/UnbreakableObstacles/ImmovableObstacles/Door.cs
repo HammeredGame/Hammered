@@ -22,16 +22,29 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     /// resulting in it not being drawn on screen anymore and not considered for any further collisions.
     /// In the future, maybe we should be applying some form of animation, instead of it abruptly 
     /// disappearing.
+    /// <para />
+    /// Temporarily, including a parameter <code>isGoal</code> (for the purposes of the demo
+    /// submission). This indicates whether the door is the goal of the level - results in the 
+    /// "PUZZLE SOLVED" text to appear on the debug console (see Player.cs). 
+    /// <para />
+    /// NOTE: THIS WILL NOT SCALE FOR FUTURE LEVELS!!!
+    /// <para />
+    /// TODO: remove the isGoal from this class. Potentially, make another class that exclusively
+    /// handles the goal state - possibly an empty game object that does not get rendered, still 
+    /// checks for player collisions, and if the player makes it here with the necessary conditions
+    /// satisfied, we trigger a cutscene/load next level/etc.
     /// </remarks>
     
     public class Door : ImmovableObstacle
     {
         // Any Unbreakable Obstacle specific variables go here
         private bool keyFound;
+        private bool isGoal; // TEMPORARY
 
-        public Door(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public Door(Model model, Vector3 pos, float scale, Texture2D t, bool isGoal=false) : base(model, pos, scale, t)
         {
             keyFound = false;
+            this.isGoal = isGoal;
         }
 
         public void SetKeyFound(bool keyFound)
@@ -43,6 +56,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         {
             if (keyFound)
             {
+                player.ReachedGoal = isGoal; // TEMPORARY
                 this.SetVisible(false);
             }
             base.TouchingPlayer(player);
