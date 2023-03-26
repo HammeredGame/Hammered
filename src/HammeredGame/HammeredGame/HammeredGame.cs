@@ -47,7 +47,7 @@ namespace HammeredGame
         private Player player;
 
         // SCENE TEST VARIABLES
-        private int testObstaclesCombo = 3;
+        private int testObstaclesCombo = 4;
 
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
@@ -270,7 +270,7 @@ namespace HammeredGame
 
             ImGui.Text("Current Loaded Scene: ");
             ImGui.SameLine();
-            ImGui.SliderInt("", ref testObstaclesCombo, 0, 3);
+            ImGui.SliderInt("", ref testObstaclesCombo, 0, 4);
             ImGui.Text("Press R on keyboard or Y on controller to reload level");
             ImGui.Separator();
 

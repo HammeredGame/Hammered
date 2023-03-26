@@ -79,7 +79,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             else
             {
                 player.OnTree = true;
-                player.Position.Y = this.BoundingBox.Max.Y; //- this.boundingBox.Min.Y;
+                player.Position.Y = 3.0f; // this.BoundingBox.Max.Y; //- this.boundingBox.Min.Y;
             }
         }
 
