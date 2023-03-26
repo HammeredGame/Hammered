@@ -48,6 +48,8 @@ namespace HammeredGame.Game
         /// </summary>
         protected bool Visible = true;
 
+        private List<(int, float[])> allVertexData;
+
         protected GameObject(Model model, Vector3 pos, float scale, Texture2D t)
         {
             this.Model = model;
@@ -55,6 +57,24 @@ namespace HammeredGame.Game
             this.Rotation = Quaternion.Identity;
             this.Scale = scale;
             this.Texture = t;
+
+            // Precalculate the vertex buffer data, since VertextBuffer.GetData is very
+            // expensive to perform on every Update. We can find the bounding box of the
+            // mesh by applying the transformations to this precalculated vertex data.
+            allVertexData = new();
+            foreach (ModelMesh mesh in Model.Meshes)
+            {
+                foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                {
+                    int vertexStride = meshPart.VertexBuffer.VertexDeclaration.VertexStride;
+                    int vertexBufferSize = meshPart.NumVertices * vertexStride;
+
+                    int vertexDataSize = vertexBufferSize / sizeof(float);
+                    float[] vertexData = new float[vertexDataSize];
+                    meshPart.VertexBuffer.GetData(vertexData);
+                    allVertexData.Add((vertexStride, vertexData));
+                }
+            }
 
             this.ComputeBounds();
         }
@@ -135,6 +155,7 @@ namespace HammeredGame.Game
             Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
             Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
+            int partCount = 0;
             // Get bounding box min/max from each mesh part's vertices
             foreach (ModelMesh mesh in Model.Meshes)
             {
@@ -143,20 +164,15 @@ namespace HammeredGame.Game
                     // Get mesh transform with respect to world
                     Matrix meshTransform = boneTransforms[mesh.ParentBone.Index] * world;
 
-                    int vertexStride = meshPart.VertexBuffer.VertexDeclaration.VertexStride;
-                    int vertexBufferSize = meshPart.NumVertices * vertexStride;
-
-                    int vertexDataSize = vertexBufferSize / sizeof(float);
-                    float[] vertexData = new float[vertexDataSize];
-                    meshPart.VertexBuffer.GetData(vertexData);
-
-                    for (int i = 0; i < vertexDataSize; i += vertexStride / sizeof(float))
+                    (int vertexStride, float[] vertexData) = allVertexData[partCount];
+                    for (int i = 0; i < vertexData.Length; i += vertexStride/ sizeof(float))
                     {
                         //Vector3 vertex = new Vector3(vertexData[i], vertexData[i + 1], vertexData[i + 2]);
                         Vector3 vertex = Vector3.Transform(new Vector3(vertexData[i], vertexData[i + 1], vertexData[i + 2]), meshTransform);
                         min = Vector3.Min(min, vertex);
                         max = Vector3.Max(max, vertex);
                     }
+                    partCount++;
                 }
             }
 
