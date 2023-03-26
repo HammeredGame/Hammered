@@ -46,6 +46,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     {
         // Any Unbreakable Obstacle specific variables go here
         private bool treeFallen;
+        private bool playerOnTree;
 
         public Tree(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
         {
@@ -70,6 +71,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
         }
 
+        public bool isPlayerOn()
+        {
+            return this.playerOnTree;
+        }
+
         public override void TouchingPlayer(Player player)
         {
             if (!treeFallen)
@@ -78,7 +84,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
             else
             {
-                player.OnTree = true;
+                //player.OnTree = true;
+                this.playerOnTree = true;
                 player.Position.Y = 3.0f; // this.BoundingBox.Max.Y; //- this.boundingBox.Min.Y;
             }
         }
@@ -88,8 +95,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             if (treeFallen)
             {
                 //System.Diagnostics.Debug.WriteLine("OFF TREE");
-                player.OnTree = false;
-                player.Position.Y = 0.0f;
+                //player.OnTree = false;
+                this.playerOnTree = false;
+
+                if (!player.OnTree)
+                    player.Position.Y = 0.0f;
             }
         }
     }
