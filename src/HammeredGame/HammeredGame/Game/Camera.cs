@@ -205,6 +205,7 @@ namespace HammeredGame.Game
 
         public void UI()
         {
+            ImGui.Begin("Camera");
             ImGui.Text($"Camera Coordinates: {Position}");
             ImGui.Text($"Camera Focus: {Target}");
 
@@ -215,7 +216,7 @@ namespace HammeredGame.Game
             }
             if (isStatic)
             {
-                ImGui.DragInt("Active Camera", ref currentCameraPosIndex, 0.1f, 0, 3);
+                ImGui.SliderInt("Active Camera", ref currentCameraPosIndex, 0, 3);
 
                 // imgui accepts system.numerics.vector3 and not XNA.vector3 so temporarily convert
                 System.Numerics.Vector3 pos1 = cameraPos[currentCameraPosIndex].ToNumerics();
@@ -228,6 +229,7 @@ namespace HammeredGame.Game
                 ImGui.DragFloat("Follow Offset", ref followDistance);
                 ImGui.DragFloat("Follow Angle", ref followAngle, 0.01f, 0, MathHelper.Pi / 2.0f);
             }
+            ImGui.End();
         }
     }
 }
