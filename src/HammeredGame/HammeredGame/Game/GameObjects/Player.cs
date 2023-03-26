@@ -1,4 +1,5 @@
 ﻿using HammeredGame.Core;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -114,6 +115,7 @@ namespace HammeredGame.Game.GameObjects
                 // The bounding box of the character when they move (translated and/or rotated AABB)
                 // is recomputed inside the "foreach" loop
 
+                this.OnTree = false;
                 // Obstacle collision detection - will be modified/removed later
                 foreach (EnvironmentObject gO in HammeredGame.ActiveLevelObstacles)
                 {
@@ -145,6 +147,11 @@ namespace HammeredGame.Game.GameObjects
                         else
                         {
                             gO.NotTouchingPlayer(this);
+                        }
+
+                        if (gO is Tree t)
+                        {
+                            if (t.isPlayerOn()) this.OnTree = true;
                         }
                     }
                 }
