@@ -8,6 +8,18 @@ using System.Threading.Tasks;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
+    /// <summary>
+    /// The <c>ObstacleObject</c> class handles any properties and interactions common to the various
+    /// obstacles that will populate the game world.
+    /// <para /> 
+    /// </summary>
+    /// 
+    /// <remarks>
+    /// <para />
+    /// REMINDER (class tree): GameObject -> EnvironmentObject -> ObstacleObject
+    /// <para />
+    /// </remarks>
+     
     public class ObstacleObject : EnvironmentObject
     {
         // Any Obstacle specific variables go here
@@ -21,6 +33,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
             // Do nothing (for now)
         }
 
+        // Base functionality for handling obstacle collisions with the player within 
+        // Default behaviour for any obstacle will be to block the player movement.
+        // However, other subclasses of <c>ObstacleObject</c> can have additional/modified functionality.
         public override void TouchingPlayer(Player player)
         {
             player.Position = player.PreviousPosition;
