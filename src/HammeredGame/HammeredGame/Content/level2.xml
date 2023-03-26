@@ -54,6 +54,9 @@
 		<position type="vec3">10 1 -30</position>
 		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.02</scale>
+    <other_constructor_args>
+      <isGoal type="boolean">true</isGoal>
+    </other_constructor_args>
 	</object>
 	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables.Key">
 		<model>test_obstacle</model>
