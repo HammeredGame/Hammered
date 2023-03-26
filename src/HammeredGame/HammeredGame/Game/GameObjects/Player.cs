@@ -135,7 +135,7 @@ namespace HammeredGame.Game.GameObjects
                             // There might be a better solution to this
                             if (gO.IsGround && !this.OnTree)
                             {
-                                //System.Diagnostics.Debug.WriteLine(this.oldPos + " -> " + this.position);
+                                //System.Diagnostics.Debug.WriteLine(this.PreviousPosition + " -> " + this.Position);
                                 this.Position = this.PreviousPosition;
                                 //this.position = Vector3.Zero;
                             }
