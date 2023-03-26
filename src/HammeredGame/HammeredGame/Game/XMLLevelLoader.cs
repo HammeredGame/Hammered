@@ -98,10 +98,9 @@ namespace HammeredGame.Game
             // Set the four static positions. (We /could/ modify the Camera constructor to pass
             // these too, but it gets a little long. Also, on the off chance we need a camera that
             // follows the player closely for one level, the current approach leaves more freedom.
-            var staticPositions = (from vecs in cameraElement.Descendants("position")
+            cameraInstance.StaticPositions = (from vecs in cameraElement.Descendants("position")
                                    where vecs.Attribute("type").Value == "vec3"
                                    select vecs).Select(v => (Vector3) typeToParserMap["vec3"](v.Value)).ToArray();
-            cameraInstance.SetStaticPositions(staticPositions);
 
             return cameraInstance;
         }

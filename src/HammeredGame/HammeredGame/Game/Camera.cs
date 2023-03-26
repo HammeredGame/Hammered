@@ -21,7 +21,7 @@ namespace HammeredGame.Game
         private Input inp;                                  // Input class for camera controls
 
         // Camera positions
-        private Vector3[] cameraPos = new Vector3[4]
+        public Vector3[] StaticPositions = new Vector3[4]
         {
             new Vector3(50f, 60f, -50f),
             new Vector3(-50f, 60f, -50f),
@@ -56,7 +56,7 @@ namespace HammeredGame.Game
         public Camera(GraphicsDevice gpu, Vector3 focusPoint, Vector3 upDirection, Input input)
         {
             Up = upDirection;
-            Position = cameraPos[0];
+            Position = StaticPositions[0];
             Target = focusPoint;
             ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
             ProjMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, gpu.Viewport.AspectRatio, 0.1f, FAR_PLANE);
@@ -65,20 +65,6 @@ namespace HammeredGame.Game
             unit_direction = ViewMatrix.Forward; unit_direction.Normalize();
 
             Mode = CameraMode.FourPointStatic;
-        }
-
-        /// <summary>
-        /// Set the four static positions used by the camera.
-        /// </summary>
-        /// <param name="cameraPos">Array of length 4</param>
-        /// <exception cref="Exception"></exception>
-        public void SetStaticPositions(Vector3[] cameraPos)
-        {
-            if (cameraPos.Length != 4)
-            {
-                throw new Exception("List of camera positions should be 4 long");
-            }
-            this.cameraPos = cameraPos;
         }
 
         /// <summary>
@@ -199,7 +185,7 @@ namespace HammeredGame.Game
 
                 #endregion TEMPORARY_CAMERA_CONTROLS
 
-                UpdatePositionTarget(cameraPos[currentCameraPosIndex], Vector3.Zero);
+                UpdatePositionTarget(StaticPositions[currentCameraPosIndex], Vector3.Zero);
             }
         }
 
@@ -219,10 +205,10 @@ namespace HammeredGame.Game
                 ImGui.SliderInt("Active Camera", ref currentCameraPosIndex, 0, 3);
 
                 // imgui accepts system.numerics.vector3 and not XNA.vector3 so temporarily convert
-                System.Numerics.Vector3 pos1 = cameraPos[currentCameraPosIndex].ToNumerics();
+                System.Numerics.Vector3 pos1 = StaticPositions[currentCameraPosIndex].ToNumerics();
                 ImGui.DragFloat3($"Position for Camera {currentCameraPosIndex}", ref pos1);
                 // other-way around can work implicitly
-                cameraPos[currentCameraPosIndex] = pos1;
+                StaticPositions[currentCameraPosIndex] = pos1;
             }
             else
             {
