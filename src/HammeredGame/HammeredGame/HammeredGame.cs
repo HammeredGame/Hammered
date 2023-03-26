@@ -12,11 +12,11 @@ using System.Collections.Generic;
 
 namespace HammeredGame
 {
-
     public class HammeredGame : Microsoft.Xna.Framework.Game, IImGui
     {
         // DISPLAY VARIABLES
         public const int SCREENWIDTH = 1280;
+
         public const int SCREENHEIGHT = 720;
 
         private GraphicsDeviceManager graphics;
@@ -33,6 +33,7 @@ namespace HammeredGame
 
         // RECTANGLES (need to modify to allow modifiable resolutions, etc.)
         private Rectangle desktopRect;
+
         private Rectangle screenRect;
 
         private SpriteFont tempFont;
@@ -41,7 +42,7 @@ namespace HammeredGame
 
         private Key key;
 
-        static public List<EnvironmentObject> ActiveLevelObstacles = new();
+        public static List<EnvironmentObject> ActiveLevelObstacles = new();
 
         private Player player;
 
@@ -50,6 +51,7 @@ namespace HammeredGame
 
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
+
         private readonly List<IImGui> uiEntities = new();
 
         public HammeredGame()
@@ -107,7 +109,7 @@ namespace HammeredGame
         {
             tempFont = Content.Load<SpriteFont>("temp_font");
 
-            InitializeLevel(0);
+            InitializeLevel(testObstaclesCombo);
         }
 
         /// <summary>
@@ -130,7 +132,8 @@ namespace HammeredGame
             foreach (GameObject entity in gameObjects)
             {
                 // Store a reference to the player since it's a little important
-                if (entity is Player p) {
+                if (entity is Player p)
+                {
                     player = p;
                 }
 
@@ -194,7 +197,7 @@ namespace HammeredGame
         /// To set state variables within graphics device back to default (in case they are changed
         /// at any point) to ensure we are correctly drawing in 3D space
         /// </summary>
-        void Set3DStates()
+        private void Set3DStates()
         {
             gpu.BlendState = BlendState.AlphaBlend; // Potentially needs to be modified depending on our textures
             gpu.DepthStencilState = DepthStencilState.Default; // Ensure we are using depth buffer (Z-buffer) for 3D
@@ -228,7 +231,7 @@ namespace HammeredGame
             gpu.SetRenderTarget(null);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
             spriteBatch.Draw(mainRenderTarget, desktopRect, Color.White);
-            if (key != null &&key.IsPickedUp())
+            if (key != null && key.IsPickedUp())
             {
                 spriteBatch.DrawString(tempFont, "KEY PICKED UP!", new Vector2(100, 100), Color.Red);
             }
