@@ -107,7 +107,7 @@ namespace HammeredGame.Game
                     //effect.LightingEnabled = Keyboard.GetState().IsKeyUp(Keys.L);
                     effect.LightingEnabled = true;
                     effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
-                    effect.DirectionalLight0.Direction = new Vector3(1, 1, 0);
+                    effect.DirectionalLight0.Direction = new Vector3(-1, -1, 0);
                     effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
 
                     if (tex != null)
