@@ -12,7 +12,7 @@ using HammeredGame.Game;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
-    class FloorObject : EnvironmentObject, IImGui
+    class FloorObject : EnvironmentObject
     {
         // Any Interactable specific variables go here
 
@@ -25,17 +25,5 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
         {
             // Do nothing (for now)
         }
-        public void UI()
-        {
-            ImGui.SetNextWindowBgAlpha(0.3f);
-            ImGui.Begin("Ground Debug", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
-
-            var numericPos = Position.ToNumerics();
-            ImGui.DragFloat3("Position", ref numericPos);
-            Position = numericPos;
-
-            ImGui.End();
-        }
-
     }
 }

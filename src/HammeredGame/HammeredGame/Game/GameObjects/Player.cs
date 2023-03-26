@@ -273,9 +273,6 @@ namespace HammeredGame.Game.GameObjects
         {
             ImGui.Begin("Player", ImGuiWindowFlags.AlwaysAutoResize);
 
-            var numericPos = Position.ToNumerics();
-            ImGui.DragFloat3("Position", ref numericPos);
-            Position = numericPos;
             ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
 
