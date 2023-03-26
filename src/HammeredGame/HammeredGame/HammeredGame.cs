@@ -262,23 +262,29 @@ namespace HammeredGame
         {
             ImGui.Begin("Hammered", ImGuiWindowFlags.AlwaysAutoResize);
 
+            // Show whether the gamepad is detected
+            if (input.GamePadState.IsConnected)
+            {
+                ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.0f, 1.0f, 1.0f), "Gamepad Connected");
+            }
+
             ImGui.Text("Current Loaded Scene: ");
             ImGui.SameLine();
             ImGui.SliderInt("", ref testObstaclesCombo, 0, 3);
             ImGui.Text("Press R on keyboard or Y on controller to reload level");
+            ImGui.Separator();
 
+            // Show an interactive list of game objects, each of which contain basic properties to edit
             if (ImGui.TreeNode($"Loaded objects: {gameObjects.Count}"))
             {
                 for (int i = 0; i < gameObjects.Count; i++)
                 {
                     var gameObject = gameObjects[i];
-                    // Use SetNextItemOpen() so set the default state of a node to be open. We could
-                    // also use TreeNodeEx() with the ImGuiTreeNodeFlags_DefaultOpen flag to achieve the same thing!
-                    //if (i == 0)
-                    //    ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
                     if (ImGui.TreeNode($"Object {i}: {gameObject}"))
                     {
+                        // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
+                        // we need to temporarily convert.
                         System.Numerics.Vector3 pos = gameObject.Position.ToNumerics();
                         ImGui.DragFloat3("Position", ref pos);
                         gameObject.Position = pos;
@@ -297,7 +303,6 @@ namespace HammeredGame
             {
                 //new XMLLevelWriter(camera, gameObjects);
             }
-
             ImGui.End();
         }
     }
