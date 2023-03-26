@@ -9,8 +9,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using System.Linq;
-//using System.Numerics;
 
 namespace HammeredGame
 {
@@ -259,12 +257,43 @@ namespace HammeredGame
 
         public void UI()
         {
-            ImGui.SetNextWindowBgAlpha(0.3f);
-            ImGui.SetNextWindowPos(new System.Numerics.Vector2(50, 150));
-            ImGui.Begin("Hammered", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNav | ImGuiWindowFlags.NoFocusOnAppearing);
+            ImGui.Begin("Hammered", ImGuiWindowFlags.AlwaysAutoResize);
 
-            ImGui.DragInt("Scene", ref testObstaclesCombo, 0.1f, 0, 3);
-            ImGui.Text($"Loaded objects: {gameObjects.Count().ToString()}");
+            ImGui.Text("Current Loaded Scene: ");
+            ImGui.SameLine();
+            ImGui.SliderInt("", ref testObstaclesCombo, 0, 3);
+            ImGui.Text("Press R on keyboard or Y on controller to reload level");
+
+            if (ImGui.TreeNode($"Loaded objects: {gameObjects.Count}"))
+            {
+                for (int i = 0; i < gameObjects.Count; i++)
+                {
+                    var gameObject = gameObjects[i];
+                    // Use SetNextItemOpen() so set the default state of a node to be open. We could
+                    // also use TreeNodeEx() with the ImGuiTreeNodeFlags_DefaultOpen flag to achieve the same thing!
+                    //if (i == 0)
+                    //    ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+
+                    if (ImGui.TreeNode($"Object {i}: {gameObject}"))
+                    {
+                        System.Numerics.Vector3 pos = gameObject.Position.ToNumerics();
+                        ImGui.DragFloat3("Position", ref pos);
+                        gameObject.Position = pos;
+
+                        System.Numerics.Vector4 rot = gameObject.Rotation.ToVector4().ToNumerics();
+                        ImGui.DragFloat4("Rotation", ref rot, 0.01f);
+                        gameObject.Rotation = new Quaternion(rot);
+
+                        ImGui.DragFloat("Scale", ref gameObject.Scale, 0.01f);
+                        ImGui.TreePop();
+                    }
+                }
+                ImGui.TreePop();
+            }
+            if (ImGui.Button("Export Level"))
+            {
+                //new XMLLevelWriter(camera, gameObjects);
+            }
 
             ImGui.End();
         }
