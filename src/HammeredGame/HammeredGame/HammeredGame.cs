@@ -216,8 +216,13 @@ namespace HammeredGame
         /// <param name="gameTime"></param>
         protected override void Draw(GameTime gameTime)
         {
-            // Set the Render Target for drawing
+            // Make all draw calls to the GPU write not to the main back buffer (which gets swapped
+            // out with the front buffer and shown to the user), but instead write to a temporary
+            // render target, which allows us to inspect the content if we want, to apply filters or
+            // capture screenshots of the game. For now we don't make use of this, but it can be useful.
             gpu.SetRenderTarget(mainRenderTarget);
+
+            // Clear the target
             gpu.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.AliceBlue, 1.0f, 0);
             Set3DStates();
 
@@ -227,14 +232,20 @@ namespace HammeredGame
                 gameObject.Draw(camera.ViewMatrix, camera.ProjMatrix);
             }
 
-            // Draw MainTarget to BackBuffer
+            // Change the GPU target to null, which means all further draw calls will now write to
+            // the back buffer. We need to copy over what we have in the temporary render target.
             gpu.SetRenderTarget(null);
+
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
             spriteBatch.Draw(mainRenderTarget, desktopRect, Color.White);
-            if (key != null && key.IsPickedUp())
+
+            // FOR THE PURPOSES OF THE DEMO, we indicate whether the puzzle is solved here
+            if (player.ReachedGoal)
             {
-                spriteBatch.DrawString(tempFont, "KEY PICKED UP!", new Vector2(100, 100), Color.Red);
+                spriteBatch.DrawString(tempFont, "PUZZLE SOLVED!! \nPress R on keyboard or Y on controller to reload level", new Vector2(100, 100), Color.Red);
             }
+
+            // Commit all the data to the back buffer
             spriteBatch.End();
 
             base.Draw(gameTime);
@@ -267,6 +278,8 @@ namespace HammeredGame
             {
                 ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.0f, 1.0f, 1.0f), "Gamepad Connected");
             }
+            float fr = ImGui.GetIO().Framerate;
+            ImGui.Text($"{1000.0f / fr:F2} ms/frame ({fr:F1} FPS)");
 
             ImGui.Text("Current Loaded Scene: ");
             ImGui.SameLine();
