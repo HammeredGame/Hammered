@@ -9,7 +9,7 @@
     <up type="vec3">0 1 0</up>
   </camera>
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
-    <model>character-merged</model>
+    <model>character-colored</model>
     <position type="vec3">10 0 -45</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.02</scale>
@@ -35,10 +35,10 @@
     </other_constructor_args>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground">
-    <model>temp_ground</model>
-    <position type="vec3">0 0 0</position>
+    <model>island</model>
+    <position type="vec3">0 -32 0</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.04</scale>
+    <scale type="float">0.1</scale>
   </object>
 
 
@@ -185,6 +185,15 @@
 	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
 		<model>temp_water_big</model>
 		<position type="vec3">22 1 8</position>
+		<rotation type="quaternion">0 0 0 1</rotation>
+		<scale type="float">0.03</scale>
+	</object>
+
+	<!-- rocks -->
+
+	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacle">
+		<model>rock</model>
+		<position type="vec3">22 1 10</position>
 		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.03</scale>
 	</object>
