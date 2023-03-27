@@ -126,9 +126,30 @@ namespace HammeredGame.Game
                     effect.EnableDefaultLighting();
                     //effect.LightingEnabled = Keyboard.GetState().IsKeyUp(Keys.L);
                     effect.LightingEnabled = true;
+
+                    //effect.DiffuseColor = new Vector3(0.25f, 0.25f, 0.25f);
+                    //effect.SpecularColor = new Vector3(0.25f, 0.25f, 0.25f);
+                    //effect.SpecularPower = 0.1f;
+                    effect.AmbientLightColor = new Vector3(0.75f, 0.75f, 0.75f);
+
+                    //effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
+                    //effect.DirectionalLight0.Direction = new Vector3(-1, -1, 0);
+                    //effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
+
+                    effect.DirectionalLight0.Enabled = true;
                     effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
-                    effect.DirectionalLight0.Direction = new Vector3(-1, -1, 0);
+                    effect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1, -1, 0));
                     effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
+
+                    effect.DirectionalLight1.Enabled = true;
+                    effect.DirectionalLight1.DiffuseColor = Vector3.One * 0.2f;
+                    effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1, -1, 0));
+                    effect.DirectionalLight1.SpecularColor = Vector3.One * 0.1f;
+
+                    effect.DirectionalLight2.Enabled = true;
+                    effect.DirectionalLight2.DiffuseColor = Vector3.One * 0.15f;
+                    effect.DirectionalLight2.Direction = Vector3.Normalize(new Vector3(-1, -1, -1));
+                    effect.DirectionalLight2.SpecularColor = Vector3.One * 0.1f;
 
                     effect.TextureEnabled = tex != null;
                     effect.Texture = tex;
