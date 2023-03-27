@@ -25,6 +25,18 @@
 /processorParam:TextureFormat=Color
 /build:awesome_goal_texture.jpg
 
+#begin awesome_key_texture.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:awesome_key_texture.jpg
+
 #begin character_3.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
