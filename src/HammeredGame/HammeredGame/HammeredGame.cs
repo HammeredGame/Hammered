@@ -182,7 +182,7 @@ namespace HammeredGame
             // Check for exit input
             if (input.BACK_DOWN || input.KeyDown(Keys.Escape)) Exit();
 
-            if (input.ButtonPress(Buttons.Y) || input.KeyDown(Keys.R))
+            if (input.ButtonPress(Buttons.Y) || input.KeyPress(Keys.R))
             {
                 InitializeLevel(testObstaclesCombo);
             }
