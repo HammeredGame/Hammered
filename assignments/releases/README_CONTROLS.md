@@ -17,3 +17,9 @@ Summoning the hammer will make the hammer follows a straight line trajectory fro
 Camera angles alternate between four four (4) predetermined camera angles.
 
 The "1", "2", "3" and "4" keys for the camera controls on the keyboard are from the alphanumeric keys section of the keyboard, not on the numeric keypad.
+
+Changing the Locale:
+1. Navigate to "level4.xml" file. PATH: publish/Content/level4.xml
+2. Using regular expressions (regex) replace ([0-9]+)\.([0-9]+) with $1\,$2
+3. Go to the top line of "level4.xml" file and change the ' Version="1,0" ' (which was altered because of step 2.) to ' Version="1.0" '
+4. The game can now be run normally
