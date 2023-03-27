@@ -79,7 +79,7 @@ namespace HammeredGame
             spriteBatch = new SpriteBatch(gpu);
 
             // Set Render Target to SCREENWIDTH x SCREENHEIGHT
-            mainRenderTarget = new RenderTarget2D(gpu, SCREENWIDTH, SCREENHEIGHT, false, pp.BackBufferFormat, DepthFormat.Depth24);
+            mainRenderTarget = new RenderTarget2D(gpu, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, DepthFormat.Depth24);
             ScreenW = mainRenderTarget.Width;
             ScreenH = mainRenderTarget.Height;
             desktopRect = new Rectangle(0, 0, pp.BackBufferWidth, pp.BackBufferHeight);
