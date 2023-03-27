@@ -119,9 +119,40 @@
     <scale type="float">0.05</scale>
   </object>
   
-    <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
     <model>foliage_colored</model>
-    <position type="vec3">7 1 -5</position>
+    <position type="vec3">-20 1 -35</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.05</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
+    <model>foliage_colored</model>
+    <position type="vec3">-20 1 -55</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.05</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
+    <model>foliage_colored</model>
+    <position type="vec3">-20 1 -25</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.05</scale>
+  </object>
+  
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
+    <model>foliage_colored</model>
+    <position type="vec3">7 1 -15</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.05</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
+    <model>foliage_colored</model>
+    <position type="vec3">17 1 -15</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.05</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
+    <model>foliage_colored</model>
+    <position type="vec3">27 1 -15</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.05</scale>
   </object>
