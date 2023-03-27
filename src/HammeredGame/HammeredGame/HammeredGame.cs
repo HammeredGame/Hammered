@@ -8,6 +8,7 @@ using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
 
 namespace HammeredGame
@@ -45,6 +46,9 @@ namespace HammeredGame
         public static List<EnvironmentObject> ActiveLevelObstacles = new();
 
         private Player player;
+
+        // Music variables
+        private Song bgMusic;
 
         // SCENE TEST VARIABLES
         private int testObstaclesCombo = 4;
@@ -110,6 +114,12 @@ namespace HammeredGame
             tempFont = Content.Load<SpriteFont>("temp_font");
 
             InitializeLevel(testObstaclesCombo);
+
+            bgMusic = Content.Load<Song>("Audio/BGM_V1");
+
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(bgMusic);
+
         }
 
         /// <summary>
