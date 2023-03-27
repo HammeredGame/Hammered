@@ -294,6 +294,8 @@ namespace HammeredGame
                         gameObject.Rotation = new Quaternion(rot);
 
                         ImGui.DragFloat("Scale", ref gameObject.Scale, 0.01f);
+
+                        ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
                         ImGui.TreePop();
                     }
                 }
