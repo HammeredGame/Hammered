@@ -41,9 +41,9 @@
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.04</scale>
   </object>
-  
-  
-  
+
+
+
   <!-- DOORS -->
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="door_pp">
     <model>test_obstacle</model>
@@ -64,7 +64,7 @@
       <isGoal type="boolean">true</isGoal>
     </other_constructor_args>
   </object>
-  
+
   <!-- TREES -->
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree">
     <model>diffuse_tree</model>
@@ -78,9 +78,9 @@
     <position type="vec3">-3 1 22</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.05</scale>
-  </object>  
-  
-  
+  </object>
+
+
   <!-- PRESSURE PLATE -->
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate">
     <model>temp_pressureplate2</model>
@@ -91,7 +91,7 @@
       <arg object_ref_id="door_pp" />
     </other_constructor_args>
   </object>
-  
+
   <!-- KEY -->
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables.Key">
     <model>test_obstacle</model>
@@ -102,16 +102,16 @@
       <arg object_ref_id="door_goal" />
     </other_constructor_args>
   </object>
-  
-  
+
+
   <!-- WATER OBJECTS -->
   <!-- Pool 1        -->
   <!--      Vertical segments    -->
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
-    <model>temp_water_big</model> 
-    <position type="vec3">-12 1 -30.5</position> 
-    <rotation type="quaternion">0 0 0 1</rotation> 
-    <scale type="float">0.03</scale> 
+    <model>temp_water_big</model>
+    <position type="vec3">-12 1 -30.5</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.03</scale>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
@@ -134,13 +134,13 @@
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.03</scale>
   </object>
-  
+
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
-    <model>temp_water_horizontal_segment1</model> 
-    <position type="vec3">-2 1 -55.5</position> 
-    <rotation type="quaternion">0 0 0 1</rotation> 
-    <scale type="float">0.02</scale> 
-  </object> 
+    <model>temp_water_horizontal_segment1</model>
+    <position type="vec3">-2 1 -55.5</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.02</scale>
+  </object>
 
 
 
@@ -163,16 +163,29 @@
   <!--    Horizontal segments    -->
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
     <model>temp_water_big</model>
-    <position type="vec3">-16 1 16</position>
+    <position type="vec3">-16 1 27</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.03</scale>
+  </object>
+	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
+	<model>temp_water_big</model>
+	<position type="vec3">-16 1 8</position>
+	<rotation type="quaternion">0 0 0 1</rotation>
+	<scale type="float">0.03</scale>
+	</object>
+
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
+    <model>temp_water_big</model>
+    <position type="vec3">22 1 27</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.03</scale>
   </object>
 
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
-    <model>temp_water_big</model>
-    <position type="vec3">22 1 16</position>
-    <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.03</scale>
-  </object>
+	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
+		<model>temp_water_big</model>
+		<position type="vec3">22 1 8</position>
+		<rotation type="quaternion">0 0 0 1</rotation>
+		<scale type="float">0.03</scale>
+	</object>
 
 </level>
