@@ -17,12 +17,19 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
     /// </summary>
 
     /// <remarks>
+    /// <para>
+    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/>
+    ///                         ---> <see cref="InteractableObject "/> ---> <see cref="CollectibleInteractable "/>
+    ///                         ---> <see cref="Key"/>
+    /// </para>
+    /// <para>
     /// TODO: Instead of having a back-and-forth between the instance of <c>Key</c> and the instane of <c>Door</c>,
     /// maybe an alternative would for the <c>Key</c> instance to just change a state variable (example name "locked")
     /// and the <c>Key</c> instance to be rendered useless afterwards.
     /// The weakness to this approach is that the Player is immediately aware as to which <c>Door</c> instance corresponds
     /// to this key, which might be unwanted behaviour. This could be a point of discussion (probably tilting towards rejecting
     /// this proposition).
+    /// </para>
     /// </remarks>
     public class Key : CollectibleInteractable
     {

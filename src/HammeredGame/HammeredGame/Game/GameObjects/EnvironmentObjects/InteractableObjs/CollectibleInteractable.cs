@@ -23,6 +23,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
     /// to be collected and triggered is to be defined inside classes which inherit from this class.
     /// </para>
     /// </summary>
+
+    /// <remarks>
+    /// <para>
+    /// REMINDER (class tree): <see cref="GameObject"/> ---> <see cref="EnvironmentObject"/> --->
+    ///                         <see cref="InteractableObject"/> ---> <see cref="CollectibleInteractable"/>
+    /// </para>
+    /// </remarks>
     public class CollectibleInteractable : ObstacleObject
     {
         // Any Unbreakable Obstacle specific variables go here

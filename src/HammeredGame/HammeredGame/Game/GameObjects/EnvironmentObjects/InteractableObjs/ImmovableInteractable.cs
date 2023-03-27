@@ -22,6 +22,14 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
     /// The specific change in environment is to be defined inside classes which inherit from this class.
     /// </para>
     /// </summary>
+    /// 
+
+    /// <remarks>
+    /// <para>
+    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/> 
+    ///                         ---> <see cref="InteractableObject "/> ---> <see cref="ImmovableInteractable"/>
+    /// </para>
+    /// </remarks>
     public class ImmovableInteractable : ObstacleObject
     {
         // Any Unbreakable Obstacle specific variables go here
