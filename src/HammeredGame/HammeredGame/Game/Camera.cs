@@ -32,10 +32,10 @@ namespace HammeredGame.Game
         private int currentCameraPosIndex = 0;
 
         // Camera follow direction for follow mode
-        private float followDistance = 62f;
+        private float followDistance = 49f;
 
-        private float followAngle = 0.651f;
-        private Vector2 followDir = new Vector2(1, 1);
+        private float followAngle = 0.551f;
+        private Vector2 followDir = new Vector2(1, -1);
 
         public enum CameraMode
         {
