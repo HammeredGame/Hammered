@@ -9,6 +9,14 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
     /// Once the weight is lifted from the <c>PressurePlate</c> instance, the state of the corresponding <paramref>triggerObject</paramref>
     /// reverts to its state before being triggered by the <c>PressurePlate</c> instance.
     /// </summary>
+
+    /// <remarks>
+    /// <para>
+    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/>
+    ///                         ---> <see cref="InteractableObject "/> ---> <see cref="ImmovableInteractable "/>
+    ///                         ---> <see cref="PressurePlate"/>
+    /// </para>
+    /// </remarks>
     public class PressurePlate : ImmovableInteractable
     {
         private readonly EnvironmentObject triggerObject;

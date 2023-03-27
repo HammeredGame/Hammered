@@ -14,9 +14,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
     /// </summary>
 
     /// <remarks>
+    /// <para>
+    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/> 
+    ///                         ---> <see cref="InteractableObject "/>
+    /// </para>
+    /// <para>
     /// TODO: Motivated by the definition provided above, it may be worth considering enriching the constructor of this class
     /// so as to always include another parameter:
     /// the EnvironmentObject which is triggered by the current <c>InteractableObject</c> instance.
+    /// </para>
     /// </remarks>
     class InteractableObject : EnvironmentObject
     {

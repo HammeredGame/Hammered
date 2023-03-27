@@ -14,6 +14,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
     /// The <c>Ground</c> class refers to solid ground the character (<see cref="Player"/> may step on.
     /// Free movement of the character along the ground is permitted.
     /// </summary>
+
+    /// <remarks>
+    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/>
+    ///                         ---> <see cref="FloorObject "/> ---> <see cref="Ground"/>
+    /// </remarks>
     class Ground : FloorObject
     {
         public Ground(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
