@@ -130,11 +130,8 @@ namespace HammeredGame.Game
                     effect.DirectionalLight0.Direction = new Vector3(-1, -1, 0);
                     effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
 
-                    if (tex != null)
-                    {
-                        effect.TextureEnabled = true;
-                        effect.Texture = tex;
-                    }
+                    effect.TextureEnabled = tex != null;
+                    effect.Texture = tex;
                 }
 
                 mesh.Draw();
