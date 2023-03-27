@@ -103,6 +103,28 @@
       <arg object_ref_id="door_goal" />
     </other_constructor_args>
   </object>
+  
+  <!-- DECOR -->
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
+    <model>foliage_colored</model>
+    <position type="vec3">7 1 -35</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.05</scale>
+  </object>
+  
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
+    <model>foliage_colored</model>
+    <position type="vec3">-3 1 12</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.05</scale>
+  </object>
+  
+    <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
+    <model>foliage_colored</model>
+    <position type="vec3">7 1 -5</position>
+    <rotation type="quaternion">0 0 0 1</rotation>
+    <scale type="float">0.05</scale>
+  </object>
 
 
   <!-- WATER OBJECTS -->
