@@ -285,12 +285,6 @@ namespace HammeredGame.Game.GameObjects
             ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
 
-            // FOR THE PURPOSES OF THE DEMO, we indicate whether the puzzle is solved here
-            if (this.ReachedGoal)
-            {
-                ImGui.Text("PUZZLE SOLVED!! \nPress R on keyboard or Y on controller to reload level");
-            }
-
             ImGui.End();
         }
     }
