@@ -130,7 +130,7 @@ namespace HammeredGame.Game
                     //effect.DiffuseColor = new Vector3(0.25f, 0.25f, 0.25f);
                     //effect.SpecularColor = new Vector3(0.25f, 0.25f, 0.25f);
                     //effect.SpecularPower = 0.1f;
-                    effect.AmbientLightColor = new Vector3(0.75f, 0.75f, 0.75f);
+                    effect.AmbientLightColor = new Vector3(0.5f, 0.5f, 0.5f);
 
                     //effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
                     //effect.DirectionalLight0.Direction = new Vector3(-1, -1, 0);
