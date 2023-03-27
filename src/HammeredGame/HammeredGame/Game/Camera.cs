@@ -23,10 +23,10 @@ namespace HammeredGame.Game
         // Camera positions
         public Vector3[] StaticPositions = new Vector3[4]
         {
-            new Vector3(50f, 60f, -50f),
-            new Vector3(-50f, 60f, -50f),
-            new Vector3(-50f, 60f, 50f),
-            new Vector3(50f, 60f, 50f)
+            new Vector3(300f, 200f, -300f),
+            new Vector3(-300f, 200f, -300f),
+            new Vector3(-300f, 200f, 300f),
+            new Vector3(300f, 200f, 300f)
         };
 
         private int currentCameraPosIndex = 0;
