@@ -13,7 +13,6 @@
     <position type="vec3">10 0 -45</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.02</scale>
-    <texture type="texture2d">Temp</texture>
     <!-- The following are passed strictly in order to the constructor.
 		Their tag names are irrelevant, the parser does not use them.
 
@@ -99,6 +98,7 @@
     <position type="vec3">10 1 15</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.01</scale>
+	  <texture type="texture2d">awesome_key_texture</texture>
     <other_constructor_args>
       <arg object_ref_id="door_goal" />
     </other_constructor_args>
