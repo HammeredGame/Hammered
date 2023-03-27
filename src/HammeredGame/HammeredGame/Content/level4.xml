@@ -45,10 +45,10 @@
 
   <!-- DOORS -->
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="door_pp">
-    <model>test_obstacle</model>
-    <position type="vec3">-20 2.5 -57.5</position>
+    <model>fence</model>
+    <position type="vec3">-10 1.5 -47.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.02</scale>
+    <scale type="float">0.08</scale>
     <other_constructor_args>
       <isGoal type="boolean">false</isGoal>
     </other_constructor_args>
@@ -65,7 +65,7 @@
     </other_constructor_args>
   </object>
 
-  <!-- TREES -->
+	<!-- TREES -->
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree">
     <model>diffuse_tree</model>
     <position type="vec3">-3 1 -32</position>
@@ -196,6 +196,15 @@
 		<position type="vec3">22 1 10</position>
 		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.03</scale>
+	</object>
+
+	<!--crude sea-->
+
+	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
+		<model>temp_water_big</model>
+		<position type="vec3">93 -29 172</position>
+		<rotation type="quaternion">0 0 0 1</rotation>
+		<scale type="float">2.8</scale>
 	</object>
 
 </level>
