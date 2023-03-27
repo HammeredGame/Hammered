@@ -35,7 +35,7 @@
     </other_constructor_args>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground">
-    <model>island</model>
+    <model>island_colored</model>
     <position type="vec3">0 -32 0</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.1</scale>
