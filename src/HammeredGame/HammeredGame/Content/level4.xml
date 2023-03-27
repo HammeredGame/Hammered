@@ -244,12 +244,12 @@
 
 	<!-- rocks -->
 
-	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacle">
+	<!--<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacle">
 		<model>rock</model>
 		<position type="vec3">22 1 10</position>
 		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.03</scale>
-	</object>
+	</object>-->
 
 	<!--crude sea-->
 
