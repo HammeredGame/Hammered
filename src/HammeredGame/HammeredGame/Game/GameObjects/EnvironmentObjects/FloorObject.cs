@@ -12,6 +12,22 @@ using HammeredGame.Game;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
+    /// <summary>
+    /// The <c>FloorObject</c> class refers to any continuous surface the character (<see cref="Player"/>) may step on to
+    /// traverse the level.
+    /// </summary>
+
+    /// <remarks>
+    /// <para>
+    /// TODO: Currently, the <see cref="Player"/> is responsible for handling their own movement
+    /// according to the <c>FloorObject</c> they interact with <see cref="Player.Update(GameTime)"/>.
+    /// This contradicts the method followed with other kinds of objects (e.g. <see cref="EnvironmentObject.TouchingPlayer(Player)"/>).
+    /// An approach conforming to the previous example may be considered.
+    /// NOTE: It is highly probable that an (external) physics library will be integrated into the project,
+    /// which will possibly (among other things) handle cases such as these, or at least ease the implementation of it.
+    /// </para>
+    /// </remarks>
+    
     class FloorObject : EnvironmentObject
     {
         // Any Interactable specific variables go here

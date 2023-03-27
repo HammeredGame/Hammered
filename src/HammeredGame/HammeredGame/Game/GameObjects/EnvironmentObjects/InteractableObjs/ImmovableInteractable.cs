@@ -8,6 +8,20 @@ using System.Threading.Tasks;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
 {
+    /// <summary>
+    /// <para>
+    /// The <c>ImmovableInteractable</c> class refers to all <see cref="InteractableObject"/> instances
+    /// which are not <see cref="CollectibleInteractable"/>.
+    /// As such, it is expected that:
+    /// 1) they are always present in the scene
+    /// 2) they do not move
+    /// 3) their change in the environment is in effect only while the <c>ImmovableInteractable</c> instance
+    ///     is being interacted with
+    /// </para>
+    /// <para>
+    /// The specific change in environment is to be defined inside classes which inherit from this class.
+    /// </para>
+    /// </summary>
     public class ImmovableInteractable : ObstacleObject
     {
         // Any Unbreakable Obstacle specific variables go here

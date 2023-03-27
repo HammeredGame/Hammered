@@ -4,6 +4,26 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables
 {
+    /// <summary>
+    /// <para>
+    /// The <c>Key</c> class refers to a collectible item in the scene which unlocks one particular <c>Door</c> instance
+    /// in the entire scene.
+    /// </para>
+    /// <para>
+    /// A <c>Key</c> instance is considered to be collected (<value>keyPickedUp</value> variable) when the character
+    /// moves sufficiently close enough such that the two objects intersect
+    /// (currently handled by <see cref="Player.Update(GameTime)"/> calling <see cref="Key.TouchingPlayer(Player)"/>).
+    /// </para>
+    /// </summary>
+
+    /// <remarks>
+    /// TODO: Instead of having a back-and-forth between the instance of <c>Key</c> and the instane of <c>Door</c>,
+    /// maybe an alternative would for the <c>Key</c> instance to just change a state variable (example name "locked")
+    /// and the <c>Key</c> instance to be rendered useless afterwards.
+    /// The weakness to this approach is that the Player is immediately aware as to which <c>Door</c> instance corresponds
+    /// to this key, which might be unwanted behaviour. This could be a point of discussion (probably tilting towards rejecting
+    /// this proposition).
+    /// </remarks>
     public class Key : CollectibleInteractable
     {
         /* Provisionally

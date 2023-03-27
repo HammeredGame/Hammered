@@ -17,7 +17,7 @@ namespace HammeredGame.Game.GameObjects
     /// The player interacts with the character with the use of the keyboard or a controller.
     /// The actions the player can make with the character are:
     /// - Movement along the 3D space (capability to move along the height dimension is dependent on the environment)
-    /// - Change the state of the hammer (for details see <c>Hammer</c> in "Hammer.cs" file)
+    /// - Change the state of the hammer (for details <see cref="Hammer"/>)
     /// </summary>
     /// <remarks>
     /// Documentation: The <c>Player</c> instance will be mentioned as "character" in the following code.
