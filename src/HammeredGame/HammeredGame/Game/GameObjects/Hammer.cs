@@ -102,7 +102,7 @@ namespace HammeredGame.Game.GameObjects
                     if (gO != null && gO.IsVisible())
                     {
                         //BoundingBox objectbbox = gO.GetBounds();
-                        if (this.BoundingBox.Intersects(gO.BoundingBox))
+                        if (this.BoundingBox.Intersects(gO.BoundingBox) && hammerState != HammerState.WithCharacter)
                         {
                             gO.TouchingHammer(this);
                         }
