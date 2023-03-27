@@ -12,6 +12,10 @@ using HammeredGame.Game;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
+    /// <summary>
+    /// The <c>Ground</c> class refers to a water surface the character (<see cref="Player"/> may encounter.
+    /// Movement towards or unto it is strictly prohibited.
+    /// </summary>
     class Water : FloorObject
     {
         public Water(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)

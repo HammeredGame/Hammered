@@ -12,6 +12,9 @@ namespace HammeredGame.Game.GameObjects
 {
     public class EnvironmentObject : GameObject
     {
+        /// <value>
+        /// TODO: Consider renaming the field <code>IsGround</code> as "IsWalkable"?
+        /// </value>
         public bool IsGround = false;
         public EnvironmentObject(Model model, Vector3 pos, float scale, Texture2D t)
             : base (model, pos, scale, t)

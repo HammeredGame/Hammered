@@ -3,6 +3,12 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
 {
+    /// <summary>
+    /// The <c>PressurePlate</c> class refers to an unmoving object on the ground, which when pressed by some weight
+    /// (currently the character or the hammer) triggers a change of behaviour of its corresponding <paramref>triggerObject</paramref>.
+    /// Once the weight is lifted from the <c>PressurePlate</c> instance, the state of the corresponding <paramref>triggerObject</paramref>
+    /// reverts to its state before being triggered by the <c>PressurePlate</c> instance.
+    /// </summary>
     public class PressurePlate : ImmovableInteractable
     {
         private readonly EnvironmentObject triggerObject;

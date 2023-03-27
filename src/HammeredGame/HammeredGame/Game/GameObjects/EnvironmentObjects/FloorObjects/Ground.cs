@@ -9,6 +9,11 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
+
+    /// <summary>
+    /// The <c>Ground</c> class refers to solid ground the character (<see cref="Player"/> may step on.
+    /// Free movement of the character along the ground is permitted.
+    /// </summary>
     class Ground : FloorObject
     {
         public Ground(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
