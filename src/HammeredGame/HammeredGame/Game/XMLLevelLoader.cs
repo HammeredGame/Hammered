@@ -23,11 +23,11 @@ namespace HammeredGame.Game
         /// <summary>
         /// A static mapping of simple value types in XML to their parsing functions.
         /// </summary>
-        private static Dictionary<string, Func<string, object>> typeToParserMap = new Dictionary<string, Func<string, object>>()
+        private static Dictionary<string, Func<string, dynamic>> parserFor = new Dictionary<string, Func<string, dynamic>>()
         {
             { "vec3", (input) => ParseVector3(input) },
             { "quaternion", (input) => ParseQuaternion(input) },
-            { "float", (input) => float.Parse(input) },
+            { "float", (input) => float.Parse(input, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture) },
             { "boolean", (input) => bool.Parse(input) }
         };
 
@@ -62,7 +62,7 @@ namespace HammeredGame.Game
         private static Vector3 ParseVector3(string spaceSeparatedNumbers)
         {
             string[] tokens = spaceSeparatedNumbers.Split(" ");
-            return new Vector3(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2]));
+            return new Vector3(parserFor["float"](tokens[0]), parserFor["float"](tokens[1]), parserFor["float"](tokens[2]));
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace HammeredGame.Game
         private static Quaternion ParseQuaternion(string spaceSeparatedNumbers)
         {
             string[] tokens = spaceSeparatedNumbers.Split(" ");
-            return new Quaternion(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2]), float.Parse(tokens[3]));
+            return new Quaternion(parserFor["float"](tokens[0]), parserFor["float"](tokens[1]), parserFor["float"](tokens[2]), float.Parse(tokens[3]));
         }
 
         /// <summary>
@@ -89,8 +89,8 @@ namespace HammeredGame.Game
             XElement cameraElement = targetXML.Root.Descendants("camera").Single(child => child.Parent == targetXML.Root);
 
             // Parse the target and positions, which are required for the constructor
-            Vector3 focusPoint = (Vector3) typeToParserMap["vec3"]((cameraElement.Descendants("target").Single().Value));
-            Vector3 upDirection = (Vector3)typeToParserMap["vec3"]((cameraElement.Descendants("up").Single().Value));
+            Vector3 focusPoint = (Vector3)parserFor["vec3"]((cameraElement.Descendants("target").Single().Value));
+            Vector3 upDirection = (Vector3)parserFor["vec3"]((cameraElement.Descendants("up").Single().Value));
 
             // Instantiate the Camera object
             Camera cameraInstance = new Camera(gpu, focusPoint, upDirection, input);
@@ -100,7 +100,7 @@ namespace HammeredGame.Game
             // follows the player closely for one level, the current approach leaves more freedom.
             cameraInstance.StaticPositions = (from vecs in cameraElement.Descendants("position")
                                    where vecs.Attribute("type").Value == "vec3"
-                                   select vecs).Select(v => (Vector3) typeToParserMap["vec3"](v.Value)).ToArray();
+                                   select vecs).Select(v => (Vector3)parserFor["vec3"](v.Value)).ToArray();
 
             return cameraInstance;
         }
@@ -146,11 +146,11 @@ namespace HammeredGame.Game
                 arguments.Add(model);
 
                 XElement posElement = obj.Descendants("position").Single();
-                var pos = typeToParserMap[posElement.Attribute("type").Value](posElement.Value);
+                var pos = parserFor[posElement.Attribute("type").Value](posElement.Value);
                 arguments.Add(pos);
 
                 XElement scaElement = obj.Descendants("scale").Single();
-                var scale = typeToParserMap[scaElement.Attribute("type").Value](scaElement.Value);
+                var scale = parserFor[scaElement.Attribute("type").Value](scaElement.Value);
                 arguments.Add(scale);
 
                 // Texture is an optional tag, so check if we have it first. If we don't, then pass
@@ -195,7 +195,7 @@ namespace HammeredGame.Game
                         }
 
                         // For simple values, parse using the static parsing map
-                        arguments.Add(typeToParserMap[args.Attribute("type").Value](args.Value));
+                        arguments.Add(parserFor[args.Attribute("type").Value](args.Value));
                     }
                 }
 
@@ -204,10 +204,10 @@ namespace HammeredGame.Game
                 GameObject instance = (GameObject)Activator.CreateInstance(t, args:arguments.ToArray());
 
                 // Rotation is not part of the constructor but is a public field, so we set it after creation
-                instance.Rotation = (Quaternion)typeToParserMap["quaternion"](obj.Descendants("rotation").Single().Value);
+                instance.Rotation = (Quaternion)parserFor["quaternion"](obj.Descendants("rotation").Single().Value);
 
                 // Visibility is also not part of the constructor
-                instance.SetVisible((bool)typeToParserMap["boolean"](obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true"));
+                instance.SetVisible((bool)parserFor["boolean"](obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true"));
 
                 // If the object was named, then store its ID for future reference
                 if (obj.Attribute("id") != null)
