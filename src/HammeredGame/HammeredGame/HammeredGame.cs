@@ -313,9 +313,9 @@ namespace HammeredGame
                         gameObject.Position = pos;
 
                         System.Numerics.Vector4 rot = gameObject.Rotation.ToVector4().ToNumerics();
-                        ImGui.DragFloat4("Rotation", ref rot, 0.01f);
-                        gameObject.Rotation = new Quaternion(rot);
+                        ImGui.DragFloat4("Rotation", ref rot, 0.01f, -1.0f, 1.0f);
 
+                        gameObject.Rotation = Quaternion.Normalize(new Quaternion(rot));
                         ImGui.DragFloat("Scale", ref gameObject.Scale, 0.01f);
 
                         ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
