@@ -152,11 +152,11 @@ namespace HammeredGame
 
             // Construct a new space for the physics simulation to occur within.
             // Using this to clear the physics space, in case the level is reloaded.
-            // TODO: There's no RemoveAllEntities function in bepuphysics, and manually 
+            // TODO: There's no RemoveAllEntities function in bepuphysics, and manually
             // removing all the entities doesn't work. Not sure if the current approach is efficient.
             if (parallelLooper == null)
             {
-                // Initialize paraller looper to tell the physics engine that it can use 
+                // Initialize paraller looper to tell the physics engine that it can use
                 // multithreading, if possible
                 parallelLooper = new ParallelLooper();
                 if (Environment.ProcessorCount > 1)
@@ -391,9 +391,8 @@ namespace HammeredGame
                         gameObject.Position = pos;
 
                         System.Numerics.Vector4 rot = gameObject.Rotation.ToVector4().ToNumerics();
-                        ImGui.DragFloat4("Rotation", ref rot, 0.01f);
-                        gameObject.Rotation = new Microsoft.Xna.Framework.Quaternion(rot);
-
+                        ImGui.DragFloat4("Rotation", ref rot, 0.01f, -1.0f, 1.0f);
+                        gameObject.Rotation = Microsoft.Xna.Framework.Quaternion.Normalize(new Microsoft.Xna.Framework.Quaternion(rot));
                         ImGui.DragFloat("Scale", ref gameObject.Scale, 0.01f);
 
                         ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
