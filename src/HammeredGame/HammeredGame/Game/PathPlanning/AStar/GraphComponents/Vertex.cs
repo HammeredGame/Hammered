@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HammeredGame.Game.PathPlanning.GraphComponents
+namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
 {
     /// <summary>
     /// The <c>Vertex</c> class represents a single vertex in a graph.
@@ -33,7 +33,7 @@ namespace HammeredGame.Game.PathPlanning.GraphComponents
 
         public Vertex(int id, double traveled, double heuristic, LinkedList<Edge> edges) : this(id, traveled, heuristic)
         {
-            Edges = edges; 
+            Edges = edges;
         }
 
         public int CompareTo(object incomingObject)
