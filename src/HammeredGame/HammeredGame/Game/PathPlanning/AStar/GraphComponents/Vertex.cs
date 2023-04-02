@@ -14,7 +14,7 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
     /// </summary>
     public class Vertex : IComparable
     {
-        public int ID { get; }
+        public string ID { get; }
         public double TraveledDistance { get; set; } = double.PositiveInfinity;
         public double HeuristicValue { get; set; } = double.PositiveInfinity;
         /// <value>
@@ -23,15 +23,14 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
         /// </value>
         public LinkedList<Edge> Edges { get; set; }
 
-        public Vertex Origin = null;
-        public Vertex(int id, double traveled, double heuristic)
+        public Vertex(string id, double traveled, double heuristic)
         {
             ID = id;
             TraveledDistance = traveled;
             HeuristicValue = heuristic;
         }
 
-        public Vertex(int id, double traveled, double heuristic, LinkedList<Edge> edges) : this(id, traveled, heuristic)
+        public Vertex(string id, double traveled, double heuristic, LinkedList<Edge> edges) : this(id, traveled, heuristic)
         {
             Edges = edges;
         }
