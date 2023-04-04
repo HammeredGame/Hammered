@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BEPUphysics;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
 {
@@ -34,7 +35,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public ImmovableInteractable(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public ImmovableInteractable(Model model, Vector3 pos, float scale, Texture2D t, Space space) : base(model, pos, scale, t, space)
         {
         }
 

@@ -1,8 +1,10 @@
-﻿using HammeredGame.Core;
+﻿using BEPUphysics;
+using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +21,17 @@ namespace HammeredGame.Game
         /// The XML document once loaded through the constructor.
         /// </summary>
         private XDocument targetXML;
+
+        /// <summary>
+        /// The active physics space attached to the loaded level.
+        /// The bouding volumes of the created game objects will be added into this
+        /// space object - and all physics calculations will be done within this context
+        /// </summary>
+        /// <remarks>
+        /// TODO: Not sure if this is the best way to reference the active physics space 
+        /// for the level.
+        /// </remarks>
+        private Space activeSpace;
 
         /// <summary>
         /// A static mapping of simple value types in XML to their parsing functions.
@@ -38,8 +51,9 @@ namespace HammeredGame.Game
         /// as Copy (instead of Build).
         /// </summary>
         /// <param name="filePath">The file path to the XML file, under the Content directory</param>
+        /// <param name="space">The active physics space that will be linked to the level being loaded</param>
         /// <exception cref="Exception">Raised if the XML file could not be loaded</exception>
-        public XMLLevelLoader(string filePath)
+        public XMLLevelLoader(string filePath, Space space)
         {
             var loadedXML = File.ReadAllText("Content/" + filePath, Encoding.UTF8);
             var xml = XDocument.Parse(loadedXML);
@@ -51,6 +65,8 @@ namespace HammeredGame.Game
             }
 
             targetXML = xml;
+
+            this.activeSpace = space;
         }
 
         /// <summary>
@@ -164,6 +180,9 @@ namespace HammeredGame.Game
                     texture = cm.Load<Texture2D>(textureElement.Value);
                 }
                 arguments.Add(texture);
+
+                // ADD physics space to arguments
+                arguments.Add(this.activeSpace);
 
                 // If any other object-specific arguments are required by the constructor, they are
                 // specified using other_constructor_args, which contains values in order. We don't

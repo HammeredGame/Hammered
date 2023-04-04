@@ -7,6 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HammeredGame.Core;
+using BEPUphysics;
+using BEPUphysics.Entities.Prefabs;
+using BEPUphysics.PositionUpdating;
+using Hammered_Physics.Core;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -43,7 +47,7 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Hammer specific variables
-        private float hammerSpeed = 0.2f;
+        private float hammerSpeed = 10f;
         private HammerState hammerState;
 
         public Vector3 OldPosition { get; private set; }
@@ -51,11 +55,43 @@ namespace HammeredGame.Game.GameObjects
         private readonly Input input;
         private readonly Player player;
 
-        public Hammer(Model model, Vector3 pos, float scale, Texture2D t, Input inp, Player p)
-            : base(model, pos, scale, t)
+        public Hammer(Model model, Vector3 pos, float scale, Texture2D t, Space space, Input inp, Player p)
+            : base(model, pos, scale, t, space)
         {
             this.input = inp;
             player = p;
+
+            hammerState = HammerState.WithCharacter;
+
+            // Defining the bounding volume entity (currently a box, but this could be
+            // defined as a capsule/cylinder/compound/etc. --> see bepuphysics1 repo)
+            this.Entity = new Box(MathConverter.Convert(this.player.Position), 1, 3, 1);
+
+            // Adding a tag to the entity, to allow us to potentially filter and
+            // view bounding volumes (for debugging)
+            this.Entity.Tag = "HammerBounds";
+
+            // Setting the entity's collision information tag to the game object itself.
+            // This will help in checking for specific collisions in object-specific 
+            // collision handling.
+            this.Entity.CollisionInformation.Tag = this;
+
+            // Set hammer to continuous collision detection
+            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+
+            // Set the entity's collision rule to 'NoBroadPhase' -->
+            // This will ensure that the hammer will not be considered for collision
+            // constraint solving while attached to the player character
+            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoBroadPhase;
+
+            // Set the entity's local inverse intertia tensor --> this ensures that the 
+            // player character doesn't just fall over due to gravity
+            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+
+            this.Entity.Material.KineticFriction = 1.0f;
+
+            // Add entity to the level's active physics space
+            this.ActiveSpace.Add(this.Entity);
         }
 
         // Update function (called every tick)
@@ -68,6 +104,7 @@ namespace HammeredGame.Game.GameObjects
             if (hammerState == HammerState.WithCharacter)
             {
                 Position = player.GetPosition();
+                this.Entity.Position = MathConverter.Convert(player.GetPosition());
             }
 
             // Get the input via keyboard or gamepad
@@ -83,35 +120,38 @@ namespace HammeredGame.Game.GameObjects
             {
                 if (hammerState == HammerState.Enroute)
                 {
-                    // Update position
-                    Position += hammerSpeed * (player.GetPosition() - Position);
+                    // Update Hammer's Linear Velocity
+                    this.Entity.LinearVelocity = hammerSpeed * MathConverter.Convert(player.GetPosition() - this.GetPosition());
 
-                    // If position is close enough to player, end its traversal
-                    if ((Position - player.GetPosition()).Length() < 0.5f)
-                    {
-                        hammerState = HammerState.WithCharacter;
-                    }
+                    //// Update position
+                    //Position += hammerSpeed * (player.GetPosition() - Position);
 
-                    this.ComputeBounds();
+                    //// If position is close enough to player, end its traversal
+                    //if ((Position - player.GetPosition()).Length() < 0.5f)
+                    //{
+                    //    hammerState = HammerState.WithCharacter;
+                    //}
+
+                    //this.ComputeBounds();
                 }
 
-                // Check for any collisions along the way
-                //BoundingBox hammerbbox = this.GetBounds();
-                foreach(EnvironmentObject gO in HammeredGame.ActiveLevelObstacles)
-                {
-                    if (gO != null && gO.IsVisible())
-                    {
-                        //BoundingBox objectbbox = gO.GetBounds();
-                        if (this.BoundingBox.Intersects(gO.BoundingBox) && hammerState != HammerState.WithCharacter)
-                        {
-                            gO.TouchingHammer(this);
-                        }
-                        else
-                        {
-                            gO.NotTouchingHammer(this);
-                        }
-                    }
-                }
+                //// Check for any collisions along the way
+                ////BoundingBox hammerbbox = this.GetBounds();
+                //foreach(EnvironmentObject gO in HammeredGame.ActiveLevelObstacles)
+                //{
+                //    if (gO != null && gO.IsVisible())
+                //    {
+                //        //BoundingBox objectbbox = gO.GetBounds();
+                //        if (this.BoundingBox.Intersects(gO.BoundingBox) && hammerState != HammerState.WithCharacter)
+                //        {
+                //            gO.TouchingHammer(this);
+                //        }
+                //        else
+                //        {
+                //            gO.NotTouchingHammer(this);
+                //        }
+                //    }
+                //}
             }
         }
 
@@ -121,8 +161,9 @@ namespace HammeredGame.Game.GameObjects
             // Hammer Drop Mechanic
             if (hammerState == HammerState.WithCharacter && input.KeyDown(Keys.E))
             {
-                hammerState = HammerState.Dropped;
-                this.ComputeBounds();
+                //hammerState = HammerState.Dropped;
+                DropHammer();
+                //this.ComputeBounds();
             }
 
             // Hammer Call Back Mechanic
@@ -131,6 +172,11 @@ namespace HammeredGame.Game.GameObjects
             if (hammerState == HammerState.Dropped && input.KeyDown(Keys.Q))
             {
                 hammerState = HammerState.Enroute;
+
+                // When hammer is enroute, the physics engine shouldn't solve for 
+                // collision constraints with it --> rather we want to manually
+                // handle collisions
+                this.Entity.BecomeKinematic();
             }
         }
 
@@ -150,6 +196,27 @@ namespace HammeredGame.Game.GameObjects
                     hammerState = HammerState.Enroute;
                 }
             }
+        }
+
+        public void DropHammer()
+        {
+            // Set hammer state to dropped
+            hammerState = HammerState.Dropped;
+
+            // Add a lot of mass to the hammer, so it becomes a dynamic entity
+            // --> this was to ensure that the hammer interacts properly with
+            // pressure plates... However, this may also be the cause of other
+            // issues, so this bit of code may need to be tweaked.
+            this.Entity.BecomeDynamic(10000);
+            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+
+            // Only gravitational force being applied to the entity, velocity in the other
+            // directions are zeroed out --> hammer is dropped, so it shouldn't move
+            this.Entity.LinearVelocity = new BEPUutilities.Vector3(0, -98.1f, 0);
+
+            // Normal collisions to ensure the physics engine solves collision constraint with 
+            // this entity --> Also, probably a cause for issues
+            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
         }
 
         public bool IsEnroute()

@@ -9,6 +9,7 @@ using ImMonoGame.Thing;
 using ImGuiNET;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game;
+using BEPUphysics;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
@@ -35,7 +36,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
     {
         // Any Interactable specific variables go here
 
-        public FloorObject(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public FloorObject(Model model, Vector3 pos, float scale, Texture2D t, Space space) : base(model, pos, scale, t, space)
         {
             IsGround = true;
         }

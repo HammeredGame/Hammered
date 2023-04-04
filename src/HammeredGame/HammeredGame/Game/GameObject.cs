@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BEPUphysics.Entities;
+using BEPUphysics;
+using Hammered_Physics.Core;
 
 namespace HammeredGame.Game
 {
@@ -34,12 +37,23 @@ namespace HammeredGame.Game
     {
         // Common variables for any object in the game (will be modified as we develop further)
         public Model Model;
+
+        /// <summary>
+        /// Physics Entity that this model follows.
+        /// </summary>
+        public Entity Entity;
+
         public Vector3 Position;
         public Quaternion Rotation;
         public float Scale;
 
         public Texture2D Texture;
+
+        // Probably unnecessary now, since we're shifting to using a physics engine
         public BoundingBox BoundingBox { get; private set; }
+
+        // The active level physics space to add and remove entities for physics constraint solving
+        public Space ActiveSpace;
 
         /// <summary>
         ///  The "flag" variable <code>bool visible</code> is used to indicate the state in which the <c>GameObject</c>
@@ -50,13 +64,15 @@ namespace HammeredGame.Game
 
         private List<(int, float[])> allVertexData;
 
-        protected GameObject(Model model, Vector3 pos, float scale, Texture2D t)
+        protected GameObject(Model model, Vector3 pos, float scale, Texture2D t, Space space)
         {
             this.Model = model;
             this.Position = pos;
             this.Rotation = Quaternion.Identity;
             this.Scale = scale;
             this.Texture = t;
+
+            this.ActiveSpace = space;
 
             // Precalculate the vertex buffer data, since VertextBuffer.GetData is very
             // expensive to perform on every Update. We can find the bounding box of the
@@ -76,7 +92,7 @@ namespace HammeredGame.Game
                 }
             }
 
-            this.ComputeBounds();
+            //this.ComputeBounds();
         }
 
         public bool IsVisible()
@@ -238,7 +254,11 @@ namespace HammeredGame.Game
         /// <returns></returns>
         public Vector3 GetPosition()
         {
-            return Position;
+            // If an 'Entity' is attached to the game object, return its position.
+            // Otherwise, return the mesh/model's position (this is usually only the
+            // case for Static Meshes - typically used for static ground models)
+            if (this.Entity != null) return MathConverter.Convert(this.Entity.Position);
+            else return Position;
         }
 
         /// <summary>
@@ -247,7 +267,8 @@ namespace HammeredGame.Game
         /// <returns></returns>
         public Quaternion GetRotation()
         {
-            return Rotation;
+            if (this.Entity != null) return MathConverter.Convert(this.Entity.Orientation);
+            else return Rotation;
         }
     }
 }

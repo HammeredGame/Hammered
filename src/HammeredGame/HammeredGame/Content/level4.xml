@@ -12,7 +12,7 @@
     <model>character-colored</model>
     <position type="vec3">10 0 -45</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.02</scale>
+    <scale type="float">1</scale>
     <!-- The following are passed strictly in order to the constructor.
 		Their tag names are irrelevant, the parser does not use them.
 
@@ -28,7 +28,7 @@
     <model>temp_hammer2</model>
     <position type="vec3">10 0 -35</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.01</scale>
+    <scale type="float">1</scale>
     <other_constructor_args>
       <arg object_ref_id="input" />
       <arg object_ref_id="player1" />
@@ -38,7 +38,7 @@
     <model>island_colored</model>
     <position type="vec3">0 -32 0</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.1</scale>
+    <scale type="float">1</scale>
   </object>
 
 
@@ -48,7 +48,7 @@
     <model>fence</model>
     <position type="vec3">-10 1.5 -47.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.08</scale>
+    <scale type="float">1</scale>
     <other_constructor_args>
       <isGoal type="boolean">false</isGoal>
     </other_constructor_args>
@@ -58,7 +58,7 @@
     <model>test_obstacle</model>
     <position type="vec3">15 2.5 -67.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.02</scale>
+    <scale type="float">1</scale>
 	  <texture type="texture2d">awesome_goal_texture</texture>
     <other_constructor_args>
       <isGoal type="boolean">true</isGoal>
@@ -70,14 +70,14 @@
     <model>diffuse_tree</model>
     <position type="vec3">-3 1 -32</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.05</scale>
+    <scale type="float">1</scale>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree">
     <model>diffuse_tree</model>
     <position type="vec3">-3 1 22</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.05</scale>
+    <scale type="float">1</scale>
   </object>
 
 
@@ -86,7 +86,7 @@
     <model>temp_pressureplate2</model>
     <position type="vec3">-3 1 -45</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.02</scale>
+    <scale type="float">1</scale>
     <other_constructor_args>
       <arg object_ref_id="door_pp" />
     </other_constructor_args>
@@ -97,7 +97,7 @@
     <model>test_obstacle</model>
     <position type="vec3">10 1 15</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.01</scale>
+    <scale type="float">1</scale>
 	  <texture type="texture2d">awesome_key_texture</texture>
     <other_constructor_args>
       <arg object_ref_id="door_goal" />
@@ -109,52 +109,52 @@
     <model>foliage_colored</model>
     <position type="vec3">7 0 -35</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.05</scale>
+    <scale type="float">1</scale>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
     <model>foliage_colored</model>
     <position type="vec3">-3 0 12</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.05</scale>
+    <scale type="float">1</scale>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
     <model>foliage_colored</model>
     <position type="vec3">-20 0 -35</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.05</scale>
+    <scale type="float">1</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
     <model>foliage_colored</model>
     <position type="vec3">-20 0 -55</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.05</scale>
+    <scale type="float">1</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
     <model>foliage_colored</model>
     <position type="vec3">-20 0 -25</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.05</scale>
+    <scale type="float">1</scale>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
     <model>foliage_colored</model>
     <position type="vec3">7 0 -15</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.05</scale>
+    <scale type="float">1</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
     <model>foliage_colored</model>
     <position type="vec3">17 0 -15</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.05</scale>
+    <scale type="float">1</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject">
     <model>foliage_colored</model>
     <position type="vec3">27 0 -15</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.05</scale>
+    <scale type="float">1</scale>
   </object>
 
 
@@ -165,20 +165,20 @@
     <model>temp_water_big</model>
     <position type="vec3">-12 1 -30.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.03</scale>
+    <scale type="float">1</scale>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
     <model>temp_water_big</model>
     <position type="vec3">34 1 -30.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.03</scale>
+    <scale type="float">1</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
     <model>temp_water_big</model>
     <position type="vec3">34 1 -50.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.03</scale>
+    <scale type="float">1</scale>
   </object>
 
   <!--      Horizontal segments    -->
@@ -186,14 +186,14 @@
     <model>temp_water_horizontal_segment1</model>
     <position type="vec3">10 1 -25</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.03</scale>
+    <scale type="float">1</scale>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
     <model>temp_water_horizontal_segment1</model>
     <position type="vec3">-2 1 -55.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.02</scale>
+    <scale type="float">1</scale>
   </object>
 
 
@@ -204,14 +204,14 @@
     <model>temp_water_horizontal_segment1</model>
     <position type="vec3">0 1 2.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.03</scale>
+    <scale type="float">1</scale>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
     <model>temp_water_horizontal_segment1</model>
     <position type="vec3">0 1 32.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.03</scale>
+    <scale type="float">1</scale>
   </object>
 
   <!--    Horizontal segments    -->
@@ -219,27 +219,27 @@
     <model>temp_water_big</model>
     <position type="vec3">-16 1 27</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.03</scale>
+    <scale type="float">1</scale>
   </object>
 	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
 	<model>temp_water_big</model>
 	<position type="vec3">-16 1 8</position>
 	<rotation type="quaternion">0 0 0 1</rotation>
-	<scale type="float">0.03</scale>
+	<scale type="float">1</scale>
 	</object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
     <model>temp_water_big</model>
     <position type="vec3">22 1 27</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">0.03</scale>
+    <scale type="float">1</scale>
   </object>
 
 	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
 		<model>temp_water_big</model>
 		<position type="vec3">22 1 8</position>
 		<rotation type="quaternion">0 0 0 1</rotation>
-		<scale type="float">0.03</scale>
+		<scale type="float">1</scale>
 	</object>
 
 	<!-- rocks -->

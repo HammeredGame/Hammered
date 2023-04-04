@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ImMonoGame.Thing;
 using ImGuiNET;
+using BEPUphysics;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -16,8 +17,8 @@ namespace HammeredGame.Game.GameObjects
         /// TODO: Consider renaming the field <code>IsGround</code> as "IsWalkable"?
         /// </value>
         public bool IsGround = false;
-        public EnvironmentObject(Model model, Vector3 pos, float scale, Texture2D t)
-            : base (model, pos, scale, t)
+        public EnvironmentObject(Model model, Vector3 pos, float scale, Texture2D t, Space space)
+            : base (model, pos, scale, t, space)
         {
         }
 
@@ -27,28 +28,28 @@ namespace HammeredGame.Game.GameObjects
         }
 
 
-        /// <summary>
-        /// Called on game updates if the object is colliding with the global hammer object.
-        /// </summary>
-        /// <param name="hammer"></param>
-        public virtual void TouchingHammer(Hammer hammer) { }
+        ///// <summary>
+        ///// Called on game updates if the object is colliding with the global hammer object.
+        ///// </summary>
+        ///// <param name="hammer"></param>
+        //public virtual void TouchingHammer(Hammer hammer) { }
 
-        /// <summary>
-        /// Called on game updates if the object is not colliding with the global hammer object.
-        /// </summary>
-        /// <param name="hammer"></param>
-        public virtual void NotTouchingHammer(Hammer hammer) { }
+        ///// <summary>
+        ///// Called on game updates if the object is not colliding with the global hammer object.
+        ///// </summary>
+        ///// <param name="hammer"></param>
+        //public virtual void NotTouchingHammer(Hammer hammer) { }
 
-        /// <summary>
-        /// Called on game updates if the object is colliding with the global player object.
-        /// </summary>
-        /// <param name="player"></param>
-        public virtual void TouchingPlayer(Player player) { }
+        ///// <summary>
+        ///// Called on game updates if the object is colliding with the global player object.
+        ///// </summary>
+        ///// <param name="player"></param>
+        //public virtual void TouchingPlayer(Player player) { }
 
-        /// <summary>
-        /// Called on game updates if the object is not colliding with the global player object.
-        /// </summary>
-        /// <param name="player"></param>
-        public virtual void NotTouchingPlayer(Player player) { }
+        ///// <summary>
+        ///// Called on game updates if the object is not colliding with the global player object.
+        ///// </summary>
+        ///// <param name="player"></param>
+        //public virtual void NotTouchingPlayer(Player player) { }
     }
 }

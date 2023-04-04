@@ -1,4 +1,9 @@
-﻿using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+﻿using BEPUphysics;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.Entities.Prefabs;
+using BEPUphysics.PositionUpdating;
+using Hammered_Physics.Core;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -38,20 +43,56 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         private readonly Door correspondingDoor;
         private bool keyPickedUp = false;
 
-        public Key(Model model, Vector3 pos, float scale, Texture2D t, Door correspondingDoor) :
-            base(model, pos, scale, t)
+        public Key(Model model, Vector3 pos, float scale, Texture2D t, Space space, Door correspondingDoor) :
+            base(model, pos, scale, t, space)
         {
             this.correspondingDoor = correspondingDoor;
+
+            this.Entity = new Box(MathConverter.Convert(this.Position), 5, 1, 5);
+
+            this.Entity.Tag = "CollectibleBounds";
+
+            this.Entity.CollisionInformation.Tag = this;
+
+            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+
+            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+
+            this.ActiveSpace.Add(this.Entity);
+
+            this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+        }
+
+        private void Events_DetectingInitialCollision(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            //This type of event can occur when an entity hits any other object which can be collided with.
+            //They aren't always entities; for example, hitting a StaticMesh would trigger this.
+            //Entities use EntityCollidables as collision proxies; see if the thing we hit is one.
+            var otherEntityInformation = other as EntityCollidable;
+            if (otherEntityInformation != null)
+            {
+                //We hit an entity!
+
+                if (other.Tag is Player)
+                {
+                    correspondingDoor.SetKeyFound(true);
+                    this.SetVisible(false);
+                    this.ActiveSpace.Remove(this.Entity);
+                    keyPickedUp = true;
+                }
+
+            }
         }
 
         public bool IsPickedUp() => keyPickedUp;
 
-        public override void TouchingPlayer(Player player)
-        {
-            //this.activateTrigger();
-            correspondingDoor.SetKeyFound(true);
-            this.SetVisible(false);
-            keyPickedUp = true;
-        }
+        //public override void TouchingPlayer(Player player)
+        //{
+        //    //this.activateTrigger();
+        //    correspondingDoor.SetKeyFound(true);
+        //    this.SetVisible(false);
+        //    keyPickedUp = true;
+        //}
     }
 }
