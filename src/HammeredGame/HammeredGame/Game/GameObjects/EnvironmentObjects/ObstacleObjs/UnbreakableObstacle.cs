@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BEPUphysics;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
 {
@@ -26,7 +27,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public UnbreakableObstacle(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public UnbreakableObstacle(Model model, Vector3 pos, float scale, Texture2D t, Space space) : base(model, pos, scale, t, space)
         {
         }
 
@@ -35,16 +36,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
             // Do nothing (for now)
         }
 
-        /// <remarks>
-        /// This function should only be entered with a hammer in the <c>Enroute</c> state,
-        /// i.e if the hammer is in the <c>WithCharacter</c> state and this function is entered,
-        /// something has gone wrong. 
-        /// </remarks>
-        public override void TouchingHammer(Hammer hammer)
-        {
-            // Unbreakable obstacles currently fully block the hammer on it's path back to the player
-            hammer.SetState(Hammer.HammerState.Dropped);
-            hammer.Position = hammer.OldPosition;
-        }
+        ///// <remarks>
+        ///// This function should only be entered with a hammer in the <c>Enroute</c> state,
+        ///// i.e if the hammer is in the <c>WithCharacter</c> state and this function is entered,
+        ///// something has gone wrong. 
+        ///// </remarks>
+        //public override void TouchingHammer(Hammer hammer)
+        //{
+        //    // Unbreakable obstacles currently fully block the hammer on it's path back to the player
+        //    hammer.SetState(Hammer.HammerState.Dropped);
+        //    hammer.Position = hammer.OldPosition;
+        //}
     }
 }

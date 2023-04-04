@@ -1,4 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BEPUphysics;
+using BEPUphysics.Entities.Prefabs;
+using BEPUphysics.PositionUpdating;
+using Hammered_Physics.Core;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -48,59 +52,100 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private bool treeFallen;
         private bool playerOnTree;
 
-        public Tree(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public Tree(Model model, Vector3 pos, float scale, Texture2D t, Space space) : base(model, pos, scale, t, space)
         {
             treeFallen = false;
+
+            this.Entity = new Box(MathConverter.Convert(this.Position), 7, 30, 7);
+            this.Entity.Tag = "MovableObstacleBounds";
+            this.Entity.CollisionInformation.Tag = this;
+            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
+            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+            this.ActiveSpace.Add(this.Entity);
+
+            this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
+            this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
+        }
+
+        private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            if (other.Tag is Hammer && !treeFallen)
+            {
+                var hammer = other.Tag as Hammer;
+                BEPUutilities.Vector3 fallDirection = hammer.Entity.LinearVelocity;
+                fallDirection.Normalize();
+                sender.Entity.Orientation *= BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection), BEPUutilities.MathHelper.ToRadians(90));
+                SetTreeFallen(true);
+            }
+
+            if (other.Tag is Player && treeFallen)
+            {
+                var player = other.Tag as Player;
+                this.playerOnTree = true;
+                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, player.Entity.Position.Y + 3.0f, player.Entity.Position.Z);
+            }
+        }
+
+        private void Events_CollisionEnded(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            if (other.Tag is Player && treeFallen)
+            {
+                var player = other.Tag as Player;
+                this.playerOnTree = false;
+                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, 0.0f, player.Entity.Position.Z);
+            }
         }
 
         public void SetTreeFallen(bool treeFallen)
         {
             this.treeFallen = treeFallen;
+            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
         }
 
-        public override void TouchingHammer(Hammer hammer)
-        {
-            if (!treeFallen)
-            {
-                SetTreeFallen(true);
-                Vector3 fallDirection = hammer.Position - hammer.OldPosition;
-                fallDirection.Normalize();
-                this.Rotation *= Quaternion.CreateFromAxisAngle(Vector3.Cross(Vector3.Up, fallDirection), MathHelper.ToRadians(90));
-                //this.position += new Vector3(0.0f, 20.0f, 0.0f);
-                //System.Diagnostics.Debug.WriteLine(Vector3.UnitZ);
-            }
-        }
+        //public override void TouchingHammer(Hammer hammer)
+        //{
+        //    if (!treeFallen)
+        //    {
+        //        SetTreeFallen(true);
+        //        Vector3 fallDirection = hammer.Position - hammer.OldPosition;
+        //        fallDirection.Normalize();
+        //        this.Rotation *= Quaternion.CreateFromAxisAngle(Vector3.Cross(Vector3.Up, fallDirection), MathHelper.ToRadians(90));
+        //        //this.position += new Vector3(0.0f, 20.0f, 0.0f);
+        //        //System.Diagnostics.Debug.WriteLine(Vector3.UnitZ);
+        //    }
+        //}
 
-        public bool isPlayerOn()
+        public bool IsPlayerOn()
         {
             return this.playerOnTree;
         }
 
-        public override void TouchingPlayer(Player player)
-        {
-            if (!treeFallen)
-            {
-                base.TouchingPlayer(player);
-            }
-            else
-            {
-                //player.OnTree = true;
-                this.playerOnTree = true;
-                player.Position.Y = 3.0f; // this.BoundingBox.Max.Y; //- this.boundingBox.Min.Y;
-            }
-        }
+        //public override void TouchingPlayer(Player player)
+        //{
+        //    if (!treeFallen)
+        //    {
+        //        base.TouchingPlayer(player);
+        //    }
+        //    else
+        //    {
+        //        //player.OnTree = true;
+        //        this.playerOnTree = true;
+        //        player.Position.Y = 3.0f; // this.BoundingBox.Max.Y; //- this.boundingBox.Min.Y;
+        //    }
+        //}
 
-        public override void NotTouchingPlayer(Player player)
-        {
-            if (treeFallen)
-            {
-                //System.Diagnostics.Debug.WriteLine("OFF TREE");
-                //player.OnTree = false;
-                this.playerOnTree = false;
+        //public override void NotTouchingPlayer(Player player)
+        //{
+        //    if (treeFallen)
+        //    {
+        //        //System.Diagnostics.Debug.WriteLine("OFF TREE");
+        //        //player.OnTree = false;
+        //        this.playerOnTree = false;
 
-                if (!player.OnTree)
-                    player.Position.Y = 0.0f;
-            }
-        }
+        //        if (!player.OnTree)
+        //            player.Position.Y = 0.0f;
+        //    }
+        //}
     }
 }

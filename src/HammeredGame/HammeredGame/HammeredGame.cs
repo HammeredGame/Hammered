@@ -1,4 +1,6 @@
-﻿using HammeredGame.Core;
+﻿using BEPUphysics.Settings;
+using BEPUphysics;
+using HammeredGame.Core;
 using HammeredGame.Game;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
@@ -25,6 +27,8 @@ namespace HammeredGame
         private GraphicsDevice gpu;
         public int ScreenW, ScreenH;
         private Camera camera;
+
+        private Space space;
 
         // INPUT and other related stuff
         private Input input;
@@ -113,13 +117,21 @@ namespace HammeredGame
         {
             tempFont = Content.Load<SpriteFont>("temp_font");
 
+            //Construct a new space for the physics simulation to occur within.
+            space = new Space();
+
+            //Set the gravity of the simulation by accessing the simulation settings of the space.
+            //It defaults to (0,0,0); this changes it to an 'earth like' gravity.
+            //Try looking around in the space's simulationSettings to familiarize yourself with the various options.
+            space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -98.1f, 0);
+            CollisionDetectionSettings.AllowedPenetration = 0.001f;
+
             InitializeLevel(testObstaclesCombo);
 
             bgMusic = Content.Load<Song>("Audio/BGM_V1");
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
-
         }
 
         /// <summary>
@@ -133,7 +145,7 @@ namespace HammeredGame
             // Clear the UI list to get a clean state with no duplicates
             uiEntities.Clear();
 
-            XMLLevelLoader levelLoader = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml");
+            XMLLevelLoader levelLoader = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml", space);
 
             camera = levelLoader.GetCamera(gpu, input);
             gameObjects = levelLoader.GetGameObjects(Content, input, camera);
@@ -197,6 +209,9 @@ namespace HammeredGame
 
             // Update camera
             camera.UpdateCamera(player);
+
+            //Steps the simulation forward one time step.
+            space.Update();
 
             base.Update(gameTime);
         }

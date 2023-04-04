@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BEPUphysics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -29,13 +30,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public MovableObstacle(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public MovableObstacle(Model model, Vector3 pos, float scale, Texture2D t, Space space) : base(model, pos, scale, t, space)
         {
         }
 
         public override void Update(GameTime gameTime)
         {
-            this.ComputeBounds();
+            //this.ComputeBounds();
             base.Update(gameTime);
         }
     }

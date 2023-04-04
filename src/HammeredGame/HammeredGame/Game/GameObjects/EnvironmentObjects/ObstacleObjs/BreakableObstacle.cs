@@ -5,6 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BEPUphysics.Entities.Prefabs;
+using BEPUphysics.PositionUpdating;
+using Hammered_Physics.Core;
+using BEPUphysics;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
 {
@@ -26,8 +31,39 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
     {
         // Any Obstacle specific variables go here
 
-        public BreakableObstacle(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public BreakableObstacle(Model model, Vector3 pos, float scale, Texture2D t, Space space) : base(model, pos, scale, t, space)
         {
+            this.Entity = new Box(MathConverter.Convert(this.Position), 7, 30, 7);
+            this.Entity.Tag = "BreakableObstacleBounds";
+            this.Entity.CollisionInformation.Tag = this;
+            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+            this.ActiveSpace.Add(this.Entity);
+
+            this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected; ;
+        }
+
+        private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            //This type of event can occur when an entity hits any other object which can be collided with.
+            //They aren't always entities; for example, hitting a StaticMesh would trigger this.
+            //Entities use EntityCollidables as collision proxies; see if the thing we hit is one.
+            var otherEntityInformation = other as EntityCollidable;
+            if (otherEntityInformation != null)
+            {
+                //System.Diagnostics.Debug.WriteLine("OK!");
+                if (other.Tag is Hammer)
+                {
+                    var hammer = other.Tag as Hammer;
+                    if (hammer.IsEnroute())
+                    {
+                        this.SetVisible(false);
+                        this.ActiveSpace.Remove(sender.Entity);
+                    }
+                }
+
+            }
         }
 
         public override void Update(GameTime gameTime)
@@ -35,15 +71,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
             // Do nothing (for now)
         }
 
-        public override void TouchingHammer(Hammer hammer)
-        {
-            // If the hammer is enroute (i.e in it's destructive state), 
-            // this obstacle's visible boolean will be set to false - which indicates
-            // that this object should no longer be drawn on screen, as well as not be 
-            // considered for future collisions.
-            if (hammer.IsEnroute())
-                Visible = false;
-            //HammeredGame.activeLevelObstacles.Remove(this);
-        }
+        //public override void TouchingHammer(Hammer hammer)
+        //{
+        //    // If the hammer is enroute (i.e in it's destructive state), 
+        //    // this obstacle's visible boolean will be set to false - which indicates
+        //    // that this object should no longer be drawn on screen, as well as not be 
+        //    // considered for future collisions.
+        //    if (hammer.IsEnroute())
+        //        Visible = false;
+        //    //HammeredGame.activeLevelObstacles.Remove(this);
+        //}
     }
 }

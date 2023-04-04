@@ -95,7 +95,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.02
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:character-colored.fbx
@@ -133,7 +133,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=90
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.05
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:diffuse_tree.fbx
@@ -152,7 +152,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.08
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:fence.fbx
@@ -171,7 +171,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.05
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:foliage_colored.fbx
@@ -190,7 +190,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:island_colored.fbx
@@ -364,7 +364,7 @@
 /processorParam:RotationX=90
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.01
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:temp_hammer2.fbx
@@ -383,7 +383,7 @@
 /processorParam:RotationX=90
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.02
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:temp_pressureplate2.fbx
@@ -459,7 +459,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.03
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:temp_water_big.fbx
@@ -478,7 +478,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.03
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:temp_water_horizontal_segment1.fbx
@@ -528,7 +528,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.02
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:test_obstacle.fbx
