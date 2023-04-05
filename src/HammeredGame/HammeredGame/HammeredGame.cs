@@ -15,6 +15,11 @@ using System.Collections.Generic;
 using BEPUphysics.Entities;
 using BEPUutilities.Threading;
 using System;
+using HammeredGame.Game.GameObjects.EmptyGameObjects;
+using BEPUphysics.Entities.Prefabs;
+using BEPUutilities;
+using Hammered_Physics.Core;
+using BEPUphysics.Paths.PathFollowing;
 
 namespace HammeredGame
 {
@@ -66,6 +71,10 @@ namespace HammeredGame
 
         private readonly List<IImGui> uiEntities = new();
 
+        // Bounding Volume debugging variables
+        private bool drawBounds = false;
+        private List<EntityDebugDrawer> debugEntities = new();
+
         public HammeredGame()
         {
             // Get width and height of desktop and set the graphics device settings
@@ -101,7 +110,7 @@ namespace HammeredGame
             input = new Input(pp, mainRenderTarget);
 
             // Initialize Camera class
-            camera = new Camera(gpu, Vector3.Zero, Vector3.Up, input);
+            camera = new Camera(gpu, Microsoft.Xna.Framework.Vector3.Zero, Microsoft.Xna.Framework.Vector3.Up, input);
 
             // Set title for game window
             Window.Title = "HAMMERED";
@@ -196,10 +205,16 @@ namespace HammeredGame
                 }
             }
 
+            //var BoundsPos = new Microsoft.Xna.Framework.Vector3(10f, 0f, -37.5f);
+            //var BoundsObject = new BoundsObject(null, BoundsPos, 1f, null, space, new Box(MathConverter.Convert(BoundsPos), 8, 6, 4));
+
             // The camera and the Game object itself (this class) have an UI, neither of them
             // are in the GameObject list
             uiEntities.Add(camera);
             uiEntities.Add(this);
+
+            // Set up the list of debug entities after all the objects are loaded for debugging visualization
+            SetupDebugBounds();
         }
 
         /// <summary>
@@ -277,6 +292,14 @@ namespace HammeredGame
                 gameObject.Draw(camera.ViewMatrix, camera.ProjMatrix);
             }
 
+            if (drawBounds)
+            {
+                foreach (EntityDebugDrawer entity in debugEntities)
+                {
+                    entity.Draw(gameTime, camera.ViewMatrix, camera.ProjMatrix);
+                }
+            }
+
             // Change the GPU target to null, which means all further draw calls will now write to
             // the back buffer. We need to copy over what we have in the temporary render target.
             gpu.SetRenderTarget(null);
@@ -287,7 +310,7 @@ namespace HammeredGame
             // FOR THE PURPOSES OF THE DEMO, we indicate whether the puzzle is solved here
             if (player.ReachedGoal)
             {
-                spriteBatch.DrawString(tempFont, "PUZZLE SOLVED!! \nPress R on keyboard or Y on controller to reload level", new Vector2(100, 100), Color.Red);
+                spriteBatch.DrawString(tempFont, "PUZZLE SOLVED!! \nPress R on keyboard or Y on controller to reload level", new Microsoft.Xna.Framework.Vector2(100, 100), Color.Red);
             }
 
             // Commit all the data to the back buffer
@@ -312,6 +335,25 @@ namespace HammeredGame
             // Call AfterLayout to finish.
             imGuiRenderer.AfterLayout();
 #endif
+        }
+
+        // Prepare the entities for debugging visualization
+        private void SetupDebugBounds()
+        {
+            debugEntities.Clear();
+            var CubeModel = Content.Load<Model>("cube");
+            //Go through the list of entities in the space and create a graphical representation for them.
+            foreach (Entity e in space.Entities)
+            {
+                Box box = e as Box;
+                if (box != null && (string)box.Tag == "BoundsObjectBounds") //This won't create any graphics for an entity that isn't a box since the model being used is a box.
+                {
+                    BEPUutilities.Matrix scaling = BEPUutilities.Matrix.CreateScale(box.Width, box.Height, box.Length); //Since the cube model is 1x1x1, it needs to be scaled to match the size of each individual box.
+                    EntityDebugDrawer model = new EntityDebugDrawer(e, CubeModel, scaling, this);
+                    //Add the drawable game component for this entity to the game.
+                    debugEntities.Add(model);
+                }
+            }
         }
 
         public void UI()
@@ -349,7 +391,7 @@ namespace HammeredGame
 
                         System.Numerics.Vector4 rot = gameObject.Rotation.ToVector4().ToNumerics();
                         ImGui.DragFloat4("Rotation", ref rot, 0.01f);
-                        gameObject.Rotation = new Quaternion(rot);
+                        gameObject.Rotation = new Microsoft.Xna.Framework.Quaternion(rot);
 
                         ImGui.DragFloat("Scale", ref gameObject.Scale, 0.01f);
 
@@ -359,6 +401,9 @@ namespace HammeredGame
                 }
                 ImGui.TreePop();
             }
+
+            ImGui.Checkbox("DrawBounds", ref drawBounds);
+
             if (ImGui.Button("Export Level"))
             {
                 //new XMLLevelWriter(camera, gameObjects);
