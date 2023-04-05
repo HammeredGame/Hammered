@@ -19,9 +19,6 @@
     <position type="vec3">10 0 -35</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.01</scale>
-    <other_constructor_args>
-      <arg object_ref_id="player1" />
-    </other_constructor_args>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground">
     <model>island_colored</model>
