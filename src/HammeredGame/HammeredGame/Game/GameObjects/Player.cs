@@ -48,12 +48,20 @@ namespace HammeredGame.Game.GameObjects
         public bool OnTree = false;
         public bool ReachedGoal = false;
 
-        private readonly Camera activeCamera;
+        private Camera activeCamera;
 
         // Initialize player class
-        public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Camera cam) : base(services, model, t, pos, rotation, scale)
+        public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
         {
-            this.activeCamera = cam;
+        }
+
+        /// <summary>
+        /// Set the active camera in use, which determines the movement vector for the player.
+        /// </summary>
+        /// <param name="camera"></param>
+        public void SetActiveCamera(Camera camera)
+        {
+            activeCamera = camera;
         }
 
         // Update (called every tick)
@@ -67,18 +75,25 @@ namespace HammeredGame.Game.GameObjects
             ///</value>
             bool moveDirty = false;
 
-            // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
-            // "forward" from the current camera perspective. Calculated by projecting the vector of
-            // the current camera position to the player position, onto the ground, and normalising it.
-            Vector3 forwardDirectionFromCamera = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
+            Vector3 forwardDirection;
+            if (activeCamera != null)
+            {
+                // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
+                // "forward" from the current camera perspective. Calculated by projecting the vector of
+                // the current camera position to the player position, onto the ground, and normalising it.
+                forwardDirection = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
+            } else
+            {
+                forwardDirection = Vector3.UnitX;
+            }
 
             // Handling input from keyboard.
-            moveDirty = this.KeyboardInput(forwardDirectionFromCamera);
+            moveDirty = this.KeyboardInput(forwardDirection);
 
             // Handling input from gamepad.
             if (Services.GetService<Input>().GamePadState.IsConnected)
             {
-                moveDirty = moveDirty || GamepadInput(forwardDirectionFromCamera);
+                moveDirty = moveDirty || GamepadInput(forwardDirection);
             }
 
 
