@@ -12,6 +12,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
+using BEPUphysics.Entities;
+using BEPUutilities.Threading;
+using System;
 
 namespace HammeredGame
 {
@@ -29,6 +32,7 @@ namespace HammeredGame
         private Camera camera;
 
         private Space space;
+        static ParallelLooper parallelLooper;
 
         // INPUT and other related stuff
         private Input input;
@@ -117,15 +121,6 @@ namespace HammeredGame
         {
             tempFont = Content.Load<SpriteFont>("temp_font");
 
-            //Construct a new space for the physics simulation to occur within.
-            space = new Space();
-
-            //Set the gravity of the simulation by accessing the simulation settings of the space.
-            //It defaults to (0,0,0); this changes it to an 'earth like' gravity.
-            //Try looking around in the space's simulationSettings to familiarize yourself with the various options.
-            space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -98.1f, 0);
-            CollisionDetectionSettings.AllowedPenetration = 0.001f;
-
             InitializeLevel(testObstaclesCombo);
 
             bgMusic = Content.Load<Song>("Audio/BGM_V1");
@@ -144,6 +139,31 @@ namespace HammeredGame
         {
             // Clear the UI list to get a clean state with no duplicates
             uiEntities.Clear();
+
+            // Construct a new space for the physics simulation to occur within.
+            // Using this to clear the physics space, in case the level is reloaded.
+            // TODO: There's no RemoveAllEntities function in bepuphysics, and manually 
+            // removing all the entities doesn't work. Not sure if the current approach is efficient.
+            if (parallelLooper == null)
+            {
+                // Initialize paraller looper to tell the physics engine that it can use 
+                // multithreading, if possible
+                parallelLooper = new ParallelLooper();
+                if (Environment.ProcessorCount > 1)
+                {
+                    for (int i = 0; i < Environment.ProcessorCount; i++)
+                    {
+                        parallelLooper.AddThread();
+                    }
+                }
+            }
+            space = new Space(parallelLooper);
+
+            //Set the gravity of the simulation by accessing the simulation settings of the space.
+            //It defaults to (0,0,0); this changes it to an 'earth like' gravity.
+            //Try looking around in the space's simulationSettings to familiarize yourself with the various options.
+            space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -98.1f, 0);
+            CollisionDetectionSettings.AllowedPenetration = 0.001f;
 
             XMLLevelLoader levelLoader = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml", space);
 
