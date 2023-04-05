@@ -141,10 +141,10 @@ namespace HammeredGame
             // Clear the UI list to get a clean state with no duplicates
             uiEntities.Clear();
 
-            XMLLevelLoader levelLoader = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml");
-
-            camera = levelLoader.GetCamera(gpu, input);
-            gameObjects = levelLoader.GetGameObjects(gameServices, camera);
+            //XMLLevelLoader levelLoader = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml");
+            Scene s = new Game.Scenes.Island1.TwoIslandPuzzle(gameServices);
+            camera = s.Camera;
+            gameObjects = s.GameObjectsList;
 
             ActiveLevelObstacles.Clear();
             foreach (GameObject entity in gameObjects)
