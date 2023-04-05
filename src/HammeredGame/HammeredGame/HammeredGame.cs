@@ -51,9 +51,6 @@ namespace HammeredGame
         // Music variables
         private Song bgMusic;
 
-        // SCENE TEST VARIABLES
-        private int testObstaclesCombo = 4;
-
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
 
@@ -274,8 +271,10 @@ namespace HammeredGame
             float fr = ImGui.GetIO().Framerate;
             ImGui.Text($"{1000.0f / fr:F2} ms/frame ({fr:F1} FPS)");
 
+            // Show a scene switcher dropdown, with the list of all scene class names in this assembly
             ImGui.Text("Current Loaded Scene: ");
-            if (ImGui.BeginCombo("Scene", currentScene.GetType().Name))
+            ImGui.SameLine();
+            if (ImGui.BeginCombo("##scene", currentScene.GetType().Name))
             {
                 foreach (string fqn in Scene.GetAllSceneFQNs())
                 {
@@ -286,9 +285,10 @@ namespace HammeredGame
                     ImGui.EndCombo();
                 }
             }
-            ImGui.SliderInt("", ref testObstaclesCombo, 0, 4);
             ImGui.Text("Press R on keyboard or Y on controller to reload level");
             ImGui.Separator();
+
+            // Show the scene's UI within the same window
             currentScene.UI();
             ImGui.End();
         }

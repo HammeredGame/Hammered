@@ -140,7 +140,7 @@ namespace HammeredGame.Game
 
         public void UI()
         {
-
+            // Show the camera UI
             Camera.UI();
 
             // Show an interactive list of game objects, each of which contain basic properties to edit
@@ -166,6 +166,7 @@ namespace HammeredGame.Game
 
                         ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
 
+                        // Draw any object specific UI
                         if (gameObject is IImGui objectWithGui)
                         {
                             objectWithGui.UI();

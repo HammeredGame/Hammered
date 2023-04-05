@@ -280,12 +280,8 @@ namespace HammeredGame.Game.GameObjects
 
         public void UI()
         {
-            ImGui.Begin("Player", ImGuiWindowFlags.AlwaysAutoResize);
-
             ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
-
-            ImGui.End();
         }
     }
 }
