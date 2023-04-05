@@ -97,9 +97,7 @@ namespace HammeredGame.Game
         /// <param name="fileName"></param>
         public void CreateFromXML(GameServices services, string fileName)
         {
-            XMLLevelLoader ll = new(fileName);
-            Camera = ll.GetCamera(services.GetService<GraphicsDevice>(), services.GetService<Input>());
-            GameObjects = ll.GetGameObjects(services, Camera);
+            (Camera, GameObjects) = SceneDescriptionIO.ParseFromXML(fileName, services);
         }
 
         // Store all the fully qualified names for available scene classes.

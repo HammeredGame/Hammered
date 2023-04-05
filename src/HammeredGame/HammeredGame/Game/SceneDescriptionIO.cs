@@ -12,14 +12,10 @@ using System.Xml.Linq;
 namespace HammeredGame.Game
 {
     /// <summary>
-    /// A class for loading XML files into GameObjects.
+    /// A class for loading and writing XML scene description files to and from GameObjects.
     /// </summary>
-    internal class XMLLevelLoader
+    internal static class SceneDescriptionIO
     {
-        /// <summary>
-        /// The XML document once loaded through the constructor.
-        /// </summary>
-        private XDocument targetXML;
 
         internal static T Parse<T>(string text)
         {
@@ -46,6 +42,29 @@ namespace HammeredGame.Game
             }
         }
 
+        internal static string Show<T>(T obj)
+        {
+            switch (typeof(T).Name)
+            {
+                case "Boolean":
+                    return obj.ToString();
+
+                case "Single":
+                    return ((float)(object)obj).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture);
+
+                case "Vector3":
+                    Vector3 vec3 = (Vector3)(object)obj;
+                    return string.Join(" ", Show<float>(vec3.X), Show<float>(vec3.Y), Show<float>(vec3.Z));
+
+                case "Quaternion":
+                    Quaternion quat = (Quaternion)(object)obj;
+                    return string.Join(" ", Show<float>(quat.X), Show<float>(quat.Y), Show<float>(quat.Z), Show<float>(quat.W));
+
+                default:
+                    return "";
+            }
+        }
+
         /// <summary>
         /// Construct a XML level parser from a given file path under the Content directory. To add
         /// new level XML files that are recognized here, make sure to add the XML in the Content
@@ -54,7 +73,7 @@ namespace HammeredGame.Game
         /// </summary>
         /// <param name="filePath">The file path to the XML file, under the Content directory</param>
         /// <exception cref="Exception">Raised if the XML file could not be loaded</exception>
-        public XMLLevelLoader(string filePath)
+        public static (Camera, Dictionary<string, GameObject>) ParseFromXML(string filePath, GameServices services)
         {
             var loadedXML = File.ReadAllText("Content/" + filePath, Encoding.UTF8);
             var xml = XDocument.Parse(loadedXML);
@@ -65,7 +84,10 @@ namespace HammeredGame.Game
                 throw new Exception("Could not load XML file: " + filePath);
             }
 
-            targetXML = xml;
+            Camera cam = GetCamera(xml, services.GetService<GraphicsDevice>(), services.GetService<Input>());
+            Dictionary<string, GameObject> objs = GetGameObjects(xml, services, cam);
+
+            return (cam, objs);
         }
 
         /// <summary>
@@ -74,7 +96,7 @@ namespace HammeredGame.Game
         /// <param name="gpu">The gpu parameter to pass to the Camera constructor</param>
         /// <param name="input">The input parameter to pass to the Camera constructor</param>
         /// <returns>The instantiated Camera object</returns>
-        public Camera GetCamera(GraphicsDevice gpu, Input input)
+        private static Camera GetCamera(XDocument targetXML, GraphicsDevice gpu, Input input)
         {
             // FInd the top level camera object (otherwise .Descendants("camera") returns nested child ones too)
             XElement cameraElement = targetXML.Root.Descendants("camera").Single(child => child.Parent == targetXML.Root);
@@ -108,7 +130,7 @@ namespace HammeredGame.Game
         /// <param name="cam">Camera parameter to pass to the constructors if necessary</param>
         /// <returns>A dictionary of unique IDs and parsed GameObjects</returns>
         /// <exception cref="Exception">When some trouble arises trying to create the object</exception>
-        public Dictionary<string, GameObject> GetGameObjects(GameServices services, Camera cam)
+        private static Dictionary<string, GameObject> GetGameObjects(XDocument targetXML, GameServices services, Camera cam)
         {
             var gameObjects = new List<GameObject>();
 
