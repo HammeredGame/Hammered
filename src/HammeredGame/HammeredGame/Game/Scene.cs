@@ -93,12 +93,7 @@ namespace HammeredGame.Game
         {
             XMLLevelLoader ll = new(fileName);
             Camera = ll.GetCamera(services.GetService<GraphicsDevice>(), services.GetService<Input>());
-            int counter = 0;
-            foreach (GameObject go in ll.GetGameObjects(services, Camera))
-            {
-                GameObjects.Add(counter.ToString(), go);
-                counter++;
-            }
+            GameObjects = ll.GetGameObjects(services, Camera);
         }
 
         // Store all the fully qualified names for available scene classes.
@@ -144,13 +139,11 @@ namespace HammeredGame.Game
             Camera.UI();
 
             // Show an interactive list of game objects, each of which contain basic properties to edit
-            if (ImGui.TreeNode($"Loaded objects: {GameObjectsList.Count}"))
+            if (ImGui.TreeNode($"Scene objects: {GameObjectsList.Count}"))
             {
-                for (int i = 0; i < GameObjectsList.Count; i++)
-                {
-                    var gameObject = GameObjectsList[i];
+                foreach ((string key, GameObject gameObject) in GameObjects) {
 
-                    if (ImGui.TreeNode($"Object {i}: {gameObject}"))
+                    if (ImGui.TreeNode($"{key}: {gameObject.GetType().Name}"))
                     {
                         // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
                         // we need to temporarily convert.
