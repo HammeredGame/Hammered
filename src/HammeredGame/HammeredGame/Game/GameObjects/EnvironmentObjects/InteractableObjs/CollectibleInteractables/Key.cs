@@ -36,10 +36,14 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
     {
         /* Provisionally
         */
-        private readonly Door correspondingDoor;
+        private Door correspondingDoor;
         private bool keyPickedUp = false;
 
-        public Key(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Door correspondingDoor) : base(services, model, t, pos, rotation, scale)
+        public Key(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        {
+        }
+
+        public void SetCorrespondingDoor(Door correspondingDoor)
         {
             this.correspondingDoor = correspondingDoor;
         }
@@ -49,7 +53,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         public override void TouchingPlayer(Player player)
         {
             //this.activateTrigger();
-            correspondingDoor.SetKeyFound(true);
+            correspondingDoor?.SetKeyFound(true);
             this.SetVisible(false);
             keyPickedUp = true;
         }
