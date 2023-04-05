@@ -39,12 +39,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     public class Door : ImmovableObstacle
     {
         // Any Unbreakable Obstacle specific variables go here
-        private bool keyFound;
-        private bool isGoal; // TEMPORARY
+        private bool keyFound = false;
+        private bool isGoal = false; // TEMPORARY
 
-        public Door(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, bool isGoal = false) : base(services, model, t, pos, rotation, scale)
+        public Door(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
         {
-            keyFound = false;
+        }
+
+        public void SetIsGoal(bool isGoal)
+        {
             this.isGoal = isGoal;
         }
 
