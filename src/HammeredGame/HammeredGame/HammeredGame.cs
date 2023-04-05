@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Content;
 
 namespace HammeredGame
 {
@@ -42,6 +43,8 @@ namespace HammeredGame
         private List<GameObject> gameObjects;
 
         private Key key;
+
+        private readonly GameServices gameServices = new();
 
         public static List<EnvironmentObject> ActiveLevelObstacles = new();
 
@@ -101,6 +104,11 @@ namespace HammeredGame
             // Initialize ImGui's internal renderer and build its font atlas
             imGuiRenderer = new ImGuiRenderer(this);
             imGuiRenderer.RebuildFontAtlas();
+
+            // Add useful game services that might want to be accessed globally
+            gameServices.AddService<GraphicsDevice>(gpu);
+            gameServices.AddService<Input>(input);
+            gameServices.AddService<ContentManager>(Content);
 
             base.Initialize();
         }
