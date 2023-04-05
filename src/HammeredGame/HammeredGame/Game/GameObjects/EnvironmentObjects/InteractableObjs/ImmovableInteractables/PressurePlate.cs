@@ -20,13 +20,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
     /// </remarks>
     public class PressurePlate : ImmovableInteractable
     {
-        private readonly EnvironmentObject triggerObject;
-        private bool playerOn, hammerOn;
+        private EnvironmentObject triggerObject;
+        private bool playerOn = false, hammerOn = false;
 
-        public PressurePlate(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, EnvironmentObject triggerObject) : base(services, model, t, pos, rotation, scale)
+        public PressurePlate(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        {
+        }
+
+        public void SetTriggerObject(EnvironmentObject triggerObject)
         {
             this.triggerObject = triggerObject;
-            playerOn = false; hammerOn = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -34,17 +37,17 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //triggerObject.setVisible(true);
             if (playerOn || hammerOn)
             {
-                triggerObject.SetVisible(false);
+                triggerObject?.SetVisible(false);
             }
             else
             {
-                triggerObject.SetVisible(true);
+                triggerObject?.SetVisible(true);
             }
         }
 
         private void ActivateTrigger()
         {
-            triggerObject.SetVisible(false);
+            triggerObject?.SetVisible(false);
         }
 
         public override void TouchingPlayer(Player player)

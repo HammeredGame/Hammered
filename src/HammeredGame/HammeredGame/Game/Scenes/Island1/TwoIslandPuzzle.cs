@@ -1,5 +1,6 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -16,6 +17,7 @@ namespace HammeredGame.Game.Scenes.Island1
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
 
             Get<Door>("door_goal").SetIsGoal(true);
+            Get<PressurePlate>("pressureplate").SetTriggerObject(Get<Door>("door_pp"));
             //Create<Player>("player", services, content.Load<Model>("character-colored"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
             //Create<Hammer>("hammer", services, content.Load<Model>("temp_hammer2"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
 

@@ -67,9 +67,6 @@
     <position type="vec3">-3 1 -45</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.02</scale>
-    <other_constructor_args>
-      <arg object_ref_id="door_pp" />
-    </other_constructor_args>
   </object>
 
   <!-- KEY -->
