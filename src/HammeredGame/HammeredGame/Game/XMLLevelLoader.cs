@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,14 +29,18 @@ namespace HammeredGame.Game
             {
                 case "Boolean":
                     return (T)(object)bool.Parse(text);
+
                 case "Single":
                     return (T)(object)float.Parse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture);
+
                 case "Vector3":
                     tokens = text.Split(" ");
                     return (T)(object)new Vector3(Parse<float>(tokens[0]), Parse<float>(tokens[1]), Parse<float>(tokens[2]));
+
                 case "Quaternion":
                     tokens = text.Split(" ");
                     return (T)(object)new Quaternion(Parse<float>(tokens[0]), Parse<float>(tokens[1]), Parse<float>(tokens[2]), Parse<float>(tokens[3]));
+
                 default:
                     return (T)(object)null;
             }
@@ -87,8 +90,8 @@ namespace HammeredGame.Game
             // these too, but it gets a little long. Also, on the off chance we need a camera that
             // follows the player closely for one level, the current approach leaves more freedom.
             cameraInstance.StaticPositions = (from vecs in cameraElement.Descendants("position")
-                                   where vecs.Attribute("type").Value == "vec3"
-                                   select vecs).Select(v => Parse<Vector3>(v.Value)).ToArray();
+                                              where vecs.Attribute("type").Value == "vec3"
+                                              select vecs).Select(v => Parse<Vector3>(v.Value)).ToArray();
 
             return cameraInstance;
         }
@@ -154,67 +157,24 @@ namespace HammeredGame.Game
                 arguments.Add(Parse<Quaternion>(obj.Descendants("rotation").Single().Value));
                 arguments.Add(Parse<float>(obj.Descendants("scale").Single().Value));
 
-                // If any other object-specific arguments are required by the constructor, they are
-                // specified using other_constructor_args, which contains values in order. We don't
-                // care about the tag name but we will use the object_ref_id attribute if it refers
-                // to a previously declared ID, or use the type="" attribute for simple values.
-                if (obj.Descendants("other_constructor_args").Any())
-                {
-                    foreach (XElement args in obj.Descendants("other_constructor_args").First().Descendants())
-                    {
-                        // Check if this argument is a reference to a previously defined object
-                        if (args.Attribute("object_ref_id") != null)
-                        {
-                            switch (args.Attribute("object_ref_id").Value)
-                            {
-                                // The Camera and Input parameters aren't GameObjects, so hard-code
-                                // their available IDs
-                                case "main_camera":
-                                    arguments.Add(cam);
-                                    break;
-                                default:
-                                    // Attempt a look up, throw an Exception if it isn't declared previously
-                                    arguments.Add(namedObjects[args.Attribute("object_ref_id").Value]);
-                                    break;
-                            }
-                            continue;
-                        }
-
-                        // For simple values, parse using the static parsing map
-                        switch (args.Attribute("type").Value)
-                        {
-                            case "vec3":
-                                arguments.Add(Parse<Vector3>(args.Value));
-                                break;
-                            case "quaternion":
-                                arguments.Add(Parse<Quaternion>(args.Value));
-                                break;
-                            case "float":
-                                arguments.Add(Parse<float>(args.Value));
-                                break;
-                            case "boolean":
-                                arguments.Add(Parse<bool>(args.Value));
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-
                 // Instantiate the GameObject. This can throw an exception if the arguments don't
                 // match the constructors.
-                GameObject instance = (GameObject)Activator.CreateInstance(t, args:arguments.ToArray());
+                GameObject instance = (GameObject)Activator.CreateInstance(t, args: arguments.ToArray());
 
                 // Visibility is also not part of the constructor
                 instance.SetVisible(Parse<bool>(obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true"));
 
-                // If the object was named, then store its ID for future reference
+                // Insert into the dictionary to return together with either the ID attribute value or a generated id
                 if (obj.Attribute("id") != null)
                 {
+                    // If the object was named, then store its ID
                     namedObjects.Add(obj.Attribute("id").Value, instance);
-                } else
+                }
+                else
                 {
+                    // Generate a unique identifier by using the lowercase class name and appending numbers
                     string nameCandidate = t.Name.ToLower();
+                    // Check until the candidate ID doesn't exist yet
                     for (int counter = 1; namedObjects.GetValueOrDefault(nameCandidate) != null; counter++)
                     {
                         nameCandidate = t.Name.ToLower() + counter.ToString();
