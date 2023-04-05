@@ -1,8 +1,13 @@
 ﻿using HammeredGame.Core;
+using ImGuiNET;
+using ImMonoGame.Thing;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace HammeredGame.Game
 {
@@ -12,7 +17,7 @@ namespace HammeredGame.Game
     /// there are always game objects placed around it. A scene definition class will define how the
     /// scene looks, or how it plays out for the player, including any triggers, scripts, or dialogs.
     /// </summary>
-    public abstract class Scene
+    public abstract class Scene : IImGui
     {
 
         /// <summary>
@@ -78,6 +83,12 @@ namespace HammeredGame.Game
             GameObjects.Clear();
         }
 
+        /// <summary>
+        /// Initialize the scene from the XML scene description. This will set up the Camera and the
+        /// GameObjects. An XML scene description will not contain any game scripts or triggers.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="fileName"></param>
         public void CreateFromXML(GameServices services, string fileName)
         {
             XMLLevelLoader ll = new(fileName);
@@ -87,6 +98,86 @@ namespace HammeredGame.Game
             {
                 GameObjects.Add(counter.ToString(), go);
                 counter++;
+            }
+        }
+
+        // Store all the fully qualified names for available scene classes.
+        private static IEnumerable<string> sceneFqns;
+
+        /// <summary>
+        /// Get all the fully qualified names for available scene classes in this assembly. Cached
+        /// upon first computation. The results of these can be instantiated with Reflection using
+        /// the function Activator.CreateInstance(Type.GetType(name)).
+        /// </summary>
+        /// <returns></returns>
+        internal static IEnumerable<string> GetAllSceneFQNs()
+        {
+            // Calculate once and use a cache from then on, since the list of available scene types
+            // don't change at runtime.
+            if (sceneFqns == null)
+            {
+                // The prefix to search all types for
+                const string sceneNamespacePrefix = "HammeredGame.Game.Scenes";
+                // Predicate to check for compiler generated types, since using async/await
+                // generates a couple of classes.
+                static bool isCompilerGenerated(Type t)
+                {
+                    if (t == null)
+                    {
+                        return false;
+                    }
+
+                    return t.GetTypeInfo().GetCustomAttributes<CompilerGeneratedAttribute>().Any() || isCompilerGenerated(t.DeclaringType);
+                }
+                sceneFqns = Assembly
+                    .GetExecutingAssembly()
+                    .GetTypes()
+                    .Where(t => t.IsClass && !isCompilerGenerated(t) && t.Namespace?.StartsWith(sceneNamespacePrefix) == true)
+                    .Select(t => t.FullName);
+            }
+            return sceneFqns;
+        }
+
+        public void UI()
+        {
+
+            Camera.UI();
+
+            // Show an interactive list of game objects, each of which contain basic properties to edit
+            if (ImGui.TreeNode($"Loaded objects: {GameObjectsList.Count}"))
+            {
+                for (int i = 0; i < GameObjectsList.Count; i++)
+                {
+                    var gameObject = GameObjectsList[i];
+
+                    if (ImGui.TreeNode($"Object {i}: {gameObject}"))
+                    {
+                        // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
+                        // we need to temporarily convert.
+                        System.Numerics.Vector3 pos = gameObject.Position.ToNumerics();
+                        ImGui.DragFloat3("Position", ref pos);
+                        gameObject.Position = pos;
+
+                        System.Numerics.Vector4 rot = gameObject.Rotation.ToVector4().ToNumerics();
+                        ImGui.DragFloat4("Rotation", ref rot, 0.01f, -1.0f, 1.0f);
+
+                        gameObject.Rotation = Quaternion.Normalize(new Quaternion(rot));
+                        ImGui.DragFloat("Scale", ref gameObject.Scale, 0.01f);
+
+                        ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
+
+                        if (gameObject is IImGui objectWithGui)
+                        {
+                            objectWithGui.UI();
+                        }
+                        ImGui.TreePop();
+                    }
+                }
+                ImGui.TreePop();
+            }
+            if (ImGui.Button("Export Level"))
+            {
+                //new XMLLevelWriter(camera, gameObjects);
             }
         }
     }
