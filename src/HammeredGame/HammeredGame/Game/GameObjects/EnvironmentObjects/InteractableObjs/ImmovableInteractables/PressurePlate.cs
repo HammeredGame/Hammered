@@ -23,8 +23,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         private readonly EnvironmentObject triggerObject;
         private bool playerOn, hammerOn;
 
-        public PressurePlate(GameServices services, Model model, Vector3 pos, float scale, Texture2D t, EnvironmentObject triggerObject) :
-            base(services, model, pos, scale, t)
+        public PressurePlate(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, EnvironmentObject triggerObject) : base(services, model, t, pos, rotation, scale)
         {
             this.triggerObject = triggerObject;
             playerOn = false; hammerOn = false;

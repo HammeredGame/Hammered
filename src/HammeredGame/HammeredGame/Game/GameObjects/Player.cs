@@ -51,7 +51,7 @@ namespace HammeredGame.Game.GameObjects
         private readonly Camera activeCamera;
 
         // Initialize player class
-        public Player(GameServices services, Model model, Vector3 pos, float scale, Texture2D t, Camera cam) : base(services, model, pos, scale, t)
+        public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Camera cam) : base(services, model, t, pos, rotation, scale)
         {
             this.activeCamera = cam;
         }

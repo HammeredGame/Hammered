@@ -35,7 +35,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public ImmovableInteractable(GameServices services, Model model, Vector3 pos, float scale, Texture2D t) : base(services, model, pos, scale, t)
+        public ImmovableInteractable(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
         {
         }
 

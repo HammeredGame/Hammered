@@ -50,8 +50,8 @@ namespace HammeredGame.Game.GameObjects
 
         private readonly Player player;
 
-        public Hammer(GameServices services, Model model, Vector3 pos, float scale, Texture2D t, Player p)
-            : base(services, model, pos, scale, t)
+        public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Player p)
+            : base(services, model, t, pos, rotation, scale)
         {
             player = p;
         }

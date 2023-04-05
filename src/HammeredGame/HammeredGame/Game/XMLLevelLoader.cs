@@ -149,25 +149,28 @@ namespace HammeredGame.Game
                 Model model = services.GetService<ContentManager>().Load<Model>((obj.Descendants("model").Single()).Value);
                 arguments.Add(model);
 
-                XElement posElement = obj.Descendants("position").Single();
-                var pos = parserFor[posElement.Attribute("type").Value](posElement.Value);
-                arguments.Add(pos);
-
-                XElement scaElement = obj.Descendants("scale").Single();
-                var scale = parserFor[scaElement.Attribute("type").Value](scaElement.Value);
-                arguments.Add(scale);
-
                 // Texture is an optional tag, so check if we have it first. If we don't, then pass
                 // null as the Texture. (FirstOrDefault() returns null if it doesn't find a matching entry)
                 XElement textureElement = (from tex in obj.Descendants("texture")
-                                      where tex.Attribute("type").Value == "texture2d"
-                                      select tex).FirstOrDefault();
+                                           where tex.Attribute("type").Value == "texture2d"
+                                           select tex).FirstOrDefault();
                 Texture2D texture = null;
                 if (textureElement != null)
                 {
                     texture = services.GetService<ContentManager>().Load<Texture2D>(textureElement.Value);
                 }
                 arguments.Add(texture);
+
+                XElement posElement = obj.Descendants("position").Single();
+                var pos = parserFor[posElement.Attribute("type").Value](posElement.Value);
+                arguments.Add(pos);
+
+                // Rotation is not part of the constructor but is a public field, so we set it after creation
+                arguments.Add((Quaternion)parserFor["quaternion"](obj.Descendants("rotation").Single().Value));
+
+                XElement scaElement = obj.Descendants("scale").Single();
+                var scale = parserFor[scaElement.Attribute("type").Value](scaElement.Value);
+                arguments.Add(scale);
 
                 // If any other object-specific arguments are required by the constructor, they are
                 // specified using other_constructor_args, which contains values in order. We don't
@@ -203,9 +206,6 @@ namespace HammeredGame.Game
                 // Instantiate the GameObject. This can throw an exception if the arguments don't
                 // match the constructors.
                 GameObject instance = (GameObject)Activator.CreateInstance(t, args:arguments.ToArray());
-
-                // Rotation is not part of the constructor but is a public field, so we set it after creation
-                instance.Rotation = (Quaternion)parserFor["quaternion"](obj.Descendants("rotation").Single().Value);
 
                 // Visibility is also not part of the constructor
                 instance.SetVisible((bool)parserFor["boolean"](obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true"));

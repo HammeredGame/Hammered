@@ -42,7 +42,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private bool keyFound;
         private bool isGoal; // TEMPORARY
 
-        public Door(GameServices services, Model model, Vector3 pos, float scale, Texture2D t, bool isGoal=false) : base(services, model, pos, scale, t)
+        public Door(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, bool isGoal = false) : base(services, model, t, pos, rotation, scale)
         {
             keyFound = false;
             this.isGoal = isGoal;
