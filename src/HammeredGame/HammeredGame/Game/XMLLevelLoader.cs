@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,16 +22,26 @@ namespace HammeredGame.Game
         /// </summary>
         private XDocument targetXML;
 
-        /// <summary>
-        /// A static mapping of simple value types in XML to their parsing functions.
-        /// </summary>
-        private static Dictionary<string, Func<string, dynamic>> parserFor = new Dictionary<string, Func<string, dynamic>>()
+        internal static T Parse<T>(string text)
         {
-            { "vec3", (input) => ParseVector3(input) },
-            { "quaternion", (input) => ParseQuaternion(input) },
-            { "float", (input) => float.Parse(input, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture) },
-            { "boolean", (input) => bool.Parse(input) }
-        };
+            string[] tokens;
+            string test = typeof(T).Name;
+            switch (typeof(T).Name)
+            {
+                case "Boolean":
+                    return (T)(object)bool.Parse(text);
+                case "Single":
+                    return (T)(object)float.Parse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture);
+                case "Vector3":
+                    tokens = text.Split(" ");
+                    return (T)(object)new Vector3(Parse<float>(tokens[0]), Parse<float>(tokens[1]), Parse<float>(tokens[2]));
+                case "Quaternion":
+                    tokens = text.Split(" ");
+                    return (T)(object)new Quaternion(Parse<float>(tokens[0]), Parse<float>(tokens[1]), Parse<float>(tokens[2]), Parse<float>(tokens[3]));
+                default:
+                    return (T)(object)null;
+            }
+        }
 
         /// <summary>
         /// Construct a XML level parser from a given file path under the Content directory. To add
@@ -55,30 +66,6 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Parse three numbers (or floating point numbers, basically anything accepted by
-        /// float.Parse()) separated by spaces, into a Vector3.
-        /// </summary>
-        /// <param name="spaceSeparatedNumbers">Space-separated numbers</param>
-        /// <returns>Parsed Vector3</returns>
-        private static Vector3 ParseVector3(string spaceSeparatedNumbers)
-        {
-            string[] tokens = spaceSeparatedNumbers.Split(" ");
-            return new Vector3(parserFor["float"](tokens[0]), parserFor["float"](tokens[1]), parserFor["float"](tokens[2]));
-        }
-
-        /// <summary>
-        /// Parse four numbers (or floating point numbers, basically anything accepted by
-        /// float.Parse()) separated by spaces, into a Quaternion.
-        /// </summary>
-        /// <param name="spaceSeparatedNumbers">Space-separated numbers</param>
-        /// <returns>Parsed Quaternion</returns>
-        private static Quaternion ParseQuaternion(string spaceSeparatedNumbers)
-        {
-            string[] tokens = spaceSeparatedNumbers.Split(" ");
-            return new Quaternion(parserFor["float"](tokens[0]), parserFor["float"](tokens[1]), parserFor["float"](tokens[2]), parserFor["float"](tokens[3]));
-        }
-
-        /// <summary>
         /// Find the single top-level camera tag and parse it, returning the instantiated Camera object.
         /// </summary>
         /// <param name="gpu">The gpu parameter to pass to the Camera constructor</param>
@@ -90,8 +77,8 @@ namespace HammeredGame.Game
             XElement cameraElement = targetXML.Root.Descendants("camera").Single(child => child.Parent == targetXML.Root);
 
             // Parse the target and positions, which are required for the constructor
-            Vector3 focusPoint = (Vector3)parserFor["vec3"]((cameraElement.Descendants("target").Single().Value));
-            Vector3 upDirection = (Vector3)parserFor["vec3"]((cameraElement.Descendants("up").Single().Value));
+            Vector3 focusPoint = Parse<Vector3>(cameraElement.Descendants("target").Single().Value);
+            Vector3 upDirection = Parse<Vector3>(cameraElement.Descendants("up").Single().Value);
 
             // Instantiate the Camera object
             Camera cameraInstance = new Camera(gpu, focusPoint, upDirection, input);
@@ -101,7 +88,7 @@ namespace HammeredGame.Game
             // follows the player closely for one level, the current approach leaves more freedom.
             cameraInstance.StaticPositions = (from vecs in cameraElement.Descendants("position")
                                    where vecs.Attribute("type").Value == "vec3"
-                                   select vecs).Select(v => (Vector3)parserFor["vec3"](v.Value)).ToArray();
+                                   select vecs).Select(v => Parse<Vector3>(v.Value)).ToArray();
 
             return cameraInstance;
         }
@@ -161,16 +148,9 @@ namespace HammeredGame.Game
                 }
                 arguments.Add(texture);
 
-                XElement posElement = obj.Descendants("position").Single();
-                var pos = parserFor[posElement.Attribute("type").Value](posElement.Value);
-                arguments.Add(pos);
-
-                // Rotation is not part of the constructor but is a public field, so we set it after creation
-                arguments.Add((Quaternion)parserFor["quaternion"](obj.Descendants("rotation").Single().Value));
-
-                XElement scaElement = obj.Descendants("scale").Single();
-                var scale = parserFor[scaElement.Attribute("type").Value](scaElement.Value);
-                arguments.Add(scale);
+                arguments.Add(Parse<Vector3>(obj.Descendants("position").Single().Value));
+                arguments.Add(Parse<Quaternion>(obj.Descendants("rotation").Single().Value));
+                arguments.Add(Parse<float>(obj.Descendants("scale").Single().Value));
 
                 // If any other object-specific arguments are required by the constructor, they are
                 // specified using other_constructor_args, which contains values in order. We don't
@@ -199,7 +179,23 @@ namespace HammeredGame.Game
                         }
 
                         // For simple values, parse using the static parsing map
-                        arguments.Add(parserFor[args.Attribute("type").Value](args.Value));
+                        switch (args.Attribute("type").Value)
+                        {
+                            case "vec3":
+                                arguments.Add(Parse<Vector3>(args.Value));
+                                break;
+                            case "quaternion":
+                                arguments.Add(Parse<Quaternion>(args.Value));
+                                break;
+                            case "float":
+                                arguments.Add(Parse<float>(args.Value));
+                                break;
+                            case "boolean":
+                                arguments.Add(Parse<bool>(args.Value));
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
 
@@ -208,7 +204,7 @@ namespace HammeredGame.Game
                 GameObject instance = (GameObject)Activator.CreateInstance(t, args:arguments.ToArray());
 
                 // Visibility is also not part of the constructor
-                instance.SetVisible((bool)parserFor["boolean"](obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true"));
+                instance.SetVisible(Parse<bool>(obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true"));
 
                 // If the object was named, then store its ID for future reference
                 if (obj.Attribute("id") != null)
