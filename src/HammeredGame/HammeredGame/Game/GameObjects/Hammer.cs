@@ -48,12 +48,16 @@ namespace HammeredGame.Game.GameObjects
 
         public Vector3 OldPosition { get; private set; }
 
-        private readonly Player player;
+        private Player player;
 
-        public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Player p)
+        public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale)
             : base(services, model, t, pos, rotation, scale)
         {
-            player = p;
+        }
+
+        public void SetOwnerPlayer(Player player)
+        {
+            this.player = player;
         }
 
         // Update function (called every tick)
@@ -63,7 +67,7 @@ namespace HammeredGame.Game.GameObjects
 
             // Ensure hammer follows/sticks with the player,
             // if hammer has not yet been dropped / if hammer is not being called back
-            if (hammerState == HammerState.WithCharacter)
+            if (hammerState == HammerState.WithCharacter && player != null)
             {
                 Position = player.GetPosition();
             }
@@ -79,7 +83,7 @@ namespace HammeredGame.Game.GameObjects
             /// </remark>
             if (hammerState != HammerState.WithCharacter)
             {
-                if (hammerState == HammerState.Enroute)
+                if (hammerState == HammerState.Enroute && player != null)
                 {
                     // Update position
                     Position += hammerSpeed * (player.GetPosition() - Position);
@@ -126,8 +130,9 @@ namespace HammeredGame.Game.GameObjects
 
             // Hammer Call Back Mechanic
             // Call back only possible if hammer has already been dropped
+            // And if the owner player is defined
             // Otherwise 'Q' does nothing
-            if (hammerState == HammerState.Dropped && input.KeyDown(Keys.Q))
+            if (hammerState == HammerState.Dropped && player != null && input.KeyDown(Keys.Q))
             {
                 hammerState = HammerState.Enroute;
             }
@@ -145,7 +150,7 @@ namespace HammeredGame.Game.GameObjects
                     hammerState = HammerState.Dropped;
                     this.ComputeBounds();
                 }
-                if (hammerState == HammerState.Dropped && input.ButtonPress(Buttons.B))
+                if (hammerState == HammerState.Dropped && player != null && input.ButtonPress(Buttons.B))
                 {
                     hammerState = HammerState.Enroute;
                 }
