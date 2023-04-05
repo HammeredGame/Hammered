@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
+using HammeredGame.Core;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
@@ -21,7 +22,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
     /// </remarks>
     class Ground : FloorObject
     {
-        public Ground(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public Ground(GameServices services, Model model, Vector3 pos, float scale, Texture2D t) : base(services, model, pos, scale, t)
         {
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HammeredGame.Core;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
@@ -22,8 +23,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         private readonly EnvironmentObject triggerObject;
         private bool playerOn, hammerOn;
 
-        public PressurePlate(Model model, Vector3 pos, float scale, Texture2D t, EnvironmentObject triggerObject) :
-            base(model, pos, scale, t)
+        public PressurePlate(GameServices services, Model model, Vector3 pos, float scale, Texture2D t, EnvironmentObject triggerObject) :
+            base(services, model, pos, scale, t)
         {
             this.triggerObject = triggerObject;
             playerOn = false; hammerOn = false;

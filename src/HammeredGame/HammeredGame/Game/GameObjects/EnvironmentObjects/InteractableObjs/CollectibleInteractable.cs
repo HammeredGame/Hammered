@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HammeredGame.Core;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
 {
@@ -34,7 +35,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public CollectibleInteractable(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public CollectibleInteractable(GameServices services, Model model, Vector3 pos, float scale, Texture2D t) : base(services, model, pos, scale, t)
         {
         }
 

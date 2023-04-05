@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HammeredGame.Core;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles
 {
     /// <summary>
-    /// The <c>MovableObstacle</c> class is a subclass of unbreakable obstacle that 
+    /// The <c>MovableObstacle</c> class is a subclass of unbreakable obstacle that
     /// cannot be broken, but can still move around within the game world.
     /// <para />
     /// On interaction with the hammer, these obstacles change their state within the world.
@@ -17,19 +18,19 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     /// (See the documentation for the subclasses of <c>MovableObstacle</c> for specific interaction
     /// descriptions)
     /// </summary>
-    /// 
+    ///
     /// <remarks>
     /// <para />
     /// REMINDER (class tree): GameObject -> EnvironmentObject -> ObstacleObject -> UnbreakableObstacle
     ///                         -> MovableObstacle
     /// <para />
     /// </remarks>
-    
+
     public class MovableObstacle : UnbreakableObstacle
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public MovableObstacle(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public MovableObstacle(GameServices services, Model model, Vector3 pos, float scale, Texture2D t) : base(services, model, pos, scale, t)
         {
         }
 

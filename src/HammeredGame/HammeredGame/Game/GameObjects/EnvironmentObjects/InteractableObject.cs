@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HammeredGame.Core;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
@@ -15,7 +16,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 
     /// <remarks>
     /// <para>
-    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/> 
+    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/>
     ///                         ---> <see cref="InteractableObject "/>
     /// </para>
     /// <para>
@@ -28,7 +29,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
     {
         // Any Interactable specific variables go here
 
-        public InteractableObject(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public InteractableObject(GameServices services, Model model, Vector3 pos, float scale, Texture2D t) : base(services, model, pos, scale, t)
         {
         }
 

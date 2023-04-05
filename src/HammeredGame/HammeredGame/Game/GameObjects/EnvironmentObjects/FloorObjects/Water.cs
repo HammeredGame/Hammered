@@ -9,6 +9,7 @@ using ImMonoGame.Thing;
 using ImGuiNET;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
 using HammeredGame.Game;
+using HammeredGame.Core;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
@@ -24,7 +25,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
     /// </remarks>
     class Water : FloorObject
     {
-        public Water(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public Water(GameServices services, Model model, Vector3 pos, float scale, Texture2D t) : base(services, model, pos, scale, t)
         {
         }
 
