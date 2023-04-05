@@ -76,9 +76,6 @@
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.01</scale>
 	  <texture type="texture2d">awesome_key_texture</texture>
-    <other_constructor_args>
-      <arg object_ref_id="door_goal" />
-    </other_constructor_args>
   </object>
 
   <!-- DECOR -->
