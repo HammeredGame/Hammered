@@ -109,6 +109,7 @@ namespace HammeredGame
             gameServices.AddService<GraphicsDevice>(gpu);
             gameServices.AddService<Input>(input);
             gameServices.AddService<ContentManager>(Content);
+            gameServices.AddService<ScriptUtils>(new ScriptUtils());
 
             base.Initialize();
         }
@@ -185,8 +186,9 @@ namespace HammeredGame
         /// <param name="gameTime"></param>
         protected override void Update(GameTime gameTime)
         {
-            // Update input
-            input.Update();
+            gameServices.GetService<Input>().Update();
+            gameServices.GetService<ScriptUtils>().Update(gameTime);
+
             // Check for exit input
             if (input.BACK_DOWN || input.KeyDown(Keys.Escape)) Exit();
 
