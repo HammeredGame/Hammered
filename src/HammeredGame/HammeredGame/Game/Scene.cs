@@ -2,6 +2,7 @@
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,6 @@ using System.Runtime.CompilerServices;
 
 namespace HammeredGame.Game
 {
-
     /// <summary>
     /// A Scene Represents one 3D scene. It may or may not have a puzzle or a couple within it, but
     /// there are always game objects placed around it. A scene definition class will define how the
@@ -19,7 +19,6 @@ namespace HammeredGame.Game
     /// </summary>
     public abstract class Scene : IImGui
     {
-
         /// <summary>
         /// The camera in the scene.
         /// </summary>
@@ -33,6 +32,13 @@ namespace HammeredGame.Game
         public List<GameObject> GameObjectsList
         {
             get { return GameObjects.Values.ToList(); }
+        }
+
+        protected GameServices Services;
+
+        public Scene(GameServices services)
+        {
+            this.Services = services;
         }
 
         /// <summary>
@@ -113,36 +119,54 @@ namespace HammeredGame.Game
             {
                 // The prefix to search all types for
                 const string sceneNamespacePrefix = "HammeredGame.Game.Scenes";
-                // Predicate to check for compiler generated types, since using async/await
-                // generates a couple of classes.
-                static bool isCompilerGenerated(Type t)
-                {
-                    if (t == null)
-                    {
-                        return false;
-                    }
-
-                    return t.GetTypeInfo().GetCustomAttributes<CompilerGeneratedAttribute>().Any() || isCompilerGenerated(t.DeclaringType);
-                }
-                sceneFqns = Assembly
-                    .GetExecutingAssembly()
-                    .GetTypes()
-                    .Where(t => t.IsClass && !isCompilerGenerated(t) && t.Namespace?.StartsWith(sceneNamespacePrefix) == true)
-                    .Select(t => t.FullName);
+                sceneFqns = GetAllFQNsWithPrefix(sceneNamespacePrefix);
             }
             return sceneFqns;
         }
+
+        /// <summary>
+        /// Get all the fully qualified names in the current assembly that begins with a prefix.
+        /// This function is not cached, so repeated queries should be avoided in the game loop. The
+        /// results of these can be instantiated with Reflection using the function Activator.CreateInstance(Type.GetType(name)).
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        private static IEnumerable<string> GetAllFQNsWithPrefix(string prefix)
+        {
+            // Predicate to check for compiler generated types, since using async/await
+            // generates a couple of classes.
+            static bool isCompilerGenerated(Type t)
+            {
+                if (t == null)
+                {
+                    return false;
+                }
+
+                return t.GetTypeInfo().GetCustomAttributes<CompilerGeneratedAttribute>().Any() || isCompilerGenerated(t.DeclaringType);
+            }
+            return Assembly
+                .GetExecutingAssembly()
+                .GetTypes()
+                .Where(t => t.IsClass && !isCompilerGenerated(t) && t.Namespace?.StartsWith(prefix) == true)
+                .Select(t => t.FullName);
+        }
+
+        // Some things for the object creation popup in the debug UI.
+        // TODO: if this affects the memory footprint of the game in Release mode, hide with an DEBUG ifdef
+        private string objectCreationSelectedFqn = "...";
+        private string objectCreationSelectedModel = "...";
+        private string objectCreationSelectedTexture = "...";
 
         public void UI()
         {
             // Show the camera UI
             Camera.UI();
 
-            // Show an interactive list of game objects, each of which contain basic properties to edit
-            if (ImGui.TreeNode($"Scene objects: {GameObjectsList.Count}"))
+            if (ImGui.TreeNode($"Scene objects: {GameObjects.Count}"))
             {
-                foreach ((string key, GameObject gameObject) in GameObjects) {
-
+                // Show an interactive list of game objects, each of which contain basic properties to edit
+                foreach ((string key, GameObject gameObject) in GameObjects)
+                {
                     if (ImGui.TreeNode($"{key}: {gameObject.GetType().Name}"))
                     {
                         // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
@@ -159,7 +183,7 @@ namespace HammeredGame.Game
 
                         ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
 
-                        // Draw any object specific UI
+                        // Draw any object specific UI defined within its UI() function
                         if (gameObject is IImGui objectWithGui)
                         {
                             objectWithGui.UI();
@@ -169,6 +193,92 @@ namespace HammeredGame.Game
                 }
                 ImGui.TreePop();
             }
+
+            if (ImGui.Button("Create New Object"))
+            {
+                ImGui.OpenPopup("create_new_object");
+            }
+
+            if (ImGui.BeginPopup("create_new_object"))
+            {
+                if (ImGui.BeginCombo("Class", objectCreationSelectedFqn))
+                {
+                    foreach (string fqn in GetAllFQNsWithPrefix("HammeredGame.Game.GameObjects"))
+                    {
+                        if (ImGui.Selectable(fqn, objectCreationSelectedFqn == fqn))
+                        {
+                            objectCreationSelectedFqn = fqn;
+                        }
+                    }
+                    ImGui.EndCombo();
+                }
+
+                Dictionary<string, object> loadedAssets = (Dictionary<string, object>)typeof(ContentManager).GetField("loadedAssets", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(Services.GetService<ContentManager>());
+                IEnumerable<string> models = loadedAssets.Where(asset => asset.Value.GetType() == typeof(Model)).Select(a => a.Key);
+                if (ImGui.BeginCombo("Model", objectCreationSelectedModel))
+                {
+                    if (ImGui.Selectable("<null>"))
+                    {
+                        objectCreationSelectedModel = "...";
+                    };
+                    foreach (string model in models)
+                    {
+                        if (ImGui.Selectable(model, objectCreationSelectedModel == model))
+                        {
+                            objectCreationSelectedModel = model;
+                        }
+                    }
+                    ImGui.EndCombo();
+                }
+
+                IEnumerable<string> textures = loadedAssets.Where(asset => asset.Value.GetType() == typeof(Texture2D)).Select(a => a.Key);
+                if (ImGui.BeginCombo("Texture", objectCreationSelectedTexture))
+                {
+                    if (ImGui.Selectable("<null>"))
+                    {
+                        objectCreationSelectedTexture = "...";
+                    };
+                    foreach (string texture in textures)
+                    {
+                        if (ImGui.Selectable(texture, objectCreationSelectedTexture == texture))
+                        {
+                            objectCreationSelectedTexture = texture;
+                        }
+                    }
+                    ImGui.EndCombo();
+                }
+
+                System.Numerics.Vector3 pos = System.Numerics.Vector3.Zero;
+                ImGui.InputFloat3("Position", ref pos);
+
+                System.Numerics.Vector4 rot = Quaternion.Identity.ToVector4().ToNumerics();
+                ImGui.InputFloat4("Rotation", ref rot);
+
+                float scale = 1f;
+                ImGui.InputFloat("Scale", ref scale);
+
+                if (ImGui.Button("Create"))
+                {
+                    string nameCandidate = Type.GetType(objectCreationSelectedFqn).Name.ToLower();
+                    for (int i = 1; GameObjects.ContainsKey(nameCandidate); i++)
+                    {
+                        nameCandidate = Type.GetType(objectCreationSelectedFqn).Name.ToLower() + i.ToString();
+                    }
+                    GetType().GetMethod(nameof(Create)).MakeGenericMethod(Type.GetType(objectCreationSelectedFqn)).Invoke(this, new object[] {
+                        nameCandidate,
+                        new object[] {
+                            Services,
+                            objectCreationSelectedModel != "..." ? Services.GetService<ContentManager>().Load<Model>(objectCreationSelectedModel) : null,
+                            objectCreationSelectedTexture != "..." ? Services.GetService<ContentManager>().Load<Texture2D>(objectCreationSelectedTexture) : null,
+                            new Vector3(pos.X, pos.Y, pos.Z),
+                            new Quaternion(rot),
+                            scale
+                        }
+                    });
+                }
+                ImGui.EndPopup();
+            }
+
             if (ImGui.Button("Export Level"))
             {
                 //new XMLLevelWriter(camera, gameObjects);
