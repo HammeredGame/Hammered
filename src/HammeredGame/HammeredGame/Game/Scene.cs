@@ -156,6 +156,9 @@ namespace HammeredGame.Game
         private string objectCreationSelectedFqn = "...";
         private string objectCreationSelectedModel = "...";
         private string objectCreationSelectedTexture = "...";
+        private System.Numerics.Vector3 objectCreationPosition = System.Numerics.Vector3.Zero;
+        private System.Numerics.Vector4 objectCreationRotation = Quaternion.Identity.ToVector4().ToNumerics();
+        private float objectCreationScale = 1f;
 
         public void UI()
         {
@@ -194,6 +197,7 @@ namespace HammeredGame.Game
                 ImGui.TreePop();
             }
 
+            // A button to launch the popup for creating a new object
             if (ImGui.Button("Create New Object"))
             {
                 ImGui.OpenPopup("create_new_object");
@@ -201,6 +205,7 @@ namespace HammeredGame.Game
 
             if (ImGui.BeginPopup("create_new_object"))
             {
+                // Select a class from the dropdown of all available game object classes
                 if (ImGui.BeginCombo("Class", objectCreationSelectedFqn))
                 {
                     foreach (string fqn in GetAllFQNsWithPrefix("HammeredGame.Game.GameObjects"))
@@ -213,10 +218,15 @@ namespace HammeredGame.Game
                     ImGui.EndCombo();
                 }
 
+                // Use Reflection to access a private variable within ContentManager that contains
+                // the key/value of all loaded assets.
                 Dictionary<string, object> loadedAssets = (Dictionary<string, object>)typeof(ContentManager).GetField("loadedAssets", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(Services.GetService<ContentManager>());
+
+                // Filter just the models, and show that as a dropdown
                 IEnumerable<string> models = loadedAssets.Where(asset => asset.Value.GetType() == typeof(Model)).Select(a => a.Key);
                 if (ImGui.BeginCombo("Model", objectCreationSelectedModel))
                 {
+                    // Add an option to select null
                     if (ImGui.Selectable("<null>"))
                     {
                         objectCreationSelectedModel = "...";
@@ -231,9 +241,11 @@ namespace HammeredGame.Game
                     ImGui.EndCombo();
                 }
 
+                // Filter just the textures and show those as the dropdown
                 IEnumerable<string> textures = loadedAssets.Where(asset => asset.Value.GetType() == typeof(Texture2D)).Select(a => a.Key);
                 if (ImGui.BeginCombo("Texture", objectCreationSelectedTexture))
                 {
+                    // Add an option to select null
                     if (ImGui.Selectable("<null>"))
                     {
                         objectCreationSelectedTexture = "...";
@@ -248,31 +260,36 @@ namespace HammeredGame.Game
                     ImGui.EndCombo();
                 }
 
-                System.Numerics.Vector3 pos = System.Numerics.Vector3.Zero;
-                ImGui.InputFloat3("Position", ref pos);
-
-                System.Numerics.Vector4 rot = Quaternion.Identity.ToVector4().ToNumerics();
-                ImGui.InputFloat4("Rotation", ref rot);
-
-                float scale = 1f;
-                ImGui.InputFloat("Scale", ref scale);
+                ImGui.InputFloat3("Position", ref objectCreationPosition);
+                ImGui.InputFloat4("Rotation", ref objectCreationRotation);
+                ImGui.InputFloat("Scale", ref objectCreationScale);
 
                 if (ImGui.Button("Create"))
                 {
+                    // Generate a name for the object.
                     string nameCandidate = Type.GetType(objectCreationSelectedFqn).Name.ToLower();
                     for (int i = 1; GameObjects.ContainsKey(nameCandidate); i++)
                     {
                         nameCandidate = Type.GetType(objectCreationSelectedFqn).Name.ToLower() + i.ToString();
                     }
+
+                    // Invoke this.Create with arguments for the game object type constructor. Since
+                    // this is a generic method, we have to create a specific version for the type
+                    // we are creating.
                     GetType().GetMethod(nameof(Create)).MakeGenericMethod(Type.GetType(objectCreationSelectedFqn)).Invoke(this, new object[] {
                         nameCandidate,
+                        // Although the type signature of Create allows passing the name, followed
+                        // by any number of parameters to pass to the game object constructor, C#
+                        // treats this as syntax sugar for accepting an object[] as the second
+                        // parameter. This is why we need to create an array here for the second
+                        // parameter to pass.
                         new object[] {
                             Services,
                             objectCreationSelectedModel != "..." ? Services.GetService<ContentManager>().Load<Model>(objectCreationSelectedModel) : null,
                             objectCreationSelectedTexture != "..." ? Services.GetService<ContentManager>().Load<Texture2D>(objectCreationSelectedTexture) : null,
-                            new Vector3(pos.X, pos.Y, pos.Z),
-                            new Quaternion(rot),
-                            scale
+                            new Vector3(objectCreationPosition.X, objectCreationPosition.Y, objectCreationPosition.Z),
+                            new Quaternion(objectCreationRotation),
+                            objectCreationScale
                         }
                     });
                 }
