@@ -39,7 +39,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         private readonly Door correspondingDoor;
         private bool keyPickedUp = false;
 
-        public Key(GameServices services, Model model, Vector3 pos, float scale, Texture2D t, Door correspondingDoor) : base(services, model, pos, scale, t)
+        public Key(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Door correspondingDoor) : base(services, model, t, pos, rotation, scale)
         {
             this.correspondingDoor = correspondingDoor;
         }

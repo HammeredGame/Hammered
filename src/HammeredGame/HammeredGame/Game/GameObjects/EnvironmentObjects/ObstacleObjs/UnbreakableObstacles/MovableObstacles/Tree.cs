@@ -49,7 +49,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private bool treeFallen;
         private bool playerOnTree;
 
-        public Tree(GameServices services, Model model, Vector3 pos, float scale, Texture2D t) : base(services, model, pos, scale, t)
+        public Tree(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
         {
             treeFallen = false;
         }

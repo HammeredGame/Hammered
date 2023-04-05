@@ -53,12 +53,12 @@ namespace HammeredGame.Game
 
         private List<(int, float[])> allVertexData;
 
-        protected GameObject(GameServices services, Model model, Vector3 pos, float scale, Texture2D t)
+        protected GameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale)
         {
             this.Services = services;
             this.Model = model;
             this.Position = pos;
-            this.Rotation = Quaternion.Identity;
+            this.Rotation = rotation;
             this.Scale = scale;
             this.Texture = t;
 
