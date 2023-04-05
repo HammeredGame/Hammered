@@ -13,15 +13,6 @@
     <position type="vec3">10 0 -45</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">0.02</scale>
-    <!-- The following are passed strictly in order to the constructor.
-		Their tag names are irrelevant, the parser does not use them.
-
-		Previously defined GameObjects can be referenced by their ID. Otherwise,
-		"input" refers to the global Input, and "main_camera" to the global camera.
-		-->
-    <other_constructor_args>
-      <arg object_ref_id="main_camera" />
-    </other_constructor_args>
   </object>
   <object type="HammeredGame.Game.GameObjects.Hammer">
     <model>temp_hammer2</model>
