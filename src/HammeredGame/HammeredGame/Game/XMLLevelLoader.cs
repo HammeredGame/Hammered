@@ -75,7 +75,7 @@ namespace HammeredGame.Game
         private static Quaternion ParseQuaternion(string spaceSeparatedNumbers)
         {
             string[] tokens = spaceSeparatedNumbers.Split(" ");
-            return new Quaternion(parserFor["float"](tokens[0]), parserFor["float"](tokens[1]), parserFor["float"](tokens[2]), float.Parse(tokens[3]));
+            return new Quaternion(parserFor["float"](tokens[0]), parserFor["float"](tokens[1]), parserFor["float"](tokens[2]), parserFor["float"](tokens[3]));
         }
 
         /// <summary>
