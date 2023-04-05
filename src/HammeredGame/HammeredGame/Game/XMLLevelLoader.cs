@@ -96,14 +96,16 @@ namespace HammeredGame.Game
         /// <summary>
         /// Find the top-level object tags and parse them as GameObjects. Some objects require
         /// access to Input or Camera, so this method should be called once you have parsed those.
-        ///
+        /// This method returns a dictionary mapping unique identifier strings to objects. These
+        /// identifiers are either taken from the XML if specified via the "id" attribute, or
+        /// otherwise generated.
         /// </summary>
         /// <param name="cm">ContentManager used for loading Models and Textures</param>
         /// <param name="input">Input parameter to pass to the constructors if necessary</param>
         /// <param name="cam">Camera parameter to pass to the constructors if necessary</param>
-        /// <returns>List of parsed GameObjects</returns>
+        /// <returns>A dictionary of unique IDs and parsed GameObjects</returns>
         /// <exception cref="Exception">When some trouble arises trying to create the object</exception>
-        public List<GameObject> GetGameObjects(GameServices services, Camera cam)
+        public Dictionary<string, GameObject> GetGameObjects(GameServices services, Camera cam)
         {
             var gameObjects = new List<GameObject>();
 
@@ -210,11 +212,17 @@ namespace HammeredGame.Game
                 if (obj.Attribute("id") != null)
                 {
                     namedObjects.Add(obj.Attribute("id").Value, instance);
+                } else
+                {
+                    string nameCandidate = t.Name.ToLower();
+                    for (int counter = 1; namedObjects.GetValueOrDefault(nameCandidate) != null; counter++)
+                    {
+                        nameCandidate = t.Name.ToLower() + counter.ToString();
+                    }
+                    namedObjects.Add(nameCandidate, instance);
                 }
-
-                gameObjects.Add(instance);
             }
-            return gameObjects;
+            return namedObjects;
         }
     }
 }
