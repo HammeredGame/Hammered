@@ -1,4 +1,5 @@
-﻿using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+﻿using HammeredGame.Core;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -38,8 +39,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         private readonly Door correspondingDoor;
         private bool keyPickedUp = false;
 
-        public Key(Model model, Vector3 pos, float scale, Texture2D t, Door correspondingDoor) :
-            base(model, pos, scale, t)
+        public Key(GameServices services, Model model, Vector3 pos, float scale, Texture2D t, Door correspondingDoor) : base(services, model, pos, scale, t)
         {
             this.correspondingDoor = correspondingDoor;
         }

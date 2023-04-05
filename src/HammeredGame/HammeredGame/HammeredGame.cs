@@ -144,7 +144,7 @@ namespace HammeredGame
             XMLLevelLoader levelLoader = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml");
 
             camera = levelLoader.GetCamera(gpu, input);
-            gameObjects = levelLoader.GetGameObjects(Content, input, camera);
+            gameObjects = levelLoader.GetGameObjects(gameServices, camera);
 
             ActiveLevelObstacles.Clear();
             foreach (GameObject entity in gameObjects)

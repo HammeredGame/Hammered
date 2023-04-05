@@ -48,13 +48,11 @@ namespace HammeredGame.Game.GameObjects
         public bool OnTree = false;
         public bool ReachedGoal = false;
 
-        private readonly Input input;
         private readonly Camera activeCamera;
 
         // Initialize player class
-        public Player(Model model, Vector3 pos, float scale, Texture2D t, Input inp, Camera cam) : base(model, pos, scale, t)
+        public Player(GameServices services, Model model, Vector3 pos, float scale, Texture2D t, Camera cam) : base(services, model, pos, scale, t)
         {
-            this.input = inp;
             this.activeCamera = cam;
         }
 
@@ -78,7 +76,7 @@ namespace HammeredGame.Game.GameObjects
             moveDirty = this.KeyboardInput(forwardDirectionFromCamera);
 
             // Handling input from gamepad.
-            if (input.GamePadState.IsConnected)
+            if (Services.GetService<Input>().GamePadState.IsConnected)
             {
                 moveDirty = moveDirty || GamepadInput(forwardDirectionFromCamera);
             }
@@ -238,6 +236,7 @@ namespace HammeredGame.Game.GameObjects
             // Keyboard input (W - forward, S - back, A - left, D - right)
 
             bool moveDirty = false;
+            Input input = Services.GetService<Input>();
 
             if (input.KeyDown(Keys.W))
             {
@@ -266,6 +265,7 @@ namespace HammeredGame.Game.GameObjects
         private bool GamepadInput(Vector3 forwardDirectionFromCamera)
         {
             bool moveDirty = false;
+            Input input = Services.GetService<Input>();
 
             float MovePad_LeftRight = input.GamePadState.ThumbSticks.Left.X;
             float MovePad_UpDown = input.GamePadState.ThumbSticks.Left.Y;

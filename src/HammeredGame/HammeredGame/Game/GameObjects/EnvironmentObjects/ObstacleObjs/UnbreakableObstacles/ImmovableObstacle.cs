@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HammeredGame.Core;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,11 @@ using System.Threading.Tasks;
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles
 {
     /// <summary>
-    /// The <c>ImmovableObstacle</c> class is a subclass of unbreakable obstacle that 
+    /// The <c>ImmovableObstacle</c> class is a subclass of unbreakable obstacle that
     /// cannot be broken and will also NOT move around within the game world.
     /// <para />
     /// </summary>
-    /// 
+    ///
     /// <remarks>
     /// <para />
     /// REMINDER (class tree): GameObject -> EnvironmentObject -> ObstacleObject -> UnbreakableObstacle
@@ -24,7 +25,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public ImmovableObstacle(Model model, Vector3 pos, float scale, Texture2D t) : base(model, pos, scale, t)
+        public ImmovableObstacle(GameServices services, Model model, Vector3 pos, float scale, Texture2D t) : base(services, model, pos, scale, t)
         {
         }
     }

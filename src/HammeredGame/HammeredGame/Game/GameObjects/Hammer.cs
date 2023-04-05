@@ -48,13 +48,11 @@ namespace HammeredGame.Game.GameObjects
 
         public Vector3 OldPosition { get; private set; }
 
-        private readonly Input input;
         private readonly Player player;
 
-        public Hammer(Model model, Vector3 pos, float scale, Texture2D t, Input inp, Player p)
-            : base(model, pos, scale, t)
+        public Hammer(GameServices services, Model model, Vector3 pos, float scale, Texture2D t, Player p)
+            : base(services, model, pos, scale, t)
         {
-            this.input = inp;
             player = p;
         }
 
@@ -117,6 +115,7 @@ namespace HammeredGame.Game.GameObjects
 
         public void KeyboardInput()
         {
+            Input input = Services.GetService<Input>();
             // Keyboard input (E - drop hammer, Q - Call back hammer)
             // Hammer Drop Mechanic
             if (hammerState == HammerState.WithCharacter && input.KeyDown(Keys.E))
@@ -136,6 +135,7 @@ namespace HammeredGame.Game.GameObjects
 
         public void GamePadInput()
         {
+            Input input = Services.GetService<Input>();
             // GamePad Control (A - Hammer drop, B - Hammer call back)
             // Same functionality as with above keyboard check
             if (input.GamePadState.IsConnected)

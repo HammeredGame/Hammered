@@ -1,5 +1,6 @@
 ﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -115,7 +116,7 @@ namespace HammeredGame.Game
         /// <param name="cam">Camera parameter to pass to the constructors if necessary</param>
         /// <returns>List of parsed GameObjects</returns>
         /// <exception cref="Exception">When some trouble arises trying to create the object</exception>
-        public List<GameObject> GetGameObjects(Microsoft.Xna.Framework.Content.ContentManager cm, Input input, Camera cam)
+        public List<GameObject> GetGameObjects(GameServices services, Camera cam)
         {
             var gameObjects = new List<GameObject>();
 
@@ -140,9 +141,12 @@ namespace HammeredGame.Game
 
                 // List of arguments to pass to the constructor. These have to match the types and
                 // orders in the constructor exactly.
-                List<object> arguments = new List<object>();
+                List<object> arguments = new()
+                {
+                    services
+                };
 
-                Model model = cm.Load<Model>((obj.Descendants("model").Single()).Value);
+                Model model = services.GetService<ContentManager>().Load<Model>((obj.Descendants("model").Single()).Value);
                 arguments.Add(model);
 
                 XElement posElement = obj.Descendants("position").Single();
@@ -161,7 +165,7 @@ namespace HammeredGame.Game
                 Texture2D texture = null;
                 if (textureElement != null)
                 {
-                    texture = cm.Load<Texture2D>(textureElement.Value);
+                    texture = services.GetService<ContentManager>().Load<Texture2D>(textureElement.Value);
                 }
                 arguments.Add(texture);
 
@@ -182,9 +186,6 @@ namespace HammeredGame.Game
                                 // their available IDs
                                 case "main_camera":
                                     arguments.Add(cam);
-                                    break;
-                                case "input":
-                                    arguments.Add(input);
                                     break;
                                 default:
                                     // Attempt a look up, throw an Exception if it isn't declared previously
