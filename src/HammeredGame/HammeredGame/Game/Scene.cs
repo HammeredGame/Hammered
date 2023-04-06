@@ -111,9 +111,9 @@ namespace HammeredGame.Game
         /// </summary>
         /// <param name="services"></param>
         /// <param name="fileName"></param>
-        public void CreateFromXML(GameServices services, string fileName)
+        public void CreateFromXML(string fileName)
         {
-            (Camera, GameObjects) = SceneDescriptionIO.ParseFromXML(fileName, services);
+            (Camera, GameObjects) = SceneDescriptionIO.ParseFromXML(fileName, Services);
         }
 
         // Store all the fully qualified names for available scene classes.
@@ -195,7 +195,7 @@ namespace HammeredGame.Game
                 {
                     // Clear the scene objects
                     Clear();
-                    CreateFromXML(Services, result.Path);
+                    CreateFromXML(result.Path);
                 }
             }
 
