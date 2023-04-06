@@ -56,6 +56,22 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
+        /// Generate a name for a game object that has numbers appended to the specified prefix
+        /// until the point where no existing object in the scene has that name.
+        /// </summary>
+        /// <param name="prefix">The prefix to add numbers to</param>
+        /// <returns>The unique name candidate</returns>
+        private string GenerateUniqueNameWithPrefix(string prefix)
+        {
+            string nameCandidate = prefix;
+            for (int i = 1; GameObjects.ContainsKey(nameCandidate); i++)
+            {
+                nameCandidate = prefix + i.ToString();
+            }
+            return nameCandidate;
+        }
+
+        /// <summary>
         /// Find the object in the scene by a unique identifier. This approaches O(1) since it's a
         /// dictionary lookup.
         /// </summary>
@@ -164,10 +180,14 @@ namespace HammeredGame.Game
             // Show the camera UI
             Camera.UI();
 
-            if (ImGui.TreeNode($"Scene objects: {GameObjects.Count}"))
+            ImGui.Text($"{GameObjects.Count} objects in scene");
+            if (ImGui.TreeNode("View objects"))
             {
-                // Show an interactive list of game objects, each of which contain basic properties to edit
-                foreach ((string key, GameObject gameObject) in GameObjects)
+                // Show an interactive list of game objects, each of which contain basic properties
+                // to edit. Since we allow editing of the list (duplicate/delete objects), we'll
+                // operate on a shallow copy of the dictionary instead of the main one to avoid
+                // looping over unpredictable containers.
+                foreach ((string key, GameObject gameObject) in new Dictionary<string, GameObject>(GameObjects))
                 {
                     if (ImGui.TreeNode($"{key}: {gameObject.GetType().Name}"))
                     {
@@ -191,6 +211,69 @@ namespace HammeredGame.Game
                             objectWithGui.UI();
                         }
                         ImGui.TreePop();
+                    }
+
+                    bool openDeletionConfirmation = false;
+
+                    // Define the menu that pops up when right clicking an object in the tree
+                    if (ImGui.BeginPopupContextItem())
+                    {
+                        // Object duplication (creates a new object with a new name but everything
+                        // else the same)
+                        if (ImGui.MenuItem("Duplicate Object"))
+                        {
+                            // We want to call Create<T>() with T being the type of gameObject.
+                            // However, we can't use variables for generic type parameters, so
+                            // instead we will create a specific version of the method and invoke it
+                            // manually. This causes some changes to how variadic "params dynamic[]"
+                            // behaves, outlined below.
+                            GetType().GetMethod(nameof(Create)).MakeGenericMethod(gameObject.GetType()).Invoke(this, new object[] {
+                                GenerateUniqueNameWithPrefix(gameObject.GetType().Name.ToLower()),
+                                new object[] {
+                                    Services,
+                                    // We are passing references to the Model and Texture here,
+                                    // assuming they won't change, and that loading them again from
+                                    // the Content Manager would be a waste.
+                                    gameObject.Model,
+                                    gameObject.Texture,
+                                    gameObject.Position,
+                                    gameObject.Rotation,
+                                    gameObject.Scale
+                                }
+                            });
+                        }
+
+                        // Object deletion
+                        if (ImGui.MenuItem("Delete Object"))
+                        {
+                            // We want to call ImGui.OpenPopup() here to open the deletion
+                            // confirmation popup. However, popups can only be called from the same
+                            // ID space, so we need to have the popup defined in this block of code,
+                            // but MenuItem closes on the next frame so the popup won't persist.
+                            // The workaround is to set a flag.
+                            openDeletionConfirmation = true;
+                        }
+                        ImGui.EndPopup();
+                    }
+
+                    if (openDeletionConfirmation)
+                    {
+                        ImGui.OpenPopup("object_deletion_confirmation_" + key);
+                    }
+
+                    ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new System.Numerics.Vector2(0.5f, 0.5f));
+
+                    // The confirmation popup to show. This has to be in the UI tree always
+                    // regardless of the state of the menu that triggered it, otherwise it'll
+                    // disappear instantly.
+                    if (ImGui.BeginPopupModal("object_deletion_confirmation_" + key))
+                    {
+                        System.Diagnostics.Debug.WriteLine("b");
+                        ImGui.Text($"Confirm delete object \"{key}\"?");
+                        if (ImGui.Button("Cancel")) { ImGui.CloseCurrentPopup(); }
+                        ImGui.SameLine();
+                        if (ImGui.Button("Delete")) { Remove(key); ImGui.CloseCurrentPopup(); }
+                        ImGui.EndPopup();
                     }
                 }
                 ImGui.TreePop();
@@ -266,17 +349,13 @@ namespace HammeredGame.Game
                 if (ImGui.Button("Create"))
                 {
                     // Generate a name for the object.
-                    string nameCandidate = Type.GetType(objectCreationSelectedFqn).Name.ToLower();
-                    for (int i = 1; GameObjects.ContainsKey(nameCandidate); i++)
-                    {
-                        nameCandidate = Type.GetType(objectCreationSelectedFqn).Name.ToLower() + i.ToString();
-                    }
+                    GenerateUniqueNameWithPrefix(Type.GetType(objectCreationSelectedFqn).Name.ToLower());
 
                     // Invoke this.Create with arguments for the game object type constructor. Since
                     // this is a generic method, we have to create a specific version for the type
                     // we are creating.
                     GetType().GetMethod(nameof(Create)).MakeGenericMethod(Type.GetType(objectCreationSelectedFqn)).Invoke(this, new object[] {
-                        nameCandidate,
+                        GenerateUniqueNameWithPrefix(Type.GetType(objectCreationSelectedFqn).Name.ToLower()),
                         // Although the type signature of Create allows passing the name, followed
                         // by any number of parameters to pass to the game object constructor, C#
                         // treats this as syntax sugar for accepting an object[] as the second
