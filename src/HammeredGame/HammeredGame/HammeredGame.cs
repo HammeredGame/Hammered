@@ -261,7 +261,8 @@ namespace HammeredGame
 
         public void UI()
         {
-            ImGui.Begin("Hammered", ImGuiWindowFlags.AlwaysAutoResize);
+            ImGui.SetNextWindowSize(new System.Numerics.Vector2(600, 500), ImGuiCond.FirstUseEver);
+            ImGui.Begin("Hammered");
 
             // Show whether the gamepad is detected
             if (input.GamePadState.IsConnected)

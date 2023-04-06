@@ -175,22 +175,136 @@ namespace HammeredGame.Game
         private System.Numerics.Vector4 objectCreationRotation = Quaternion.Identity.ToVector4().ToNumerics();
         private float objectCreationScale = 1f;
 
+        private string objectListCurrentSelection;
+
         public void UI()
         {
             // Show the camera UI
             Camera.UI();
 
             ImGui.Text($"{GameObjects.Count} objects in scene");
-            if (ImGui.TreeNode("View objects"))
+            ImGui.SameLine();
+            // Button to load from XML. This will replace all the scene objects
+            // TODO: update Space and bounding boxes?
+            if (ImGui.Button("Load Scene XML"))
             {
-                // Show an interactive list of game objects, each of which contain basic properties
-                // to edit. Since we allow editing of the list (duplicate/delete objects), we'll
-                // operate on a shallow copy of the dictionary instead of the main one to avoid
-                // looping over unpredictable containers.
-                foreach ((string key, GameObject gameObject) in new Dictionary<string, GameObject>(GameObjects))
+                // open a cross platform file dialog
+                NativeFileDialogSharp.DialogResult result = NativeFileDialogSharp.Dialog.FileOpen("xml");
+
+                if (result.IsOk)
                 {
-                    if (ImGui.TreeNode($"{key}: {gameObject.GetType().Name}"))
+                    // Clear the scene objects
+                    Clear();
+                    CreateFromXML(Services, result.Path);
+                }
+            }
+
+            ImGui.SameLine();
+            // Button to export to XML
+            if (ImGui.Button("Export Scene"))
+            {
+                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, GameObjects, Services);
+            }
+
+            // Show a dual pane layout, with the scene object list on the left and details on the
+            // right. We begin with defining the left side.
+            {
+                ImGui.BeginGroup();
+                const int sideBarWidth = 250;
+                // Define the sidebar to take the set width and all height except one line at the bottom.
+                if (ImGui.BeginChild("scene_object_list", new System.Numerics.Vector2(sideBarWidth, -ImGui.GetFrameHeightWithSpacing()), true))
+                {
+                    // See explanation later on why this boolean is needed
+                    bool openDeletionConfirmation = false;
+
+                    // Show each object key as a selectable item
+                    foreach ((string key, GameObject gameObject) in new Dictionary<string, GameObject>(GameObjects))
                     {
+                        if (ImGui.Selectable($"{key}: {gameObject.GetType().Name}", objectListCurrentSelection == key))
+                        {
+                            objectListCurrentSelection = key;
+                        }
+                        // Define the menu that pops up when right clicking an object in the tree
+                        if (ImGui.BeginPopupContextItem())
+                        {
+                            // Object duplication (creates a new object with a new name but everything
+                            // else the same)
+                            if (ImGui.MenuItem("Duplicate Object"))
+                            {
+                                // We want to call Create<T>() with T being the type of gameObject.
+                                // However, we can't use variables for generic type parameters, so
+                                // instead we will create a specific version of the method and invoke it
+                                // manually. This causes some changes to how variadic "params dynamic[]"
+                                // behaves, outlined below.
+                                GetType().GetMethod(nameof(Create)).MakeGenericMethod(gameObject.GetType()).Invoke(this, new object[] {
+                                    GenerateUniqueNameWithPrefix(gameObject.GetType().Name.ToLower()),
+                                    new object[] {
+                                        Services,
+                                        // We are passing references to the Model and Texture here,
+                                        // assuming they won't change, and that loading them again from
+                                        // the Content Manager would be a waste.
+                                        gameObject.Model,
+                                        gameObject.Texture,
+                                        gameObject.Position,
+                                        gameObject.Rotation,
+                                        gameObject.Scale
+                                    }
+                                });
+                            }
+
+                            // Object deletion
+                            if (ImGui.MenuItem("Delete Object"))
+                            {
+                                // Explanation on this boolean: We want to call ImGui.OpenPopup()
+                                // here to open the deletion confirmation popup. However, popups can
+                                // only be called from the same ID space, so we need to have the
+                                // popup defined in this block of code, but MenuItem closes on the
+                                // next frame so the popup won't persist. The workaround is to set a flag.
+                                openDeletionConfirmation = true;
+                            }
+                            ImGui.EndPopup();
+                        }
+
+                        // See above on why this is called here
+                        if (openDeletionConfirmation)
+                        {
+                            ImGui.OpenPopup("object_deletion_confirmation_" + key);
+                        }
+
+                        // The confirmation popup to show. This has to be in the UI tree always
+                        // regardless of the state of the menu that triggered it, otherwise it'll
+                        // disappear instantly.
+                        ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new System.Numerics.Vector2(0.5f, 0.5f));
+                        if (ImGui.BeginPopupModal("object_deletion_confirmation_" + key))
+                        {
+                            System.Diagnostics.Debug.WriteLine("b");
+                            ImGui.Text($"Confirm delete object \"{key}\"?");
+                            if (ImGui.Button("Cancel")) { ImGui.CloseCurrentPopup(); }
+                            ImGui.SameLine();
+                            if (ImGui.Button("Delete")) { Remove(key); ImGui.CloseCurrentPopup(); }
+                            ImGui.EndPopup();
+                        }
+                    }
+                    ImGui.EndChild();
+                }
+                // A button to launch the popup for creating a new object
+                if (ImGui.Button("Create New Object", new System.Numerics.Vector2(sideBarWidth, 0f)))
+                {
+                    ImGui.OpenPopup("create_new_object");
+                }
+
+                ImGui.EndGroup();
+            }
+            ImGui.SameLine();
+
+            // Define the right side of the two-pane layout, which contains the selected object details
+            {
+                ImGui.BeginGroup();
+                if (ImGui.BeginChild("object_detail_view", new System.Numerics.Vector2(0, 0)))
+                {
+                    if (objectListCurrentSelection != null && GameObjects.ContainsKey(objectListCurrentSelection))
+                    {
+                        GameObject gameObject = GameObjects[objectListCurrentSelection];
                         // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
                         // we need to temporarily convert.
                         System.Numerics.Vector3 pos = gameObject.Position.ToNumerics();
@@ -205,86 +319,20 @@ namespace HammeredGame.Game
 
                         ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
 
+                        ImGui.Separator();
+
                         // Draw any object specific UI defined within its UI() function
                         if (gameObject is IImGui objectWithGui)
                         {
                             objectWithGui.UI();
                         }
-                        ImGui.TreePop();
                     }
-
-                    bool openDeletionConfirmation = false;
-
-                    // Define the menu that pops up when right clicking an object in the tree
-                    if (ImGui.BeginPopupContextItem())
-                    {
-                        // Object duplication (creates a new object with a new name but everything
-                        // else the same)
-                        if (ImGui.MenuItem("Duplicate Object"))
-                        {
-                            // We want to call Create<T>() with T being the type of gameObject.
-                            // However, we can't use variables for generic type parameters, so
-                            // instead we will create a specific version of the method and invoke it
-                            // manually. This causes some changes to how variadic "params dynamic[]"
-                            // behaves, outlined below.
-                            GetType().GetMethod(nameof(Create)).MakeGenericMethod(gameObject.GetType()).Invoke(this, new object[] {
-                                GenerateUniqueNameWithPrefix(gameObject.GetType().Name.ToLower()),
-                                new object[] {
-                                    Services,
-                                    // We are passing references to the Model and Texture here,
-                                    // assuming they won't change, and that loading them again from
-                                    // the Content Manager would be a waste.
-                                    gameObject.Model,
-                                    gameObject.Texture,
-                                    gameObject.Position,
-                                    gameObject.Rotation,
-                                    gameObject.Scale
-                                }
-                            });
-                        }
-
-                        // Object deletion
-                        if (ImGui.MenuItem("Delete Object"))
-                        {
-                            // We want to call ImGui.OpenPopup() here to open the deletion
-                            // confirmation popup. However, popups can only be called from the same
-                            // ID space, so we need to have the popup defined in this block of code,
-                            // but MenuItem closes on the next frame so the popup won't persist.
-                            // The workaround is to set a flag.
-                            openDeletionConfirmation = true;
-                        }
-                        ImGui.EndPopup();
-                    }
-
-                    if (openDeletionConfirmation)
-                    {
-                        ImGui.OpenPopup("object_deletion_confirmation_" + key);
-                    }
-
-                    ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new System.Numerics.Vector2(0.5f, 0.5f));
-
-                    // The confirmation popup to show. This has to be in the UI tree always
-                    // regardless of the state of the menu that triggered it, otherwise it'll
-                    // disappear instantly.
-                    if (ImGui.BeginPopupModal("object_deletion_confirmation_" + key))
-                    {
-                        System.Diagnostics.Debug.WriteLine("b");
-                        ImGui.Text($"Confirm delete object \"{key}\"?");
-                        if (ImGui.Button("Cancel")) { ImGui.CloseCurrentPopup(); }
-                        ImGui.SameLine();
-                        if (ImGui.Button("Delete")) { Remove(key); ImGui.CloseCurrentPopup(); }
-                        ImGui.EndPopup();
-                    }
+                    ImGui.EndChild();
                 }
-                ImGui.TreePop();
+                ImGui.EndGroup();
             }
 
-            // A button to launch the popup for creating a new object
-            if (ImGui.Button("Create New Object"))
-            {
-                ImGui.OpenPopup("create_new_object");
-            }
-
+            // The popup that upons when you click the button to create a new object
             if (ImGui.BeginPopup("create_new_object"))
             {
                 // Select a class from the dropdown of all available game object classes
@@ -349,13 +397,13 @@ namespace HammeredGame.Game
                 if (ImGui.Button("Create"))
                 {
                     // Generate a name for the object.
-                    GenerateUniqueNameWithPrefix(Type.GetType(objectCreationSelectedFqn).Name.ToLower());
+                    string name = GenerateUniqueNameWithPrefix(Type.GetType(objectCreationSelectedFqn).Name.ToLower());
 
                     // Invoke this.Create with arguments for the game object type constructor. Since
                     // this is a generic method, we have to create a specific version for the type
                     // we are creating.
                     GetType().GetMethod(nameof(Create)).MakeGenericMethod(Type.GetType(objectCreationSelectedFqn)).Invoke(this, new object[] {
-                        GenerateUniqueNameWithPrefix(Type.GetType(objectCreationSelectedFqn).Name.ToLower()),
+                        name,
                         // Although the type signature of Create allows passing the name, followed
                         // by any number of parameters to pass to the game object constructor, C#
                         // treats this as syntax sugar for accepting an object[] as the second
@@ -370,34 +418,12 @@ namespace HammeredGame.Game
                             objectCreationScale
                         }
                     });
+
+                    // Set sidebar focus to created object
+                    objectListCurrentSelection = name;
                 }
                 ImGui.EndPopup();
             }
-
-            ImGui.SameLine();
-            // Button to load from XML. This will replace all the scene objects
-            // TODO: update Space and bounding boxes?
-            if (ImGui.Button("Load XML"))
-            {
-                // open a cross platform file dialog
-                NativeFileDialogSharp.DialogResult result = NativeFileDialogSharp.Dialog.FileOpen("xml");
-
-                if (result.IsOk)
-                {
-                    // Clear the scene objects
-                    Clear();
-                    CreateFromXML(Services, result.Path);
-                }
-            }
-
-            ImGui.SameLine();
-            // Button to export to XML
-            if (ImGui.Button("Export Level"))
-            {
-                SceneDescriptionIO.WriteToXML("test.xml", Camera, GameObjects, Services);
-            }
-
-            ImGui.ShowDemoWindow();
         }
     }
 }
