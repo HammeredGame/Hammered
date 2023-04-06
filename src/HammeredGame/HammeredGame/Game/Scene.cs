@@ -231,13 +231,16 @@ namespace HammeredGame.Game
                             // else the same)
                             if (ImGui.MenuItem("Duplicate Object"))
                             {
+                                // Generate a new name for the object
+                                string name = GenerateUniqueNameWithPrefix(gameObject.GetType().Name.ToLower());
+
                                 // We want to call Create<T>() with T being the type of gameObject.
                                 // However, we can't use variables for generic type parameters, so
                                 // instead we will create a specific version of the method and invoke it
                                 // manually. This causes some changes to how variadic "params dynamic[]"
                                 // behaves, outlined below.
                                 GetType().GetMethod(nameof(Create)).MakeGenericMethod(gameObject.GetType()).Invoke(this, new object[] {
-                                    GenerateUniqueNameWithPrefix(gameObject.GetType().Name.ToLower()),
+                                    name,
                                     new object[] {
                                         Services,
                                         // We are passing references to the Model and Texture here,
@@ -250,6 +253,9 @@ namespace HammeredGame.Game
                                         gameObject.Scale
                                     }
                                 });
+
+                                // Set sidebar focus to created object
+                                objectListCurrentSelection = name;
                             }
 
                             // Object deletion
