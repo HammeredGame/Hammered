@@ -308,7 +308,7 @@ namespace HammeredGame.Game
                         // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
                         // we need to temporarily convert.
                         System.Numerics.Vector3 pos = gameObject.Position.ToNumerics();
-                        ImGui.DragFloat3("Position", ref pos);
+                        ImGui.DragFloat3("Position", ref pos, 10f);
                         gameObject.Position = pos;
 
                         System.Numerics.Vector4 rot = gameObject.Rotation.ToVector4().ToNumerics();
