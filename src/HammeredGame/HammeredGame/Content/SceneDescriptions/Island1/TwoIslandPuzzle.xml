@@ -227,11 +227,11 @@
 
 	<!--crude sea-->
 
-	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water">
+	<object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="sea">
 		<model>temp_water_big</model>
-		<position type="vec3">93 -29 172</position>
+		<position type="vec3">0 -29 0</position>
 		<rotation type="quaternion">0 0 0 1</rotation>
-		<scale type="float">2.8</scale>
+		<scale type="float">80</scale>
 	</object>
 
 </level>
