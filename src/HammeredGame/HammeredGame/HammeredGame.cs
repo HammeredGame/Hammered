@@ -283,8 +283,8 @@ namespace HammeredGame
                     {
                         InitializeLevel(fqn);
                     }
-                    ImGui.EndCombo();
                 }
+                ImGui.EndCombo();
             }
             ImGui.Text("Press R on keyboard or Y on controller to reload level");
             ImGui.Separator();
