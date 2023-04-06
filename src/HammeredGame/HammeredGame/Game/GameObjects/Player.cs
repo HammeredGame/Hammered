@@ -64,7 +64,7 @@ namespace HammeredGame.Game.GameObjects
 
             // Defining the bounding volume entity (currently a box, but this could be
             // defined as a capsule/cylinder/compound/etc. --> see bepuphysics1 repo)
-            this.Entity = new Box(MathConverter.Convert(Position), 1, 4, 1, 50);
+            this.Entity = new Box(MathConverter.Convert(Position), 2, 6, 2, 50);
 
             // Adding a tag to the entity, to allow us to potentially filter and
             // view bounding volumes (for debugging)

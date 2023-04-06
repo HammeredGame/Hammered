@@ -87,8 +87,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //System.Diagnostics.Debug.WriteLine(this.entity.CollisionInformation.Pairs.Count);
             if (otherEntityInformation != null)
             {
-
-                this.SetActivated(false);
+                if (sender.Pairs.Count <= 1)
+                {
+                    this.SetActivated(false);
+                }
             }
         }
 

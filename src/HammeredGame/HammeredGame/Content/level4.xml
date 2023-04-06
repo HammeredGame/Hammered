@@ -68,14 +68,14 @@
 	<!-- TREES -->
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree">
     <model>diffuse_tree</model>
-    <position type="vec3">-3 1 -32</position>
+    <position type="vec3">-3 0 -32</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">1</scale>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree">
     <model>diffuse_tree</model>
-    <position type="vec3">-3 1 22</position>
+    <position type="vec3">-3 0 24</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">1</scale>
   </object>

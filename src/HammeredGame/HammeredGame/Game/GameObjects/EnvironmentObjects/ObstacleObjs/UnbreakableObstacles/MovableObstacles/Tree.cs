@@ -1,5 +1,8 @@
 ﻿using BEPUphysics;
+using BEPUphysics.CollisionShapes.ConvexShapes;
+using BEPUphysics.CollisionShapes;
 using BEPUphysics.Entities.Prefabs;
+using BEPUphysics.Paths.PathFollowing;
 using BEPUphysics.PositionUpdating;
 using Hammered_Physics.Core;
 using Microsoft.Xna.Framework;
@@ -56,7 +59,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         {
             treeFallen = false;
 
-            this.Entity = new Box(MathConverter.Convert(this.Position), 7, 30, 7);
+            this.Entity = new Box(MathConverter.Convert(this.Position), 7, 20, 7);
+            this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0f, 5f, 0f);
             this.Entity.Tag = "MovableObstacleBounds";
             this.Entity.CollisionInformation.Tag = this;
             this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
@@ -65,7 +69,29 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.ActiveSpace.Add(this.Entity);
 
             this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
-            this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
+            this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
+            //this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
+            this.Entity.CollisionInformation.Events.RemovingPair += Events_RemovingPair;
+        }
+
+        private void Events_RemovingPair(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.BroadPhaseEntry other)
+        {
+            if (other.Tag is Player && treeFallen)
+            {
+                var player = other.Tag as Player;
+                this.playerOnTree = false;
+                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, 0.0f, player.Entity.Position.Z);
+            }
+        }
+
+        private void Events_PairTouching(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            if (other.Tag is Player && treeFallen)
+            {
+                var player = other.Tag as Player;
+                this.playerOnTree = true;
+                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, player.Entity.Position.Y + 0.1f, player.Entity.Position.Z);
+            }
         }
 
         private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
@@ -77,13 +103,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 fallDirection.Normalize();
                 sender.Entity.Orientation *= BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection), BEPUutilities.MathHelper.ToRadians(90));
                 SetTreeFallen(true);
-            }
-
-            if (other.Tag is Player && treeFallen)
-            {
-                var player = other.Tag as Player;
-                this.playerOnTree = true;
-                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, player.Entity.Position.Y + 3.0f, player.Entity.Position.Z);
             }
         }
 

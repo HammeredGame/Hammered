@@ -20,6 +20,7 @@ using BEPUphysics.Entities.Prefabs;
 using BEPUutilities;
 using Hammered_Physics.Core;
 using BEPUphysics.Paths.PathFollowing;
+using BEPUphysics.CollisionRuleManagement;
 
 namespace HammeredGame
 {
@@ -346,7 +347,7 @@ namespace HammeredGame
             foreach (Entity e in space.Entities)
             {
                 Box box = e as Box;
-                if (box != null && (string)box.Tag == "BoundsObjectBounds") //This won't create any graphics for an entity that isn't a box since the model being used is a box.
+                if (box != null && ((string)box.Tag == "MovableObstacleBounds" || (string)box.Tag == "PlayerBounds")) //This won't create any graphics for an entity that isn't a box since the model being used is a box.
                 {
                     BEPUutilities.Matrix scaling = BEPUutilities.Matrix.CreateScale(box.Width, box.Height, box.Length); //Since the cube model is 1x1x1, it needs to be scaled to match the size of each individual box.
                     EntityDebugDrawer model = new EntityDebugDrawer(e, CubeModel, scaling, this);
