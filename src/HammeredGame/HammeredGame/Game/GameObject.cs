@@ -256,26 +256,23 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Getter function for game object position
+        /// Getter function for game object position. To get the physics entity position (which may
+        /// be different), query Entity.Position
         /// </summary>
         /// <returns></returns>
         public virtual Vector3 GetPosition()
         {
-            // If an 'Entity' is attached to the game object, return its position.
-            // Otherwise, return the mesh/model's position (this is usually only the
-            // case for Static Meshes - typically used for static ground models)
-            if (this.Entity != null) return MathConverter.Convert(this.Entity.Position);
-            else return Position;
+            return Position;
         }
 
         /// <summary>
-        /// Getter function for game object rotation
+        /// Getter function for game object rotation. To get the physics entity position (which may
+        /// be different), query Entity.Orientation
         /// </summary>
         /// <returns></returns>
         public virtual Quaternion GetRotation()
         {
-            if (this.Entity != null) return MathConverter.Convert(this.Entity.Orientation);
-            else return Rotation;
+            return Rotation;
         }
     }
 }
