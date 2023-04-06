@@ -53,15 +53,11 @@ namespace HammeredGame.Game.GameObjects
         public bool OnTree = false;
         public bool ReachedGoal = false;
 
-        private readonly Input input;
-        private readonly Camera activeCamera;
+        private Camera activeCamera;
 
         // Initialize player class
-        public Player(Model model, Vector3 pos, float scale, Texture2D t, Space space, Input inp, Camera cam) : base(model, pos, scale, t, space)
+        public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
         {
-            this.input = inp;
-            this.activeCamera = cam;
-
             // Defining the bounding volume entity (currently a box, but this could be
             // defined as a capsule/cylinder/compound/etc. --> see bepuphysics1 repo)
             this.Entity = new Box(MathConverter.Convert(Position), 2, 6, 2, 50);
@@ -71,8 +67,8 @@ namespace HammeredGame.Game.GameObjects
             this.Entity.Tag = "PlayerBounds";
 
             // Setting the entity's collision information tag to the game object itself.
-            // This will help in checking for specific collisions in object-specific 
-            // collision handling. --> See the Events_DetectingInitialCollision function in 
+            // This will help in checking for specific collisions in object-specific
+            // collision handling. --> See the Events_DetectingInitialCollision function in
             // this file to see an example of how this might be used
             this.Entity.CollisionInformation.Tag = this;
 
@@ -80,11 +76,11 @@ namespace HammeredGame.Game.GameObjects
             // walls which would be pretty jarring from a player's perspective.
             this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
 
-            // Set the entity's local inverse intertia tensor --> this ensures that the 
+            // Set the entity's local inverse intertia tensor --> this ensures that the
             // player character doesn't just fall over due to gravity
             this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
 
-            // Increase the entity's kinetic friction variable --> currently being used to 
+            // Increase the entity's kinetic friction variable --> currently being used to
             // reduce the character sliding along the surface. Also, not setting it too high
             // since higher values make the player get stuck on certain parts of an uneven ground mesh.
             // TODO: May want the flat ground meshes be as even and flat as possible
@@ -92,7 +88,7 @@ namespace HammeredGame.Game.GameObjects
             // handled separately within collision handling <-- more testing needed for these settings)
             this.Entity.Material.KineticFriction = 1.5f;
 
-            // Add the entity to the level's physics space - this ensures that this game object 
+            // Add the entity to the level's physics space - this ensures that this game object
             // will be considered for collision constraint solving (handled by the physics engine)
             this.ActiveSpace.Add(this.Entity);
 
@@ -127,6 +123,15 @@ namespace HammeredGame.Game.GameObjects
             }
         }
 
+        /// <summary>
+        /// Set the active camera in use, which determines the movement vector for the player.
+        /// </summary>
+        /// <param name="camera"></param>
+        public void SetActiveCamera(Camera camera)
+        {
+            activeCamera = camera;
+        }
+
         // Update (called every tick)
         public override void Update(GameTime gameTime)
         {
@@ -142,18 +147,24 @@ namespace HammeredGame.Game.GameObjects
             // previous computations accumulating/carrying over)
             player_vel = Vector3.Zero;
 
-            // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
-            // "forward" from the current camera perspective. Calculated by projecting the vector of
-            // the current camera position to the player position, onto the ground, and normalising it.
-            Vector3 forwardDirectionFromCamera = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
+            Vector3 forwardDirection;
+            if (activeCamera != null) {
+                // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
+                // "forward" from the current camera perspective. Calculated by projecting the vector of
+                // the current camera position to the player position, onto the ground, and normalising it.
+                forwardDirection = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
+            } else
+            {
+                forwardDirection = Vector3.UnitX;
+            }
 
             // Handling input from keyboard.
-            moveDirty = this.KeyboardInput(forwardDirectionFromCamera);
+            moveDirty = this.KeyboardInput(forwardDirection);
 
             // Handling input from gamepad.
-            if (input.GamePadState.IsConnected)
+            if (Services.GetService<Input>().GamePadState.IsConnected)
             {
-                moveDirty = moveDirty || GamepadInput(forwardDirectionFromCamera);
+                moveDirty = moveDirty || GamepadInput(forwardDirection);
             }
 
             // After checking for inputs, if the player velocity vector is still a zero vector,
@@ -339,6 +350,7 @@ namespace HammeredGame.Game.GameObjects
             // Keyboard input (W - forward, S - back, A - left, D - right)
 
             bool moveDirty = false;
+            Input input = Services.GetService<Input>();
 
             if (input.KeyDown(Keys.W))
             {
@@ -367,6 +379,7 @@ namespace HammeredGame.Game.GameObjects
         private bool GamepadInput(Vector3 forwardDirectionFromCamera)
         {
             bool moveDirty = false;
+            Input input = Services.GetService<Input>();
 
             float MovePad_LeftRight = input.GamePadState.ThumbSticks.Left.X;
             float MovePad_UpDown = input.GamePadState.ThumbSticks.Left.Y;
@@ -381,12 +394,8 @@ namespace HammeredGame.Game.GameObjects
 
         public void UI()
         {
-            ImGui.Begin("Player", ImGuiWindowFlags.AlwaysAutoResize);
-
             ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
-
-            ImGui.End();
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BEPUphysics;
+using HammeredGame.Core;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
@@ -16,7 +17,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 
     /// <remarks>
     /// <para>
-    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/> 
+    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/>
     ///                         ---> <see cref="DecorObject "/>
     /// </para>
     /// <para>
@@ -28,7 +29,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
     {
         // Any Interactable specific variables go here
 
-        public DecorObject(Model model, Vector3 pos, float scale, Texture2D t, Space space) : base(model, pos, scale, t, space)
+        public DecorObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
         {
         }
 

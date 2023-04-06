@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BEPUphysics.Entities;
 using BEPUphysics.PositionUpdating;
+using HammeredGame.Core;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -22,8 +23,8 @@ namespace HammeredGame.Game.GameObjects
     /// </remarks>
     public class EmptyGameObject : GameObject
     {
-        public EmptyGameObject(Model model, Vector3 pos, float scale, Texture2D t, Space space, Entity entity)
-            : base(model, pos, scale, t, space)
+
+        public EmptyGameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale)
         {
             // these game objects should not be visible
             this.SetVisible(false);

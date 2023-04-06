@@ -3,6 +3,7 @@ using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using Hammered_Physics.Core;
+﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -40,14 +41,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
     {
         /* Provisionally
         */
-        private readonly Door correspondingDoor;
+        private Door correspondingDoor;
         private bool keyPickedUp = false;
 
-        public Key(Model model, Vector3 pos, float scale, Texture2D t, Space space, Door correspondingDoor) :
-            base(model, pos, scale, t, space)
+        public Key(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
         {
-            this.correspondingDoor = correspondingDoor;
-
             this.Entity = new Box(MathConverter.Convert(this.Position), 5, 1, 5);
 
             this.Entity.Tag = "CollectibleBounds";
@@ -62,6 +60,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
             this.ActiveSpace.Add(this.Entity);
 
             this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+        }
+
+        public void SetCorrespondingDoor(Door correspondingDoor)
+        {
+            this.correspondingDoor = correspondingDoor;
         }
 
         private void Events_DetectingInitialCollision(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)

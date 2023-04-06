@@ -4,21 +4,22 @@ using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using Hammered_Physics.Core;
+﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles
 {
     /// <summary>
-    /// The <c>Door</c> class is an immovable obstacle within the game world, blocking the player's 
+    /// The <c>Door</c> class is an immovable obstacle within the game world, blocking the player's
     /// access to other parts of the map.
     /// <para />
-    /// Doors have a <code>keyFound</code> property that indicates whether the player has found 
+    /// Doors have a <code>keyFound</code> property that indicates whether the player has found
     /// the associated key (that will open the door). If this property has been successfully set
-    /// (player has key) and the player interacts with the door, the door will open up and cease 
+    /// (player has key) and the player interacts with the door, the door will open up and cease
     /// blocking the player's path.
     /// </summary>
-    /// 
+    ///
     /// <remarks>
     /// <para />
     /// REMINDER (class tree): GameObject -> EnvironmentObject -> ObstacleObject -> UnbreakableObstacle
@@ -26,32 +27,28 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     /// <para />
     /// The current implementation of the door opening up just sets the door's visible status to false,
     /// resulting in it not being drawn on screen anymore and not considered for any further collisions.
-    /// In the future, maybe we should be applying some form of animation, instead of it abruptly 
+    /// In the future, maybe we should be applying some form of animation, instead of it abruptly
     /// disappearing.
     /// <para />
     /// Temporarily, including a parameter <code>isGoal</code> (for the purposes of the demo
-    /// submission). This indicates whether the door is the goal of the level - results in the 
-    /// "PUZZLE SOLVED" text to appear on the debug console (see Player.cs). 
+    /// submission). This indicates whether the door is the goal of the level - results in the
+    /// "PUZZLE SOLVED" text to appear on the debug console (see Player.cs).
     /// <para />
     /// NOTE: THIS WILL NOT SCALE FOR FUTURE LEVELS!!!
     /// <para />
     /// TODO: remove the isGoal from this class. Potentially, make another class that exclusively
-    /// handles the goal state - possibly an empty game object that does not get rendered, still 
+    /// handles the goal state - possibly an empty game object that does not get rendered, still
     /// checks for player collisions, and if the player makes it here with the necessary conditions
     /// satisfied, we trigger a cutscene/load next level/etc.
     /// </remarks>
-    
+
     public class Door : ImmovableObstacle
     {
         // Any Unbreakable Obstacle specific variables go here
-        private bool keyFound;
-        private bool isGoal; // TEMPORARY
-
-        public Door(Model model, Vector3 pos, float scale, Texture2D t, Space space, bool isGoal=false) : base(model, pos, scale, t, space)
+        private bool keyFound = false;
+        private bool isGoal = false; // TEMPORARY
+        public Door(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
         {
-            keyFound = false;
-            this.isGoal = isGoal;
-
             this.Entity = new Box(MathConverter.Convert(this.Position), 5, 10, 3);
             this.Entity.Tag = "ImmovableObstacleBounds";
             this.Entity.CollisionInformation.Tag = this;
@@ -61,6 +58,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.ActiveSpace.Add(this.Entity);
 
             this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
+        }
+
+        public void SetIsGoal(bool isGoal)
+        {
+
+            this.isGoal = isGoal;
         }
 
         private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
