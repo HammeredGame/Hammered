@@ -3,9 +3,6 @@ using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -13,7 +10,7 @@ namespace HammeredGame.Game.Scenes.Island1
     {
         public TwoIslandPuzzle(GameServices services) : base(services)
         {
-            CreateFromXML(services, $"Content/SceneDescriptions/Island1/TwoIslandPuzzle.xml");
+            CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle.xml");
 
             Get<Player>("player1").SetActiveCamera(Camera);
 
