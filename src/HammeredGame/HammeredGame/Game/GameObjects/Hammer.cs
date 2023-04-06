@@ -104,8 +104,9 @@ namespace HammeredGame.Game.GameObjects
             // if hammer has not yet been dropped / if hammer is not being called back
             if (hammerState == HammerState.WithCharacter && player != null)
             {
-                Position = player.GetPosition();
-                this.Entity.Position = MathConverter.Convert(player.GetPosition());
+                // Assumes player object position and physics entity position are tied
+                Position = player.Position;
+                this.Entity.Position = player.Entity.Position;
             }
 
             // Get the input via keyboard or gamepad
@@ -122,7 +123,7 @@ namespace HammeredGame.Game.GameObjects
                 if (hammerState == HammerState.Enroute && player != null)
                 {
                     // Update Hammer's Linear Velocity
-                    this.Entity.LinearVelocity = hammerSpeed * MathConverter.Convert(player.GetPosition() - this.GetPosition());
+                    this.Entity.LinearVelocity = hammerSpeed * (player.Entity.Position - Entity.Position);
 
                     //// Update position
                     //Position += hammerSpeed * (player.GetPosition() - Position);
