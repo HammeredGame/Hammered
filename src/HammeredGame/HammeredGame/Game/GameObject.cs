@@ -255,7 +255,7 @@ namespace HammeredGame.Game
         /// Getter function for game object position
         /// </summary>
         /// <returns></returns>
-        public Vector3 GetPosition()
+        public virtual Vector3 GetPosition()
         {
             // If an 'Entity' is attached to the game object, return its position.
             // Otherwise, return the mesh/model's position (this is usually only the
@@ -268,7 +268,7 @@ namespace HammeredGame.Game
         /// Getter function for game object rotation
         /// </summary>
         /// <returns></returns>
-        public Quaternion GetRotation()
+        public virtual Quaternion GetRotation()
         {
             if (this.Entity != null) return MathConverter.Convert(this.Entity.Orientation);
             else return Rotation;

@@ -177,6 +177,7 @@ namespace HammeredGame.Game.GameObjects
                 // collision constraints with it --> rather we want to manually
                 // handle collisions
                 this.Entity.BecomeKinematic();
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
             }
         }
 
@@ -188,12 +189,19 @@ namespace HammeredGame.Game.GameObjects
             {
                 if (hammerState == HammerState.WithCharacter && input.ButtonPress(Buttons.A))
                 {
-                    hammerState = HammerState.Dropped;
-                    this.ComputeBounds();
+                    DropHammer();
+                    //hammerState = HammerState.Dropped;
+                    //this.ComputeBounds();
                 }
                 if (hammerState == HammerState.Dropped && input.ButtonPress(Buttons.B))
                 {
                     hammerState = HammerState.Enroute;
+
+                    // When hammer is enroute, the physics engine shouldn't solve for 
+                    // collision constraints with it --> rather we want to manually
+                    // handle collisions
+                    this.Entity.BecomeKinematic();
+                    this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
                 }
             }
         }
