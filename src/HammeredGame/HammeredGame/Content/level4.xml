@@ -55,8 +55,8 @@
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="door_goal">
-    <model>test_obstacle</model>
-    <position type="vec3">15 2.5 -67.5</position>
+    <model>test_door2</model>
+    <position type="vec3">22.5 2.5 -57.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">1</scale>
 	  <texture type="texture2d">awesome_goal_texture</texture>

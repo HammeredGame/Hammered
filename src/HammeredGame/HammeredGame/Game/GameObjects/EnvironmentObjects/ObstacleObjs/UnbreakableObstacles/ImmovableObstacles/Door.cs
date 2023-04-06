@@ -52,7 +52,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             keyFound = false;
             this.isGoal = isGoal;
 
-            this.Entity = new Box(MathConverter.Convert(this.Position), 2, 30, 10);
+            this.Entity = new Box(MathConverter.Convert(this.Position), 5, 10, 3);
             this.Entity.Tag = "ImmovableObstacleBounds";
             this.Entity.CollisionInformation.Tag = this;
             this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
