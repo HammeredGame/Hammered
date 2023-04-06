@@ -17,16 +17,23 @@ namespace HammeredGame.Game
     internal static class SceneDescriptionIO
     {
 
+        /// <summary>
+        /// Generic function to parse basic data to classes.
+        /// </summary>
+        /// <typeparam name="T">Supports bool, float, XNA.Vector3, and XNA.Quaternion</typeparam>
+        /// <param name="text">String to parse</param>
+        /// <returns>null if the parsing failed, otherwise contains the parsed object</returns>
         internal static T Parse<T>(string text)
         {
             string[] tokens;
-            string test = typeof(T).Name;
             switch (typeof(T).Name)
             {
                 case "Boolean":
                     return (T)(object)bool.Parse(text);
 
                 case "Single":
+                    // Make sure to parse floats with a culture-agnostic way that treats dots as
+                    // decimal point
                     return (T)(object)float.Parse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture);
 
                 case "Vector3":
@@ -42,6 +49,14 @@ namespace HammeredGame.Game
             }
         }
 
+        /// <summary>
+        /// Generic function to write basic classes to strings.
+        /// </summary>
+        /// <typeparam name="T">Supports bool, float, XNA.Vector3, and XNA.Quaternion</typeparam>
+        /// <param name="obj">The object to show as string</param>
+        /// <returns>
+        /// Empty string if the conversion failed, otherwise the string representation of the object
+        /// </returns>
         internal static string Show<T>(T obj)
         {
             switch (typeof(T).Name)
@@ -50,6 +65,7 @@ namespace HammeredGame.Game
                     return obj.ToString();
 
                 case "Single":
+                    // Show floats up to 3 decimal points, using the dot as the decimal point
                     return ((float)(object)obj).ToString("0.000", System.Globalization.CultureInfo.InvariantCulture);
 
                 case "Vector3":
@@ -98,7 +114,7 @@ namespace HammeredGame.Game
         /// <returns>The instantiated Camera object</returns>
         private static Camera GetCamera(XDocument targetXML, GraphicsDevice gpu, Input input)
         {
-            // FInd the top level camera object (otherwise .Descendants("camera") returns nested child ones too)
+            // Find the top level camera object (otherwise .Descendants("camera") returns nested child ones too)
             XElement cameraElement = targetXML.Root.Descendants("camera").Single(child => child.Parent == targetXML.Root);
 
             // Parse the target and positions, which are required for the constructor
