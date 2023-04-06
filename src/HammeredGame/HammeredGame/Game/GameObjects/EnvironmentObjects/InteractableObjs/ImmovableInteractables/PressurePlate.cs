@@ -5,6 +5,7 @@ using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.NarrowPhaseSystems.Pairs;
 using BEPUphysics.PositionUpdating;
 using Hammered_Physics.Core;
+﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -26,17 +27,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
     /// </remarks>
     public class PressurePlate : ImmovableInteractable
     {
-        private readonly EnvironmentObject triggerObject;
-        private bool playerOn, hammerOn;
-        private bool pressureActivated;
+        private EnvironmentObject triggerObject;
+        private bool playerOn = false, hammerOn = false;
+        private bool pressureActivated = false;
 
-        public PressurePlate(Model model, Vector3 pos, float scale, Texture2D t, Space space, EnvironmentObject triggerObject) :
-            base(model, pos, scale, t, space)
+        public PressurePlate(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
         {
-            this.triggerObject = triggerObject;
-            playerOn = false; hammerOn = false;
-            pressureActivated = false;
-
             this.Entity = new Box(MathConverter.Convert(this.Position), 6, 3, 6);
             this.Entity.Tag = "ImmovableInteractableBounds";
             this.Entity.CollisionInformation.Tag = this;
@@ -48,6 +44,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //this.entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollision;
             this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
             this.Entity.CollisionInformation.Events.CollisionEnded += this.Events_CollisionEnded;
+        }
+
+        public void SetTriggerObject(EnvironmentObject triggerObject)
+        {
+            this.triggerObject = triggerObject;
         }
 
         private void Events_PairTouching(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
@@ -107,14 +108,14 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //}
             if (this.pressureActivated)
             {
-                triggerObject.SetVisible(false);
-                if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                triggerObject?.SetVisible(false);
+                if (triggerObject != null && this.ActiveSpace.Entities.Contains(triggerObject.Entity))
                     this.ActiveSpace.Remove(triggerObject.Entity);
             }
             else
             {
-                triggerObject.SetVisible(true);
-                if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                triggerObject?.SetVisible(true);
+                if (triggerObject != null && !this.ActiveSpace.Entities.Contains(triggerObject.Entity))
                     this.ActiveSpace.Add(triggerObject.Entity);
             }
         }

@@ -245,9 +245,6 @@
 #begin level3.xml
 /copy:level3.xml
 
-#begin level4.xml
-/copy:level4.xml
-
 #begin rock.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
@@ -266,6 +263,9 @@
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:rock.fbx
+
+#begin SceneDescriptions/Island1/TwoIslandPuzzle.xml
+/copy:SceneDescriptions/Island1/TwoIslandPuzzle.xml
 
 #begin temp_floor_flat.fbx
 /importer:FbxImporter

@@ -10,9 +10,9 @@ using ImGuiNET;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
 using HammeredGame.Game;
 using BEPUphysics.BroadPhaseEntries;
-using BEPUutilities;
 using Hammered_Physics.Core;
 using BEPUphysics;
+using HammeredGame.Core;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
@@ -28,13 +28,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
     /// </remarks>
     class Water : FloorObject
     {
-        public Water(Model model, Microsoft.Xna.Framework.Vector3 pos, float scale, Texture2D t, Space space) : base(model, pos, scale, t, space)
+        public Water(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
         {
             BEPUutilities.Vector3[] vertices;
             int[] indices;
             ModelDataExtractor.GetVerticesAndIndicesFromModel(this.Model, out vertices, out indices);
-            //Give the mesh information to a new StaticMesh.  
-            var mesh = new StaticMesh(vertices, indices, new AffineTransform(MathConverter.Convert(this.Position)));
+            //Give the mesh information to a new StaticMesh.
+            var mesh = new StaticMesh(vertices, indices, new BEPUutilities.AffineTransform(MathConverter.Convert(this.Position)));
             this.ActiveSpace.Add(mesh);
         }
 

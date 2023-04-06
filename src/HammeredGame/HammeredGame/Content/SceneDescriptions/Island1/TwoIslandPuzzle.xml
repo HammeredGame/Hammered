@@ -13,26 +13,12 @@
     <position type="vec3">10 0 -45</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">1</scale>
-    <!-- The following are passed strictly in order to the constructor.
-		Their tag names are irrelevant, the parser does not use them.
-
-		Previously defined GameObjects can be referenced by their ID. Otherwise,
-		"input" refers to the global Input, and "main_camera" to the global camera.
-		-->
-    <other_constructor_args>
-      <arg object_ref_id="input" />
-      <arg object_ref_id="main_camera" />
-    </other_constructor_args>
   </object>
   <object type="HammeredGame.Game.GameObjects.Hammer">
     <model>temp_hammer2</model>
     <position type="vec3">10 0 -35</position>
     <rotation type="quaternion">0 0 0 1</rotation>
-    <scale type="float">1</scale>
-    <other_constructor_args>
-      <arg object_ref_id="input" />
-      <arg object_ref_id="player1" />
-    </other_constructor_args>
+	<scale type="float">1</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground">
     <model>island_colored</model>
@@ -49,9 +35,6 @@
     <position type="vec3">-10 1.5 -47.5</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">1</scale>
-    <other_constructor_args>
-      <isGoal type="boolean">false</isGoal>
-    </other_constructor_args>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="door_goal">
@@ -60,9 +43,6 @@
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">1</scale>
 	  <texture type="texture2d">awesome_goal_texture</texture>
-    <other_constructor_args>
-      <isGoal type="boolean">true</isGoal>
-    </other_constructor_args>
   </object>
 
 	<!-- TREES -->
@@ -87,9 +67,6 @@
     <position type="vec3">-3 1 -45</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">1</scale>
-    <other_constructor_args>
-      <arg object_ref_id="door_pp" />
-    </other_constructor_args>
   </object>
 
   <!-- KEY -->
@@ -99,9 +76,6 @@
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">1</scale>
 	  <texture type="texture2d">awesome_key_texture</texture>
-    <other_constructor_args>
-      <arg object_ref_id="door_goal" />
-    </other_constructor_args>
   </object>
 
   <!-- DECOR -->

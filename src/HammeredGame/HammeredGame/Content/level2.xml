@@ -21,7 +21,6 @@
 		"input" refers to the global Input, and "main_camera" to the global camera.
 		-->
 		<other_constructor_args>
-			<arg object_ref_id="input" />
 			<arg object_ref_id="main_camera" />
 		</other_constructor_args>
 	</object>
@@ -31,7 +30,6 @@
 		<rotation type="quaternion">0 0 0 1</rotation>
 		<scale type="float">0.02</scale>
 		<other_constructor_args>
-			<arg object_ref_id="input" />
 			<arg object_ref_id="player1" />
 		</other_constructor_args>
 	</object>

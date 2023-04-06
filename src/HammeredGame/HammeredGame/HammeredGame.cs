@@ -21,6 +21,8 @@ using BEPUutilities;
 using Hammered_Physics.Core;
 using BEPUphysics.Paths.PathFollowing;
 using BEPUphysics.CollisionRuleManagement;
+using Microsoft.Xna.Framework.Content;
+using System;
 
 namespace HammeredGame
 {
@@ -35,7 +37,6 @@ namespace HammeredGame
         private SpriteBatch spriteBatch;
         private GraphicsDevice gpu;
         public int ScreenW, ScreenH;
-        private Camera camera;
 
         private Space space;
         static ParallelLooper parallelLooper;
@@ -53,24 +54,19 @@ namespace HammeredGame
 
         private SpriteFont tempFont;
 
-        private List<GameObject> gameObjects;
-
-        private Key key;
+        private readonly GameServices gameServices = new();
 
         public static List<EnvironmentObject> ActiveLevelObstacles = new();
+
+        private Scene currentScene;
 
         private Player player;
 
         // Music variables
         private Song bgMusic;
 
-        // SCENE TEST VARIABLES
-        private int testObstaclesCombo = 4;
-
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
-
-        private readonly List<IImGui> uiEntities = new();
 
         // Bounding Volume debugging variables
         private bool drawBounds = false;
@@ -110,15 +106,18 @@ namespace HammeredGame
             // Initialize Input class
             input = new Input(pp, mainRenderTarget);
 
-            // Initialize Camera class
-            camera = new Camera(gpu, Microsoft.Xna.Framework.Vector3.Zero, Microsoft.Xna.Framework.Vector3.Up, input);
-
             // Set title for game window
             Window.Title = "HAMMERED";
 
             // Initialize ImGui's internal renderer and build its font atlas
             imGuiRenderer = new ImGuiRenderer(this);
             imGuiRenderer.RebuildFontAtlas();
+
+            // Add useful game services that might want to be accessed globally
+            gameServices.AddService<GraphicsDevice>(gpu);
+            gameServices.AddService<Input>(input);
+            gameServices.AddService<ContentManager>(Content);
+            gameServices.AddService<ScriptUtils>(new ScriptUtils());
 
             base.Initialize();
         }
@@ -131,7 +130,7 @@ namespace HammeredGame
         {
             tempFont = Content.Load<SpriteFont>("temp_font");
 
-            InitializeLevel(testObstaclesCombo);
+            InitializeLevel("HammeredGame.Game.Scenes.Island1.TwoIslandPuzzle");
 
             bgMusic = Content.Load<Song>("Audio/BGM_V1");
 
@@ -145,11 +144,8 @@ namespace HammeredGame
         /// all visible UI as well and show only the UIs relevant to the new objects.
         /// </summary>
         /// <param name="levelToLoad"></param>
-        private void InitializeLevel(int levelToLoad)
+        private void InitializeLevel(string levelToLoad)
         {
-            // Clear the UI list to get a clean state with no duplicates
-            uiEntities.Clear();
-
             // Construct a new space for the physics simulation to occur within.
             // Using this to clear the physics space, in case the level is reloaded.
             // TODO: There's no RemoveAllEntities function in bepuphysics, and manually
@@ -175,24 +171,18 @@ namespace HammeredGame
             space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -98.1f, 0);
             CollisionDetectionSettings.AllowedPenetration = 0.001f;
 
-            XMLLevelLoader levelLoader = new XMLLevelLoader($"level{levelToLoad.ToString()}.xml", space);
+            // Add the physics space to be a globally accessible service
+            gameServices.AddService<Space>(space);
 
-            camera = levelLoader.GetCamera(gpu, input);
-            gameObjects = levelLoader.GetGameObjects(Content, input, camera);
+            currentScene = (Scene)Activator.CreateInstance(Type.GetType(levelToLoad), gameServices);
 
             ActiveLevelObstacles.Clear();
-            foreach (GameObject entity in gameObjects)
+            foreach (GameObject entity in currentScene.GameObjectsList)
             {
                 // Store a reference to the player since it's a little important
                 if (entity is Player p)
                 {
                     player = p;
-                }
-
-                // Add all level objects with an associated UI to the list of UIs to draw in Draw()
-                if (entity is IImGui imGuiAble)
-                {
-                    uiEntities.Add(imGuiAble);
                 }
 
                 // All objects that the player can collide with (for now, this is everything but
@@ -205,15 +195,6 @@ namespace HammeredGame
                     ActiveLevelObstacles.Add(envAble);
                 }
             }
-
-            //var BoundsPos = new Microsoft.Xna.Framework.Vector3(10f, 0f, -37.5f);
-            //var BoundsObject = new BoundsObject(null, BoundsPos, 1f, null, space, new Box(MathConverter.Convert(BoundsPos), 8, 6, 4));
-
-            // The camera and the Game object itself (this class) have an UI, neither of them
-            // are in the GameObject list
-            uiEntities.Add(camera);
-            uiEntities.Add(this);
-
             // Set up the list of debug entities after all the objects are loaded for debugging visualization
             SetupDebugBounds();
         }
@@ -225,26 +206,27 @@ namespace HammeredGame
         /// <param name="gameTime"></param>
         protected override void Update(GameTime gameTime)
         {
-            // Update input
-            input.Update();
+            gameServices.GetService<Input>().Update();
+            gameServices.GetService<ScriptUtils>().Update(gameTime);
+
             // Check for exit input
             if (input.BACK_DOWN || input.KeyDown(Keys.Escape)) Exit();
 
             if (input.ButtonPress(Buttons.Y) || input.KeyPress(Keys.R))
             {
-                InitializeLevel(testObstaclesCombo);
+                InitializeLevel("HammeredGame.Game.Scenes.Island1.TwoIslandPuzzle");
             }
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             //    Exit();
 
             // Update each game object
-            foreach (GameObject gameObject in gameObjects)
+            foreach (GameObject gameObject in currentScene.GameObjectsList)
             {
                 gameObject.Update(gameTime);
             }
 
             // Update camera
-            camera.UpdateCamera(player);
+            currentScene.Camera.UpdateCamera(player);
 
             //Steps the simulation forward one time step.
             space.Update();
@@ -288,16 +270,16 @@ namespace HammeredGame
             Set3DStates();
 
             // Render all the scene objects (given that they are not destroyed)
-            foreach (GameObject gameObject in gameObjects)
+            foreach (GameObject gameObject in currentScene.GameObjectsList)
             {
-                gameObject.Draw(camera.ViewMatrix, camera.ProjMatrix);
+                gameObject.Draw(currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
             }
 
             if (drawBounds)
             {
                 foreach (EntityDebugDrawer entity in debugEntities)
                 {
-                    entity.Draw(gameTime, camera.ViewMatrix, camera.ProjMatrix);
+                    entity.Draw(gameTime, currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
                 }
             }
 
@@ -326,12 +308,8 @@ namespace HammeredGame
 
             imGuiRenderer.BeforeLayout(gameTime);
 
-            // Draw each of our entities
-            foreach (var UIEntity in uiEntities)
-            {
-                if (UIEntity != null)
-                    UIEntity.UI();
-            }
+            // Draw the main developer UI
+            UI();
 
             // Call AfterLayout to finish.
             imGuiRenderer.AfterLayout();
@@ -359,7 +337,8 @@ namespace HammeredGame
 
         public void UI()
         {
-            ImGui.Begin("Hammered", ImGuiWindowFlags.AlwaysAutoResize);
+            ImGui.SetNextWindowSize(new System.Numerics.Vector2(600, 500), ImGuiCond.FirstUseEver);
+            ImGui.Begin("Hammered");
 
             // Show whether the gamepad is detected
             if (input.GamePadState.IsConnected)
@@ -369,45 +348,27 @@ namespace HammeredGame
             float fr = ImGui.GetIO().Framerate;
             ImGui.Text($"{1000.0f / fr:F2} ms/frame ({fr:F1} FPS)");
 
+            // Show a scene switcher dropdown, with the list of all scene class names in this assembly
             ImGui.Text("Current Loaded Scene: ");
             ImGui.SameLine();
-            ImGui.SliderInt("", ref testObstaclesCombo, 0, 4);
+            if (ImGui.BeginCombo("##scene", currentScene.GetType().Name))
+            {
+                foreach (string fqn in Scene.GetAllSceneFQNs())
+                {
+                    if (ImGui.Selectable(fqn, fqn == currentScene.GetType().FullName))
+                    {
+                        InitializeLevel(fqn);
+                    }
+                }
+                ImGui.EndCombo();
+            }
             ImGui.Text("Press R on keyboard or Y on controller to reload level");
             ImGui.Separator();
 
-            // Show an interactive list of game objects, each of which contain basic properties to edit
-            if (ImGui.TreeNode($"Loaded objects: {gameObjects.Count}"))
-            {
-                for (int i = 0; i < gameObjects.Count; i++)
-                {
-                    var gameObject = gameObjects[i];
-
-                    if (ImGui.TreeNode($"Object {i}: {gameObject}"))
-                    {
-                        // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
-                        // we need to temporarily convert.
-                        System.Numerics.Vector3 pos = gameObject.Position.ToNumerics();
-                        ImGui.DragFloat3("Position", ref pos);
-                        gameObject.Position = pos;
-
-                        System.Numerics.Vector4 rot = gameObject.Rotation.ToVector4().ToNumerics();
-                        ImGui.DragFloat4("Rotation", ref rot, 0.01f, -1.0f, 1.0f);
-                        gameObject.Rotation = Microsoft.Xna.Framework.Quaternion.Normalize(new Microsoft.Xna.Framework.Quaternion(rot));
-                        ImGui.DragFloat("Scale", ref gameObject.Scale, 0.01f);
-
-                        ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
-                        ImGui.TreePop();
-                    }
-                }
-                ImGui.TreePop();
-            }
-
             ImGui.Checkbox("DrawBounds", ref drawBounds);
 
-            if (ImGui.Button("Export Level"))
-            {
-                //new XMLLevelWriter(camera, gameObjects);
-            }
+            // Show the scene's UI within the same window
+            currentScene.UI();
             ImGui.End();
         }
     }

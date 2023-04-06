@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using BEPUphysics.Entities;
 using BEPUphysics;
 using Hammered_Physics.Core;
+using HammeredGame.Core;
 
 namespace HammeredGame.Game
 {
@@ -47,6 +48,8 @@ namespace HammeredGame.Game
         public Quaternion Rotation;
         public float Scale;
 
+        protected GameServices Services;
+
         public Texture2D Texture;
 
         // Probably unnecessary now, since we're shifting to using a physics engine
@@ -64,15 +67,16 @@ namespace HammeredGame.Game
 
         private List<(int, float[])> allVertexData;
 
-        protected GameObject(Model model, Vector3 pos, float scale, Texture2D t, Space space)
+        protected GameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale)
         {
+            this.Services = services;
             this.Model = model;
             this.Position = pos;
-            this.Rotation = Quaternion.Identity;
+            this.Rotation = rotation;
             this.Scale = scale;
             this.Texture = t;
 
-            this.ActiveSpace = space;
+            this.ActiveSpace = services.GetService<Space>();
 
             if (this.Model != null)
             {
