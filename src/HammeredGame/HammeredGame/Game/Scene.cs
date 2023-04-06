@@ -36,7 +36,7 @@ namespace HammeredGame.Game
 
         protected GameServices Services;
 
-        public Scene(GameServices services)
+        protected Scene(GameServices services)
         {
             this.Services = services;
         }
