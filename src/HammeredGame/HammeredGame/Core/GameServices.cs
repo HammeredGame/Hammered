@@ -29,12 +29,17 @@ namespace HammeredGame.Core
         }
 
         /// <summary>
-        /// Add a service provider of the specified type.
+        /// Add a service provider of the specified type. This method will delete any preexisting
+        /// service with the same type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="service"></param>
         public void AddService<T>(T service)
         {
+            if (GetService<T>() != null)
+            {
+                RemoveService<T>();
+            }
             container.AddService(typeof(T), service);
         }
 
