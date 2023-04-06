@@ -152,6 +152,7 @@ namespace HammeredGame.Game
         // Some things for the object creation popup in the debug UI.
         // TODO: if this affects the memory footprint of the game in Release mode, hide with an DEBUG ifdef
         private string objectCreationSelectedFqn = "...";
+
         private string objectCreationSelectedModel = "...";
         private string objectCreationSelectedTexture = "...";
         private System.Numerics.Vector3 objectCreationPosition = System.Numerics.Vector3.Zero;
@@ -294,10 +295,30 @@ namespace HammeredGame.Game
                 ImGui.EndPopup();
             }
 
+            ImGui.SameLine();
+            // Button to load from XML. This will replace all the scene objects
+            // TODO: update Space and bounding boxes?
+            if (ImGui.Button("Load XML"))
+            {
+                // open a cross platform file dialog
+                NativeFileDialogSharp.DialogResult result = NativeFileDialogSharp.Dialog.FileOpen("xml");
+
+                if (result.IsOk)
+                {
+                    // Clear the scene objects
+                    Clear();
+                    CreateFromXML(Services, result.Path);
+                }
+            }
+
+            ImGui.SameLine();
+            // Button to export to XML
             if (ImGui.Button("Export Level"))
             {
-                //new XMLLevelWriter(camera, gameObjects);
+                SceneDescriptionIO.WriteToXML("test.xml", Camera, GameObjects, Services);
             }
+
+            ImGui.ShowDemoWindow();
         }
     }
 }

@@ -50,7 +50,7 @@ namespace HammeredGame.Game
                     return obj.ToString();
 
                 case "Single":
-                    return ((float)(object)obj).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture);
+                    return ((float)(object)obj).ToString("0.000", System.Globalization.CultureInfo.InvariantCulture);
 
                 case "Vector3":
                     Vector3 vec3 = (Vector3)(object)obj;
@@ -66,16 +66,16 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Construct a XML level parser from a given file path under the Content directory. To add
-        /// new level XML files that are recognized here, make sure to add the XML in the Content
-        /// directory of the repository, followed by using the MGCB editor to add the file. Mark it
-        /// as Copy (instead of Build).
+        /// Construct a XML level parser from a given file path relative to the binary directory. To
+        /// add new level XML files that are recognized here, make sure to add the XML in the
+        /// Content directory of the repository, followed by using the MGCB editor to add the file.
+        /// Mark it as Copy (instead of Build). Then pass a path prepended with Content/ to this method.
         /// </summary>
-        /// <param name="filePath">The file path to the XML file, under the Content directory</param>
+        /// <param name="filePath">The file path to the XML file</param>
         /// <exception cref="Exception">Raised if the XML file could not be loaded</exception>
         public static (Camera, Dictionary<string, GameObject>) ParseFromXML(string filePath, GameServices services)
         {
-            var loadedXML = File.ReadAllText("Content/" + filePath, Encoding.UTF8);
+            var loadedXML = File.ReadAllText(filePath, Encoding.UTF8);
             var xml = XDocument.Parse(loadedXML);
 
             //Sanity check
@@ -111,9 +111,7 @@ namespace HammeredGame.Game
             // Set the four static positions. (We /could/ modify the Camera constructor to pass
             // these too, but it gets a little long. Also, on the off chance we need a camera that
             // follows the player closely for one level, the current approach leaves more freedom.
-            cameraInstance.StaticPositions = (from vecs in cameraElement.Descendants("position")
-                                              where vecs.Attribute("type").Value == "vec3"
-                                              select vecs).Select(v => Parse<Vector3>(v.Value)).ToArray();
+            cameraInstance.StaticPositions = cameraElement.Descendants("position").Select(v => Parse<Vector3>(v.Value)).ToArray();
 
             return cameraInstance;
         }
@@ -165,9 +163,7 @@ namespace HammeredGame.Game
 
                 // Texture is an optional tag, so check if we have it first. If we don't, then pass
                 // null as the Texture. (FirstOrDefault() returns null if it doesn't find a matching entry)
-                XElement textureElement = (from tex in obj.Descendants("texture")
-                                           where tex.Attribute("type").Value == "texture2d"
-                                           select tex).FirstOrDefault();
+                XElement textureElement = obj.Descendants("texture").FirstOrDefault();
                 Texture2D texture = null;
                 if (textureElement != null)
                 {
@@ -205,6 +201,90 @@ namespace HammeredGame.Game
                 }
             }
             return namedObjects;
+        }
+
+        /// <summary>
+        /// Write an XML file to the specified file path (overwriting any existing file contents).
+        /// The content will be a valid scene description constructed from the Camera instance
+        /// passed to this method, and the dictionary of objects and their unique identifiers.
+        /// </summary>
+        /// <param name="filePath">The filepath to write the XML to. </param>
+        /// <param name="camera">The camera instance to write to XML</param>
+        /// <param name="namedObjects">The game objects in the scene and their unique ids</param>
+        /// <param name="services">Core game services. This method needs the Content Manager.</param>
+        /// <returns>Whether the write was successful or not</returns>
+        public static bool WriteToXML(string filePath, Camera camera, Dictionary<string, GameObject> namedObjects, GameServices services)
+        {
+            // First create the global camera element
+            XElement cameraElement =
+                new XElement("camera",
+                    new XAttribute("type", "static"),
+                    new XElement("position",
+                        Show<Vector3>(camera.StaticPositions[0])),
+                    new XElement("position",
+                        Show<Vector3>(camera.StaticPositions[1])),
+                    new XElement("position",
+                        Show<Vector3>(camera.StaticPositions[2])),
+                    new XElement("position",
+                        Show<Vector3>(camera.StaticPositions[3])),
+                    new XElement("target",
+                        Show<Vector3>(camera.Target)),
+                    new XElement("up",
+                        Show<Vector3>(camera.Up)));
+
+            // Create the root <level> tag and add the camera
+            XElement rootElement = new XElement("scene",
+                cameraElement);
+
+            // Then add all the game objects, including player and hammer
+            foreach ((string id, GameObject gameObject) in namedObjects)
+            {
+                // Basic attributes
+                XElement objElement = new("object",
+                    new XAttribute("type", gameObject.GetType().FullName),
+                    new XAttribute("id", id));
+
+                // For the model, gameObject.Model does not contain the name of the file used to
+                // load it, so we will look into the Content Manager's internal cache to find the
+                // key matching the same object reference.
+                Dictionary<string, object> loadedAssets = (Dictionary<string, object>)typeof(ContentManager).GetField("loadedAssets", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(services.GetService<ContentManager>());
+                string modelName = loadedAssets.Where(asset => asset.Value == gameObject.Model).Select(a => a.Key).FirstOrDefault();
+                objElement.Add(new XElement("model", modelName));
+
+                // Texture can be null
+                if (gameObject.Texture != null)
+                {
+                    objElement.Add(new XElement("texture",
+                        new XAttribute("type", "texture2d"),
+                        gameObject.Texture.Name));
+                }
+
+                objElement.Add(new XElement("position", Show<Vector3>(gameObject.Position)));
+                objElement.Add(new XElement("rotation", Show<Quaternion>(gameObject.Rotation)));
+                objElement.Add(new XElement("scale", Show<float>(gameObject.Scale)));
+
+                // Add visibility tag only if it's not visible
+                if (!gameObject.IsVisible())
+                {
+                    objElement.Add(new XElement("visibility", Show<bool>(gameObject.IsVisible())));
+                }
+
+                rootElement.Add(objElement);
+            }
+
+            NativeFileDialogSharp.DialogResult result = NativeFileDialogSharp.Dialog.FileSave("xml", filePath);
+            try
+            {
+                if (result.IsOk)
+                {
+                    File.WriteAllText(result.Path, rootElement.ToString());
+                    return true;
+                }
+                return false;
+            } catch (Exception e)
+            {
+                return false;
+            }
         }
     }
 }

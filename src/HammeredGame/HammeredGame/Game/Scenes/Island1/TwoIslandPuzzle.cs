@@ -13,7 +13,7 @@ namespace HammeredGame.Game.Scenes.Island1
     {
         public TwoIslandPuzzle(GameServices services) : base(services)
         {
-            CreateFromXML(services, $"SceneDescriptions/Island1/TwoIslandPuzzle.xml");
+            CreateFromXML(services, $"Content/SceneDescriptions/Island1/TwoIslandPuzzle.xml");
 
             Get<Player>("player1").SetActiveCamera(Camera);
 
