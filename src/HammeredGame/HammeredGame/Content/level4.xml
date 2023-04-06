@@ -94,7 +94,7 @@
 
   <!-- KEY -->
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables.Key">
-    <model>test_obstacle</model>
+    <model>temp_key</model>
     <position type="vec3">10 1 15</position>
     <rotation type="quaternion">0 0 0 1</rotation>
     <scale type="float">1</scale>

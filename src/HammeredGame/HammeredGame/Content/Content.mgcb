@@ -388,6 +388,25 @@
 /processorParam:TextureFormat=Compressed
 /build:temp_hammer2.fbx
 
+#begin temp_key.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=90
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=0.02
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:temp_key.fbx
+
 #begin temp_pressureplate2.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
