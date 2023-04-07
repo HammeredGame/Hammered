@@ -124,7 +124,7 @@ namespace HammeredGame
         {
             tempFont = Content.Load<SpriteFont>("temp_font");
 
-            InitializeLevel("HammeredGame.Game.Scenes.Island1.TwoIslandPuzzle");
+            InitializeLevel("HammeredGame.Game.Scenes.Island1.ShoreWakeup");
 
             bgMusic = Content.Load<Song>("Audio/BGM_V1");
 
