@@ -27,7 +27,7 @@ namespace HammeredGame.Game.GameObjects
         public EmptyGameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale)
         {
             // these game objects should not be visible
-            this.SetVisible(false);
+            this.Visible = false;
 
             this.Entity = entity;
             this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;

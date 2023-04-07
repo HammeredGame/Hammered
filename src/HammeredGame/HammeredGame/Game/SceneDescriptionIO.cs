@@ -196,7 +196,7 @@ namespace HammeredGame.Game
                 GameObject instance = (GameObject)Activator.CreateInstance(t, args: arguments.ToArray());
 
                 // Visibility is also not part of the constructor
-                instance.SetVisible(Parse<bool>(obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true"));
+                instance.Visible = Parse<bool>(obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true");
 
                 // Insert into the dictionary to return together with either the ID attribute value or a generated id
                 if (obj.Attribute("id") != null)
@@ -280,9 +280,9 @@ namespace HammeredGame.Game
                 objElement.Add(new XElement("scale", Show<float>(gameObject.Scale)));
 
                 // Add visibility tag only if it's not visible
-                if (!gameObject.IsVisible())
+                if (!gameObject.Visible)
                 {
-                    objElement.Add(new XElement("visibility", Show<bool>(gameObject.IsVisible())));
+                    objElement.Add(new XElement("visibility", Show<bool>(gameObject.Visible)));
                 }
 
                 rootElement.Add(objElement);

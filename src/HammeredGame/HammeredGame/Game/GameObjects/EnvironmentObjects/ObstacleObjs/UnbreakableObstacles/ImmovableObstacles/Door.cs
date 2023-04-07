@@ -91,7 +91,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 {
                     var player = other.Tag as Player;
                     player.ReachedGoal = isGoal; // TEMPORARY
-                    this.SetVisible(false);
+                    this.Visible = false;
                     this.ActiveSpace.Remove(sender.Entity);
                 }
 
