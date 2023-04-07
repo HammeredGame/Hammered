@@ -100,7 +100,7 @@ namespace HammeredGame.Game
                 throw new Exception("Could not load XML file: " + filePath);
             }
 
-            Camera cam = GetCamera(xml, services.GetService<GraphicsDevice>(), services.GetService<Input>());
+            Camera cam = GetCamera(xml, services);
             Dictionary<string, GameObject> objs = GetGameObjects(xml, services, cam);
 
             return (cam, objs);
@@ -112,7 +112,7 @@ namespace HammeredGame.Game
         /// <param name="gpu">The gpu parameter to pass to the Camera constructor</param>
         /// <param name="input">The input parameter to pass to the Camera constructor</param>
         /// <returns>The instantiated Camera object</returns>
-        private static Camera GetCamera(XDocument targetXML, GraphicsDevice gpu, Input input)
+        private static Camera GetCamera(XDocument targetXML, GameServices services)
         {
             // Find the top level camera object (otherwise .Descendants("camera") returns nested child ones too)
             XElement cameraElement = targetXML.Root.Descendants("camera").Single(child => child.Parent == targetXML.Root);
@@ -122,7 +122,7 @@ namespace HammeredGame.Game
             Vector3 upDirection = Parse<Vector3>(cameraElement.Descendants("up").Single().Value);
 
             // Instantiate the Camera object
-            Camera cameraInstance = new Camera(gpu, focusPoint, upDirection, input);
+            Camera cameraInstance = new Camera(services, focusPoint, upDirection);
 
             // Set the four static positions. (We /could/ modify the Camera constructor to pass
             // these too, but it gets a little long. Also, on the off chance we need a camera that

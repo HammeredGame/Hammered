@@ -16,9 +16,10 @@ namespace HammeredGame.Game
         public Matrix ViewMatrix, ProjMatrix, ViewProjMatrix;        // View Matrix, Projection Matrix
         public Vector3 Up;                          // Vector that points up
 
-        private Vector3 unit_direction;                     // direction of camera (normalized to distance of 1 unit)
+        // Core game services for access to the GPU aspect ratio and Input handlers
+        private GameServices services;
 
-        private Input inp;                                  // Input class for camera controls
+        private Vector3 unit_direction;                     // direction of camera (normalized to distance of 1 unit)
 
         // Camera positions
         public Vector3[] StaticPositions = new Vector3[4]
@@ -33,8 +34,9 @@ namespace HammeredGame.Game
 
         // Camera follow direction for follow mode
         private float followDistance = 49f;
-
         private float followAngle = 0.551f;
+        private float fieldOfView = MathHelper.PiOver4;
+
         private Vector2 followDir = new Vector2(1, -1);
 
         public enum CameraMode
@@ -53,18 +55,19 @@ namespace HammeredGame.Game
         /// <param name="focusPoint"></param>
         /// <param name="upDirection"></param>
         /// <param name="input"></param>
-        public Camera(GraphicsDevice gpu, Vector3 focusPoint, Vector3 upDirection, Input input)
+        public Camera(GameServices services, Vector3 focusPoint, Vector3 upDirection)
         {
             Up = upDirection;
             Position = StaticPositions[0];
             Target = focusPoint;
             ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
-            ProjMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, gpu.Viewport.AspectRatio, 0.1f, FAR_PLANE);
+            ProjMatrix = Matrix.CreatePerspectiveFieldOfView(fieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
-            inp = input;
             unit_direction = ViewMatrix.Forward; unit_direction.Normalize();
 
             Mode = CameraMode.FourPointStatic;
+
+            this.services = services;
         }
 
         /// <summary>
@@ -139,6 +142,7 @@ namespace HammeredGame.Game
 
                 #region TEMPORARY_CAMERA_CONTROLS
 
+                Input inp = services.GetService<Input>();
                 if (inp.ButtonPress(Buttons.DPadUp) || inp.KeyDown(Keys.D1))
                 {
                     followDir = new Vector2(1, -1);
@@ -166,6 +170,7 @@ namespace HammeredGame.Game
 
                 #region TEMPORARY_CAMERA_CONTROLS
 
+                Input inp = services.GetService<Input>();
                 if (inp.ButtonPress(Buttons.DPadUp) || inp.KeyDown(Keys.D1))
                 {
                     currentCameraPosIndex = 0;
@@ -194,6 +199,9 @@ namespace HammeredGame.Game
             ImGui.Begin("Camera");
             ImGui.Text($"Camera Coordinates: {Position}");
             ImGui.Text($"Camera Focus: {Target}");
+
+            ImGui.DragFloat("Field of View (rad): ", ref fieldOfView, 0.01f, 0f, MathHelper.Pi);
+            ProjMatrix = Matrix.CreatePerspectiveFieldOfView(fieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
 
             bool isStatic = Mode == CameraMode.FourPointStatic;
             if (ImGui.Checkbox("Static Camera Mode", ref isStatic))
