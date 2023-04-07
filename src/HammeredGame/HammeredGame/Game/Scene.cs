@@ -1,4 +1,5 @@
-﻿using HammeredGame.Core;
+﻿using Hammered_Physics.Core;
+using HammeredGame.Core;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -177,6 +178,8 @@ namespace HammeredGame.Game
 
         private string objectListCurrentSelection;
 
+        private bool objectDetailTieChangesToEntity;
+
         public void UI()
         {
             // Show the camera UI
@@ -311,19 +314,43 @@ namespace HammeredGame.Game
                     if (objectListCurrentSelection != null && GameObjects.ContainsKey(objectListCurrentSelection))
                     {
                         GameObject gameObject = GameObjects[objectListCurrentSelection];
+
+                        ImGui.Text($"Object details: {objectListCurrentSelection}");
+
                         // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
                         // we need to temporarily convert.
                         System.Numerics.Vector3 pos = gameObject.Position.ToNumerics();
                         ImGui.DragFloat3("Position", ref pos, 10f);
-                        gameObject.Position = pos;
+                        // update position later after using the delta for entity too
 
                         System.Numerics.Vector4 rot = gameObject.Rotation.ToVector4().ToNumerics();
                         ImGui.DragFloat4("Rotation", ref rot, 0.01f, -1.0f, 1.0f);
+                        // update rotation later after using the delta for entity too
 
-                        gameObject.Rotation = Quaternion.Normalize(new Quaternion(rot));
                         ImGui.DragFloat("Scale", ref gameObject.Scale, 0.01f);
 
                         ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
+
+                        if (gameObject.Entity != null) {
+                            ImGui.Checkbox("Tie object position/rotation changes to the corresponding entity", ref objectDetailTieChangesToEntity);
+
+                            System.Numerics.Vector3 entityPos = MathConverter.Convert(gameObject.Entity.Position).ToNumerics();
+                            ImGui.DragFloat3("Entity Position", ref entityPos, 10f);
+                            gameObject.Entity.Position = MathConverter.Convert(entityPos);
+
+                            System.Numerics.Vector4 entityRot = MathConverter.Convert(gameObject.Entity.Orientation).ToVector4().ToNumerics();
+                            ImGui.DragFloat4("Rotation", ref entityRot, 0.01f, -1.0f, 1.0f);
+                            gameObject.Entity.Orientation = MathConverter.Convert(Quaternion.Normalize(new Quaternion(entityRot)));
+
+                            if (objectDetailTieChangesToEntity)
+                            {
+                                gameObject.Entity.Position += MathConverter.Convert(pos - gameObject.Position);
+                                gameObject.Entity.Orientation *= MathConverter.Convert(Quaternion.Normalize(new Quaternion(rot)) / gameObject.Rotation);
+                            }
+                        }
+
+                        gameObject.Position = pos;
+                        gameObject.Rotation = Quaternion.Normalize(new Quaternion(rot));
 
                         ImGui.Separator();
 
