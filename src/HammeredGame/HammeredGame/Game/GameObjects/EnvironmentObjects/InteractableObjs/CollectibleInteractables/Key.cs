@@ -80,7 +80,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
                 if (other.Tag is Player)
                 {
                     correspondingDoor.SetKeyFound(true);
-                    this.SetVisible(false);
+                    this.Visible = false;
                     this.ActiveSpace.Remove(this.Entity);
                     keyPickedUp = true;
                 }

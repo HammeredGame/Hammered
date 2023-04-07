@@ -1,11 +1,10 @@
-﻿using BEPUphysics;
+﻿using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
-using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.NarrowPhaseSystems.Pairs;
 using BEPUphysics.PositionUpdating;
 using Hammered_Physics.Core;
-﻿using HammeredGame.Core;
+using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -66,7 +65,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             }
         }
 
-        void Events_InitialCollision(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        private void Events_InitialCollision(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
         {
             //This type of event can occur when an entity hits any other object which can be collided with.
             //They aren't always entities; for example, hitting a StaticMesh would trigger this.
@@ -79,7 +78,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             }
         }
 
-        void Events_CollisionEnded(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        private void Events_CollisionEnded(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
         {
             //This type of event can occur when an entity hits any other object which can be collided with.
             //They aren't always entities; for example, hitting a StaticMesh would trigger this.
@@ -106,16 +105,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //{
             //    triggerObject.SetVisible(true);
             //}
-            if (this.pressureActivated)
+            if (this.pressureActivated && triggerObject != null)
             {
-                triggerObject?.SetVisible(false);
-                if (triggerObject != null && this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                triggerObject.Visible = false;
+                if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
                     this.ActiveSpace.Remove(triggerObject.Entity);
             }
-            else
+            else if (triggerObject != null)
             {
-                triggerObject?.SetVisible(true);
-                if (triggerObject != null && !this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                triggerObject.Visible = true;
+                if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity))
                     this.ActiveSpace.Add(triggerObject.Entity);
             }
         }

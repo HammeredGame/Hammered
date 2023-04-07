@@ -59,7 +59,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
                     var hammer = other.Tag as Hammer;
                     if (hammer.IsEnroute())
                     {
-                        this.SetVisible(false);
+                        this.Visible = false;
                         this.ActiveSpace.Remove(sender.Entity);
                     }
                 }
