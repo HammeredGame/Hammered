@@ -200,7 +200,7 @@ namespace HammeredGame.Game
             ImGui.Text($"Camera Coordinates: {Position}");
             ImGui.Text($"Camera Focus: {Target}");
 
-            ImGui.DragFloat("Field of View (rad): ", ref fieldOfView, 0.01f, 0f, MathHelper.Pi);
+            ImGui.DragFloat("Field of View (rad): ", ref fieldOfView, 0.01f, 0.01f, MathHelper.Pi - 0.01f);
             ProjMatrix = Matrix.CreatePerspectiveFieldOfView(fieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
 
             bool isStatic = Mode == CameraMode.FourPointStatic;
