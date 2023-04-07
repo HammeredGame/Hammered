@@ -12,7 +12,7 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
     ///     - an ID number (for easier identification in other parts of the code)
     ///     - directional edges, which connect it to other <c>Vertex</c> instances.
     /// </summary>
-    public class Vertex : IComparable
+    public class Vertex : IEquatable<Vertex>
     {
         public string ID { get; }
         public double TraveledDistance { get; set; } = double.PositiveInfinity;
@@ -35,10 +35,9 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
             Edges = edges;
         }
 
-        public int CompareTo(object incomingObject)
+        public bool Equals(Vertex other)
         {
-            Vertex incomingVertex = incomingObject as Vertex;
-            return this.ID.CompareTo(incomingVertex.ID);
+            return ReferenceEquals(this, other);
         }
     }
 }

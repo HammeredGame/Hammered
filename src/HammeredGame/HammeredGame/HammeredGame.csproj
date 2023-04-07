@@ -26,6 +26,7 @@
     <PackageReference Include="ImGui.NET" Version="1.89.4" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+    <PackageReference Include="OptimizedPriorityQueue" Version="5.1.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Audio\" />
