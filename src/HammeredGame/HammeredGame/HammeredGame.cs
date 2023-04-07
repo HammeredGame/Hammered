@@ -15,14 +15,8 @@ using System.Collections.Generic;
 using BEPUphysics.Entities;
 using BEPUutilities.Threading;
 using System;
-using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using BEPUphysics.Entities.Prefabs;
-using BEPUutilities;
-using Hammered_Physics.Core;
-using BEPUphysics.Paths.PathFollowing;
-using BEPUphysics.CollisionRuleManagement;
 using Microsoft.Xna.Framework.Content;
-using System;
 
 namespace HammeredGame
 {
@@ -214,7 +208,8 @@ namespace HammeredGame
 
             if (input.ButtonPress(Buttons.Y) || input.KeyPress(Keys.R))
             {
-                InitializeLevel("HammeredGame.Game.Scenes.Island1.TwoIslandPuzzle");
+                // Reload the current scene class
+                InitializeLevel(currentScene.GetType().FullName);
             }
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             //    Exit();
