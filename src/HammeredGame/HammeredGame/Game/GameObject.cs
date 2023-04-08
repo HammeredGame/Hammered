@@ -37,16 +37,21 @@ namespace HammeredGame.Game
     {
         // Common variables for any object in the game
         public Model Model;
+
         public Texture2D Texture;
         private Vector3 position;
+
         // Use the private position vector only if we don't have a physics entity attached.
         // Otherwise, we delegate the position property entirely to the physics body position and
         // never use our own private value.
-        public Vector3 Position {
+        public Vector3 Position
+        {
             get { if (Entity != null) { return MathConverter.Convert(Entity.Position); } else { return position; } }
             set { if (Entity != null) { Entity.Position = MathConverter.Convert(value); } position = value; }
         }
+
         private Quaternion rotation;
+
         // Use the private rotation quaternion only if we don't have a physics entity attached.
         // Otherwise, we delegate the rotation property entirely to the physics body orientation and
         // never use our own private value.
@@ -55,6 +60,7 @@ namespace HammeredGame.Game
             get { if (Entity != null) { return MathConverter.Convert(Entity.Orientation); } else { return rotation; } }
             set { if (Entity != null) { Entity.Orientation = MathConverter.Convert(value); } rotation = value; }
         }
+
         public float Scale;
 
         /// <summary>
@@ -249,16 +255,23 @@ namespace HammeredGame.Game
                 ImGui.DragFloat3("Origin offset (between Graphic & Physics)", ref modelOffset, 0.01f);
                 EntityModelOffset = modelOffset;
 
+                Entity.IgnoreShapeChanges = true;
                 // Display some entity-specific parameters
                 if (Entity is Box box)
                 {
-                    box.IgnoreShapeChanges = true;
                     System.Numerics.Vector3 whl = new(box.Width, box.Height, box.Length);
-                    ImGui.DragFloat3("Box W,H,L", ref whl);
+                    ImGui.DragFloat3("Box W,H,L", ref whl, 0.1f, 0.1f, float.MaxValue);
                     box.Width = whl.X;
                     box.Height = whl.Y;
                     box.Length = whl.Z;
                 }
+                else if (Entity is Sphere sph)
+                {
+                    float radius = sph.Radius;
+                    ImGui.DragFloat("Sphere R", ref radius, 0.1f, 0.1f, float.MaxValue);
+                    sph.Radius = radius;
+                }
+                Entity.IgnoreShapeChanges = false;
             }
         }
     }

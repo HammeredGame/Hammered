@@ -19,7 +19,6 @@ namespace HammeredGame.Game
     /// </summary>
     internal static class SceneDescriptionIO
     {
-
         /// <summary>
         /// Generic function to parse basic data to classes.
         /// </summary>
@@ -241,16 +240,18 @@ namespace HammeredGame.Game
                 return (null, Vector3.Zero);
             }
 
+            // All types of collision bodies can have an optional mass which makes it a dynamic body
+            // (responsive to movement upon collision).
+            XElement massElem = bodyElement.Descendants("mass").FirstOrDefault();
+            Entity body;
+
             switch (bodyElement.Attribute("type").Value)
             {
                 case "box":
                     // A Box needs to receive width, height, length and optionally mass in its constructor.
-                    // Specifying a mass makes it a dynamic body (responsive to movement upon collision).
                     float width = Parse<float>(bodyElement.Descendants("width").First().Value);
                     float height = Parse<float>(bodyElement.Descendants("height").First().Value);
                     float length = Parse<float>(bodyElement.Descendants("length").First().Value);
-                    XElement massElem = bodyElement.Descendants("mass").FirstOrDefault();
-                    Entity body;
                     if (massElem != null)
                     {
                         float mass = Parse<float>(massElem.Value);
@@ -260,16 +261,33 @@ namespace HammeredGame.Game
                     {
                         body = new Box(MathConverter.Convert(modelPosition), width, height, length);
                     }
-                    // The model origin may be different to the center of mass where the physics
-                    // engine treats as the origin. The local position attribute allows shifting the
-                    // center of mass.
-                    return (body, bodyElement
-                        .Descendants("shift_graphic")
-                        .Select(a => Parse<Vector3>(a.Value))
-                        .FirstOrDefault(Vector3.Zero));
+                    break;
+
+                case "sphere":
+                    // A sphere needs to receive radius and optionally mass.
+                    float radius = Parse<float>(bodyElement.Descendants("radius").First().Value);
+                    if (massElem != null)
+                    {
+                        float mass = Parse<float>(massElem.Value);
+                        body = new Sphere(MathConverter.Convert(modelPosition), radius, mass);
+                    }
+                    else
+                    {
+                        body = new Sphere(MathConverter.Convert(modelPosition), radius);
+                    }
+                    break;
+
                 default:
                     return (null, Vector3.Zero);
             }
+
+            // The model origin may be different to the center of mass where the physics
+            // engine treats as the origin. The shift_graphic value allows specifying how
+            // much to shift the rendered model by compared to the collision body.
+            return (body, bodyElement
+                .Descendants("shift_graphic")
+                .Select(a => Parse<Vector3>(a.Value))
+                .FirstOrDefault(Vector3.Zero));
         }
 
         /// <summary>
@@ -351,6 +369,14 @@ namespace HammeredGame.Game
                             box.IsDynamic ? new XElement("mass", Show<float>(box.Mass)) : null,
                             new XElement("shift_graphic", Show<Vector3>(gameObject.EntityModelOffset))));
                     }
+                    else if (gameObject.Entity is Sphere sph)
+                    {
+                        objElement.Add(new XElement("body",
+                            new XAttribute("type", "sphere"),
+                            new XElement("radius", Show<float>(sph.Radius)),
+                            sph.IsDynamic ? new XElement("mass", Show<float>(sph.Mass)) : null,
+                            new XElement("shift_graphic", Show<Vector3>(gameObject.EntityModelOffset))));
+                    }
                 }
 
                 rootElement.Add(objElement);
@@ -365,7 +391,8 @@ namespace HammeredGame.Game
                     return true;
                 }
                 return false;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 return false;
             }
