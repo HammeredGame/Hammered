@@ -255,6 +255,9 @@ namespace HammeredGame.Game
                 ImGui.DragFloat3("Origin offset (between Graphic & Physics)", ref modelOffset, 0.01f);
                 EntityModelOffset = modelOffset;
 
+                // Setting IgnoreShapeChanges makes sure that editing body properties don't randomly
+                // start causing the body to tip over or lose its center of mass. We're disobeying
+                // the laws of physics by editing these, so it makes sense to disable the change triggers.
                 Entity.IgnoreShapeChanges = true;
                 // Display some entity-specific parameters
                 if (Entity is Box box)
