@@ -14,7 +14,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground" id="ground">
     <model>shore</model>
-    <texture type="texture2d">shore color</texture>
+    <texture type="texture2d">shore_texture</texture>
     <position>0.000 -11.000 0.000</position>
     <rotation>0.000 -0.837 0.000 0.547</rotation>
     <scale>1.000</scale>
