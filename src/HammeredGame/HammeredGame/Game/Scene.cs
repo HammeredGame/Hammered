@@ -65,22 +65,6 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Generate a name for a game object that has numbers appended to the specified prefix
-        /// until the point where no existing object in the scene has that name.
-        /// </summary>
-        /// <param name="prefix">The prefix to add numbers to</param>
-        /// <returns>The unique name candidate</returns>
-        private string GenerateUniqueNameWithPrefix(string prefix)
-        {
-            string nameCandidate = prefix;
-            for (int i = 1; GameObjects.ContainsKey(nameCandidate); i++)
-            {
-                nameCandidate = prefix + i.ToString();
-            }
-            return nameCandidate;
-        }
-
-        /// <summary>
         /// Find the object in the scene by a unique identifier. This approaches O(1) since it's a
         /// dictionary lookup.
         /// </summary>
@@ -123,6 +107,22 @@ namespace HammeredGame.Game
         public void CreateFromXML(string fileName)
         {
             (Camera, GameObjects) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+        }
+
+        /// <summary>
+        /// Generate a name for a game object that has numbers appended to the specified prefix
+        /// until the point where no existing object in the scene has that name.
+        /// </summary>
+        /// <param name="prefix">The prefix to add numbers to</param>
+        /// <returns>The unique name candidate</returns>
+        private string GenerateUniqueNameWithPrefix(string prefix)
+        {
+            string nameCandidate = prefix;
+            for (int i = 1; GameObjects.ContainsKey(nameCandidate); i++)
+            {
+                nameCandidate = prefix + i.ToString();
+            }
+            return nameCandidate;
         }
 
         // Store all the fully qualified names for available scene classes.
@@ -174,7 +174,7 @@ namespace HammeredGame.Game
                 .Select(t => t.FullName);
         }
 
-        // Some things for the object creation popup in the debug UI.
+        // Some things for the object creation popup in the debug UI, to make data persistent across frames.
         // TODO: if this affects the memory footprint of the game in Release mode, hide with an DEBUG ifdef
         private string objectCreationSelectedFqn = "...";
 
@@ -205,7 +205,7 @@ namespace HammeredGame.Game
                 {
                     // Clear the scene objects
                     Clear();
-
+                    // TODO: clear physics space
                     CreateFromXML(result.Path);
                     // Re-run the scene start script
                     OnSceneStart();
