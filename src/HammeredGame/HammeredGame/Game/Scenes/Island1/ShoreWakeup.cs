@@ -15,6 +15,7 @@ namespace HammeredGame.Game.Scenes.Island1
         {
             CreateFromXML($"Content/SceneDescriptions/Island1/ShoreWakeup.xml");
 
+            Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
 
             // Get<Player>("player").OnMove += async _ => {
