@@ -402,6 +402,10 @@ namespace HammeredGame.Game
                         // creation button.
                         objectCreationEntity = new Box(BEPUutilities.Vector3.Zero, 1f, 1f, 1f);
                     }
+                    if (ImGui.Selectable("Sphere"))
+                    {
+                        objectCreationEntity = new Sphere(BEPUutilities.Vector3.Zero, 1f);
+                    }
                     ImGui.EndCombo();
                 }
 
