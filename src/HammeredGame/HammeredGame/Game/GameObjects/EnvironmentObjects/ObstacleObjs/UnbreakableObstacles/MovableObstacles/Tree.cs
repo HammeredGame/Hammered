@@ -62,10 +62,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         {
             if (this.Entity != null)
             {
+                if (this.Entity is not Box)
+                {
+                    throw new Exception("Tree only supports Box due to how it falls over");
+                }
                 this.Entity.Tag = "MovableObstacleBounds";
                 this.Entity.CollisionInformation.Tag = this;
                 this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
                 this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
+                this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, (this.Entity as Box).HalfHeight, 0);
                 this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
                 this.ActiveSpace.Add(this.Entity);
 
