@@ -1,4 +1,5 @@
-﻿using BEPUphysics.Entities;
+﻿using BEPUphysics;
+using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using Hammered_Physics.Core;
 using HammeredGame.Core;
@@ -43,6 +44,11 @@ namespace HammeredGame.Game
         {
             this.Services = services;
         }
+
+        /// <summary>
+        /// Script to run after loading the scene description. Should be called from the constructor.
+        /// </summary>
+        protected abstract void OnSceneStart();
 
         /// <summary>
         /// Create a new object in the scene
@@ -186,7 +192,7 @@ namespace HammeredGame.Game
             // Show the camera UI
             Camera.UI();
 
-            ImGui.Text($"{GameObjects.Count} objects in scene");
+            ImGui.Text($"{GameObjects.Count} objects in scene, {Services.GetService<Space>().Entities.Count} entities in physics space");
             ImGui.SameLine();
             // Button to load from XML. This will replace all the scene objects
             // TODO: update Space and bounding boxes?
@@ -199,7 +205,10 @@ namespace HammeredGame.Game
                 {
                     // Clear the scene objects
                     Clear();
+
                     CreateFromXML(result.Path);
+                    // Re-run the scene start script
+                    OnSceneStart();
                 }
             }
 
