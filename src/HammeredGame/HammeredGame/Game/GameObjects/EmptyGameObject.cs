@@ -24,7 +24,7 @@ namespace HammeredGame.Game.GameObjects
     public class EmptyGameObject : GameObject
     {
 
-        public EmptyGameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale)
+        public EmptyGameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             // these game objects should not be visible
             this.Visible = false;

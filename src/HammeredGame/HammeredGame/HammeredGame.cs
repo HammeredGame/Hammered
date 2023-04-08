@@ -189,8 +189,6 @@ namespace HammeredGame
                     ActiveLevelObstacles.Add(envAble);
                 }
             }
-            // Set up the list of debug entities after all the objects are loaded for debugging visualization
-            SetupDebugBounds();
         }
 
         /// <summary>
@@ -225,6 +223,9 @@ namespace HammeredGame
 
             //Steps the simulation forward one time step.
             space.Update();
+
+            // Set up the list of debug entities for debugging visualization
+            SetupDebugBounds();
 
             base.Update(gameTime);
         }

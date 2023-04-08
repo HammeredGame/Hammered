@@ -10,6 +10,7 @@ using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries;
 using Hammered_Physics.Core;
 using HammeredGame.Core;
+using BEPUphysics.Entities;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
@@ -25,7 +26,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
     /// </remarks>
     class Ground : FloorObject
     {
-        public Ground(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        public Ground(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             BEPUutilities.Vector3[] vertices;
             int[] indices;

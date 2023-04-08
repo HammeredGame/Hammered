@@ -1,4 +1,6 @@
-﻿using Hammered_Physics.Core;
+﻿using BEPUphysics.Entities;
+using BEPUphysics.Entities.Prefabs;
+using Hammered_Physics.Core;
 using HammeredGame.Core;
 using ImGuiNET;
 using ImMonoGame.Thing;
@@ -175,10 +177,9 @@ namespace HammeredGame.Game
         private System.Numerics.Vector3 objectCreationPosition = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector4 objectCreationRotation = Quaternion.Identity.ToVector4().ToNumerics();
         private float objectCreationScale = 1f;
+        private Entity objectCreationEntity;
 
         private string objectListCurrentSelection;
-
-        private bool objectDetailTieChangesToEntity;
 
         public void UI()
         {
@@ -321,36 +322,37 @@ namespace HammeredGame.Game
                         // we need to temporarily convert.
                         System.Numerics.Vector3 pos = gameObject.Position.ToNumerics();
                         ImGui.DragFloat3("Position", ref pos, 10f);
-                        // update position later after using the delta for entity too
+                        gameObject.Position = pos;
 
                         System.Numerics.Vector4 rot = gameObject.Rotation.ToVector4().ToNumerics();
                         ImGui.DragFloat4("Rotation", ref rot, 0.01f, -1.0f, 1.0f);
-                        // update rotation later after using the delta for entity too
+                        gameObject.Rotation = Quaternion.Normalize(new Quaternion(rot));
 
                         ImGui.DragFloat("Scale", ref gameObject.Scale, 0.01f);
 
                         ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
 
-                        if (gameObject.Entity != null) {
-                            ImGui.Checkbox("Tie object position/rotation changes to the corresponding entity", ref objectDetailTieChangesToEntity);
+                        if (gameObject.Entity != null)
+                        {
+                            System.Numerics.Vector3 modelOffset = gameObject.EntityModelOffset.ToNumerics();
+                            ImGui.DragFloat3("Graphic/Physics offset", ref modelOffset, 0.01f);
+                            gameObject.EntityModelOffset = modelOffset;
 
-                            System.Numerics.Vector3 entityPos = MathConverter.Convert(gameObject.Entity.Position).ToNumerics();
-                            ImGui.DragFloat3("Entity Position", ref entityPos, 10f);
-                            gameObject.Entity.Position = MathConverter.Convert(entityPos);
-
-                            System.Numerics.Vector4 entityRot = MathConverter.Convert(gameObject.Entity.Orientation).ToVector4().ToNumerics();
-                            ImGui.DragFloat4("Rotation", ref entityRot, 0.01f, -1.0f, 1.0f);
-                            gameObject.Entity.Orientation = MathConverter.Convert(Quaternion.Normalize(new Quaternion(entityRot)));
-
-                            if (objectDetailTieChangesToEntity)
+                            // Display some entity-specific parameters
+                            if (gameObject.Entity is Box box)
                             {
-                                gameObject.Entity.Position += MathConverter.Convert(pos - gameObject.Position);
-                                gameObject.Entity.Orientation *= MathConverter.Convert(Quaternion.Normalize(new Quaternion(rot)) / gameObject.Rotation);
+                                box.IgnoreShapeChanges = true;
+                                float w = box.Width;
+                                ImGui.DragFloat("Body width", ref w);
+                                box.Width = w;
+                                float h = box.Height;
+                                ImGui.DragFloat("Body height", ref h);
+                                box.Height = h;
+                                float l = box.Length;
+                                ImGui.DragFloat("Body length", ref l);
+                                box.Length = l;
                             }
                         }
-
-                        gameObject.Position = pos;
-                        gameObject.Rotation = Quaternion.Normalize(new Quaternion(rot));
 
                         ImGui.Separator();
 
@@ -427,10 +429,31 @@ namespace HammeredGame.Game
                 ImGui.InputFloat4("Rotation", ref objectCreationRotation);
                 ImGui.InputFloat("Scale", ref objectCreationScale);
 
+                if (ImGui.BeginCombo("Attached physics body", objectCreationEntity?.GetType()?.Name ?? "..."))
+                {
+                    if (ImGui.Selectable("<null>"))
+                    {
+                        objectCreationEntity = null;
+                    }
+                    if (ImGui.Selectable("Box"))
+                    {
+                        // Default to a unit cube at 0,0,0. This will be moved upon hitting the
+                        // creation button.
+                        objectCreationEntity = new Box(BEPUutilities.Vector3.Zero, 1f, 1f, 1f);
+                    }
+                    ImGui.EndCombo();
+                }
+
                 if (ImGui.Button("Create"))
                 {
                     // Generate a name for the object.
                     string name = GenerateUniqueNameWithPrefix(Type.GetType(objectCreationSelectedFqn).Name.ToLower());
+
+                    // Set up the physics body if we said we desired one
+                    if (objectCreationEntity != null)
+                    {
+                        objectCreationEntity.Position = MathConverter.Convert(objectCreationPosition);
+                    }
 
                     // Invoke this.Create with arguments for the game object type constructor. Since
                     // this is a generic method, we have to create a specific version for the type
@@ -448,7 +471,8 @@ namespace HammeredGame.Game
                             objectCreationSelectedTexture != "..." ? Services.GetService<ContentManager>().Load<Texture2D>(objectCreationSelectedTexture) : null,
                             new Vector3(objectCreationPosition.X, objectCreationPosition.Y, objectCreationPosition.Z),
                             new Quaternion(objectCreationRotation),
-                            objectCreationScale
+                            objectCreationScale,
+                            objectCreationEntity
                         }
                     });
 

@@ -1,5 +1,6 @@
 ﻿using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using Hammered_Physics.Core;
@@ -54,50 +55,43 @@ namespace HammeredGame.Game.GameObjects
         private Camera activeCamera;
 
         // Initialize player class
-        public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
-            // Defining the bounding volume entity (currently a box, but this could be
-            // defined as a capsule/cylinder/compound/etc. --> see bepuphysics1 repo)
-            this.Entity = new Box(MathConverter.Convert(Position), 2, 6, 2, 50);
+            if (this.Entity != null)
+            {
+                // Adding a tag to the entity, to allow us to potentially filter and
+                // view bounding volumes (for debugging)
+                this.Entity.Tag = "PlayerBounds";
 
-            // Offset the center of mass to the bottom of the box to make the entity position and
-            // the GameObject position match. This is because entities by default have a center of
-            // mass in the middle, which leads to discrepancies in the positions between it and the
-            // visual position from GameObject.
-            this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, ((Box)Entity).HalfHeight, 0);
+                // Setting the entity's collision information tag to the game object itself.
+                // This will help in checking for specific collisions in object-specific
+                // collision handling. --> See the Events_DetectingInitialCollision function in
+                // this file to see an example of how this might be used
+                this.Entity.CollisionInformation.Tag = this;
 
-            // Adding a tag to the entity, to allow us to potentially filter and
-            // view bounding volumes (for debugging)
-            this.Entity.Tag = "PlayerBounds";
+                // Making the character a continuous object prevents it from flying through
+                // walls which would be pretty jarring from a player's perspective.
+                this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
 
-            // Setting the entity's collision information tag to the game object itself.
-            // This will help in checking for specific collisions in object-specific
-            // collision handling. --> See the Events_DetectingInitialCollision function in
-            // this file to see an example of how this might be used
-            this.Entity.CollisionInformation.Tag = this;
+                // Set the entity's local inverse intertia tensor --> this ensures that the
+                // player character doesn't just fall over due to gravity
+                this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
 
-            // Making the character a continuous object prevents it from flying through
-            // walls which would be pretty jarring from a player's perspective.
-            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+                // Increase the entity's kinetic friction variable --> currently being used to
+                // reduce the character sliding along the surface. Also, not setting it too high
+                // since higher values make the player get stuck on certain parts of an uneven ground mesh.
+                // TODO: May want the flat ground meshes be as even and flat as possible
+                // (except ramps/stairs/ladders to reach higher elevations --> these can maybe be
+                // handled separately within collision handling <-- more testing needed for these settings)
+                this.Entity.Material.KineticFriction = 1.5f;
 
-            // Set the entity's local inverse intertia tensor --> this ensures that the
-            // player character doesn't just fall over due to gravity
-            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+                // Add the entity to the level's physics space - this ensures that this game object
+                // will be considered for collision constraint solving (handled by the physics engine)
+                this.ActiveSpace.Add(this.Entity);
 
-            // Increase the entity's kinetic friction variable --> currently being used to
-            // reduce the character sliding along the surface. Also, not setting it too high
-            // since higher values make the player get stuck on certain parts of an uneven ground mesh.
-            // TODO: May want the flat ground meshes be as even and flat as possible
-            // (except ramps/stairs/ladders to reach higher elevations --> these can maybe be
-            // handled separately within collision handling <-- more testing needed for these settings)
-            this.Entity.Material.KineticFriction = 1.5f;
-
-            // Add the entity to the level's physics space - this ensures that this game object
-            // will be considered for collision constraint solving (handled by the physics engine)
-            this.ActiveSpace.Add(this.Entity);
-
-            // Initialize the collision handlers based on the associated collision events
-            this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+                // Initialize the collision handlers based on the associated collision events
+                this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+            }
         }
 
         // Collision Handling Event for any initial collisions detected
@@ -173,7 +167,7 @@ namespace HammeredGame.Game.GameObjects
 
             // If there was movement, normalize speed and edit rotation of character model
             // Also account for collisions
-            if (moveDirty)
+            if (moveDirty && this.Entity != null)
             {
                 BEPUutilities.Vector3 Pos = this.Entity.Position;
 
@@ -209,13 +203,6 @@ namespace HammeredGame.Game.GameObjects
 
                 //position += player_vel;
             }
-
-
-            // Set the position and rotation of the visual object based on the attached entity. This
-            // is done regardless of input in this frame, since physics-based movement can have
-            // position updates based on inertia even after key release.
-            this.Position = MathConverter.Convert(this.Entity.Position);
-            this.Rotation = MathConverter.Convert(this.Entity.Orientation);
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
 

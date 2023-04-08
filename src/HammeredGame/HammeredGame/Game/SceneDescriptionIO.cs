@@ -1,4 +1,7 @@
-﻿using HammeredGame.Core;
+﻿using BEPUphysics.Entities;
+using BEPUphysics.Entities.Prefabs;
+using Hammered_Physics.Core;
+using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -191,12 +194,18 @@ namespace HammeredGame.Game
                 arguments.Add(Parse<Quaternion>(obj.Descendants("rotation").Single().Value));
                 arguments.Add(Parse<float>(obj.Descendants("scale").Single().Value));
 
+                // Parse the physics body attached to this
+                (Entity body, Vector3 bodyOffset) = GetBody(Parse<Vector3>(obj.Descendants("position").Single().Value), obj.Descendants("body").FirstOrDefault());
+                arguments.Add(body);
+
                 // Instantiate the GameObject. This can throw an exception if the arguments don't
                 // match the constructors.
                 GameObject instance = (GameObject)Activator.CreateInstance(t, args: arguments.ToArray());
 
                 // Visibility is also not part of the constructor
                 instance.Visible = Parse<bool>(obj.Descendants("visibility").SingleOrDefault()?.Value ?? "true");
+
+                instance.EntityModelOffset = bodyOffset;
 
                 // Insert into the dictionary to return together with either the ID attribute value or a generated id
                 if (obj.Attribute("id") != null)
@@ -217,6 +226,50 @@ namespace HammeredGame.Game
                 }
             }
             return namedObjects;
+        }
+
+        /// <summary>
+        /// Generate a physics body Entity using the body tag specified in the XML. Supports box types.
+        /// </summary>
+        /// <param name="modelPosition">The position of the model</param>
+        /// <param name="bodyElement">The XML element for the body tag</param>
+        /// <returns></returns>
+        private static (Entity, Vector3) GetBody(Vector3 modelPosition, XElement bodyElement)
+        {
+            if (bodyElement == null)
+            {
+                return (null, Vector3.Zero);
+            }
+
+            switch (bodyElement.Attribute("type").Value)
+            {
+                case "box":
+                    // A Box needs to receive width, height, length and optionally mass in its constructor.
+                    // Specifying a mass makes it a dynamic body (responsive to movement upon collision).
+                    float width = Parse<float>(bodyElement.Descendants("width").First().Value);
+                    float height = Parse<float>(bodyElement.Descendants("height").First().Value);
+                    float length = Parse<float>(bodyElement.Descendants("length").First().Value);
+                    XElement massElem = bodyElement.Descendants("mass").FirstOrDefault();
+                    Entity body;
+                    if (massElem != null)
+                    {
+                        float mass = Parse<float>(massElem.Value);
+                        body = new Box(MathConverter.Convert(modelPosition), width, height, length, mass);
+                    }
+                    else
+                    {
+                        body = new Box(MathConverter.Convert(modelPosition), width, height, length);
+                    }
+                    // The model origin may be different to the center of mass where the physics
+                    // engine treats as the origin. The local position attribute allows shifting the
+                    // center of mass.
+                    return (body, bodyElement
+                        .Descendants("shift_graphic")
+                        .Select(a => Parse<Vector3>(a.Value))
+                        .FirstOrDefault(Vector3.Zero));
+                default:
+                    return (null, Vector3.Zero);
+            }
         }
 
         /// <summary>
@@ -283,6 +336,21 @@ namespace HammeredGame.Game
                 if (!gameObject.Visible)
                 {
                     objElement.Add(new XElement("visibility", Show<bool>(gameObject.Visible)));
+                }
+
+                // Add the physics body entity (if one exists)
+                if (gameObject.Entity != null)
+                {
+                    if (gameObject.Entity is Box box)
+                    {
+                        objElement.Add(new XElement("body",
+                            new XAttribute("type", "box"),
+                            new XElement("width", Show<float>(box.Width)),
+                            new XElement("height", Show<float>(box.Height)),
+                            new XElement("length", Show<float>(box.Length)),
+                            box.IsDynamic ? new XElement("mass", Show<float>(box.Mass)) : null,
+                            new XElement("shift_graphic", Show<Vector3>(gameObject.EntityModelOffset))));
+                    }
                 }
 
                 rootElement.Add(objElement);

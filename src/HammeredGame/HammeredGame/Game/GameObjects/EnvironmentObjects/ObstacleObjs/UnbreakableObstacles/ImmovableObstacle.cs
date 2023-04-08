@@ -1,5 +1,6 @@
 ﻿using BEPUphysics;
-﻿using HammeredGame.Core;
+using BEPUphysics.Entities;
+using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -26,7 +27,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public ImmovableObstacle(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        public ImmovableObstacle(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
         }
     }

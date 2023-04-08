@@ -7,6 +7,7 @@ using Hammered_Physics.Core;
 ﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using BEPUphysics.Entities;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles
 {
@@ -47,17 +48,20 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         // Any Unbreakable Obstacle specific variables go here
         private bool keyFound = false;
         private bool isGoal = false; // TEMPORARY
-        public Door(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        public Door(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
-            this.Entity = new Box(MathConverter.Convert(this.Position), 5, 10, 3);
-            this.Entity.Tag = "ImmovableObstacleBounds";
-            this.Entity.CollisionInformation.Tag = this;
-            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
-            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
-            this.ActiveSpace.Add(this.Entity);
+            if (this.Entity != null)
+            {
+                this.Entity = new Box(MathConverter.Convert(this.Position), 5, 10, 3);
+                this.Entity.Tag = "ImmovableObstacleBounds";
+                this.Entity.CollisionInformation.Tag = this;
+                this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
+                this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+                this.ActiveSpace.Add(this.Entity);
 
-            this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
+                this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
+            }
         }
 
         public void SetIsGoal(bool isGoal)

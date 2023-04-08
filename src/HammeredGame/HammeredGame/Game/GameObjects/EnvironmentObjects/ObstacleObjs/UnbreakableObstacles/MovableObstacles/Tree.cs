@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static HammeredGame.Game.GameObjects.Player;
+using BEPUphysics.Entities;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles
 {
@@ -57,21 +58,22 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private bool playerOnTree;
 
 
-        public Tree(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        public Tree(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
-            this.Entity = new Box(MathConverter.Convert(this.Position), 7, 20, 7);
-            this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0f, 5f, 0f);
-            this.Entity.Tag = "MovableObstacleBounds";
-            this.Entity.CollisionInformation.Tag = this;
-            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
-            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
-            this.ActiveSpace.Add(this.Entity);
+            if (this.Entity != null)
+            {
+                this.Entity.Tag = "MovableObstacleBounds";
+                this.Entity.CollisionInformation.Tag = this;
+                this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
+                this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+                this.ActiveSpace.Add(this.Entity);
 
-            this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
-            this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
-            //this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
-            this.Entity.CollisionInformation.Events.RemovingPair += Events_RemovingPair;
+                this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
+                this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
+                //this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
+                this.Entity.CollisionInformation.Events.RemovingPair += Events_RemovingPair;
+            }
         }
 
         private void Events_RemovingPair(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.BroadPhaseEntry other)
@@ -119,7 +121,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         public void SetTreeFallen(bool treeFallen)
         {
             this.treeFallen = treeFallen;
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+            if (this.Entity != null)
+            {
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+            }
         }
 
         //public override void TouchingHammer(Hammer hammer)
