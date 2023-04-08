@@ -126,10 +126,27 @@ namespace HammeredGame.Game
             // Instantiate the Camera object
             Camera cameraInstance = new Camera(services, focusPoint, upDirection);
 
-            // Set the four static positions. (We /could/ modify the Camera constructor to pass
-            // these too, but it gets a little long. Also, on the off chance we need a camera that
-            // follows the player closely for one level, the current approach leaves more freedom.
-            cameraInstance.StaticPositions = cameraElement.Descendants("position").Select(v => Parse<Vector3>(v.Value)).ToArray();
+            // Determine the camera mode
+            switch (cameraElement.Attribute("mode")?.Value)
+            {
+                case "follow":
+                    // Set the distance and angle for follow mode. The position is not necessary
+                    // since it will be dynamically calculated at runtime from the distance, angle,
+                    // and the 4 isometric view directions.
+                    cameraInstance.Mode = Camera.CameraMode.Follow;
+                    cameraInstance.FollowDistance = Parse<float>(cameraElement.Descendants("follow_distance").Single().Value);
+                    cameraInstance.FollowAngle = Parse<float>(cameraElement.Descendants("follow_angle").Single().Value);
+                    break;
+                case "static":
+                default:
+                    // Set the four static positions.
+                    cameraInstance.Mode = Camera.CameraMode.FourPointStatic;
+                    cameraInstance.StaticPositions = cameraElement.Descendants("position").Select(v => Parse<Vector3>(v.Value)).ToArray();
+                    break;
+            }
+
+            // Set the field of view
+            cameraInstance.FieldOfView = Parse<float>(cameraElement.Descendants("fov").Single().Value);
 
             return cameraInstance;
         }
@@ -148,8 +165,6 @@ namespace HammeredGame.Game
         /// <exception cref="Exception">When some trouble arises trying to create the object</exception>
         private static Dictionary<string, GameObject> GetGameObjects(XDocument targetXML, GameServices services, Camera cam)
         {
-            var gameObjects = new List<GameObject>();
-
             // Maintain a map of named objects (those with attribute "id") so that we can reference
             // them and use them as arguments to constructors if needed in the future. This is used
             // for example for keys and doors, where the door needs to be present first in the XML
@@ -303,9 +318,11 @@ namespace HammeredGame.Game
         public static bool WriteToXML(string filePath, Camera camera, Dictionary<string, GameObject> namedObjects, GameServices services)
         {
             // First create the global camera element
-            XElement cameraElement =
-                new XElement("camera",
-                    new XAttribute("type", "static"),
+            XElement cameraElement = new XElement("camera");
+            if (camera.Mode == Camera.CameraMode.FourPointStatic)
+            {
+                cameraElement.Add(
+                    new XAttribute("mode", "static"),
                     new XElement("position",
                         Show<Vector3>(camera.StaticPositions[0])),
                     new XElement("position",
@@ -318,6 +335,20 @@ namespace HammeredGame.Game
                         Show<Vector3>(camera.Target)),
                     new XElement("up",
                         Show<Vector3>(camera.Up)));
+            } else
+            {
+                cameraElement.Add(
+                    new XAttribute("mode", "follow"),
+                    new XElement("follow_distance",
+                        Show<float>(camera.FollowDistance)),
+                    new XElement("follow_angle",
+                        Show<float>(camera.FollowAngle)),
+                    new XElement("target",
+                        Show<Vector3>(camera.Target)),
+                    new XElement("up",
+                        Show<Vector3>(camera.Up)));
+            }
+            cameraElement.Add(new XElement("fov", Show<float>(camera.FieldOfView)));
 
             // Create the root <level> tag and add the camera
             XElement rootElement = new XElement("scene",
