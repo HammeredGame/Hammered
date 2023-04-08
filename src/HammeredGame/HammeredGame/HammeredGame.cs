@@ -50,11 +50,7 @@ namespace HammeredGame
 
         private readonly GameServices gameServices = new();
 
-        public static List<EnvironmentObject> ActiveLevelObstacles = new();
-
         private Scene currentScene;
-
-        private Player player;
 
         // Music variables
         private Song bgMusic;
@@ -169,26 +165,6 @@ namespace HammeredGame
             gameServices.AddService<Space>(space);
 
             currentScene = (Scene)Activator.CreateInstance(Type.GetType(levelToLoad), gameServices);
-
-            ActiveLevelObstacles.Clear();
-            foreach (GameObject entity in currentScene.GameObjectsList)
-            {
-                // Store a reference to the player since it's a little important
-                if (entity is Player p)
-                {
-                    player = p;
-                }
-
-                // All objects that the player can collide with (for now, this is everything but
-                // Ground) needs to be stored in activeLevelObstacles, which the Player class checks
-                // for collision against.
-                // TODO: this needs to change to a different implementation when collision detection changes.
-                var envAble = entity as EnvironmentObject;
-                if (envAble != null && entity is not Ground)
-                {
-                    ActiveLevelObstacles.Add(envAble);
-                }
-            }
         }
 
         /// <summary>
@@ -219,7 +195,7 @@ namespace HammeredGame
             }
 
             // Update camera
-            currentScene.Camera.UpdateCamera(player);
+            currentScene.Camera.UpdateCamera();
 
             //Steps the simulation forward one time step.
             space.Update();
@@ -287,10 +263,10 @@ namespace HammeredGame
             spriteBatch.Draw(mainRenderTarget, desktopRect, Color.White);
 
             // FOR THE PURPOSES OF THE DEMO, we indicate whether the puzzle is solved here
-            if (player.ReachedGoal)
-            {
-                spriteBatch.DrawString(tempFont, "PUZZLE SOLVED!! \nPress R on keyboard or Y on controller to reload level", new Microsoft.Xna.Framework.Vector2(100, 100), Color.Red);
-            }
+            //if (player.ReachedGoal)
+            //{
+            //    spriteBatch.DrawString(tempFont, "PUZZLE SOLVED!! \nPress R on keyboard or Y on controller to reload level", new Microsoft.Xna.Framework.Vector2(100, 100), Color.Red);
+            //}
 
             // Commit all the data to the back buffer
             spriteBatch.End();

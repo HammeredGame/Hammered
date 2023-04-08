@@ -32,10 +32,11 @@ namespace HammeredGame.Game
 
         private int currentCameraPosIndex = 0;
 
-        // Camera follow direction for follow mode
+        // Camera follow properties, like distance, angle, and what to follow
+        private GameObject followTarget;
         public float FollowDistance = 49f;
         public float FollowAngle = 0.551f;
-        private Vector2 followDir = new Vector2(1, -1);
+        private Vector2 followDir2D = new Vector2(1, -1);
 
         public float FieldOfView = MathHelper.PiOver4;
 
@@ -68,6 +69,15 @@ namespace HammeredGame.Game
             Mode = CameraMode.FourPointStatic;
 
             this.services = services;
+        }
+
+        /// <summary>
+        /// Set the game object for the camera to follow.
+        /// </summary>
+        /// <param name="target"></param>
+        public void SetFollowTarget(GameObject target)
+        {
+            followTarget = target;
         }
 
         /// <summary>
@@ -133,7 +143,7 @@ namespace HammeredGame.Game
         /// TEMPORARY - needs to be modified Update the camera position and look-at Currently just
         /// switches between 4 predetermined positions given the corresponding keyboard input
         /// </summary>
-        public void UpdateCamera(Player player)
+        public void UpdateCamera()
         {
             if (Mode == CameraMode.Follow)
             {
@@ -145,24 +155,34 @@ namespace HammeredGame.Game
                 Input inp = services.GetService<Input>();
                 if (inp.ButtonPress(Buttons.DPadUp) || inp.KeyDown(Keys.D1))
                 {
-                    followDir = new Vector2(1, -1);
+                    followDir2D = new Vector2(1, -1);
                 }
                 if (inp.ButtonPress(Buttons.DPadLeft) || inp.KeyDown(Keys.D2))
                 {
-                    followDir = new Vector2(-1, -1);
+                    followDir2D = new Vector2(-1, -1);
                 }
                 if (inp.ButtonPress(Buttons.DPadDown) || inp.KeyDown(Keys.D3))
                 {
-                    followDir = new Vector2(-1, 1);
+                    followDir2D = new Vector2(-1, 1);
                 }
                 if (inp.ButtonPress(Buttons.DPadRight) || inp.KeyDown(Keys.D4))
                 {
-                    followDir = new Vector2(1, 1);
+                    followDir2D = new Vector2(1, 1);
                 }
 
-                FollowPlayer(player, followDir);
-
                 #endregion TEMPORARY_CAMERA_CONTROLS
+
+                // Calculate the base follow offset position (from the follow target) using the
+                // followAngle, between 0 (horizon) and 90 (top down)
+                var sinCos = Math.SinCos(FollowAngle);
+                Vector3 followOffset = new Vector3((float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos), (float)sinCos.Sin, (float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos));
+
+                // Multiply by the diagonal direction
+                followOffset.X *= followDir2D.X;
+                followOffset.Z *= followDir2D.Y;
+
+                Vector3 newPosition = followTarget.Position + Vector3.Normalize(followOffset) * FollowDistance;
+                UpdatePositionTarget(newPosition, followTarget.Position);
             }
             else
             {

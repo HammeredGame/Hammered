@@ -12,6 +12,7 @@ namespace HammeredGame.Game.Scenes.Island1
         {
             CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle.xml");
 
+            Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
 
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
