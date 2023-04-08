@@ -318,49 +318,10 @@ namespace HammeredGame.Game
 
                         ImGui.Text($"Object details: {objectListCurrentSelection}");
 
-                        // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
-                        // we need to temporarily convert.
-                        System.Numerics.Vector3 pos = gameObject.Position.ToNumerics();
-                        ImGui.DragFloat3("Position", ref pos, 10f);
-                        gameObject.Position = pos;
-
-                        System.Numerics.Vector4 rot = gameObject.Rotation.ToVector4().ToNumerics();
-                        ImGui.DragFloat4("Rotation", ref rot, 0.01f, -1.0f, 1.0f);
-                        gameObject.Rotation = Quaternion.Normalize(new Quaternion(rot));
-
-                        ImGui.DragFloat("Scale", ref gameObject.Scale, 0.01f);
-
-                        ImGui.Text($"Texture: {gameObject.Texture?.ToString() ?? "None"}");
-
-                        if (gameObject.Entity != null)
-                        {
-                            System.Numerics.Vector3 modelOffset = gameObject.EntityModelOffset.ToNumerics();
-                            ImGui.DragFloat3("Graphic/Physics offset", ref modelOffset, 0.01f);
-                            gameObject.EntityModelOffset = modelOffset;
-
-                            // Display some entity-specific parameters
-                            if (gameObject.Entity is Box box)
-                            {
-                                box.IgnoreShapeChanges = true;
-                                float w = box.Width;
-                                ImGui.DragFloat("Body width", ref w);
-                                box.Width = w;
-                                float h = box.Height;
-                                ImGui.DragFloat("Body height", ref h);
-                                box.Height = h;
-                                float l = box.Length;
-                                ImGui.DragFloat("Body length", ref l);
-                                box.Length = l;
-                            }
-                        }
-
                         ImGui.Separator();
 
-                        // Draw any object specific UI defined within its UI() function
-                        if (gameObject is IImGui objectWithGui)
-                        {
-                            objectWithGui.UI();
-                        }
+                        // Draw the game object UI, using the most specific implementation of UI()
+                        (gameObject as IImGui)?.UI();
                     }
                     ImGui.EndChild();
                 }
