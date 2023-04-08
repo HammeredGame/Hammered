@@ -167,7 +167,7 @@ namespace HammeredGame.Game.GameObjects
 
             // If there was movement, normalize speed and edit rotation of character model
             // Also account for collisions
-            if (moveDirty && this.Entity != null)
+            if (moveDirty && this.Entity != null && player_vel != Vector3.Zero)
             {
                 BEPUutilities.Vector3 Pos = this.Entity.Position;
 
