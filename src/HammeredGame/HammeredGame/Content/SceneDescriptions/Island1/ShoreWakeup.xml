@@ -1,11 +1,10 @@
 <scene>
-  <camera type="static">
-    <position>80.000 60.000 -80.000</position>
-    <position>-80.000 60.000 -80.000</position>
-    <position>-80.000 60.000 80.000</position>
-    <position>80.000 60.000 80.000</position>
-    <target>0 0 0</target>
+  <camera mode="follow">
+    <follow_distance>200.000</follow_distance>
+    <follow_angle>0.551</follow_angle>
+    <target>46.079 2.158 -11.691</target>
     <up>0.000 1.000 0.000</up>
+    <fov>0.205</fov>
   </camera>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water">
     <model>temp_water_big</model>
