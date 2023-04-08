@@ -11,6 +11,7 @@ using HammeredGame.Game.GameObjects;
 using HammeredGame.Game;
 using BEPUphysics;
 using HammeredGame.Core;
+using BEPUphysics.Entities;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
@@ -37,7 +38,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
     {
         // Any Interactable specific variables go here
 
-        public FloorObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        public FloorObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             IsGround = true;
         }

@@ -1,5 +1,6 @@
 ﻿using BEPUphysics;
 using BEPUphysics.Entities;
+using Hammered_Physics.Core;
 using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -34,14 +35,30 @@ namespace HammeredGame.Game
         // Common variables for any object in the game
         public Model Model;
         public Texture2D Texture;
-        public Vector3 Position;
-        public Quaternion Rotation;
+        private Vector3 position;
+        public Vector3 Position {
+            get { if (Entity != null) { return MathConverter.Convert(Entity.Position); } else { return position; } }
+            set { if (Entity != null) { Entity.Position = MathConverter.Convert(value); } position = value; }
+        }
+        private Quaternion rotation;
+        public Quaternion Rotation
+        {
+            get { if (Entity != null) { return MathConverter.Convert(Entity.Orientation); } else { return rotation; } }
+            set { if (Entity != null) { Entity.Orientation = MathConverter.Convert(value); } rotation = value; }
+        }
         public float Scale;
 
         /// <summary>
         /// Physics Entity that this model follows. Could be null for e.g. terrain.
         /// </summary>
         public Entity Entity;
+
+        /// <summary>
+        /// A model may have its origin somewhere other than its center of mass. In this case, the
+        /// graphic display and the physics body calculations will not match. This vector is used to
+        /// shift the model drawing so it matches the physics body.
+        /// </summary>
+        public Vector3 EntityModelOffset = Vector3.Zero;
 
         protected GameServices Services;
 
@@ -57,8 +74,9 @@ namespace HammeredGame.Game
 
         private List<(int, float[])> allVertexData;
 
-        protected GameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale)
+        protected GameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
         {
+            this.Entity = entity;
             this.Services = services;
             this.Model = model;
             this.Position = pos;
@@ -172,7 +190,9 @@ namespace HammeredGame.Game
         public Matrix GetWorldMatrix()
         {
             Matrix rotationMatrix = Matrix.CreateFromQuaternion(Rotation);
-            Matrix translationMatrix = Matrix.CreateTranslation(Position);
+            // For translation, include the model's origin offset so that the collision body
+            // position matches with the rendered model
+            Matrix translationMatrix = Matrix.CreateTranslation(Position + EntityModelOffset);
             Matrix scaleMatrix = Matrix.CreateScale(Scale);
 
             // Construct world matrix

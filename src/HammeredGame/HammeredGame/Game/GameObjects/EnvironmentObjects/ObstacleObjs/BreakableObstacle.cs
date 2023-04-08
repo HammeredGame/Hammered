@@ -11,6 +11,7 @@ using Hammered_Physics.Core;
 using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using HammeredGame.Core;
+using BEPUphysics.Entities;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
 {
@@ -32,9 +33,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
     {
         // Any Obstacle specific variables go here
 
-        public BreakableObstacle(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        public BreakableObstacle(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
-            this.Entity = new Box(MathConverter.Convert(this.Position), 7, 30, 7);
             this.Entity.Tag = "BreakableObstacleBounds";
             this.Entity.CollisionInformation.Tag = this;
             this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;

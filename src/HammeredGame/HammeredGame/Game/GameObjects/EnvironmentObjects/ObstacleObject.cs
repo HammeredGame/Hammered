@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BEPUphysics;
 using HammeredGame.Core;
+using BEPUphysics.Entities;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
@@ -26,7 +27,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
     {
         // Any Obstacle specific variables go here
 
-        public ObstacleObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        public ObstacleObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
         }
 

@@ -9,6 +9,7 @@ using ImMonoGame.Thing;
 using ImGuiNET;
 using BEPUphysics;
 using HammeredGame.Core;
+using BEPUphysics.Entities;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -18,8 +19,8 @@ namespace HammeredGame.Game.GameObjects
         /// TODO: Consider renaming the field <code>IsGround</code> as "IsWalkable"?
         /// </value>
         public bool IsGround = false;
-        public EnvironmentObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale)
-            : base (services, model, t, pos, rotation, scale)
+        public EnvironmentObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
+            : base (services, model, t, pos, rotation, scale, entity)
         {
         }
 

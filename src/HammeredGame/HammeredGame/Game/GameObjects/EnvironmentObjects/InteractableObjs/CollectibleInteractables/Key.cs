@@ -1,5 +1,6 @@
 ﻿using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using Hammered_Physics.Core;
@@ -44,22 +45,23 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         private Door correspondingDoor;
         private bool keyPickedUp = false;
 
-        public Key(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        public Key(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
-            this.Entity = new Box(MathConverter.Convert(this.Position), 5, 1, 5);
+            if (this.Entity != null)
+            {
+                this.Entity.Tag = "CollectibleBounds";
 
-            this.Entity.Tag = "CollectibleBounds";
+                this.Entity.CollisionInformation.Tag = this;
 
-            this.Entity.CollisionInformation.Tag = this;
+                this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
 
-            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+                this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
 
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
-            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+                this.ActiveSpace.Add(this.Entity);
 
-            this.ActiveSpace.Add(this.Entity);
-
-            this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+                this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+            }
         }
 
         public void SetCorrespondingDoor(Door correspondingDoor)

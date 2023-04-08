@@ -1,5 +1,6 @@
 ﻿using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.NarrowPhaseSystems.Pairs;
 using BEPUphysics.PositionUpdating;
@@ -30,19 +31,21 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         private bool playerOn = false, hammerOn = false;
         private bool pressureActivated = false;
 
-        public PressurePlate(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale) : base(services, model, t, pos, rotation, scale)
+        public PressurePlate(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
-            this.Entity = new Box(MathConverter.Convert(this.Position), 6, 3, 6);
-            this.Entity.Tag = "ImmovableInteractableBounds";
-            this.Entity.CollisionInformation.Tag = this;
-            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
-            this.ActiveSpace.Add(this.Entity);
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
-            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+            if (this.Entity != null)
+            {
+                this.Entity.Tag = "ImmovableInteractableBounds";
+                this.Entity.CollisionInformation.Tag = this;
+                this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+                this.ActiveSpace.Add(this.Entity);
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+                this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
 
-            //this.entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollision;
-            this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
-            this.Entity.CollisionInformation.Events.CollisionEnded += this.Events_CollisionEnded;
+                //this.entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollision;
+                this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
+                this.Entity.CollisionInformation.Events.CollisionEnded += this.Events_CollisionEnded;
+            }
         }
 
         public void SetTriggerObject(EnvironmentObject triggerObject)
@@ -114,7 +117,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             else if (triggerObject != null)
             {
                 triggerObject.Visible = true;
-                if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
                     this.ActiveSpace.Add(triggerObject.Entity);
             }
         }
