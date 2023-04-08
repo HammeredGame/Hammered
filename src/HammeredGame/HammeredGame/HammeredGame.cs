@@ -32,8 +32,7 @@ namespace HammeredGame
         private GraphicsDevice gpu;
         public int ScreenW, ScreenH;
 
-        private Space space;
-        static ParallelLooper parallelLooper;
+        public static ParallelLooper ParallelLooper;
 
         // INPUT and other related stuff
         private Input input;
@@ -96,6 +95,22 @@ namespace HammeredGame
             // Initialize Input class
             input = new Input(pp, mainRenderTarget);
 
+            // Set up the parallelization pool for the physics engine based on the amount of cores
+            // we have.
+            if (ParallelLooper == null)
+            {
+                // Initialize paraller looper to tell the physics engine that it can use
+                // multithreading, if possible
+                ParallelLooper = new ParallelLooper();
+                if (Environment.ProcessorCount > 1)
+                {
+                    for (int i = 0; i < Environment.ProcessorCount; i++)
+                    {
+                        ParallelLooper.AddThread();
+                    }
+                }
+            }
+
             // Set title for game window
             Window.Title = "HAMMERED";
 
@@ -136,34 +151,6 @@ namespace HammeredGame
         /// <param name="levelToLoad"></param>
         private void InitializeLevel(string levelToLoad)
         {
-            // Construct a new space for the physics simulation to occur within.
-            // Using this to clear the physics space, in case the level is reloaded.
-            // TODO: There's no RemoveAllEntities function in bepuphysics, and manually
-            // removing all the entities doesn't work. Not sure if the current approach is efficient.
-            if (parallelLooper == null)
-            {
-                // Initialize paraller looper to tell the physics engine that it can use
-                // multithreading, if possible
-                parallelLooper = new ParallelLooper();
-                if (Environment.ProcessorCount > 1)
-                {
-                    for (int i = 0; i < Environment.ProcessorCount; i++)
-                    {
-                        parallelLooper.AddThread();
-                    }
-                }
-            }
-            space = new Space(parallelLooper);
-
-            //Set the gravity of the simulation by accessing the simulation settings of the space.
-            //It defaults to (0,0,0); this changes it to an 'earth like' gravity.
-            //Try looking around in the space's simulationSettings to familiarize yourself with the various options.
-            space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -98.1f, 0);
-            CollisionDetectionSettings.AllowedPenetration = 0.001f;
-
-            // Add the physics space to be a globally accessible service
-            gameServices.AddService<Space>(space);
-
             currentScene = (Scene)Activator.CreateInstance(Type.GetType(levelToLoad), gameServices);
         }
 
@@ -198,7 +185,7 @@ namespace HammeredGame
             currentScene.Camera.UpdateCamera();
 
             //Steps the simulation forward one time step.
-            space.Update();
+            currentScene.Space.Update();
 
             // Set up the list of debug entities for debugging visualization
             SetupDebugBounds();
@@ -294,7 +281,7 @@ namespace HammeredGame
             debugEntities.Clear();
             var CubeModel = Content.Load<Model>("cube");
             //Go through the list of entities in the space and create a graphical representation for them.
-            foreach (Entity e in space.Entities)
+            foreach (Entity e in currentScene.Space.Entities)
             {
                 Box box = e as Box;
                 if (box != null) //This won't create any graphics for an entity that isn't a box since the model being used is a box.

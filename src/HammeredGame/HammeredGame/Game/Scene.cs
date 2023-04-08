@@ -1,6 +1,8 @@
 ﻿using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
+using BEPUphysics.Settings;
+using BEPUutilities.Threading;
 using Hammered_Physics.Core;
 using HammeredGame.Core;
 using ImGuiNET;
@@ -38,11 +40,17 @@ namespace HammeredGame.Game
             get { return GameObjects.Values.ToList(); }
         }
 
+        /// <summary>
+        /// The physics space for the scene.
+        /// </summary>
+        public Space Space;
+
         protected GameServices Services;
 
         protected Scene(GameServices services)
         {
             this.Services = services;
+            InitNewSpace();
         }
 
         /// <summary>
@@ -51,7 +59,27 @@ namespace HammeredGame.Game
         protected abstract void OnSceneStart();
 
         /// <summary>
-        /// Create a new object in the scene
+        /// Initialize a new physics space for the scene, with Earth-like gravity. Adds it to the
+        /// GameService under the Space type.
+        /// </summary>
+        private void InitNewSpace()
+        {
+            // Construct a new space for the physics simulation to occur within.
+            Space = new Space(HammeredGame.ParallelLooper);
+
+            //Set the gravity of the simulation by accessing the simulation settings of the space.
+            //It defaults to (0,0,0); this changes it to an 'earth like' gravity.
+            //Try looking around in the space's simulationSettings to familiarize yourself with the various options.
+            Space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -98.1f, 0);
+            CollisionDetectionSettings.AllowedPenetration = 0.001f;
+
+            // Add the physics space to be a globally accessible service
+            Services.AddService<Space>(Space);
+        }
+
+        /// <summary>
+        /// Create a new object in the scene. The object constructor handles the addition of itself
+        /// to the physics Space if necessary.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="name">The unique identifier for the object</param>
@@ -81,13 +109,20 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Remove an object in the scene by a unique identifier.
+        /// Remove an object in the scene by a unique identifier. Also removes the associated entity
+        /// (if there is one) from the active physics space.
         /// </summary>
         /// <param name="name">The unique identifier to find</param>
         /// <returns>Whether the removal was successful or not</returns>
         public bool Remove(string name)
         {
-            return GameObjects.Remove(name);
+            if (GameObjects.ContainsKey(name))
+            {
+                Entity associatedEntity = Get<GameObject>(name)?.Entity;
+                Space.Remove(associatedEntity);
+                return GameObjects.Remove(name);
+            }
+            return false;
         }
 
         /// <summary>
@@ -96,6 +131,7 @@ namespace HammeredGame.Game
         public void Clear()
         {
             GameObjects.Clear();
+            InitNewSpace();
         }
 
         /// <summary>
@@ -203,9 +239,8 @@ namespace HammeredGame.Game
 
                 if (result.IsOk)
                 {
-                    // Clear the scene objects
+                    // Clear the scene objects and the physics space
                     Clear();
-                    // TODO: clear physics space
                     CreateFromXML(result.Path);
                     // Re-run the scene start script
                     OnSceneStart();
