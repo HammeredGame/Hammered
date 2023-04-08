@@ -11,7 +11,11 @@ namespace HammeredGame.Game.Scenes.Island1
         public TwoIslandPuzzle(GameServices services) : base(services)
         {
             CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle.xml");
+            OnSceneStart();
+        }
 
+        protected override void OnSceneStart()
+        {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
 
