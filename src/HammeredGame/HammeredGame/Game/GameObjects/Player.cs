@@ -304,8 +304,10 @@ namespace HammeredGame.Game.GameObjects
             return moveDirty;
         }
 
-        public void UI()
+        new public void UI()
         {
+            base.UI();
+            ImGui.Separator();
             ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
         }

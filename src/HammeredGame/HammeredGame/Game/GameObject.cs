@@ -1,7 +1,10 @@
 ﻿using BEPUphysics;
 using BEPUphysics.Entities;
+using BEPUphysics.Entities.Prefabs;
 using Hammered_Physics.Core;
 using HammeredGame.Core;
+using ImGuiNET;
+using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -30,17 +33,23 @@ namespace HammeredGame.Game
     /// <remarks>
     /// TODO: Add "class_skeleton_class_diagram.jpg" to game files
     /// </remarks>
-    public abstract class GameObject
+    public abstract class GameObject : IImGui
     {
         // Common variables for any object in the game
         public Model Model;
         public Texture2D Texture;
         private Vector3 position;
+        // Use the private position vector only if we don't have a physics entity attached.
+        // Otherwise, we delegate the position property entirely to the physics body position and
+        // never use our own private value.
         public Vector3 Position {
             get { if (Entity != null) { return MathConverter.Convert(Entity.Position); } else { return position; } }
             set { if (Entity != null) { Entity.Position = MathConverter.Convert(value); } position = value; }
         }
         private Quaternion rotation;
+        // Use the private rotation quaternion only if we don't have a physics entity attached.
+        // Otherwise, we delegate the rotation property entirely to the physics body orientation and
+        // never use our own private value.
         public Quaternion Rotation
         {
             get { if (Entity != null) { return MathConverter.Convert(Entity.Orientation); } else { return rotation; } }
@@ -208,6 +217,49 @@ namespace HammeredGame.Game
 
             // World matrix = S -> R -> T
             return scaleMatrix * rotationMatrix * translationMatrix;
+        }
+
+        /// <summary>
+        /// A default game object property UI, shown in the debug UI for editing the basic position,
+        /// rotation, scale, and any physics entity properties at runtime.
+        /// </summary>
+        public void UI()
+        {
+            ImGui.Text($"Texture: {Texture?.ToString() ?? "None"}");
+
+            // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
+            // we need to temporarily convert.
+            System.Numerics.Vector3 pos = Position.ToNumerics();
+            ImGui.DragFloat3("Position", ref pos, 10f);
+            Position = pos;
+
+            System.Numerics.Vector4 rot = Rotation.ToVector4().ToNumerics();
+            ImGui.DragFloat4("Rotation", ref rot, 0.01f, -1.0f, 1.0f);
+            Rotation = Quaternion.Normalize(new Quaternion(rot));
+
+            ImGui.DragFloat("Scale", ref Scale, 0.01f);
+            ImGui.TextWrapped("* Changing scale only changes the rendering scale and not the collision entity scale.");
+
+            ImGui.NewLine();
+
+            ImGui.Text($"Collision body: {Entity?.GetType()?.Name ?? "None"}");
+            if (Entity != null)
+            {
+                System.Numerics.Vector3 modelOffset = EntityModelOffset.ToNumerics();
+                ImGui.DragFloat3("Origin offset (between Graphic & Physics)", ref modelOffset, 0.01f);
+                EntityModelOffset = modelOffset;
+
+                // Display some entity-specific parameters
+                if (Entity is Box box)
+                {
+                    box.IgnoreShapeChanges = true;
+                    System.Numerics.Vector3 whl = new(box.Width, box.Height, box.Length);
+                    ImGui.DragFloat3("Box W,H,L", ref whl);
+                    box.Width = whl.X;
+                    box.Height = whl.Y;
+                    box.Length = whl.Z;
+                }
+            }
         }
     }
 }
