@@ -270,7 +270,7 @@
 #begin SceneDescriptions/Island1/TwoIslandPuzzle.xml
 /copy:SceneDescriptions/Island1/TwoIslandPuzzle.xml
 
-#begin shore color.png
+#begin shore_texture.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -280,7 +280,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:shore color.png
+/build:shore_texture.png
 
 #begin shore.fbx
 /importer:FbxImporter
