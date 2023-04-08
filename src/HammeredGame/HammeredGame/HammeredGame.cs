@@ -8,6 +8,7 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Collecti
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -63,6 +64,8 @@ namespace HammeredGame
 
         // Music variables
         private Song bgMusic;
+        private List<SoundEffect> sfx;
+        private SoundEffect footsteps;
 
         // SCENE TEST VARIABLES
         private int testObstaclesCombo = 4;
@@ -133,10 +136,16 @@ namespace HammeredGame
 
             InitializeLevel(testObstaclesCombo);
 
-            bgMusic = Content.Load<Song>("Audio/BGM_V1");
+            bgMusic = Content.Load<Song>("Audio/BGM_V2_4x");
+            footsteps = Content.Load<SoundEffect>("Audio/footstep1");
+            //sfx.Add(Content.Load<SoundEffect>("Audio/footstep1"));
+            //sfx[0].Play();
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
+            footsteps.Play();
+            //var instance = sfx[0].CreateInstance();
+            // instance.Play();
         }
 
         /// <summary>
