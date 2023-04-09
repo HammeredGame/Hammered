@@ -23,6 +23,13 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
         /// </value>
         public LinkedList<Edge> Edges { get; set; }
 
+        public Vertex()
+        {
+            TraveledDistance = 0;
+            HeuristicValue = 0;
+        }
+         
+
         public Vertex(string id, double traveled, double heuristic)
         {
             ID = id;
@@ -34,6 +41,8 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
         {
             Edges = edges;
         }
+
+        public void AddEdge(Vertex target, double weight) { this.Edges.AddLast(new Edge(target, weight)); }
 
         public bool Equals(Vertex other)
         {
