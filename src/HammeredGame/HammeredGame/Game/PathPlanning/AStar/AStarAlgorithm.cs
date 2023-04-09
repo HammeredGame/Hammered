@@ -34,7 +34,7 @@ namespace HammeredGame.Game.PathPlanning
     public class AStarAlgorithm
     {
 
-        public Stack<Vertex> getMinimumPath(Vertex start, Vertex destination, Graph graph)
+        public Stack<Vertex> GetMinimumPath(Vertex start, Vertex destination, Graph graph)
         {
             // Dynamic sanity check.
             // If the graph does not contain both the starting node s and the destination node g,
@@ -139,7 +139,6 @@ namespace HammeredGame.Game.PathPlanning
 
 
                     double targetPriority = topElement.TraveledDistance + target.HeuristicValue;
-                    PriorityQueueEntry potentialInsertion = new PriorityQueueEntry(target, topElement.TraveledDistance + target.HeuristicValue);
                     if (!priorityQueue.Contains(target)) // If "target" vertex has never been in the priority queue, add it.
                     {
                         target.TraveledDistance = topElement.TraveledDistance + e.Value.Weight; // Calculate the total traveled distance 

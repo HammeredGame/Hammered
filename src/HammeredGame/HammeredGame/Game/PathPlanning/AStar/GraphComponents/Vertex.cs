@@ -22,6 +22,9 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
         /// Therefore a <c>LinkedList</c> data structure will suffice.
         /// </value>
         public LinkedList<Edge> Edges { get; set; }
+        public Vertex()
+        {
+        }
 
         public Vertex(string id, double traveled, double heuristic)
         {
