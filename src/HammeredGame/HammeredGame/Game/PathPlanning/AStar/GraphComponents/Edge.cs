@@ -12,10 +12,10 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
         // Consider storing the source vertex as well.
         //Vertex SourceVertex { get; set; };
         public Vertex TargetVertex { get; set; } = null;
-        public Edge(double weight, Vertex target)
+        public Edge(Vertex target, double weight)
         {
-            Weight = weight;
             TargetVertex = target;
+            Weight = weight;
         }
     }
 }
