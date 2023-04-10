@@ -259,7 +259,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.02
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:rock.fbx

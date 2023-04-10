@@ -132,6 +132,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
         }
 
+        public bool IsTreeFallen()
+        {
+            return this.treeFallen;
+        }
+
         //public override void TouchingHammer(Hammer hammer)
         //{
         //    if (!treeFallen)
