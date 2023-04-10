@@ -14,25 +14,50 @@ namespace HammeredGame.Game.PathPlanning.Grid
         private BidirectionalDictionary<Vector3, Vertex> biMap;
         private Graph graph;
 
-        public UniformGrid(int nrCellsPerDimension, float sideLength)
+        public UniformGrid(int nrCellsX, int nrCellsY, int nrCellsZ, float sideLength)
         {
-            grid = new Vector3[nrCellsPerDimension, nrCellsPerDimension, nrCellsPerDimension];
+            grid = new Vector3[nrCellsX, nrCellsY, nrCellsZ];
             // STEP 1: Define all points in 3D space and map them to corresponding vertices.
             FillBidirectionalMapping(sideLength);
-
             // STEP 2: Define the connections between the vertices.
             MakeVerticesConnections();
+
         }
 
-        public UniformGrid(float fullCubeLengthPerDimension, float sideLength)
+        public UniformGrid(int nrCellsPerDimension, float sideLength) : this(nrCellsPerDimension, nrCellsPerDimension, nrCellsPerDimension, sideLength)
         {
-            int nrCellsPerDimension = (int)Math.Ceiling(fullCubeLengthPerDimension / sideLength);
-            grid = new Vector3[nrCellsPerDimension, nrCellsPerDimension, nrCellsPerDimension];
+        }
+
+        public UniformGrid(float fullCubeLengthPerDimension, float sideLength) : this((int)Math.Ceiling(fullCubeLengthPerDimension / sideLength), sideLength)
+        {
+        }
+
+        public UniformGrid(Vector3 bottomLeftClosePoint, Vector3 topRightAwayPoint, int nrCellsX, int nrCellsY, int nrCellsZ, float sideLength)
+        {
+            if (bottomLeftClosePoint.X > topRightAwayPoint.X)
+                throw new ArgumentException(String.Format("First input must be on the left of the second input. Instead, {0} > {1} was provided", bottomLeftClosePoint.X, topRightAwayPoint.X));
+            if (bottomLeftClosePoint.Y > topRightAwayPoint.Y)
+                throw new ArgumentException(String.Format("First input must be below the second input. Instead, {0} > {1} was provided", bottomLeftClosePoint.Y, topRightAwayPoint.Y));
+            if (bottomLeftClosePoint.Z > topRightAwayPoint.Z)
+                throw new ArgumentException(String.Format("First input must be closer to origin than the second input. Instead, {0} > {1} was provided", bottomLeftClosePoint.Z, topRightAwayPoint.Z));
+
+            grid = new Vector3[nrCellsX, nrCellsY, nrCellsZ];
             // STEP 1: Define all points in 3D space and map them to corresponding vertices.
             FillBidirectionalMapping(sideLength);
-
             // STEP 2: Define the connections between the vertices.
             MakeVerticesConnections();
+
+
+        }
+
+        public UniformGrid(Vector3 bottomLeftClosePoint, Vector3 topRightAwayPoint, float sideLength) :
+            this(bottomLeftClosePoint, topRightAwayPoint,
+                (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.X - topRightAwayPoint.X) / sideLength),
+                (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.Y - topRightAwayPoint.Y) / sideLength),
+                (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.Z - topRightAwayPoint.Z) / sideLength),
+                sideLength
+                )
+        { 
         }
 
         public Vector3[] FindShortestPathAStar(Vector3 start, Vector3 finish, HashSet<Vector3> pointsConsidered)
@@ -81,6 +106,8 @@ namespace HammeredGame.Game.PathPlanning.Grid
 
         // Assistance function for constructor.
         private void FillBidirectionalMapping(float sideLength)
+        // Theoretically, this function can be broken into two pieces: I) fill in the grid entries II) make the mapping
+        // However, it was considered to be too much of a waste to iterate through a 3D data structure twice.
         {
             for (int i = 0; i < grid.GetLength(0); i++)
             {
