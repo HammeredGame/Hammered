@@ -14,6 +14,7 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
     /// </summary>
     public class Vertex : IEquatable<Vertex>
     {
+        private static string NextID = "ID00";
         public string ID { get; }
         public double TraveledDistance { get; set; } = double.PositiveInfinity;
         public double HeuristicValue { get; set; } = double.PositiveInfinity;
@@ -23,14 +24,40 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
         /// </value>
         public LinkedList<Edge> Edges { get; set; }
 
+        private static string IncrementNumberIn(string s)
+        {
+            string result = string.Empty;
+            string numberStr = string.Empty;
+
+            int i = s.Length - 1;
+            for (; i > 0; i--)
+            {
+                char c = s[i];
+
+                if (!char.IsDigit(c))
+                    break;
+
+                numberStr = c + numberStr;
+            }
+
+            int number = int.Parse(numberStr);
+            number++;
+
+            result += s.Substring(0, i + 1);
+            result += number < 10 ? "0" : "";
+            result += number;
+
+            return result;
+        }
+
         public Vertex()
         {
-            TraveledDistance = 0;
-            HeuristicValue = 0;
+            ID = NextID;
+            NextID = IncrementNumberIn(NextID); // Generate next ID.
         }
          
 
-        public Vertex(string id, double traveled, double heuristic)
+        public Vertex(string id, double traveled, double heuristic) : this()
         {
             ID = id;
             TraveledDistance = traveled;

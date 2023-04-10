@@ -14,16 +14,30 @@ namespace HammeredGame.Game.PathPlanning.Grid
         private BidirectionalDictionary<Vector3, Vertex> biMap;
         private Graph graph;
 
+        /// <summary>
+        /// Constructs a uniform 3D grid with the first grid cell positioned at the origin O(0,0,0) and expanding towards the positive
+        /// direction of each axis (strictly monotonically increasing X, Y and Z).
+        /// </summary>
+        /// <param name="nrCellsX">Number of cells in the X dimension. Expecting a non-negative integer.</param>
+        /// <param name="nrCellsY">Number of cells in the Y dimension. Expecting a non-negative integer.</param>
+        /// <param name="nrCellsZ">Number of cells in the Z dimension. Expecting a non-negative integer.</param>
+        /// <param name="sideLength">The length of each side of a cell. Cells are considered to be perfect cubes.</param>
         public UniformGrid(int nrCellsX, int nrCellsY, int nrCellsZ, float sideLength)
         {
             grid = new Vector3[Math.Max(1, nrCellsX), Math.Max(1, nrCellsY), Math.Max(1, nrCellsZ)];
             // STEP 1: Define all points in 3D space and map them to corresponding vertices.
-            FillBidirectionalMapping(sideLength);
+            FillBidirectionalMapping(Vector3.Zero, sideLength);
             // STEP 2: Define the connections between the vertices.
             MakeVerticesConnections();
 
         }
 
+        /// <summary>
+        /// Constructs a uniform 3D cube grid with the the first grid cell positioned at the origin O(0,0,0)
+        /// and expanding towards the positive of each axis (strictly monotonically increasing X, Y and Z).
+        /// </summary>
+        /// <param name="nrCellsPerDimension">Number of cells in each of the X, Y and Z dimensions. Expecting a non-negative integer</param>
+        /// <param name="sideLength">The length of each side of a cell. Cells are considered to be perfect cubes.</param>
         public UniformGrid(int nrCellsPerDimension, float sideLength) : this(nrCellsPerDimension, nrCellsPerDimension, nrCellsPerDimension, sideLength)
         {
         }
@@ -32,7 +46,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
         {
         }
 
-        public UniformGrid(Vector3 bottomLeftClosePoint, Vector3 topRightAwayPoint, int nrCellsX, int nrCellsY, int nrCellsZ, float sideLength)
+        public UniformGrid(Vector3 bottomLeftClosePoint, Vector3 topRightAwayPoint, float sideLength)
         {
             if (bottomLeftClosePoint.X > topRightAwayPoint.X)
                 throw new ArgumentException(String.Format("First input must be on the left of the second input. Instead, {0} > {1} was provided", bottomLeftClosePoint.X, topRightAwayPoint.X));
@@ -41,23 +55,19 @@ namespace HammeredGame.Game.PathPlanning.Grid
             if (bottomLeftClosePoint.Z > topRightAwayPoint.Z)
                 throw new ArgumentException(String.Format("First input must be closer to origin than the second input. Instead, {0} > {1} was provided", bottomLeftClosePoint.Z, topRightAwayPoint.Z));
 
+            int nrCellsX = (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.X - topRightAwayPoint.X) / sideLength);
+            int nrCellsY = (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.Y - topRightAwayPoint.Y) / sideLength);
+            int nrCellsZ = (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.Z - topRightAwayPoint.Z) / sideLength);
+
             grid = new Vector3[Math.Max(1, nrCellsX), Math.Max(1, nrCellsY), Math.Max(1, nrCellsZ)];
             // STEP 1: Define all points in 3D space and map them to corresponding vertices.
-            FillBidirectionalMapping(sideLength);
+            FillBidirectionalMapping(bottomLeftClosePoint, sideLength);
             // STEP 2: Define the connections between the vertices.
             MakeVerticesConnections();
-
-
         }
 
-        public UniformGrid(Vector3 bottomLeftClosePoint, Vector3 topRightAwayPoint, float sideLength) :
-            this(bottomLeftClosePoint, topRightAwayPoint,
-                (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.X - topRightAwayPoint.X) / sideLength),
-                (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.Y - topRightAwayPoint.Y) / sideLength),
-                (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.Z - topRightAwayPoint.Z) / sideLength),
-                sideLength
-                )
-        { 
+        public UniformGrid(Vector3 topRightAwayPoint, float sideLength) : this(Vector3.Zero, topRightAwayPoint, sideLength)
+        {
         }
 
         public Vector3[] FindShortestPathAStar(Vector3 start, Vector3 finish, HashSet<Vector3> pointsConsidered)
@@ -105,7 +115,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
         }
 
         // Assistance function for constructor.
-        private void FillBidirectionalMapping(float sideLength)
+        private void FillBidirectionalMapping(Vector3 bottomLeftClosePoint, float sideLength)
         // Theoretically, this function can be broken into two pieces: I) fill in the grid entries II) make the mapping
         // However, it was considered to be too much of a waste to iterate through a 3D data structure twice.
         {
@@ -115,12 +125,15 @@ namespace HammeredGame.Game.PathPlanning.Grid
                 {
                     for (int k = 0; k < grid.GetLength(2); k++)
                     {
-                        grid[i, j, k] = new Vector3(i * sideLength, j * sideLength, k * sideLength); // Define 3D point
+                        grid[i, j, k] = new Vector3(bottomLeftClosePoint.X + i * sideLength,
+                                                    bottomLeftClosePoint.Y + j * sideLength,
+                                                    bottomLeftClosePoint.Z + k * sideLength); // Define 3D point
                         biMap.Add(grid[i, j, k], new Vertex()); // Make 3D mapping.
                     }
                 }
             }
         }
+
 
         // Assistance function for constructor.
         private void MakeVerticesConnections()
