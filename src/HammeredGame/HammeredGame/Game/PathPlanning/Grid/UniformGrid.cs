@@ -46,6 +46,10 @@ namespace HammeredGame.Game.PathPlanning.Grid
         {
         }
 
+        public UniformGrid(Vector3 topRightAwayPoint, float sideLength) : this(Vector3.Zero, topRightAwayPoint, sideLength)
+        {
+        }
+
         public UniformGrid(Vector3 bottomLeftClosePoint, Vector3 topRightAwayPoint, float sideLength)
         {
             if (bottomLeftClosePoint.X > topRightAwayPoint.X)
@@ -66,9 +70,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
             MakeVerticesConnections();
         }
 
-        public UniformGrid(Vector3 topRightAwayPoint, float sideLength) : this(Vector3.Zero, topRightAwayPoint, sideLength)
-        {
-        }
+        public int[] GetDimensions() { return new int[3] { grid.GetLength(0), grid.GetLength(1), grid.GetLength(2) }; }
 
         public Vector3[] FindShortestPathAStar(Vector3 start, Vector3 finish, HashSet<Vector3> pointsConsidered)
         {
@@ -93,6 +95,29 @@ namespace HammeredGame.Game.PathPlanning.Grid
             return shortestPath;
 
         }
+
+        public Vector3[] FindShortesPathAStar(Vector3 start, Vector3 finish, bool[, ,] mask)
+        {
+            if (mask.GetLength(0) != grid.GetLength(0) || mask.GetLength(1) != grid.GetLength(1) || mask.GetLength(2) != grid.GetLength(2))
+                throw new ArgumentException("The mask provided is not the same dimensions as the grid");
+
+            HashSet<Vector3> pointsConsidered = new HashSet<Vector3>();
+
+            for (int i = 0; i < grid.GetLength(0); ++i)
+            {
+                for (int j = 0; j < grid.GetLength(1); ++j)
+                {
+                    for (int k = 0; k < grid.GetLength(2); ++k)
+                    {
+                        if (mask[i, j, k]) { pointsConsidered.Add(grid[i, j, k]); }
+                    }
+                }
+            }
+
+
+            return FindShortestPathAStar(start, finish, pointsConsidered);
+        }
+
 
         public Vector3[] FindShortestPathAStar(Vector3 start, Vector3 finish)
         {
@@ -166,6 +191,9 @@ namespace HammeredGame.Game.PathPlanning.Grid
                 }
             }
         }
+
+
+
 
 
 
