@@ -16,7 +16,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
 
         public UniformGrid(int nrCellsX, int nrCellsY, int nrCellsZ, float sideLength)
         {
-            grid = new Vector3[nrCellsX, nrCellsY, nrCellsZ];
+            grid = new Vector3[Math.Max(1, nrCellsX), Math.Max(1, nrCellsY), Math.Max(1, nrCellsZ)];
             // STEP 1: Define all points in 3D space and map them to corresponding vertices.
             FillBidirectionalMapping(sideLength);
             // STEP 2: Define the connections between the vertices.
@@ -41,7 +41,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
             if (bottomLeftClosePoint.Z > topRightAwayPoint.Z)
                 throw new ArgumentException(String.Format("First input must be closer to origin than the second input. Instead, {0} > {1} was provided", bottomLeftClosePoint.Z, topRightAwayPoint.Z));
 
-            grid = new Vector3[nrCellsX, nrCellsY, nrCellsZ];
+            grid = new Vector3[Math.Max(1, nrCellsX), Math.Max(1, nrCellsY), Math.Max(1, nrCellsZ)];
             // STEP 1: Define all points in 3D space and map them to corresponding vertices.
             FillBidirectionalMapping(sideLength);
             // STEP 2: Define the connections between the vertices.
