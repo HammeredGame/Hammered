@@ -27,6 +27,8 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
 
+            Get<Laser>("laser1").SetLaserDefaultScale(2.0f);
+
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
             //     services.GetService<ScriptUtils>.WaitSeconds(5);
