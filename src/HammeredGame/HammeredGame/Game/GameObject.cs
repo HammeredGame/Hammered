@@ -202,7 +202,7 @@ namespace HammeredGame.Game
         /// Get the world matrix for the object's current position in the world. Mainly used for drawing.
         /// </summary>
         /// <returns></returns>
-        public Matrix GetWorldMatrix()
+        public virtual Matrix GetWorldMatrix()
         {
             Matrix rotationMatrix = Matrix.CreateFromQuaternion(Rotation);
             // For translation, include the model's origin offset so that the collision body
