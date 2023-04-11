@@ -13,6 +13,8 @@ class HelloWorld
 
         double inf = double.PositiveInfinity;
 
+        // Graph example taken from https://www.youtube.com/watch?v=ySN5Wnu88nE&t=242s&ab_channel=Computerphile
+
         Vertex s = new Vertex("S", 0, 10), a = new Vertex("A", inf, 9), b = new Vertex("B", inf, 7),
                 c = new Vertex("C", inf, 8), d = new Vertex("D", inf, 8), e = new Vertex("E", inf, 0),
                 f = new Vertex("F", inf, 6), g = new Vertex("G", inf, 3), h = new Vertex("H", inf, 6),
@@ -21,49 +23,48 @@ class HelloWorld
 
         HashSet<Vertex> vertices = new HashSet<Vertex>(new[] { s, a, b, c, d, e, f, g, h, i, j, k, l });
 
-        Edge SA = new Edge(7, a), SB = new Edge(2, b), SC = new Edge(3, c);
+        Edge SA = new Edge(a, 7), SB = new Edge(b, 2), SC = new Edge(c, 3);
         LinkedList<Edge> sEdges = new LinkedList<Edge>(new[] { SA, SB, SC }); s.Edges = sEdges;
 
-        Edge AB = new Edge(3, b), AD = new Edge(4, d), AS = new Edge(7, s);
+        Edge AB = new Edge(b, 3), AD = new Edge(d, 4), AS = new Edge(s, 7);
         LinkedList<Edge> aEdges = new LinkedList<Edge>(new[] { AB, AD, AS }); a.Edges = aEdges;
 
-        Edge BA = new Edge(3, a), BD = new Edge(4, d), BH = new Edge(1, h), BS = new Edge(2, s);
+        Edge BA = new Edge(a, 3), BD = new Edge(d, 4), BH = new Edge(h, 1), BS = new Edge(s, 2);
         LinkedList<Edge> bEdges = new LinkedList<Edge>(new[] { BA, BD, BH, BS }); b.Edges = bEdges;
 
-        Edge CL = new Edge(2, l), CS = new Edge(3, s);
+        Edge CL = new Edge(l, 2), CS = new Edge(s, 3);
         LinkedList<Edge> cEdges = new LinkedList<Edge>(new[] { CL, CS }); c.Edges = cEdges;
 
-        Edge DF = new Edge(5, f), DB = new Edge(4, b), DA = new Edge(4, a);
+        Edge DF = new Edge(f, 5), DB = new Edge(b, 4), DA = new Edge(a, 4);
         LinkedList<Edge> dEdges = new LinkedList<Edge>(new[] { DF, DB, DA }); d.Edges = dEdges;
 
-        Edge EG = new Edge(2, g), EK = new Edge(5, k);
+        Edge EG = new Edge(g, 2), EK = new Edge(k, 5);
         LinkedList<Edge> eEdges = new LinkedList<Edge>(new[] { EG, EK }); e.Edges = eEdges;
 
-        Edge FD = new Edge(5, d), FH = new Edge(3, h);
+        Edge FD = new Edge(d, 5), FH = new Edge(h, 3);
         LinkedList<Edge> fEdges = new LinkedList<Edge>(new[] { FD, FH }); f.Edges = fEdges;
 
-        Edge GH = new Edge(2, h), GE = new Edge(2, e);
+        Edge GH = new Edge(h, 2), GE = new Edge(e, 2);
         LinkedList<Edge> gEdges = new LinkedList<Edge>(new[] { GH, GE }); g.Edges = gEdges;
 
-        Edge HG = new Edge(2, g), HF = new Edge(3, f), HB = new Edge(1, b);
+        Edge HG = new Edge(g, 2), HF = new Edge(f, 3), HB = new Edge(b, 1);
         LinkedList<Edge> hEdges = new LinkedList<Edge>(new[] { HG, HF, HB }); h.Edges = hEdges;
 
-        Edge IJ = new Edge(6, j), IK = new Edge(4, k), IL = new Edge(4, l);
+        Edge IJ = new Edge(j, 6), IK = new Edge(k, 4), IL = new Edge(l, 4);
         LinkedList<Edge> iEdges = new LinkedList<Edge>(new[] { IJ, IK, IL }); i.Edges = iEdges;
 
-        Edge JK = new Edge(4, k), JL = new Edge(4, l), JI = new Edge(6, i);
+        Edge JK = new Edge(k, 4), JL = new Edge(l, 4), JI = new Edge(i, 6);
         LinkedList<Edge> jEdges = new LinkedList<Edge>(new[] { JK, JL, JI }); j.Edges = jEdges;
 
-        Edge KE = new Edge(5, e), KI = new Edge(4, i), KJ = new Edge(4, j);
+        Edge KE = new Edge(e, 5), KI = new Edge(i, 4), KJ = new Edge(j, 4);
         LinkedList<Edge> kEdges = new LinkedList<Edge>(new[] { KE, KI, KJ }); k.Edges = kEdges;
 
-        Edge LI = new Edge(4, i), LJ = new Edge(4, j), LC = new Edge(2, c);
+        Edge LI = new Edge(i, 4), LJ = new Edge(j, 4), LC = new Edge(c, 2);
         LinkedList<Edge> lEdges = new LinkedList<Edge>(new[] { LI, LJ, LC }); l.Edges = lEdges;
 
         Graph graph = new Graph(vertices);
 
-        AStarAlgorithm test = new AStarAlgorithm();
-        Stack<Vertex> result = test.getMinimumPath(s, e, graph);
+        Stack<Vertex> result = AStarAlgorithm.GetMinimumPath(s, e, graph);
 
         while (result.Count > 0)
         {
