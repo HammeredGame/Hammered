@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using BEPUphysics.CollisionTests;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles
 {
@@ -80,7 +81,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
 
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
-                this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
+                this.Entity.CollisionInformation.Events.PairRemoved += Events_PairRemoved;
             }
 
             // Set the default state / variables
@@ -90,7 +91,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.laserScale = this.Scale;
         }
 
-        private void Events_CollisionEnded(EntityCollidable sender, Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        private void Events_PairRemoved(EntityCollidable sender, BroadPhaseEntry other)
         {
             //This type of event can occur when an entity hits any other object which can be collided with.
             //They aren't always entities; for example, hitting a StaticMesh would trigger this.
@@ -100,7 +101,23 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 if (other.Tag is ObstacleObject)
                 {
-                    this.ReturnToDefaultLength();
+                    List<BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler> validPairs = new();
+                    foreach (var pair in sender.Pairs)
+                    {
+                        if (pair.EntityA == null || pair.EntityB == null)
+                            continue;
+
+                        if (pair.EntityA.CollisionInformation.Tag is ObstacleObject && pair.EntityB.CollisionInformation.Tag is ObstacleObject)
+                        {
+                            validPairs.Add(pair);
+                        }
+                    }
+
+                    if (validPairs.Count <= 0)
+                    {
+                        this.ReturnToDefaultLength();
+                    }
+                    //this.ReturnToDefaultLength();
                 }
             }
         }
@@ -115,13 +132,25 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 if (other.Tag is ObstacleObject)
                 {
-                    //pair.Contacts[0].Contact.Position;
-                    BEPUutilities.Vector3 pointOfContact = pair.Contacts[0].Contact.Position;
-                    float dist = (pointOfContact - MathConverter.Convert(this.Position)).Length();
-                    float scale = dist / this.laserDefaultLength;
-                    if (scale < this.laserScale)
-                        this.SetLaserDynamicScale(scale);
-                    
+                    float maxScale = 0f;
+                    foreach (var contact in pair.Contacts)
+                    {
+                        BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
+                        float dist = (pointOfContact - MathConverter.Convert(this.Position)).Length();
+                        float scale = (this.laserDefaultScale * dist) / this.laserDefaultLength;
+                        maxScale = Math.Max(maxScale, scale);
+                    }
+
+                    if (maxScale < this.laserScale)
+                        this.SetLaserDynamicScale(maxScale);
+                    //BEPUutilities.Vector3 pointOfContact = pair.Contacts[0].Contact.Position;
+                    //float dist = (pointOfContact - MathConverter.Convert(this.Position)).Length();
+                    //float scale = (this.laserDefaultScale * dist) / this.laserDefaultLength;
+                    //if (scale < this.laserScale)
+                    //    this.SetLaserDynamicScale(scale);
+                    (this.Entity as Box).Height *= this.laserScale / this.laserDefaultScale;
+                    this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, (this.Entity as Box).HalfHeight, 0);
+
                 }
             }
         }
@@ -138,16 +167,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         public void SetLaserDefaultScale(float scale)
         {
-            this.laserDefaultScale = scale;
             this.SetLaserDynamicScale(scale);
+            (this.Entity as Box).Height *= this.laserScale / this.laserDefaultScale;
+            this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, (this.Entity as Box).HalfHeight, 0);
+            this.laserDefaultScale = scale;
             this.laserDefaultLength = (this.Entity as Box).Height;
         }
 
         private void SetLaserDynamicScale(float scale)
         {
             this.laserScale = scale;
-            (this.Entity as Box).Height *= scale;
-            this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, (this.Entity as Box).HalfHeight, 0);
         }
 
         private void ReturnToDefaultLength()
