@@ -22,7 +22,7 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
         /// The elements "Edges" will be only accessed sequentally during the execution of the A* algorithm.
         /// Therefore a <c>LinkedList</c> data structure will suffice.
         /// </value>
-        public LinkedList<Edge> Edges { get; set; }
+        public LinkedList<Edge> Edges { get; set; } = new LinkedList<Edge>();
 
         private static string IncrementNumberIn(string s)
         {
