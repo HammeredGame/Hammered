@@ -8,6 +8,9 @@ using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Net.Mime;
+using System;
+using System.IO;
 
 namespace HammeredGame.Game
 {
@@ -37,6 +40,10 @@ namespace HammeredGame.Game
     {
         // Common variables for any object in the game
         public Model Model;
+
+        // Load in shader
+        public Effect Effect;
+        protected GraphicsDevice GPU;
 
         public Texture2D Texture;
         private Vector3 position;
@@ -102,6 +109,11 @@ namespace HammeredGame.Game
             this.Texture = t;
 
             this.ActiveSpace = services.GetService<Space>();
+            this.GPU = services.GetService<GraphicsDevice>();
+
+            // Load in Shader
+            var shaderPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\Content\\Effects\\basic.mgfx");
+            this.Effect = new Effect(GPU, File.ReadAllBytes(shaderPath));
 
             if (this.Model != null && model.GetAnimations() == null)
             {
@@ -148,6 +160,56 @@ namespace HammeredGame.Game
         /// <param name="projection"></param>
         /// <param name="tex"></param>
         public void DrawModel(Model model, Matrix view, Matrix projection, Texture2D tex)
+        {
+            DrawModeShader(model, view, projection);
+            //DrawModeBasic(model, view, projection, tex);
+        }
+
+        /// <summary>
+        /// Common method to draw 3D models
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="view"></param>
+        /// <param name="projection"></param>
+        /// <param name="tex"></param>
+        public void DrawModeShader(Model model, Matrix view, Matrix projection)
+        {
+            Matrix world = GetWorldMatrix();
+
+            Matrix[] meshTransforms = new Matrix[model.Bones.Count];
+            model.CopyAbsoluteBoneTransformsTo(meshTransforms);
+
+            foreach (ModelMesh mesh in model.Meshes)
+            {
+                foreach (ModelMeshPart part in mesh.MeshParts)
+                {
+                    // Load in the shader and set its parameters
+                    part.Effect = this.Effect;
+                    this.Effect.Parameters["World"].SetValue(world * mesh.ParentBone.Transform);
+                    this.Effect.Parameters["View"].SetValue(view);
+                    this.Effect.Parameters["Projection"].SetValue(projection);
+
+                    // Precompute the inverse transpose of the world matrix to use in shader
+                    Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
+                    this.Effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTranspose);
+
+                    // Set light parameters
+                    this.Effect.Parameters["AmbientColor"].SetValue(new Vector3(0.5f, 0.5f, 0.5f));
+                    this.Effect.Parameters["DiffuseLightDirection"].SetValue(Vector3.Normalize(new Vector3(1, -1, 0)));
+                    this.Effect.Parameters["DiffuseColor"].SetValue(Vector3.One * 0.7f);
+                }
+                mesh.Draw();
+            }
+        }
+
+        /// <summary>
+        /// Common method to draw 3D models
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="view"></param>
+        /// <param name="projection"></param>
+        /// <param name="tex"></param>
+        public void DrawModeBasic(Model model, Matrix view, Matrix projection, Texture2D tex)
         {
             Matrix world = GetWorldMatrix();
 
