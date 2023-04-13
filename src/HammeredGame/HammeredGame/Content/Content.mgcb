@@ -10,6 +10,15 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\Animation.dll
+/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\AnimationImporters.dll
+/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\Atlas.dll
+/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\AtlasImporter.dll
+/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\DDSImporter.dll
+/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\Graphics.dll
+/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\GraphicsImporters.dll
+/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\RawModelProcessor.dll
+/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\SLMCImporter.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -118,6 +127,30 @@
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:character-merged.fbx
+
+#begin character-walking-with-hammer.fbx
+/importer:FbxImporter
+/processor:CpuAnimatedModelProcessor
+/processorParam:VertexBufferType=Default
+/processorParam:IndexBufferType=Default
+/processorParam:MaxBones=72
+/processorParam:GenerateKeyframesFrequency=0
+/processorParam:FixRealBoneRoot=False
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=0.1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:character-walking-with-hammer.fbx
 
 #begin cube.fbx
 /importer:FbxImporter
