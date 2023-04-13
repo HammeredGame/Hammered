@@ -17,6 +17,8 @@ using BEPUutilities.Threading;
 using System;
 using BEPUphysics.Entities.Prefabs;
 using Microsoft.Xna.Framework.Content;
+using Aether.Animation;
+using System.Diagnostics;
 
 namespace HammeredGame
 {
@@ -31,6 +33,8 @@ namespace HammeredGame
         private SpriteBatch spriteBatch;
         private GraphicsDevice gpu;
         public int ScreenW, ScreenH;
+
+        private Animations animations;
 
         public static ParallelLooper ParallelLooper;
 
@@ -137,6 +141,10 @@ namespace HammeredGame
 
             InitializeLevel("HammeredGame.Game.Scenes.Island1.ShoreWakeup");
 
+            animations = currentScene.Get<GameObject>("player1").Model.GetAnimations();
+            var clip = animations.Clips["Armature|Armature|mixamo.com|Layer0"];
+            animations.SetClip(clip);
+
             bgMusic = Content.Load<Song>("Audio/BGM_V1");
 
             MediaPlayer.IsRepeating = true;
@@ -181,6 +189,8 @@ namespace HammeredGame
                 gameObject.Update(gameTime);
             }
 
+            animations.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
+
             // Update camera
             currentScene.Camera.UpdateCamera();
 
@@ -211,6 +221,7 @@ namespace HammeredGame
             }
         }
 
+
         /// <summary>
         /// Called on each game loop after Update(). Should not contain expensive computation but
         /// rather just rendering and drawing to the GPU.
@@ -227,6 +238,26 @@ namespace HammeredGame
             // Clear the target
             gpu.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.AliceBlue, 1.0f, 0);
             Set3DStates();
+
+            // Animate player
+            Model playerModel = currentScene.Get<GameObject>("player1").Model;
+            Matrix[] transforms = new Matrix[playerModel.Bones.Count];
+            playerModel.CopyAbsoluteBoneTransformsTo(transforms);
+
+            foreach (ModelMesh mesh in playerModel.Meshes)
+            {
+                foreach (var part in mesh.MeshParts)
+                {
+                    ((BasicEffect)part.Effect).SpecularColor = Vector3.Zero;
+                    //((SkinnedEffect)part.Effect).SpecularColor = Vector3.Zero;
+                    //ConfigureEffectMatrices((IEffectMatrices)part.Effect, Matrix.Identity, currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
+                    //ConfigureEffectLighting((IEffectLights)part.Effect);
+
+                    part.UpdateVertices(animations.AnimationTransforms); // animate vertices on CPU
+                    //((SkinnedEffect)part.Effect).SetBoneTransforms(animations.AnimationTransforms);// animate vertices on GPU
+                }
+                mesh.Draw();
+            }
 
             // Render all the scene objects (given that they are not destroyed)
             foreach (GameObject gameObject in currentScene.GameObjectsList)
@@ -273,6 +304,23 @@ namespace HammeredGame
             // Call AfterLayout to finish.
             imGuiRenderer.AfterLayout();
 #endif
+        }
+
+        private void ConfigureEffectMatrices(IEffectMatrices effect, Matrix world, Matrix view, Matrix projection)
+        {
+            effect.World = world;
+            effect.View = view;
+            effect.Projection = projection;
+        }
+
+        private void ConfigureEffectLighting(IEffectLights effect)
+        {
+            effect.EnableDefaultLighting();
+            effect.DirectionalLight0.Direction = Vector3.Backward;
+            effect.DirectionalLight0.Enabled = true;
+            effect.DirectionalLight1.Enabled = false;
+            effect.DirectionalLight2.Enabled = false;
+            effect.AmbientLightColor = Vector3.One;
         }
 
         // Prepare the entities for debugging visualization

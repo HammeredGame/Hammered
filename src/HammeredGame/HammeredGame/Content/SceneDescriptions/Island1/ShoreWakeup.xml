@@ -20,7 +20,7 @@
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
-    <model>character-colored</model>
+    <model>character-walking-with-hammer</model>
     <position>122.093 12.271 27.020</position>
     <rotation>0.000 0.924 0.000 0.383</rotation>
     <scale>1.000</scale>
