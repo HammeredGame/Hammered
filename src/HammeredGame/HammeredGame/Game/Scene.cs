@@ -287,12 +287,20 @@ namespace HammeredGame.Game
                                 // Generate a new name for the object
                                 string name = GenerateUniqueNameWithPrefix(gameObject.GetType().Name.ToLower());
 
+                                // Copy the entity
+                                Entity entity = null;
+                                if (gameObject.Entity is Box box) {
+                                    entity = new Box(box.Position, box.Width, box.Height, box.Length, box.Mass);
+                                } else if (gameObject.Entity is Sphere sph)
+                                {
+                                    entity = new Sphere(sph.Position, sph.Radius, sph.Mass);
+                                }
                                 // We want to call Create<T>() with T being the type of gameObject.
                                 // However, we can't use variables for generic type parameters, so
                                 // instead we will create a specific version of the method and invoke it
                                 // manually. This causes some changes to how variadic "params dynamic[]"
                                 // behaves, outlined below.
-                                GetType().GetMethod(nameof(Create)).MakeGenericMethod(gameObject.GetType()).Invoke(this, new object[] {
+                                GameObject newObj = (GameObject)GetType().GetMethod(nameof(Create)).MakeGenericMethod(gameObject.GetType()).Invoke(this, new object[] {
                                     name,
                                     new object[] {
                                         Services,
@@ -303,9 +311,12 @@ namespace HammeredGame.Game
                                         gameObject.Texture,
                                         gameObject.Position,
                                         gameObject.Rotation,
-                                        gameObject.Scale
+                                        gameObject.Scale,
+                                        entity
                                     }
                                 });
+                                // Apply the same model offset as the original
+                                newObj.EntityModelOffset = gameObject.EntityModelOffset;
 
                                 // Set sidebar focus to created object
                                 objectListCurrentSelection = name;
