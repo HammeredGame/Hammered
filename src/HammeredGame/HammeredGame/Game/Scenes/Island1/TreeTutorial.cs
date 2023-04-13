@@ -20,7 +20,7 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
-                Services.GetService<HammeredGame>().InitializeLevel(typeof(TwoIslandPuzzle).FullName);
+                // Services.GetService<HammeredGame>().InitializeLevel(typeof(TwoIslandPuzzle).FullName);
             };
 
             // Get<Player>("player").OnMove += async _ => {
