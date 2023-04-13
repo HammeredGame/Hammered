@@ -43,7 +43,7 @@ namespace HammeredGame.Game
 
             var label1 = new Label
             {
-                Text = "Hammered",
+                Text = "PAUSED",
                 TextColor = Color.White,
                 Font = skranjiFontSystem.GetFont(oneLineHeight * 1.5f),
                 Margin = new Thickness(100, oneLineHeight, 0, 0),
@@ -90,7 +90,7 @@ namespace HammeredGame.Game
                 Background = new SolidBrush("#00000000"),
                 Border = new SolidBrush("#00000000"),
                 Id = "_mainMenu",
-                Margin = new Thickness(100, oneLineHeight),
+                Margin = new Thickness(100, (int)(oneLineHeight * 0.5f)),
                 LabelFont = barlowFontSystem.GetFont(oneLineHeight),
             };
             mainMenu.Items.Add(menuItemContinue);
