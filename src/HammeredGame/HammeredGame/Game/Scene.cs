@@ -110,7 +110,9 @@ namespace HammeredGame.Game
 
         /// <summary>
         /// Remove an object in the scene by a unique identifier. Also removes the associated entity
-        /// (if there is one) from the active physics space.
+        /// (if there is one) from the active physics space. Unfortunately this won't remove terrain
+        /// StaticMeshes in the physics space since they're not entities nor are they tied to the
+        /// game object, but hopefully it's rare that a terrain needs to be Remove()-ed.
         /// </summary>
         /// <param name="name">The unique identifier to find</param>
         /// <returns>Whether the removal was successful or not</returns>
@@ -119,7 +121,10 @@ namespace HammeredGame.Game
             if (GameObjects.ContainsKey(name))
             {
                 Entity associatedEntity = Get<GameObject>(name)?.Entity;
-                Space.Remove(associatedEntity);
+                if (associatedEntity != null)
+                {
+                    Space.Remove(associatedEntity);
+                }
                 return GameObjects.Remove(name);
             }
             return false;
@@ -323,6 +328,7 @@ namespace HammeredGame.Game
                         if (openDeletionConfirmation)
                         {
                             ImGui.OpenPopup("object_deletion_confirmation_" + key);
+                            openDeletionConfirmation = false;
                         }
 
                         // The confirmation popup to show. This has to be in the UI tree always

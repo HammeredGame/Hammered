@@ -44,7 +44,7 @@ namespace HammeredGame.Game.GameObjects
     public class Player : GameObject, IImGui
     {
         // Private variables specific to the player class
-        private float baseSpeed = 20f;
+        private float baseSpeed = 50f;
 
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
