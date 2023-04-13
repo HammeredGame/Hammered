@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ImGuiNET;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
@@ -50,17 +51,18 @@ namespace HammeredGame.Core
                 Screen screen = screensWorkingCopy[i];
                 screen.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
-                if (screen.IsExiting)
-                {
-                    RemoveScreen(screen);
-                }
-                else if (screen.State == ScreenState.Active)
+                if (screen.State == ScreenState.Active)
                 {
                     otherScreenHasFocus = true;
                     if (!screen.IsPartial)
                     {
                         coveredByOtherScreen = true;
                     }
+                }
+
+                if (screen.IsExiting)
+                {
+                    RemoveScreen(screen);
                 }
             }
         }
@@ -91,6 +93,7 @@ namespace HammeredGame.Core
 
         public void UI()
         {
+            ImGui.TextWrapped($"Current screen stack: {System.String.Join(", ", screens)}");
             foreach (Screen screen in screens)
             {
                 if (screen.State != ScreenState.Hidden)
