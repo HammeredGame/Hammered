@@ -82,9 +82,9 @@ namespace HammeredGame.Game
 
             VerticalMenu mainMenu = new()
             {
-                LabelColor = Color.White,
-                SelectionHoverBackground = new SolidBrush("#f665ffFF"),
-                SelectionBackground = new SolidBrush("#f665ffFF"),
+                LabelColor = new Color(255, 255, 255, 198),
+                SelectionHoverBackground = new SolidBrush("#00000000"),
+                SelectionBackground = new SolidBrush("#00000000"),
                 LabelHorizontalAlignment = HorizontalAlignment.Left,
                 HoverIndexCanBeNull = false,
                 Background = new SolidBrush("#00000000"),
@@ -151,9 +151,11 @@ namespace HammeredGame.Game
                     if (menuItem.Index == mainMenu.HoverIndex && menuItem.Text[0] != '>')
                     {
                         menuItem.Text = "> " + menuItem.Text;
+                        menuItem.Color = new Color(246, 101, 255);
                     } else if (menuItem.Index != mainMenu.HoverIndex && menuItem.Text[0] == '>')
                     {
                         menuItem.Text = menuItem.Text.Substring(2);
+                        menuItem.Color = new Color(255, 255, 255, 198);
                     }
                 }
             }
