@@ -48,7 +48,7 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Hammer specific variables
-        private float hammerSpeed = 10f;
+        private float hammerSpeed = 7f;
         private HammerState hammerState;
 
         public Vector3 OldPosition { get; private set; }

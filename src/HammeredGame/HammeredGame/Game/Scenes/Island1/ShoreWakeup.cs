@@ -1,5 +1,6 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 
 namespace HammeredGame.Game.Scenes.Island1
 {

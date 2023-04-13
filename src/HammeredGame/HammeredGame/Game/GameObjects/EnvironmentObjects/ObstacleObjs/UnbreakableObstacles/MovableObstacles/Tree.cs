@@ -75,34 +75,35 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
-                this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
+                //this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
                 //this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
-                this.Entity.CollisionInformation.Events.RemovingPair += Events_RemovingPair;
+                //this.Entity.CollisionInformation.Events.RemovingPair += Events_RemovingPair;
             }
         }
 
-        private void Events_RemovingPair(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.BroadPhaseEntry other)
-        {
-            if (other.Tag is Player && treeFallen)
-            {
-                var player = other.Tag as Player;
-                this.playerOnTree = false;
-                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, 0.0f, player.Entity.Position.Z);
-            }
-        }
+        //private void Events_RemovingPair(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.BroadPhaseEntry other)
+        //{
+        //    if (other.Tag is Player && treeFallen)
+        //    {
+        //        var player = other.Tag as Player;
+        //        this.playerOnTree = false;
+        //        player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, 0.0f, player.Entity.Position.Z);
+        //    }
+        //}
 
-        private void Events_PairTouching(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
-        {
-            if (other.Tag is Player && treeFallen)
-            {
-                var player = other.Tag as Player;
-                this.playerOnTree = true;
-                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, player.Entity.Position.Y + 0.1f, player.Entity.Position.Z);
-            }
-        }
+        //private void Events_PairTouching(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        //{
+        //    if (other.Tag is Player && treeFallen)
+        //    {
+        //        var player = other.Tag as Player;
+        //        this.playerOnTree = true;
+        //        player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, player.Entity.Position.Y + 0.1f, player.Entity.Position.Z);
+        //    }
+        //}
 
         private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
+            // Make the tree fall (currently falls 90 degrees in the direction of hammer movement
             if (other.Tag is Hammer && !treeFallen)
             {
                 var hammer = other.Tag as Hammer;
@@ -111,15 +112,22 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 sender.Entity.Orientation *= BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection), BEPUutilities.MathHelper.ToRadians(90));
                 SetTreeFallen(true);
             }
-        }
 
-        private void Events_CollisionEnded(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
-        {
+            // If tree is fallen, player can walk on top of the tree
+            // Currently designed as: player's Y = maxY + bbox width
+            // maxY calculated as the max of either player's current Y or
+            // the contact position's Y
             if (other.Tag is Player && treeFallen)
             {
                 var player = other.Tag as Player;
-                this.playerOnTree = false;
-                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, 0.0f, player.Entity.Position.Z);
+                float maxY = player.Entity.Position.Y;
+                foreach (var contact in pair.Contacts)
+                {
+                    BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
+                    maxY = Math.Max(maxY, pointOfContact.Y);
+                }
+
+                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).Width, player.Entity.Position.Z);
             }
         }
 
@@ -128,8 +136,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.treeFallen = treeFallen;
             if (this.Entity != null)
             {
-                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+                (this.Entity as Box).Width *= 1.2f;
+                (this.Entity as Box).Length *= 1.2f;
+                //this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
             }
+        }
+
+        public bool IsTreeFallen()
+        {
+            return this.treeFallen;
         }
 
         //public override void TouchingHammer(Hammer hammer)
