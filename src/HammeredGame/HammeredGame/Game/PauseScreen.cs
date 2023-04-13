@@ -115,6 +115,11 @@ namespace HammeredGame.Game
                 mainMenu.HoverIndex = (mainMenu.HoverIndex - MathF.Sign(input.GamePadState.ThumbSticks.Left.Y) + mainMenu.Items.Count) % mainMenu.Items.Count;
             }
 
+            if (!otherScreenHasFocus && input.ButtonPress(Buttons.A))
+            {
+                ((desktop.Root as Grid)?.Widgets[1] as VerticalMenu)?.OnKeyDown(Keys.Enter);
+            }
+
         }
 
         public override void Draw(GameTime gameTime)
