@@ -1,6 +1,6 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using HammeredGame.Game.GameObjects.EmptyGameObjects;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -16,6 +16,11 @@ namespace HammeredGame.Game.Scenes.Island1
         {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
+
+            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            {
+                Services.GetService<HammeredGame>().InitializeLevel(typeof(TreeTutorial).FullName);
+            };
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
