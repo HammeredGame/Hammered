@@ -26,12 +26,17 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     ///     -- blocks hammer, but not the player -> <code>LaserState.HammerBlocking</code>
     ///     -- blocks player, but not the hammer -> <code>LaserState.PlayerBlocking</code>
     ///     
+    /// - The default length of the laser -> <code>float laserDefaultLength</code>
+    ///     -- This is the default start length of the laser (at the start, and the value to return 
+    ///         the entity height to when unobstructed)
+    ///        
+    /// - The default scale of the laser -> <code>float laserDefaultScale</code>
+    ///     -- This is the default starting scale of the laser (at the start, and the value to return
+    ///        the draw scale to when unobstructed)
+    ///     
     /// - The current scale of the laser -> <code>float laserScale</code>
     ///     -- This gets modified as obstacles collide with the laser
     /// 
-    /// - The default length of the laser -> <code>float laserDefaultLength</code>
-    ///     -- This is the default start length of the laser (at the start, and the value to return to
-    ///        when unobstructed
     /// <para/>
     /// </summary>
     ///
@@ -40,10 +45,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     /// REMINDER (class tree): GameObject -> EnvironmentObject -> ObstacleObject -> UnbreakableObstacle
     ///                         -> ImmovableObstacle
     /// <para />
-    /// TODO: The laser's collision handling is not quite robust. (it works alright if we have one obstacle blocking
-    /// it, but doesn't work as intended with multiple obstacles blocking it). Possibly need to play around with 
-    /// the different collision handlers.
-    /// <para/>
+    /// TODO: Currently, the laser is defined as a vertical cylinder. So, when scaling up and down to simulate
+    /// the blocking of the laser, the y-component of the scale is modified (see the overloaded Draw function).
+    /// According to how the final laser mesh is built, this would need to be appropriately modified.
+    /// <para />
     /// 
     /// TODO: Currently, the code only handles the default state of the laser (full blocking). Additionally, it does
     /// not handle any rotating laser functionality.
@@ -75,7 +80,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.Entity.Tag = "ImmovableObstacleBounds";
                 this.Entity.CollisionInformation.Tag = this;
                 this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
-                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
                 this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, (this.Entity as Box).HalfHeight, 0);
                 this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
                 this.ActiveSpace.Add(this.Entity);
@@ -132,22 +137,17 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 if (other.Tag is ObstacleObject)
                 {
-                    float maxScale = 0f;
+                    float minScale = 1000f;
                     foreach (var contact in pair.Contacts)
                     {
                         BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
                         float dist = (pointOfContact - MathConverter.Convert(this.Position)).Length();
                         float scale = (this.laserDefaultScale * dist) / this.laserDefaultLength;
-                        maxScale = Math.Max(maxScale, scale);
+                        minScale = Math.Min(minScale, scale);
                     }
 
-                    if (maxScale < this.laserScale)
-                        this.SetLaserDynamicScale(maxScale);
-                    //BEPUutilities.Vector3 pointOfContact = pair.Contacts[0].Contact.Position;
-                    //float dist = (pointOfContact - MathConverter.Convert(this.Position)).Length();
-                    //float scale = (this.laserDefaultScale * dist) / this.laserDefaultLength;
-                    //if (scale < this.laserScale)
-                    //    this.SetLaserDynamicScale(scale);
+                    if (minScale < this.laserScale) this.SetLaserDynamicScale(minScale);
+
                     (this.Entity as Box).Height *= this.laserScale / this.laserDefaultScale;
                     this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, (this.Entity as Box).HalfHeight, 0);
 

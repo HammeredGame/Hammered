@@ -307,6 +307,9 @@
 /processorParam:TextureFormat=Compressed
 /build:rock.fbx
 
+#begin SceneDescriptions/Island1/LaserRockTest.xml
+/copy:SceneDescriptions/Island1/LaserRockTest.xml
+
 #begin SceneDescriptions/Island1/ShoreWakeup.xml
 /copy:SceneDescriptions/Island1/ShoreWakeup.xml
 
