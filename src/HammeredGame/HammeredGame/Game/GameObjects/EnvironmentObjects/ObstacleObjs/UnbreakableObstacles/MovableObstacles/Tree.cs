@@ -103,6 +103,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
+            // Make the tree fall (currently falls 90 degrees in the direction of hammer movement
             if (other.Tag is Hammer && !treeFallen)
             {
                 var hammer = other.Tag as Hammer;
@@ -112,6 +113,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 SetTreeFallen(true);
             }
 
+            // If tree is fallen, player can walk on top of the tree
+            // Currently designed as: player's Y = maxY + bbox width
+            // maxY calculated as the max of either player's current Y or
+            // the contact position's Y
             if (other.Tag is Player && treeFallen)
             {
                 var player = other.Tag as Player;
@@ -122,7 +127,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     maxY = Math.Max(maxY, pointOfContact.Y);
                 }
 
-                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + 2f, player.Entity.Position.Z);
+                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).Width, player.Entity.Position.Z);
             }
         }
 

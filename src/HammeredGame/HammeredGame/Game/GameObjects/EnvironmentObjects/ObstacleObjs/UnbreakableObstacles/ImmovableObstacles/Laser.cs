@@ -65,7 +65,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             PlayerBlocking
         }
 
-        // Default variables (should ideally only be modified at level setup)
+        // Default variables (should ideally only be modified at level/scene setup)
         private float laserDefaultLength;
         private float laserDefaultScale;
 
@@ -106,6 +106,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 if (other.Tag is ObstacleObject)
                 {
+                    // find all valid contact pairs between obstacles
+                    // if there are no more such valid pairs, then reset the laser to default length
+
                     List<BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler> validPairs = new();
                     foreach (var pair in sender.Pairs)
                     {
@@ -122,7 +125,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     {
                         this.ReturnToDefaultLength();
                     }
-                    //this.ReturnToDefaultLength();
                 }
             }
         }
@@ -137,6 +139,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 if (other.Tag is ObstacleObject)
                 {
+                    // Go through the pair contact points to find the closest contact point
+                    // from the start of the laser - to calculate the re-scaling factor
+                    // of the laser
                     float minScale = 1000f;
                     foreach (var contact in pair.Contacts)
                     {
