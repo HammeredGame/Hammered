@@ -236,10 +236,13 @@ namespace HammeredGame
 
             if (drawBounds)
             {
+                RasterizerState currentRS = gpu.RasterizerState;
+                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
                 foreach (EntityDebugDrawer entity in debugEntities)
                 {
                     entity.Draw(gameTime, currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
                 }
+                gpu.RasterizerState = currentRS;
             }
 
             // Change the GPU target to null, which means all further draw calls will now write to

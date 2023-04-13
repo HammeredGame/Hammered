@@ -33,6 +33,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
             ModelDataExtractor.GetVerticesAndIndicesFromModel(this.Model, out vertices, out indices);
             // Give the mesh information to a new StaticMesh.
             var mesh = new StaticMesh(vertices, indices, new BEPUutilities.AffineTransform(new BEPUutilities.Vector3(scale, scale, scale), MathConverter.Convert(this.Rotation), MathConverter.Convert(this.Position)));
+            mesh.Tag = this;
 
             //Add it to the space!
             ActiveSpace.Add(mesh);
