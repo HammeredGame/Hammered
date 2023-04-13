@@ -191,16 +191,25 @@ namespace HammeredGame.Game
                     services
                 };
 
-                Model model = services.GetService<ContentManager>().Load<Model>((obj.Descendants("model").Single()).Value);
+                // Model is an optional tag (and even if it exists, could have no value) for things
+                // like trigger objects. So check if it's specified, and load it only if it is.
+                // (FirstOrDefault() returns null if it doesn't find a matching entry)
+                string modelName = obj.Descendants("model").FirstOrDefault()?.Value;
+                Model model = null;
+                if (!string.IsNullOrEmpty(modelName))
+                {
+                    model = services.GetService<ContentManager>().Load<Model>(modelName);
+                }
                 arguments.Add(model);
 
-                // Texture is an optional tag, so check if we have it first. If we don't, then pass
-                // null as the Texture. (FirstOrDefault() returns null if it doesn't find a matching entry)
-                XElement textureElement = obj.Descendants("texture").FirstOrDefault();
+                // Texture is an optional tag (and even if it exists, could have no value), so check
+                // if we have it first. If we don't, then pass null as the Texture.
+                // (FirstOrDefault() returns null if it doesn't find a matching entry)
+                string textureName = obj.Descendants("texture").FirstOrDefault()?.Value;
                 Texture2D texture = null;
-                if (textureElement != null)
+                if (!string.IsNullOrEmpty(textureName))
                 {
-                    texture = services.GetService<ContentManager>().Load<Texture2D>(textureElement.Value);
+                    texture = services.GetService<ContentManager>().Load<Texture2D>(textureName);
                 }
                 arguments.Add(texture);
 
