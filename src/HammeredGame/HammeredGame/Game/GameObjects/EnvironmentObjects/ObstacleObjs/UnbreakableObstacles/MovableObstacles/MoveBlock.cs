@@ -72,7 +72,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 if (other.Tag is Player)
                 {
                     var player = other.Tag as Player;
-                    player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, player.Entity.Position.Y + (this.Entity as Box).Width + 1.0f, player.Entity.Position.Z);
+                    float maxY = player.Entity.Position.Y;
+                    foreach (var contact in pair.Contacts)
+                    {
+                        BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
+                        maxY = Math.Max(maxY, pointOfContact.Y);
+                    }
+                    player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).Width, player.Entity.Position.Z);
                 }
 
                 return;
