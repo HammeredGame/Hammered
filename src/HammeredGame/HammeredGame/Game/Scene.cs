@@ -275,7 +275,20 @@ namespace HammeredGame.Game
                     {
                         if (ImGui.Selectable($"{key}: {gameObject.GetType().Name}", objectListCurrentSelection == key))
                         {
+                            // When item in list selected, set the selection variable used in the
+                            // details pane to show its details.
                             objectListCurrentSelection = key;
+
+                            // Also highlight the item on screen by changing its texture to red for
+                            // 500 milliseconds
+                            var currentTexture = gameObject.Texture;
+                            var redRectangle = new Texture2D(Services.GetService<GraphicsDevice>(), 1, 1);
+                            redRectangle.SetData(new[] { Color.Red });
+                            gameObject.Texture = redRectangle;
+
+                            Services.GetService<ScriptUtils>()
+                                .WaitMilliseconds(500)
+                                .ContinueWith((_) => gameObject.Texture = currentTexture);
                         }
                         // Define the menu that pops up when right clicking an object in the tree
                         if (ImGui.BeginPopupContextItem())
