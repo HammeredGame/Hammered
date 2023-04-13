@@ -4,15 +4,11 @@ using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
-using BEPUphysics.Entities;
 using BEPUutilities.Threading;
 using System;
-using BEPUphysics.Entities.Prefabs;
 using Microsoft.Xna.Framework.Content;
-using System.Diagnostics;
+using Myra;
 
 namespace HammeredGame
 {
@@ -67,6 +63,8 @@ namespace HammeredGame
                 PreferredDepthStencilFormat = DepthFormat.None,
                 GraphicsProfile = GraphicsProfile.HiDef
             };
+
+            Window.Title = "HAMMERED";
             Window.IsBorderless = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -104,8 +102,7 @@ namespace HammeredGame
                 }
             }
 
-            // Set title for game window
-            Window.Title = "HAMMERED";
+            MyraEnvironment.Game = this;
 
             //initialize audio manager
             audioManager = new AudioManager(this);
@@ -149,12 +146,6 @@ namespace HammeredGame
             gameServices.GetService<Input>().Update();
             gameServices.GetService<ScriptUtils>().Update(gameTime);
             manager.Update(gameTime);
-
-            // Check for exit input
-            if (input.BACK_DOWN || input.KeyDown(Keys.Escape)) Exit();
-
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            //    Exit();
 
             base.Update(gameTime);
         }

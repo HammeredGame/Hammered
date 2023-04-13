@@ -17,18 +17,12 @@ namespace HammeredGame
     public class GameScreen : Screen
     {
         // RENDER TARGET
-        private RenderTarget2D mainRenderTarget;
-
-        // RECTANGLES (need to modify to allow modifiable resolutions, etc.)
-        private Rectangle desktopRect;
-
         private Scene currentScene;
 
         // Music variables
         private Song bgMusic;
         private AudioListener listener = new AudioListener();
         private AudioEmitter emitter = new AudioEmitter();
-
 
         // Bounding Volume debugging variables
         private bool drawBounds = false;
@@ -40,9 +34,6 @@ namespace HammeredGame
         /// </summary>
         public override void LoadContent()
         {
-            PresentationParameters pp = ScreenManager.GraphicsDevice.PresentationParameters;
-            desktopRect = new Rectangle(0, 0, pp.BackBufferWidth, pp.BackBufferHeight);
-
             InitializeLevel("HammeredGame.Game.Scenes.Island1.ShoreWakeup");
 
             ContentManager Content = GameServices.GetService<ContentManager>();
@@ -90,6 +81,12 @@ namespace HammeredGame
                 // Reload the current scene class
                 InitializeLevel(currentScene.GetType().FullName);
             }
+
+            if (!otherScreenHasFocus && (input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape)))
+            {
+                ScreenManager.AddScreen(new PauseScreen(gameTime.TotalGameTime));
+            }
+
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             //    Exit();
 
@@ -117,7 +114,7 @@ namespace HammeredGame
         /// </summary>
         private void Set3DStates()
         {
-            GraphicsDevice gpu = GameServices.GetService<GraphicsDevice>();
+            GraphicsDevice gpu = ScreenManager.GraphicsDevice;
             gpu.BlendState = BlendState.AlphaBlend; // Potentially needs to be modified depending on our textures
             gpu.DepthStencilState = DepthStencilState.Default; // Ensure we are using depth buffer (Z-buffer) for 3D
             if (gpu.RasterizerState.CullMode == CullMode.None)
