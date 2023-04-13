@@ -1,4 +1,5 @@
-﻿using HammeredGame.Core;
+﻿using FontStashSharp;
+using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -26,19 +27,32 @@ namespace HammeredGame.Game
         {
             base.LoadContent();
 
+            // todo handle viewport resize by checking if .Height changed in Update()
+            int oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
+
             whiteRectangle = new Texture2D(ScreenManager.GraphicsDevice, 1, 1);
             whiteRectangle.SetData(new[] { Color.White });
+
+            byte[] skranjiTtfData = System.IO.File.ReadAllBytes("Content/Skranji-Regular.ttf");
+            FontSystem skranjiFontSystem = new FontSystem();
+            skranjiFontSystem.AddFont(skranjiTtfData);
+
+            byte[] barlowTtfData = System.IO.File.ReadAllBytes("Content/Barlow-Medium.ttf");
+            FontSystem barlowFontSystem = new FontSystem();
+            barlowFontSystem.AddFont(barlowTtfData);
 
             var label1 = new Label
             {
                 Text = "Hammered",
-                TextColor = Color.LightBlue,
+                TextColor = Color.White,
+                Font = skranjiFontSystem.GetFont(oneLineHeight * 1.5f),
+                Margin = new Thickness(100, oneLineHeight, 0, 0),
             };
 
             MenuItem menuItemContinue = new()
             {
                 Text = "Continue",
-                Id = "menuItemContinue"
+                Id = "menuItemContinue",
             };
             menuItemContinue.Selected += (s, a) => ExitScreen();
 
@@ -62,22 +76,22 @@ namespace HammeredGame.Game
             MenuItem menuItemQuitToTitle = new()
             {
                 Text = "Quit to Title",
-                Id = "menuItemQuitToTitle"
+                Id = "menuItemQuitToTitle",
             };
             menuItemQuitToTitle.Selected += (s, a) => Environment.Exit(0); // todo quit to title & unload stuff
 
             VerticalMenu mainMenu = new()
             {
-                VerticalAlignment = VerticalAlignment.Center,
-                LabelColor = Color.Indigo,
-                SelectionHoverBackground = new SolidBrush("#808000FF"),
-                SelectionBackground = new SolidBrush("#FFA500FF"),
-                LabelHorizontalAlignment = HorizontalAlignment.Center,
+                LabelColor = Color.White,
+                SelectionHoverBackground = new SolidBrush("#f665ffFF"),
+                SelectionBackground = new SolidBrush("#f665ffFF"),
+                LabelHorizontalAlignment = HorizontalAlignment.Left,
                 HoverIndexCanBeNull = false,
                 Background = new SolidBrush("#00000000"),
                 Border = new SolidBrush("#00000000"),
                 Id = "_mainMenu",
-                Padding = new Thickness(100)
+                Margin = new Thickness(100, oneLineHeight),
+                LabelFont = barlowFontSystem.GetFont(oneLineHeight),
             };
             mainMenu.Items.Add(menuItemContinue);
             mainMenu.Items.Add(menuItemRestartLevel);
@@ -85,16 +99,12 @@ namespace HammeredGame.Game
             mainMenu.Items.Add(menuItemQuitToTitle);
             mainMenu.HoverIndex = 0;
 
-            var grid = new Grid
-            {
-                RowSpacing = 8,
-                ColumnSpacing = 8
-            };
-            grid.Widgets.Add(label1);
-            grid.Widgets.Add(mainMenu);
+            var panel = new VerticalStackPanel();
+            panel.Widgets.Add(label1);
+            panel.Widgets.Add(mainMenu);
             // Add it to the desktop
             desktop = new();
-            desktop.Root = grid;
+            desktop.Root = panel;
 
             // Make main menu permanently hold keyboard focus as long as it's the active screen
             // todo: i don't think this works
@@ -122,14 +132,30 @@ namespace HammeredGame.Game
 
             if (!otherScreenHasFocus && (MathF.Abs(input.GamePadState.ThumbSticks.Left.Y) > 0.5))
             {
-                Grid grid = desktop.Root as Grid;
-                VerticalMenu mainMenu = grid.Widgets[1] as VerticalMenu;
+                VerticalStackPanel panel = desktop.Root as VerticalStackPanel;
+                VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
                 mainMenu.HoverIndex = (mainMenu.HoverIndex - MathF.Sign(input.GamePadState.ThumbSticks.Left.Y) + mainMenu.Items.Count) % mainMenu.Items.Count;
             }
 
             if (!otherScreenHasFocus && input.ButtonPress(Buttons.A))
             {
-                ((desktop.Root as Grid)?.Widgets[1] as VerticalMenu)?.OnKeyDown(Keys.Enter);
+                ((desktop.Root as VerticalStackPanel)?.Widgets[1] as VerticalMenu)?.OnKeyDown(Keys.Enter);
+            }
+
+            if (!otherScreenHasFocus)
+            {
+                VerticalStackPanel panel = desktop.Root as VerticalStackPanel;
+                VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
+                foreach (MenuItem menuItem in mainMenu.Items)
+                {
+                    if (menuItem.Index == mainMenu.HoverIndex && menuItem.Text[0] != '>')
+                    {
+                        menuItem.Text = "> " + menuItem.Text;
+                    } else if (menuItem.Index != mainMenu.HoverIndex && menuItem.Text[0] == '>')
+                    {
+                        menuItem.Text = menuItem.Text.Substring(2);
+                    }
+                }
             }
 
         }
@@ -142,7 +168,7 @@ namespace HammeredGame.Game
 
             GameServices.GetService<SpriteBatch>().Begin();
 
-            int maxWidthMenuUI = (desktop.Root as Grid).Widgets[1].Bounds.Width;
+            int maxWidthMenuUI = (desktop.Root as VerticalStackPanel).Widgets[1].Bounds.Width;
 
             GameServices.GetService<SpriteBatch>().Draw(whiteRectangle, Vector2.Zero, null, bgColor, 0f, Vector2.Zero, new Vector2(maxWidthMenuUI, ScreenManager.GraphicsDevice.Viewport.Height), SpriteEffects.None, 0f);
 
