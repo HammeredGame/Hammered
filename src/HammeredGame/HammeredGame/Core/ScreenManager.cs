@@ -19,7 +19,6 @@ namespace HammeredGame.Core
             this.MainRenderTarget = mainRenderTarget;
         }
 
-
         public void LoadContent()
         {
             foreach (Screen screen in screens)

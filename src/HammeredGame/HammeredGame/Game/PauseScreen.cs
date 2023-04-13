@@ -1,6 +1,7 @@
 ﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using System;
 
@@ -10,76 +11,91 @@ namespace HammeredGame.Game
     {
         private Desktop desktop;
 
-        private TimeSpan pauseTime;
+        private Action restartLevelFunc;
 
-        public PauseScreen(TimeSpan totalGameTime) {
+        public PauseScreen(Action restartLevelFunc) {
             IsPartial = true;
-            pauseTime = totalGameTime;
+            this.restartLevelFunc = restartLevelFunc;
         }
 
         public override void LoadContent()
         {
             base.LoadContent();
 
+            var label1 = new Label
+            {
+                Text = "Hammered",
+                TextColor = Color.LightBlue,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            MenuItem menuItemContinue = new()
+            {
+                Text = "Continue",
+                Id = "menuItemContinue"
+            };
+            menuItemContinue.Selected += (s, a) => ExitScreen();
+
+            MenuItem menuItemRestartLevel = new()
+            {
+                Text = "Restart Level",
+                Id = "_menuItemRestartLevel"
+            };
+            menuItemRestartLevel.Selected += (s, a) =>
+            {
+                restartLevelFunc.Invoke();
+                ExitScreen();
+            };
+
+            MenuItem menuItemOptions = new()
+            {
+                Text = "Options",
+                Id = "_menuItemOptions"
+            };
+
+            MenuItem menuItemQuitToTitle = new()
+            {
+                Text = "Quit to Title",
+                Id = "menuItemQuitToTitle"
+            };
+            menuItemQuitToTitle.Selected += (s, a) => Environment.Exit(0); // todo quit to title & unload stuff
+
+            VerticalMenu mainMenu = new()
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                LabelColor = Color.Indigo,
+                SelectionHoverBackground = new SolidBrush("#808000FF"),
+                SelectionBackground = new SolidBrush("#FFA500FF"),
+                LabelHorizontalAlignment = HorizontalAlignment.Center,
+                HoverIndexCanBeNull = false,
+                Background = new SolidBrush("#00000000"),
+                Border = new SolidBrush("#00000000"),
+                Id = "_mainMenu"
+            };
+            mainMenu.Items.Add(menuItemContinue);
+            mainMenu.Items.Add(menuItemRestartLevel);
+            mainMenu.Items.Add(menuItemOptions);
+            mainMenu.Items.Add(menuItemQuitToTitle);
+            mainMenu.HoverIndex = 0;
+
             var grid = new Grid
             {
                 RowSpacing = 8,
                 ColumnSpacing = 8
             };
-
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-            grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
-            grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
-
-            var helloWorld = new Label
-            {
-                Id = "label",
-                Text = "Hello, World!"
-            };
-            grid.Widgets.Add(helloWorld);
-
-            // ComboBox
-            var combo = new ComboBox
-            {
-                GridColumn = 1,
-                GridRow = 0
-            };
-
-            combo.Items.Add(new ListItem("Red", Color.Red));
-            combo.Items.Add(new ListItem("Green", Color.Green));
-            combo.Items.Add(new ListItem("Blue", Color.Blue));
-            grid.Widgets.Add(combo);
-
-            // Button
-            var button = new TextButton
-            {
-                GridColumn = 0,
-                GridRow = 1,
-                Text = "Show"
-            };
-
-            button.Click += (s, a) =>
-            {
-                var messageBox = Dialog.CreateMessageBox("Message", "Some message!");
-                messageBox.ShowModal(desktop);
-            };
-
-            grid.Widgets.Add(button);
-
-            // Spin button
-            var spinButton = new SpinButton
-            {
-                GridColumn = 1,
-                GridRow = 1,
-                Width = 100,
-                Nullable = true
-            };
-            grid.Widgets.Add(spinButton);
-
+            grid.Widgets.Add(label1);
+            grid.Widgets.Add(mainMenu);
             // Add it to the desktop
-            desktop = new Desktop();
+            desktop = new();
             desktop.Root = grid;
+
+            // Make main menu permanently hold keyboard focus as long as it's the active screen
+            // todo: i don't think this works
+            desktop.WidgetLosingKeyboardFocus += (s, a) =>
+            {
+                a.Cancel = HasFocus;
+            };
         }
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
@@ -87,10 +103,18 @@ namespace HammeredGame.Game
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
             Input input = GameServices.GetService<Input>();
-            if (!otherScreenHasFocus && (input.BACK_PRESS || input.KeyPress(Keys.Escape)))
+            if (!otherScreenHasFocus && (input.ButtonPress(Buttons.B) || input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape)))
             {
                 ExitScreen();
             }
+
+            if (!otherScreenHasFocus && (MathF.Abs(input.GamePadState.ThumbSticks.Left.Y) > 0.5))
+            {
+                Grid grid = desktop.Root as Grid;
+                VerticalMenu mainMenu = grid.Widgets[1] as VerticalMenu;
+                mainMenu.HoverIndex = (mainMenu.HoverIndex - MathF.Sign(input.GamePadState.ThumbSticks.Left.Y) + mainMenu.Items.Count) % mainMenu.Items.Count;
+            }
+
         }
 
         public override void Draw(GameTime gameTime)

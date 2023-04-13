@@ -76,15 +76,9 @@ namespace HammeredGame
 
             Input input = GameServices.GetService<Input>();
 
-            if (input.ButtonPress(Buttons.Y) || input.KeyPress(Keys.R))
-            {
-                // Reload the current scene class
-                InitializeLevel(currentScene.GetType().FullName);
-            }
-
             if (!otherScreenHasFocus && (input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape)))
             {
-                ScreenManager.AddScreen(new PauseScreen(gameTime.TotalGameTime));
+                ScreenManager.AddScreen(new PauseScreen(() => InitializeLevel(currentScene.GetType().FullName)));
             }
 
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
