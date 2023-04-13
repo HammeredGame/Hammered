@@ -119,6 +119,7 @@ namespace HammeredGame
             imGuiRenderer.RebuildFontAtlas();
 
             // Add useful game services that might want to be accessed globally
+            gameServices.AddService<HammeredGame>(this);
             gameServices.AddService<GraphicsDevice>(gpu);
             gameServices.AddService<Input>(input);
             gameServices.AddService<ContentManager>(Content);
@@ -149,7 +150,7 @@ namespace HammeredGame
         /// all visible UI as well and show only the UIs relevant to the new objects.
         /// </summary>
         /// <param name="levelToLoad"></param>
-        private void InitializeLevel(string levelToLoad)
+        public void InitializeLevel(string levelToLoad)
         {
             currentScene = (Scene)Activator.CreateInstance(Type.GetType(levelToLoad), gameServices);
         }
