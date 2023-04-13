@@ -1,6 +1,8 @@
 ﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using System;
@@ -13,6 +15,8 @@ namespace HammeredGame.Game
 
         private Action restartLevelFunc;
 
+        Texture2D whiteRectangle;
+
         public PauseScreen(Action restartLevelFunc) {
             IsPartial = true;
             this.restartLevelFunc = restartLevelFunc;
@@ -22,11 +26,13 @@ namespace HammeredGame.Game
         {
             base.LoadContent();
 
+            whiteRectangle = new Texture2D(ScreenManager.GraphicsDevice, 1, 1);
+            whiteRectangle.SetData(new[] { Color.White });
+
             var label1 = new Label
             {
                 Text = "Hammered",
                 TextColor = Color.LightBlue,
-                HorizontalAlignment = HorizontalAlignment.Center
             };
 
             MenuItem menuItemContinue = new()
@@ -62,7 +68,6 @@ namespace HammeredGame.Game
 
             VerticalMenu mainMenu = new()
             {
-                HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 LabelColor = Color.Indigo,
                 SelectionHoverBackground = new SolidBrush("#808000FF"),
@@ -71,7 +76,8 @@ namespace HammeredGame.Game
                 HoverIndexCanBeNull = false,
                 Background = new SolidBrush("#00000000"),
                 Border = new SolidBrush("#00000000"),
-                Id = "_mainMenu"
+                Id = "_mainMenu",
+                Padding = new Thickness(100)
             };
             mainMenu.Items.Add(menuItemContinue);
             mainMenu.Items.Add(menuItemRestartLevel);
@@ -96,6 +102,12 @@ namespace HammeredGame.Game
             {
                 a.Cancel = HasFocus;
             };
+        }
+
+        public override void UnloadContent()
+        {
+            base.UnloadContent();
+            whiteRectangle.Dispose();
         }
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
@@ -125,6 +137,31 @@ namespace HammeredGame.Game
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+
+            Color bgColor = new(75, 43, 58);
+
+            GameServices.GetService<SpriteBatch>().Begin();
+
+            int maxWidthMenuUI = (desktop.Root as Grid).Widgets[1].Bounds.Width;
+
+            GameServices.GetService<SpriteBatch>().Draw(whiteRectangle, Vector2.Zero, null, bgColor, 0f, Vector2.Zero, new Vector2(maxWidthMenuUI, ScreenManager.GraphicsDevice.Viewport.Height), SpriteEffects.None, 0f);
+
+            VertexPositionColor[] vertices = new VertexPositionColor[6];
+            vertices[0] = new VertexPositionColor(new Vector3(maxWidthMenuUI, ScreenManager.GraphicsDevice.Viewport.Height, 0), bgColor);
+            vertices[1] = new VertexPositionColor(new Vector3(maxWidthMenuUI, 0, 0), bgColor);
+            vertices[2] = new VertexPositionColor(new Vector3(maxWidthMenuUI + 300, 0, 0), bgColor);
+
+            BasicEffect basicEffect = new BasicEffect(ScreenManager.GraphicsDevice);
+            basicEffect.VertexColorEnabled = true;
+            basicEffect.Projection = Matrix.CreateOrthographicOffCenter(
+            0, ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height, 0, 0, 1);
+
+            foreach (var pass in basicEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                ScreenManager.GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertices, 0, 1);
+            }
+            GameServices.GetService<SpriteBatch>().End();
 
             desktop.Render();
         }
