@@ -7,8 +7,8 @@ namespace HammeredGame.Core
 {
     public class ScreenManager
     {
-        private List<Screen> screens = new();
-        private GameServices services;
+        private readonly List<Screen> screens = new();
+        private readonly GameServices services;
         public GraphicsDevice GraphicsDevice;
         public RenderTarget2D MainRenderTarget;
 
@@ -38,10 +38,7 @@ namespace HammeredGame.Core
         public void Update(GameTime gameTime)
         {
             List<Screen> screensWorkingCopy = new();
-            foreach (Screen screen in screens)
-            {
-                screensWorkingCopy.Add(screen);
-            }
+            screensWorkingCopy.AddRange(screens);
 
             bool otherScreenHasFocus = false;
             bool coveredByOtherScreen = false;
@@ -87,12 +84,13 @@ namespace HammeredGame.Core
 
         public void RemoveScreen(Screen screen)
         {
+            screen.UnloadContent();
             screens.Remove(screen);
         }
 
         public void UI()
         {
-            ImGui.TextWrapped($"Current screen stack: {System.String.Join(", ", screens)}");
+            ImGui.TextWrapped($"Current screen stack: {string.Join(", ", screens)}");
             foreach (Screen screen in screens)
             {
                 if (screen.State != ScreenState.Hidden)
