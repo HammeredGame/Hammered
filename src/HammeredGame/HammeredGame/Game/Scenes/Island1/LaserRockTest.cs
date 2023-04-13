@@ -1,16 +1,21 @@
-﻿using HammeredGame.Core;
+﻿using BEPUphysics.CollisionRuleManagement;
+using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
-    internal class TwoIslandPuzzle : Scene
+    internal class LaserRockTest : Scene
     {
-        public TwoIslandPuzzle(GameServices services) : base(services)
+        public LaserRockTest(GameServices services) : base(services)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle.xml");
+            CreateFromXML($"Content/SceneDescriptions/Island1/LaserRockTest.xml");
             OnSceneStart();
         }
 
@@ -18,14 +23,20 @@ namespace HammeredGame.Game.Scenes.Island1
         {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
-
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
 
-            Get<Door>("door_goal").SetIsGoal(true);
+            // Set laser to desired length within level
+            Laser laser1 = Get<Laser>("laser1");
+            laser1.SetLaserDefaultScale(4.0f);
 
-            Get<PressurePlate>("pressureplate").SetTriggerObject(Get<Door>("door_pp"));
+            MoveBlock rock1 = Get<MoveBlock>("rock1");
 
-            Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
+            var laserRockGroup = new CollisionGroup();
+            CollisionGroupPair pair = new CollisionGroupPair(laserRockGroup, laserRockGroup);
+            CollisionRules.CollisionGroupRules.Add(pair, CollisionRule.NoSolver);
+
+            laser1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+            rock1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");

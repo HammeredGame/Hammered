@@ -49,8 +49,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.Entity.Tag = "MovableObstacleBounds";
                 this.Entity.CollisionInformation.Tag = this;
                 this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
-                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+                this.Entity.CollisionInformation.CollisionRules.Personal = CollisionRule.Defer;
                 this.SetStationary();
+                this.Entity.Material.KineticFriction = 1.5f;
                 this.ActiveSpace.Add(this.Entity);
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollisionDetected;
             }
@@ -60,22 +61,49 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
+            if (this.mbState == MBState.InWater) 
+            {
+                // If in water, do nothing with the block - the block is
+                // essentially submerged and cannot move anymore
+
+                // TODO: Once the MoveBlock is set to the InWater state,
+                // there may need to be some checks that allow the player
+                // to walk over the rock to cross the water (similar to the tree maybe?)
+                if (other.Tag is Player)
+                {
+                    var player = other.Tag as Player;
+                    player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, player.Entity.Position.Y + (this.Entity as Box).Width + 1.0f, player.Entity.Position.Z);
+                }
+
+                return;
+            }
+
+            // Check if collided object is a static mesh (ground/water) or an entity
             var otherEntityInformation = other as EntityCollidable;
             if (otherEntityInformation != null)
             {
-                if (other.Tag is Hammer)
+                // If colliding with a moving hammer, set the move block to move in the same direction
+                if (other.Tag is Hammer && this.mbState != MBState.Moving)
                 {
                     var hammer = other.Tag as Hammer;
                     if (hammer.IsEnroute())
                     {
-                        this.SetMoving(hammer.Entity.LinearVelocity);
+                        this.SetMoving(hammer.Entity.LinearVelocity * 0.5f);
                     }
                 }
                 else if (this.mbState == MBState.Moving)
                 {
+                    // Otherwise, the only collisions we care about is if the block is already moving
+                    // If so, and the colliding object is the player or another obstacle,
+                    // then handle these cases appropriately (if needed, otherwise default behavior
+                    // is for the MoveBlock to come to a stop.
                     if (other.Tag is Player || other.Tag is ObstacleObject)
                     {
-                        // TODO: Revisit hitting another movable block
+                        // If hitting another stationary MoveBlock, set that one to move in the
+                        // same direction as the current moving MoveBlock
+                        // TODO: Revisit this implementation, depending on whether the desired behavior is different.
+                        // The current implementation makes the current MoveBlock stop in it's tracks,
+                        // and the colliding MoveBlock begins moving
                         if (other.Tag is MoveBlock)
                         {
                             var otherMoveBlock = other.Tag as MoveBlock;
@@ -84,14 +112,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                                 otherMoveBlock.SetMoving(initialMovementVelocity);
                             }
                         }
-
-                        // Handle Obstacles like fallen tree here
-                        if (other.Tag is Tree)
+                        else if (other.Tag is Laser)
                         {
-                            var tree = other.Tag as Tree;
-                            // Do nothing if the tree is already fallen
-                            // Otherwise, handle it like any other blocking obstacle
-                            if (tree != null && tree.IsTreeFallen()) return;
+                            // (maybe) TEMPORARY: lasers shall not make the block stationary for now
+                            return;
                         }
 
                         // A player or blocking obstacle will stop the movable block
@@ -106,11 +130,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 {
                     this.SetStationary();
                     mbState = MBState.InWater;
-                    // TODO: Once the MoveBlock is set to the InWater state,
-                    // there needs to be some checks that allow the player
-                    // to walk over the rock to cross the water (similar to the tree maybe?)
                 }
             }
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            //if (this.mbState == MBState.Moving) this.Entity.LinearVelocity = initialMovementVelocity;
+
+            //base.Update(gameTime);
         }
 
         // This function sets the MoveBlock object to a moving state, with the provided velocity.
@@ -119,8 +147,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private void SetMoving(BEPUutilities.Vector3 velocity)
         {
             this.Entity.BecomeDynamic(1.0f);
-            this.Entity.LinearVelocity = velocity;
-            initialMovementVelocity = velocity;
+            BEPUutilities.Vector3 move_vel = new BEPUutilities.Vector3(velocity.X, this.Entity.LinearVelocity.Y, velocity.Z);
+            this.Entity.LinearVelocity = move_vel;
+            initialMovementVelocity = move_vel;
             this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
             mbState = MBState.Moving;
         }
