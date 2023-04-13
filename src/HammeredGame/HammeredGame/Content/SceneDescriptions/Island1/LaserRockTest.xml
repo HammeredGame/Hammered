@@ -13,8 +13,8 @@
     <scale>10.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground" id="ground">
-    <model>island1_treetutorial_terrain</model>
-    <texture type="texture2d">island1_treetutorial_texture</texture>
+    <model>island1_treetutorial</model>
+    <texture type="texture2d">island1_treetutorial_albedo</texture>
     <position>0.000 0.000 0.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
