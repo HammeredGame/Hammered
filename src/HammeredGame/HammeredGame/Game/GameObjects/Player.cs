@@ -49,6 +49,8 @@ namespace HammeredGame.Game.GameObjects
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
 
+        // Last known ground position, used to reset player's position
+        // if the player comes into contact with a water object
         private Vector3 lastGroundPosition;
 
         // TEMPORARY (FOR TESTING)
@@ -98,6 +100,7 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
             }
 
+            // Initial position should be on/over ground
             this.lastGroundPosition = this.Position;
         }
 
@@ -105,6 +108,7 @@ namespace HammeredGame.Game.GameObjects
         {
             // If the player touches water, return the player to the last
             // known ground position
+            // Comment this section out, if testing requires walking on water
             if (other.Tag is Water)
             {
                 this.Position = this.lastGroundPosition;
