@@ -2,6 +2,7 @@
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.Screens;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -33,17 +34,21 @@ namespace HammeredGame.Game.Scenes.Island1
 
             // On entering hammer vicinity show hammer prompt
             CancellationTokenSource hammerPromptTokenSource = new();
-            Get<TriggerObject>("hammer_trigger").OnTrigger += (_, _) =>
+            EventHandler hammerOnTriggerJustOnce = null;
+            Get<TriggerObject>("hammer_trigger").OnTrigger += hammerOnTriggerJustOnce = async (_, _) =>
             {
+                // remove trigger after once
+                Get<TriggerObject>("hammer_trigger").OnTrigger -= hammerOnTriggerJustOnce;
+
+                // set hammer owner so we can now summon it
                 Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
+
+                // hide movement controls
                 movementPromptTokenSource.Cancel();
 
+                // show summon controls, and after summoning it, show drop controls
                 ParentGameScreen.ShowPromptsFor(new List<string>() { "Summon Hammer" }, hammerPromptTokenSource.Token);
-            };
-
-            // upon summon, add the drop prompt too
-            Get<Hammer>("hammer").OnSummon += (_, _) =>
-            {
+                await Services.GetService<ScriptUtils>().WaitEvent(Get<Hammer>("hammer"), "OnSummon");
                 ParentGameScreen.ShowPromptsFor(new List<string>() { "Drop Hammer" }, hammerPromptTokenSource.Token);
             };
 
