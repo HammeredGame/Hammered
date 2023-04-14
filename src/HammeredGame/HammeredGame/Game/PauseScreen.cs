@@ -16,11 +16,12 @@ namespace HammeredGame.Game
 
         public Action RestartLevelFunc;
 
-        Texture2D whiteRectangle;
+        private Texture2D whiteRectangle;
 
-        int maxWidthMenuUI;
+        private int maxWidthMenuUI;
 
-        public PauseScreen() {
+        public PauseScreen()
+        {
             IsPartial = true;
         }
 
@@ -126,43 +127,49 @@ namespace HammeredGame.Game
             whiteRectangle.Dispose();
         }
 
-        public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
+        public override void Update(GameTime gameTime, bool isBelowAnotherScreen, bool isCoveredByNonPartialScreen)
         {
-            base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
+            // Update screen state and HasFocus (= active state && is on top) so we can use it
+            base.Update(gameTime, isBelowAnotherScreen, isCoveredByNonPartialScreen);
 
             Input input = GameServices.GetService<Input>();
-            if (!otherScreenHasFocus && (input.ButtonPress(Buttons.B) || input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape)))
+
+            // Do nothing if the screen doesn't have focus
+            if (!HasFocus) return;
+
+            VerticalStackPanel panel = desktop.Root as VerticalStackPanel;
+            VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
+
+            // Back out of pause menu without unloading content
+            if (input.ButtonPress(Buttons.B) || input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape))
             {
                 ExitScreen(alsoUnloadContent: false);
             }
 
-            if (!otherScreenHasFocus && (MathF.Abs(input.GamePadState.ThumbSticks.Left.Y) > 0.5))
+            // Scroll with left thumbstick on controller
+            if (MathF.Abs(input.GamePadState.ThumbSticks.Left.Y) > 0.5)
             {
-                VerticalStackPanel panel = desktop.Root as VerticalStackPanel;
-                VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
                 mainMenu.HoverIndex = (mainMenu.HoverIndex - MathF.Sign(input.GamePadState.ThumbSticks.Left.Y) + mainMenu.Items.Count) % mainMenu.Items.Count;
             }
 
-            if (!otherScreenHasFocus && input.ButtonPress(Buttons.A))
+            // Controller selection support
+            if (input.ButtonPress(Buttons.A))
             {
                 ((desktop.Root as VerticalStackPanel)?.Widgets[1] as VerticalMenu)?.OnKeyDown(Keys.Enter);
             }
 
-            if (!otherScreenHasFocus)
+            // Change text color and show a ">" cursor on the currently active item
+            foreach (MenuItem menuItem in mainMenu.Items)
             {
-                VerticalStackPanel panel = desktop.Root as VerticalStackPanel;
-                VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
-                foreach (MenuItem menuItem in mainMenu.Items)
+                if (menuItem.Index == mainMenu.HoverIndex && menuItem.Text[0] != '>')
                 {
-                    if (menuItem.Index == mainMenu.HoverIndex && menuItem.Text[0] != '>')
-                    {
-                        menuItem.Text = "> " + menuItem.Text;
-                        menuItem.Color = new Color(246, 101, 255);
-                    } else if (menuItem.Index != mainMenu.HoverIndex && menuItem.Text[0] == '>')
-                    {
-                        menuItem.Text = menuItem.Text.Substring(2);
-                        menuItem.Color = new Color(255, 255, 255, 198);
-                    }
+                    menuItem.Text = "> " + menuItem.Text;
+                    menuItem.Color = new Color(246, 101, 255);
+                }
+                else if (menuItem.Index != mainMenu.HoverIndex && menuItem.Text[0] == '>')
+                {
+                    menuItem.Text = menuItem.Text.Substring(2);
+                    menuItem.Color = new Color(255, 255, 255, 198);
                 }
             }
         }
@@ -171,17 +178,23 @@ namespace HammeredGame.Game
         {
             base.Draw(gameTime);
 
+            // Nice looking purple color for the background
             Color bgColor = new(75, 43, 58);
 
+            // Draw everything in a batch for speed
             GameServices.GetService<SpriteBatch>().Begin();
 
+            // Draw a rectangle at least the width of the menu and its padding
             GameServices.GetService<SpriteBatch>().Draw(whiteRectangle, Vector2.Zero, null, bgColor, 0f, Vector2.Zero, new Vector2(maxWidthMenuUI, ScreenManager.GraphicsDevice.Viewport.Height), SpriteEffects.None, 0f);
 
+            // Draw a triangle next to the previous rectangle, spanning 300 on the top (TODO; change?)
             VertexPositionColor[] vertices = new VertexPositionColor[6];
             vertices[0] = new VertexPositionColor(new Vector3(maxWidthMenuUI, ScreenManager.GraphicsDevice.Viewport.Height, 0), bgColor);
             vertices[1] = new VertexPositionColor(new Vector3(maxWidthMenuUI, 0, 0), bgColor);
             vertices[2] = new VertexPositionColor(new Vector3(maxWidthMenuUI + 300, 0, 0), bgColor);
 
+            // Set up a basic effect and an orthographic projection to draw the previous triangle
+            // vertices onto the screen
             BasicEffect basicEffect = new BasicEffect(ScreenManager.GraphicsDevice);
             basicEffect.VertexColorEnabled = true;
             basicEffect.Projection = Matrix.CreateOrthographicOffCenter(
@@ -194,6 +207,7 @@ namespace HammeredGame.Game
             }
             GameServices.GetService<SpriteBatch>().End();
 
+            // Render the UI
             desktop.Render();
         }
     }

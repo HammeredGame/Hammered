@@ -1,25 +1,26 @@
-﻿using HammeredGame.Core;
+﻿using BEPUphysics.Entities;
+using BEPUphysics.Entities.Prefabs;
+using HammeredGame.Core;
 using HammeredGame.Game;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using System.Collections.Generic;
-using BEPUphysics.Entities;
 using System;
-using BEPUphysics.Entities.Prefabs;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Audio;
+using System.Collections.Generic;
 
 namespace HammeredGame
 {
     public class GameScreen : Screen
     {
-        // RENDER TARGET
+        // Current active game scene.
         private Scene currentScene;
 
-        PauseScreen pauseScreen;
+        // Pause screen is always loaded, see LoadContent().
+        private PauseScreen pauseScreen;
 
         // Music variables
         private Song bgMusic;
@@ -28,6 +29,7 @@ namespace HammeredGame
 
         // Bounding Volume debugging variables
         private bool drawBounds = false;
+
         private List<EntityDebugDrawer> debugEntities = new();
 
         /// <summary>
@@ -57,6 +59,9 @@ namespace HammeredGame
 
             SoundEffect.MasterVolume = 0.2f;
 
+            // Preload the pause screen, so that adding the pause screen to the screen stack doesn't
+            // call LoadContent every time (which lags because it has to loads fonts and create the
+            // UI layout)
             pauseScreen = new PauseScreen();
             ScreenManager.PreloadScreen(pauseScreen);
         }
@@ -77,22 +82,21 @@ namespace HammeredGame
         /// constant, so use the gameTime argument to make sure speeds appear natural.
         /// </summary>
         /// <param name="gameTime"></param>
-        public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
+        public override void Update(GameTime gameTime, bool isBelowAnotherScreen, bool isCoveredByNonPartialScreen)
         {
-            base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
+            // Update screen state and HasFocus (= active state && is on top) so we can use it
+            base.Update(gameTime, isBelowAnotherScreen, isCoveredByNonPartialScreen);
 
             Input input = GameServices.GetService<Input>();
 
-            if (!otherScreenHasFocus && (input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape)))
+            if (HasFocus && (input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape)))
             {
                 pauseScreen.RestartLevelFunc = () => InitializeLevel(currentScene.GetType().FullName);
                 ScreenManager.AddScreen(pauseScreen);
             }
 
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            //    Exit();
-
-            // Update each game object
+            // Update each game object (TODO: pass HasFocus, or some way to stop responding to input
+            // if screen not focused?)
             foreach (GameObject gameObject in currentScene.GameObjectsList)
             {
                 gameObject.Update(gameTime);
@@ -134,6 +138,8 @@ namespace HammeredGame
         /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+
             Set3DStates();
 
             GraphicsDevice gpu = GameServices.GetService<GraphicsDevice>();
