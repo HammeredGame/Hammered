@@ -14,6 +14,11 @@ using System.Collections.Generic;
 
 namespace HammeredGame
 {
+
+    /// <summary>
+    /// The game screen shows the main gameplay. It has one active scene at a time, and may add a
+    /// PauseScreen to the screen stack upon pausing.
+    /// </summary>
     public class GameScreen : Screen
     {
         // Current active game scene.
@@ -182,17 +187,6 @@ namespace HammeredGame
 
         public override void UI()
         {
-            ImGui.SetNextWindowSize(new System.Numerics.Vector2(600, 500), ImGuiCond.FirstUseEver);
-            ImGui.Begin("Hammered");
-
-            // Show whether the gamepad is detected
-            if (GameServices.GetService<Input>().GamePadState.IsConnected)
-            {
-                ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.0f, 1.0f, 1.0f), "Gamepad Connected");
-            }
-            float fr = ImGui.GetIO().Framerate;
-            ImGui.Text($"{1000.0f / fr:F2} ms/frame ({fr:F1} FPS)");
-
             // Show a scene switcher dropdown, with the list of all scene class names in this assembly
             ImGui.Text("Current Loaded Scene: ");
             ImGui.SameLine();
@@ -214,7 +208,6 @@ namespace HammeredGame
 
             // Show the scene's UI within the same window
             currentScene.UI();
-            ImGui.End();
         }
     }
 }

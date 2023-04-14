@@ -9,6 +9,7 @@ using BEPUutilities.Threading;
 using System;
 using Microsoft.Xna.Framework.Content;
 using Myra;
+using ImGuiNET;
 
 namespace HammeredGame
 {
@@ -193,13 +194,28 @@ namespace HammeredGame
             imGuiRenderer.BeforeLayout(gameTime);
 
             // Draw the main developer UI
-            manager.UI();
+            UI();
 
             // Call AfterLayout to finish.
             imGuiRenderer.AfterLayout();
 #endif
 
             base.Draw(gameTime);
+        }
+
+        public void UI()
+        {
+            ImGui.SetNextWindowSize(new System.Numerics.Vector2(600, 500), ImGuiCond.FirstUseEver);
+            ImGui.Begin("Hammered");
+
+            // Show whether the gamepad is detected
+            if (input.GamePadState.IsConnected)
+            {
+                ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.0f, 1.0f, 1.0f), "Gamepad Connected");
+            }
+            float fr = ImGui.GetIO().Framerate;
+            ImGui.Text($"{1000.0f / fr:F2} ms/frame ({fr:F1} FPS)");
+            manager.UI();
         }
     }
 }
