@@ -11,6 +11,7 @@ namespace HammeredGame.Game.Screens
     {
 
         public Action RestartLevelFunc;
+        public Action QuitToTitleFunc;
 
         public PauseScreen()
         {
@@ -52,7 +53,11 @@ namespace HammeredGame.Game.Screens
                 Text = "Quit to Title",
                 Id = "menuItemQuitToTitle",
             };
-            menuItemQuitToTitle.Selected += (s, a) => Environment.Exit(0); // todo quit to title & unload stuff
+            menuItemQuitToTitle.Selected += (s, a) =>
+            {
+                QuitToTitleFunc?.Invoke();
+                ExitScreen(alsoUnloadContent: true);
+            };
 
             MenuItems = new List<MenuItem>() { menuItemContinue, menuItemRestartLevel, menuItemOptions, menuItemQuitToTitle };
             base.LoadContent();
