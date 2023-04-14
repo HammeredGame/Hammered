@@ -123,9 +123,28 @@ namespace HammeredGame
             gameServices.AddService<AudioManager>(audioManager);
 
             manager = new ScreenManager(gameServices, gpu, mainRenderTarget);
-            manager.AddScreen(new Game.Screens.GameScreen());
+            InitTitleScreen();
 
             base.Initialize();
+        }
+
+        /// <summary>
+        /// Function to add the title screen to the stack, setting handlers for Continue and Start New.
+        /// </summary>
+        public void InitTitleScreen()
+        {
+            manager.AddScreen(new Game.Screens.TitleScreen()
+            {
+                ContinueFunc = () =>
+                {
+                    // load scene name from file
+                    manager.AddScreen(new Game.Screens.GameScreen(typeof(Game.Scenes.Island1.TreeTutorial).FullName));
+                },
+                StartNewFunc = () =>
+                {
+                    manager.AddScreen(new Game.Screens.GameScreen(typeof(Game.Scenes.Island1.ShoreWakeup).FullName));
+                }
+            });
         }
 
         /// <summary>

@@ -39,6 +39,14 @@ namespace HammeredGame.Game.Screens
 
         private List<EntityDebugDrawer> debugEntities = new();
 
+        private string currentSceneName;
+
+        public GameScreen(string startScene)
+        {
+            // Don't load the scene yet, since it's expensive. Do it in LoadContent()
+            currentSceneName = startScene;
+        }
+
         /// <summary>
         /// Called once when loading the game. Load all assets here since it is expensive to load
         /// them on demand when we need it in e.g. Update() or Draw().
@@ -60,7 +68,7 @@ namespace HammeredGame.Game.Screens
             sfx.Add(Content.Load<SoundEffect>("Audio/door_open"));
             sfx.Add(Content.Load<SoundEffect>("Audio/door_close"));
 
-            InitializeLevel("HammeredGame.Game.Scenes.Island1.ShoreWakeup");
+            InitializeLevel(currentSceneName);
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 0.1f;
@@ -71,7 +79,14 @@ namespace HammeredGame.Game.Screens
             // Preload the pause screen, so that adding the pause screen to the screen stack doesn't
             // call LoadContent every time (which lags because it has to loads fonts and create the
             // UI layout)
-            pauseScreen = new PauseScreen();
+            pauseScreen = new PauseScreen() {
+                QuitToTitleFunc = () => {
+                    ExitScreen(true);
+                    // Ask the main game class to recreate the title screen, since it needs to
+                    // assign handlers that we don't have access to
+                    GameServices.GetService<HammeredGame>().InitTitleScreen();
+                }
+            };
             ScreenManager.PreloadScreen(pauseScreen);
 
             promptsScreen = new ControlPromptsScreen();
@@ -79,16 +94,37 @@ namespace HammeredGame.Game.Screens
         }
 
         /// <summary>
+        /// Called when the scene is exiting. Should be used to dispose any assets that were loaded
+        /// manually or take a lot of memory.
+        /// </summary>
+        public override void UnloadContent()
+        {
+            base.UnloadContent();
+
+            // Make sure we have exited screens that we created.
+            pauseScreen.ExitScreen();
+            promptsScreen.ExitScreen();
+
+            MediaPlayer.Stop();
+        }
+
+        /// <summary>
         /// Relatively expensive function! Loads the XML file from disk, parses it and instantiates
         /// the level (including Camera and GameObjects like player, hammer, obstacles). Will reset
         /// all visible UI as well and show only the UIs relevant to the new objects.
         /// </summary>
-        /// <param name="levelToLoad"></param>
-        public void InitializeLevel(string levelToLoad)
+        /// <param name="sceneToLoad"></param>
+        public void InitializeLevel(string sceneToLoad)
         {
-            currentScene = (Scene)Activator.CreateInstance(Type.GetType(levelToLoad), GameServices, this);
+            currentSceneName = sceneToLoad;
+            currentScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
         }
 
+        /// <summary>
+        /// Show input prompts for controls, see ControlPromptsScreen.ShowPromptsFor() for more info.
+        /// </summary>
+        /// <param name="controls"></param>
+        /// <param name="stopToken"></param>
         public void ShowPromptsFor(List<string> controls, CancellationToken stopToken)
         {
             promptsScreen.ShowPromptsFor(controls, stopToken);
@@ -107,7 +143,7 @@ namespace HammeredGame.Game.Screens
 
             if (HasFocus && (input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape)))
             {
-                pauseScreen.RestartLevelFunc = () => InitializeLevel(currentScene.GetType().FullName);
+                pauseScreen.RestartLevelFunc = () => InitializeLevel(currentSceneName);
                 ScreenManager.AddScreen(pauseScreen);
             }
 
