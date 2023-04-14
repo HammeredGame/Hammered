@@ -30,6 +30,7 @@ namespace HammeredGame.Game.Scenes.Island1
             laser1.SetLaserDefaultScale(4.0f);
 
             MoveBlock rock1 = Get<MoveBlock>("rock1");
+            //MoveBlock rock2 = Get<MoveBlock>("rock2");
 
             var laserRockGroup = new CollisionGroup();
             CollisionGroupPair pair = new CollisionGroupPair(laserRockGroup, laserRockGroup);
@@ -37,6 +38,7 @@ namespace HammeredGame.Game.Scenes.Island1
 
             laser1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
             rock1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+            //rock2.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
