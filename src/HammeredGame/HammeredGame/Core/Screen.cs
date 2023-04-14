@@ -5,8 +5,8 @@ namespace HammeredGame.Core
 {
     public enum ScreenState
     {
-        Hidden,
-        Active
+        Hidden, // Automatically becomes this when screen should not be drawn
+        Active // Automatically becomes this when screen should be drawn
     }
 
     public abstract class Screen : IImGui
@@ -15,19 +15,22 @@ namespace HammeredGame.Core
 
         public ScreenState State { get; protected set; } = ScreenState.Active;
 
+        public bool IsLoaded { get; protected set; }
+
         private bool otherScreenHasFocus;
 
         public bool HasFocus {
             get { return State == ScreenState.Active && !otherScreenHasFocus; }
         }
 
-        public bool IsExiting { get; protected set; } = false;
-
         public GameServices GameServices { get; set; }
 
         public ScreenManager ScreenManager { get; set; }
 
-        public virtual void LoadContent() { }
+        public virtual void LoadContent() {
+            IsLoaded = true;
+        }
+
         public virtual void UnloadContent() { }
         public virtual void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen) {
             this.otherScreenHasFocus = otherScreenHasFocus;
@@ -42,9 +45,9 @@ namespace HammeredGame.Core
         }
         public virtual void Draw(GameTime gameTime) { }
 
-        public void ExitScreen()
+        public void ExitScreen(bool alsoUnloadContent = true)
         {
-            IsExiting = true;
+            ScreenManager.RemoveScreen(this, alsoUnloadContent);
         }
 
         public virtual void UI() { }
