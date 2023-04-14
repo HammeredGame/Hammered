@@ -109,7 +109,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 var hammer = other.Tag as Hammer;
                 BEPUutilities.Vector3 fallDirection = hammer.Entity.LinearVelocity;
                 fallDirection.Normalize();
-                sender.Entity.Orientation *= BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection), BEPUutilities.MathHelper.ToRadians(90));
+                this.Entity.Orientation = BEPUutilities.Quaternion.Identity * BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection), BEPUutilities.MathHelper.ToRadians(90));
                 SetTreeFallen(true);
             }
 
