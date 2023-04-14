@@ -118,12 +118,14 @@ namespace HammeredGame.Game
             // Precalculate layout once so we know the width of the text to draw the background for
             desktop.UpdateLayout();
 
-            maxWidthMenuUI = (desktop.Root as VerticalStackPanel).Widgets[1].Bounds.Width;
+            maxWidthMenuUI = panel.Widgets[1].Bounds.Width;
         }
 
         public override void UnloadContent()
         {
             base.UnloadContent();
+
+            // Any assets created or loaded without the content manager should be disposed of.
             whiteRectangle.Dispose();
         }
 
