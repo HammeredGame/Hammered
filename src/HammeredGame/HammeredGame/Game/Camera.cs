@@ -143,9 +143,9 @@ namespace HammeredGame.Game
         /// TEMPORARY - needs to be modified Update the camera position and look-at Currently just
         /// switches between 4 predetermined positions given the corresponding keyboard input
         /// </summary>
-        public void UpdateCamera()
+        public void UpdateCamera(bool screenHasFocus)
         {
-            if (Mode == CameraMode.Follow)
+            if (Mode == CameraMode.Follow && screenHasFocus)
             {
                 // In the case of follow mode, we modify the 2D vector that is multiplied onto the
                 // base camera offset. This controls the 4 isometric directions that the camera can take.
@@ -182,9 +182,12 @@ namespace HammeredGame.Game
                 followOffset.Z *= followDir2D.Y;
 
                 Vector3 newPosition = followTarget.Position + Vector3.Normalize(followOffset) * FollowDistance;
+
+                ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
+
                 UpdatePositionTarget(newPosition, followTarget.Position);
             }
-            else
+            else if (Mode == CameraMode.FourPointStatic && screenHasFocus)
             {
                 // In static camera mode, we use the input to select the static camera.
 
@@ -210,7 +213,36 @@ namespace HammeredGame.Game
 
                 #endregion TEMPORARY_CAMERA_CONTROLS
 
+                ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
+
                 UpdatePositionTarget(StaticPositions[currentCameraPosIndex], Vector3.Zero);
+            } else {
+                // In paused mode, make the camera really up close. We use const values here and
+                // don't update the camera fields. This way we can reset to the previous values easily.
+                const float tempFollowDistance = 23f;
+                const float tempFollowAngle = 0.411f;
+                const float tempFieldOfView = 0.965f;
+
+                // Calculate the base follow offset position (from the follow target) using the
+                // followAngle, between 0 (horizon) and 90 (top down)
+                var sinCos = Math.SinCos(tempFollowAngle);
+                Vector3 followOffset = new Vector3((float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos), (float)sinCos.Sin, (float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos));
+
+                // Multiply by the diagonal direction
+                followOffset.X *= followDir2D.X;
+                followOffset.Z *= followDir2D.Y;
+
+                Vector3 newPosition = followTarget.Position + Vector3.Normalize(followOffset) * tempFollowDistance;
+
+                // Find which direction to offset the camera by so it fits in the right half of the
+                // paused screen
+                Vector3 unitScreenLeft = Vector3.Normalize(Vector3.Cross(followOffset, Vector3.UnitY));
+
+                // Tween the projection matrix
+                Matrix targetProjMatrix = Matrix.CreatePerspectiveFieldOfView(tempFieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
+                ProjMatrix = (targetProjMatrix - ProjMatrix) / 10f + ProjMatrix;
+
+                UpdatePositionTarget(newPosition, followTarget.Position + unitScreenLeft * 5);
             }
         }
 
@@ -221,7 +253,6 @@ namespace HammeredGame.Game
             ImGui.Text($"Camera Focus: {Target}");
 
             ImGui.DragFloat("Field of View (rad): ", ref FieldOfView, 0.01f, 0.01f, MathHelper.Pi - 0.01f);
-            ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
 
             bool isStatic = Mode == CameraMode.FourPointStatic;
             if (ImGui.Checkbox("Static Camera Mode", ref isStatic))

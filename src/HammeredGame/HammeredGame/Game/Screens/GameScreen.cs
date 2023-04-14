@@ -155,7 +155,7 @@ namespace HammeredGame.Game.Screens
             }
 
             // Update camera
-            currentScene.Camera.UpdateCamera();
+            currentScene.Camera.UpdateCamera(HasFocus);
 
             //Steps the simulation forward one time step.
             currentScene.Space.Update();
