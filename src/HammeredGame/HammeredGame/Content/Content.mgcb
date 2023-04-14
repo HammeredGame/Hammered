@@ -203,6 +203,18 @@
 /processorParam:TextureFormat=Compressed
 /build:character-merged.fbx
 
+#begin ControlPrompts/controls_atlas_keyboard.png
+/copy:ControlPrompts/controls_atlas_keyboard.png
+
+#begin ControlPrompts/controls_atlas_keyboard.xmat
+/copy:ControlPrompts/controls_atlas_keyboard.xmat
+
+#begin ControlPrompts/controls_atlas_xbox.png
+/copy:ControlPrompts/controls_atlas_xbox.png
+
+#begin ControlPrompts/controls_atlas_xbox.xmat
+/copy:ControlPrompts/controls_atlas_xbox.xmat
+
 #begin cube.fbx
 /importer:FbxImporter
 /processor:ModelProcessor

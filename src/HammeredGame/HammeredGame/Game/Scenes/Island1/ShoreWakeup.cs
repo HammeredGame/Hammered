@@ -1,6 +1,8 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -12,7 +14,7 @@ namespace HammeredGame.Game.Scenes.Island1
             OnSceneStart();
         }
 
-        protected override void OnSceneStart()
+        protected override async void OnSceneStart()
         {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
@@ -21,6 +23,13 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName);
             };
+
+            await Services.GetService<ScriptUtils>().WaitSeconds(5);
+            CancellationTokenSource tokenSource = new();
+            ParentGameScreen.ShowPromptsFor(new List<string>() { "XboxSeriesX_Left_Stick" }, tokenSource.Token);
+
+            await Services.GetService<ScriptUtils>().WaitSeconds(5);
+            tokenSource.Cancel();
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
