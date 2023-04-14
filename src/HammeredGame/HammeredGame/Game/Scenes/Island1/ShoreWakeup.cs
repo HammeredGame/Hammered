@@ -17,12 +17,20 @@ namespace HammeredGame.Game.Scenes.Island1
         protected override async void OnSceneStart()
         {
             Camera.SetFollowTarget(Get<Player>("player1"));
+
+            // set active camera to determine which way is forward
             Get<Player>("player1").SetActiveCamera(Camera);
 
+            // drop hammer here to set state as Dropped, so when we set the owner player later it
+            // won't fly back
+            Get<Hammer>("hammer").DropHammer();
+
+            // Show movement prompt 1 second after launch
             await Services.GetService<ScriptUtils>().WaitSeconds(1);
             CancellationTokenSource movementPromptTokenSource = new();
             ParentGameScreen.ShowPromptsFor(new List<string>() { "Move" }, movementPromptTokenSource.Token);
 
+            // On entering hammer vicinity show hammer prompt
             CancellationTokenSource summonPromptTokenSource = new();
             Get<TriggerObject>("hammer_trigger").OnTrigger += (_, _) =>
             {
@@ -39,15 +47,6 @@ namespace HammeredGame.Game.Scenes.Island1
                 summonPromptTokenSource.Cancel();
                 ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName);
             };
-
-            // Get<Player>("player").OnMove += async _ => {
-            //     System.Diagnostics.Debug.WriteLine("a");
-            //     services.GetService<ScriptUtils>.WaitSeconds(5);
-            //     System.Diagnostics.Debug.WriteLine("written after 5 seconds of player movement");
-            // };
-
-            //Create<Player>("player", services, content.Load<Model>("character-colored"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
-            //Create<Hammer>("hammer", services, content.Load<Model>("temp_hammer2"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
         }
     }
 }
