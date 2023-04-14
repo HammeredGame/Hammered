@@ -56,11 +56,15 @@ namespace HammeredGame.Game.GameObjects
 
         private Player player;
 
-        private List<SoundEffect> hammer_sfx = new List<SoundEffect>(); 
-        //how long till trigger next sound 
+        private List<SoundEffect> hammer_sfx = new List<SoundEffect>();
+        //how long till trigger next sound
         //TimeSpan audioDelay = TimeSpan.Zero;
 
-        private AudioManager audioManager; 
+        private AudioManager audioManager;
+
+        public event EventHandler OnSummon;
+        public event EventHandler OnCollision;
+        public event EventHandler OnDrop;
 
         public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
             : base(services, model, t, pos, rotation, scale, entity)
@@ -68,7 +72,7 @@ namespace HammeredGame.Game.GameObjects
             hammerState = HammerState.WithCharacter;
             hammer_sfx = Services.GetService<List<SoundEffect>>();
             audioManager = Services.GetService<AudioManager>();
-            
+
             if (this.Entity != null)
             {
                 // Adding a tag to the entity, to allow us to potentially filter and
@@ -112,6 +116,8 @@ namespace HammeredGame.Game.GameObjects
             if (otherEntityInformation != null)
             {
                 if (other.Tag is Player) return;
+                OnCollision?.Invoke(this, null);
+
                 Input input = Services.GetService<Input>();
                 if (input.GamePadState.IsConnected)
                 {
@@ -185,7 +191,7 @@ namespace HammeredGame.Game.GameObjects
                 //        }
                 //    }
                 //}
-                
+
             }
         }
 
@@ -209,6 +215,7 @@ namespace HammeredGame.Game.GameObjects
             if (hammerState == HammerState.Dropped && player != null && Entity != null && input.KeyDown(Keys.Q))
             {
                 hammerState = HammerState.Enroute;
+                OnSummon?.Invoke(this, null);
 
                 // When hammer is enroute, the physics engine shouldn't solve for
                 // collision constraints with it --> rather we want to manually
@@ -234,6 +241,7 @@ namespace HammeredGame.Game.GameObjects
                 if (hammerState == HammerState.Dropped && player != null && Entity != null && input.ButtonPress(Buttons.B))
                 {
                     hammerState = HammerState.Enroute;
+                    OnSummon?.Invoke(this, null);
 
                     // When hammer is enroute, the physics engine shouldn't solve for
                     // collision constraints with it --> rather we want to manually
@@ -248,12 +256,12 @@ namespace HammeredGame.Game.GameObjects
         {
             // Set hammer state to dropped
             hammerState = HammerState.Dropped;
-            
+
             hammer_sfx[1].Play();
-            
+
             //audioManager.Play3DSound("Audio/hammer_drop", false);
-            
-            
+
+            OnDrop?.Invoke(this, null);
 
             if (this.Entity != null)
             {
