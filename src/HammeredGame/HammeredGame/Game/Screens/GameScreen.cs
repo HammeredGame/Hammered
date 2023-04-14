@@ -151,7 +151,7 @@ namespace HammeredGame.Game.Screens
             // if screen not focused?)
             foreach (GameObject gameObject in currentScene.GameObjectsList)
             {
-                gameObject.Update(gameTime);
+                gameObject.Update(gameTime, HasFocus);
             }
 
             // Update camera

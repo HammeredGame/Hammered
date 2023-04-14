@@ -135,7 +135,7 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Update function (called every tick)
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             OldPosition = this.Position;
 

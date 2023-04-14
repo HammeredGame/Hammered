@@ -123,7 +123,7 @@ namespace HammeredGame.Game
             }
         }
 
-        public abstract void Update(GameTime gameTime);
+        public abstract void Update(GameTime gameTime, bool screenHasFocus);
 
         // get position and rotation of the object - extract the scale, rotation, and translation matrices
         // get world matrix and then call draw model to draw the mesh on screen

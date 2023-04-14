@@ -33,7 +33,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs
         {
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             // Do nothing (for now)
         }

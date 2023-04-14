@@ -36,10 +36,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         {
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             //this.ComputeBounds();
-            base.Update(gameTime);
+            base.Update(gameTime, screenHasFocus);
         }
     }
 }
