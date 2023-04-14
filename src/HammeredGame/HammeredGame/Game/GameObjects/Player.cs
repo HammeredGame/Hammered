@@ -207,7 +207,7 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Update (called every tick)
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             ///<value>
             /// The variable <c>moveDirty</c> indicates whether there has been any input from the player
@@ -221,15 +221,12 @@ namespace HammeredGame.Game.GameObjects
             // previous computations accumulating/carrying over)
             player_vel = Vector3.Zero;
 
-            Vector3 forwardDirection;
-            if (activeCamera != null) {
+            Vector3 forwardDirection = Vector3.Zero;
+            if (activeCamera != null && screenHasFocus) {
                 // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
                 // "forward" from the current camera perspective. Calculated by projecting the vector of
                 // the current camera position to the player position, onto the ground, and normalising it.
                 forwardDirection = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
-            } else
-            {
-                forwardDirection = Vector3.UnitX;
             }
 
             // Handling input from keyboard.

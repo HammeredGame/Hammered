@@ -102,7 +102,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             }
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             //triggerObject.setVisible(true);
             //if (playerOn || hammerOn)
