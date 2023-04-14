@@ -49,7 +49,7 @@ namespace HammeredGame.Game
 
         public void ShowPromptsFor(List<string> actions, CancellationToken stopToken)
         {
-            shownControls.Add(stopToken, actions);
+            shownControls[stopToken] = actions;
         }
 
         public override void LoadContent()
