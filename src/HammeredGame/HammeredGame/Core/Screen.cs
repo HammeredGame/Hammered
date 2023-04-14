@@ -9,11 +9,15 @@ namespace HammeredGame.Core
         Active // Automatically becomes this when screen should be drawn
     }
 
+    /// <summary>
+    /// A screen is a.... a screen. The game window always contains at least one screen, and draws
+    /// all of them in the stack from bottom up.
+    /// </summary>
     public abstract class Screen : IImGui
     {
         /// <summary>
-        /// Whether this screen completely blocks out screens under it. If true, all screens below
-        /// it will receive { coveredByOtherScreen = true } in their Update() calls.
+        /// Whether this screen completely blocks out screens under it. If false, all screens below
+        /// it will receive { isCoveredByNonPartialScreen = true } in their Update() calls.
         /// </summary>
         public bool IsPartial { get; protected set; }
 
