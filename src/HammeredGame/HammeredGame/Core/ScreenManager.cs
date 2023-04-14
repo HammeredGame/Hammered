@@ -21,9 +21,9 @@ namespace HammeredGame.Core
 
         public void LoadContent()
         {
-            foreach (Screen screen in screens)
-            {
-                screen.LoadContent();
+            // Call LoadContent for screens that were already added to the list through AddScreen
+            for (int i = 0; i < screens.Count; i++) {
+                screens[i].LoadContent();
             }
         }
 
@@ -55,11 +55,6 @@ namespace HammeredGame.Core
                         coveredByOtherScreen = true;
                     }
                 }
-
-                if (screen.IsExiting)
-                {
-                    RemoveScreen(screen);
-                }
             }
         }
 
@@ -74,18 +69,31 @@ namespace HammeredGame.Core
             }
         }
 
-        public void AddScreen(Screen screen)
+        public void PreloadScreen(Screen screen)
         {
             screen.GameServices = services;
             screen.ScreenManager = this;
             screen.LoadContent();
+        }
+
+        public void AddScreen(Screen screen)
+        {
+            screen.GameServices = services;
+            screen.ScreenManager = this;
+
+            if (!screen.IsLoaded)
+            {
+                screen.LoadContent();
+            }
+
             screens.Add(screen);
         }
 
-        public void RemoveScreen(Screen screen)
+        public void RemoveScreen(Screen screen, bool alsoUnloadContent = true)
         {
-            screen.UnloadContent();
             screens.Remove(screen);
+
+            if (alsoUnloadContent) screen.UnloadContent();
         }
 
         public void UI()
