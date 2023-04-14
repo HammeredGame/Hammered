@@ -19,7 +19,13 @@ namespace HammeredGame.Core
         /// Whether this screen completely blocks out screens under it. If false, all screens below
         /// it will receive { isCoveredByNonPartialScreen = true } in their Update() calls.
         /// </summary>
-        public bool IsPartial { get; protected set; }
+        public bool IsPartial { get; protected set; } = false;
+
+        /// <summary>
+        /// Whether this screen steals focus or passes it through, i.e. screens below this also get
+        /// focus or not.
+        /// </summary>
+        public bool PassesFocusThrough { get; protected set; } = false;
 
         /// <summary>
         /// The draw state of the screen. This is updated in Update() automatically. It is Hidden
@@ -32,13 +38,13 @@ namespace HammeredGame.Core
         /// Whether this screen's contents are already loaded. Set to true by LoadContent(). Screens
         /// with this set to true can be added to the ScreenManager cheaply.
         /// </summary>
-        public bool IsLoaded { get; protected set; }
+        public bool IsLoaded { get; protected set; } = false;
 
         /// <summary>
         /// A screen has "focus" when it is drawn and nothing else has taken its focus. Input
         /// handling should try to rely on this boolean.
         /// </summary>
-        public bool HasFocus { get; protected set; }
+        public bool HasFocus { get; protected set; } = false;
 
         /// <summary>
         /// The game services (set by ScreenManager) that the screen has access to.

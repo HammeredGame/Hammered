@@ -1,7 +1,9 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HammeredGame.Core
 {
@@ -73,10 +75,13 @@ namespace HammeredGame.Core
                 screen.UpdateWithPrelude(gameTime, hasFocus, isCoveredByNonPartialScreen);
 
                 // If the screen is drawn in some amount, then mark it as having stolen focus from
-                // the rest of the stack
+                // the rest of the stack, unless it passes through focus
                 if (screen.State == ScreenState.Active)
                 {
-                    hasFocus = false;
+                    if (!screen.PassesFocusThrough)
+                    {
+                        hasFocus = false;
+                    }
                     if (!screen.IsPartial)
                     {
                         isCoveredByNonPartialScreen = true;
@@ -144,7 +149,13 @@ namespace HammeredGame.Core
 
         public void UI()
         {
-            ImGui.TextWrapped($"Current screen stack: {string.Join(", ", screens)}");
+            Func<Screen, string> screenProps = s =>
+            {
+                // Show only selected properties that are true
+                List<string> propertiesToShow = new() { "HasFocus", "IsPartial", "PassesFocusThrough" };
+                return "{" + string.Join(",", propertiesToShow.Where(p => (bool)s.GetType().GetProperty(p).GetValue(s, null))) + "}";
+            };
+            ImGui.TextWrapped($"Current screen stack: {string.Join(", ", screens.Select(s => s.GetType().Name + screenProps(s)))}");
             foreach (Screen screen in screens)
             {
                 if (screen.State != ScreenState.Hidden)
