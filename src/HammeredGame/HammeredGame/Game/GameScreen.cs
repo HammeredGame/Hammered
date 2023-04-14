@@ -27,6 +27,8 @@ namespace HammeredGame
         // Pause screen is always loaded, see LoadContent().
         private PauseScreen pauseScreen;
 
+        private ControlPromptsScreen promptsScreen;
+
         // Music variables
         private Song bgMusic;
         private AudioListener listener = new AudioListener();
@@ -87,10 +89,9 @@ namespace HammeredGame
         /// constant, so use the gameTime argument to make sure speeds appear natural.
         /// </summary>
         /// <param name="gameTime"></param>
-        public override void Update(GameTime gameTime, bool isBelowAnotherScreen, bool isCoveredByNonPartialScreen)
+        public override void Update(GameTime gameTime)
         {
-            // Update screen state and HasFocus (= active state && is on top) so we can use it
-            base.Update(gameTime, isBelowAnotherScreen, isCoveredByNonPartialScreen);
+            base.Update(gameTime);
 
             Input input = GameServices.GetService<Input>();
 

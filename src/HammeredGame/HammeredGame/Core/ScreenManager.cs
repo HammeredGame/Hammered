@@ -62,7 +62,7 @@ namespace HammeredGame.Core
             List<Screen> screensWorkingCopy = new();
             screensWorkingCopy.AddRange(screens);
 
-            bool isBelowAnotherScreen = false;
+            bool hasFocus = true;
             bool isCoveredByNonPartialScreen = false;
 
             // Traverse backwards, so from the top of the stack. This way we can tell the ones on
@@ -70,13 +70,13 @@ namespace HammeredGame.Core
             for (int i = screensWorkingCopy.Count - 1; i >= 0; i--)
             {
                 Screen screen = screensWorkingCopy[i];
-                screen.Update(gameTime, isBelowAnotherScreen, isCoveredByNonPartialScreen);
+                screen.UpdateWithPrelude(gameTime, hasFocus, isCoveredByNonPartialScreen);
 
-                // If the screen is in the foreground and doing fine, don't give focus to the rest
-                // of the screens.
+                // If the screen is drawn in some amount, then mark it as having stolen focus from
+                // the rest of the stack
                 if (screen.State == ScreenState.Active)
                 {
-                    isBelowAnotherScreen = true;
+                    hasFocus = false;
                     if (!screen.IsPartial)
                     {
                         isCoveredByNonPartialScreen = true;

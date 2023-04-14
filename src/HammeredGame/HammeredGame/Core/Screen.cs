@@ -22,7 +22,9 @@ namespace HammeredGame.Core
         public bool IsPartial { get; protected set; }
 
         /// <summary>
-        /// The draw state of the screen. This is updated in Update() automatically.
+        /// The draw state of the screen. This is updated in Update() automatically. It is Hidden
+        /// when the screen is behind some other screen that has IsPartial set to false, i.e. a
+        /// full-screen screen. It is set to Active if the screen is drawn in some amount.
         /// </summary>
         public ScreenState State { get; protected set; } = ScreenState.Active;
 
@@ -33,17 +35,10 @@ namespace HammeredGame.Core
         public bool IsLoaded { get; protected set; }
 
         /// <summary>
-        /// Whether another screen exists above this screen layer.
+        /// A screen has "focus" when it is drawn and nothing else has taken its focus. Input
+        /// handling should try to rely on this boolean.
         /// </summary>
-        private bool isBelowAnotherScreen;
-
-        /// <summary>
-        /// A screen has "focus" when it is drawn and another screen doesn't exist on top. Input
-        /// handling can try to rely on this boolean.
-        /// </summary>
-        public bool HasFocus {
-            get { return State == ScreenState.Active && !isBelowAnotherScreen; }
-        }
+        public bool HasFocus { get; protected set; }
 
         /// <summary>
         /// The game services (set by ScreenManager) that the screen has access to.
@@ -69,14 +64,19 @@ namespace HammeredGame.Core
         public virtual void UnloadContent() { }
 
         /// <summary>
-        /// Called on every game update as long as the screen is in the stack. The base
-        /// implementation of this function changes the draw State and whether it has focus.
+        /// Called on every game update as long as the screen is in the stack. This function is not
+        /// virtual. This is to prevent implementations of Screen Update() methods to access the
+        /// hasFocus and <paramref name="isCoveredByNonPartialScreen"/> arguments.
+        /// <para />
+        /// Use Update() for implementing an Update function.
         /// </summary>
         /// <param name="gameTime"></param>
-        /// <param name="isBelowAnotherScreen">Whether a screen exists above this</param>
-        /// <param name="isCoveredByNonPartialScreen">Whether a non-partial screen exists above this</param>
-        public virtual void Update(GameTime gameTime, bool isBelowAnotherScreen, bool isCoveredByNonPartialScreen) {
-            this.isBelowAnotherScreen = isBelowAnotherScreen;
+        /// <param name="hasFocus">Whether the screen has focus</param>
+        /// <param name="isCoveredByNonPartialScreen">
+        /// Whether a non-partial screen exists above this
+        /// </param>
+        public void UpdateWithPrelude(GameTime gameTime, bool hasFocus, bool isCoveredByNonPartialScreen) {
+            this.HasFocus = hasFocus;
 
             if (isCoveredByNonPartialScreen)
             {
@@ -85,7 +85,16 @@ namespace HammeredGame.Core
             {
                 State = ScreenState.Active;
             }
+
+            Update(gameTime);
         }
+
+        /// <summary>
+        /// Called on every game update as long as the screen is in the stack. Use HasFocus for
+        /// checking if it has focus, and Status for checking if it is drawn at all.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public virtual void Update(GameTime gameTime) { }
 
         /// <summary>
         /// Called to draw.
