@@ -7,7 +7,14 @@ namespace HammeredGame.Core
 {
     public class ScreenManager
     {
+        /// <summary>
+        /// List of all screens in the stack, in render order (0 is rendered first, n - 1 is rendered on top)
+        /// </summary>
         private readonly List<Screen> screens = new();
+
+        /// <summary>
+        /// Game services, graphics device, and the main render target that all Screens can access.
+        /// </summary>
         private readonly GameServices services;
         public GraphicsDevice GraphicsDevice;
         public RenderTarget2D MainRenderTarget;
@@ -19,14 +26,22 @@ namespace HammeredGame.Core
             this.MainRenderTarget = mainRenderTarget;
         }
 
+        /// <summary>
+        /// Should be called once during main game LoadContent(). Calls LoadContent for any screens
+        /// that were already added before this through AddScreen.
+        /// </summary>
         public void LoadContent()
         {
-            // Call LoadContent for screens that were already added to the list through AddScreen
+            // Screens may load additional screens, so use a for loop instead of a foreach loop.
+            // We assume screens won't exit during content load...
             for (int i = 0; i < screens.Count; i++) {
                 screens[i].LoadContent();
             }
         }
 
+        /// <summary>
+        /// Unloads content from all screens.
+        /// </summary>
         public void UnloadContent()
         {
             foreach (Screen screen in screens)
@@ -35,29 +50,42 @@ namespace HammeredGame.Core
             }
         }
 
+        /// <summary>
+        /// Calls Update() on all screens on the stack, passing them parameters on whether or not it
+        /// has focus (is in the foreground), or whether it is completely hidden from view by other screens.
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void Update(GameTime gameTime)
         {
+            // Create a working copy of the screens list since Update() may add or remove screens,
+            // but we only want to loop over the screens that are present at this point in time.
             List<Screen> screensWorkingCopy = new();
             screensWorkingCopy.AddRange(screens);
 
-            bool otherScreenHasFocus = false;
-            bool coveredByOtherScreen = false;
-            for (int i = screensWorkingCopy.Count - 1; i >= 0; i--)
-            {
-                Screen screen = screensWorkingCopy[i];
-                screen.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
+            bool isBelowAnotherScreen = false;
+            bool isCoveredByNonPartialScreen = false;
 
+            foreach (Screen screen in screensWorkingCopy)
+            {
+                screen.Update(gameTime, isBelowAnotherScreen, isCoveredByNonPartialScreen);
+
+                // If the screen is in the foreground and doing fine, don't give focus to the rest
+                // of the screens.
                 if (screen.State == ScreenState.Active)
                 {
-                    otherScreenHasFocus = true;
+                    isBelowAnotherScreen = true;
                     if (!screen.IsPartial)
                     {
-                        coveredByOtherScreen = true;
+                        isCoveredByNonPartialScreen = true;
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Calls Draw() on all screens on the stack that aren't totally hidden in the background.
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void Draw(GameTime gameTime)
         {
             foreach (Screen screen in screens)
@@ -69,6 +97,11 @@ namespace HammeredGame.Core
             }
         }
 
+        /// <summary>
+        /// Calls LoadContent() on the screen, for preloading content. This sets the IsLoaded flag
+        /// in the screen. Resulting screens can be added via AddScreen() without much delay.
+        /// </summary>
+        /// <param name="screen"></param>
         public void PreloadScreen(Screen screen)
         {
             screen.GameServices = services;
@@ -76,6 +109,11 @@ namespace HammeredGame.Core
             screen.LoadContent();
         }
 
+        /// <summary>
+        /// Add a screen to the stack (rendered on top of everything else). If the screen is already
+        /// preloaded, this function is very cheap. Otherwise, it calls LoadContent() and could be expensive.
+        /// </summary>
+        /// <param name="screen"></param>
         public void AddScreen(Screen screen)
         {
             screen.GameServices = services;
@@ -89,6 +127,11 @@ namespace HammeredGame.Core
             screens.Add(screen);
         }
 
+        /// <summary>
+        /// Remove a screen from the stack, optionally calling UnloadContent() on it.
+        /// </summary>
+        /// <param name="screen"></param>
+        /// <param name="alsoUnloadContent"></param>
         public void RemoveScreen(Screen screen, bool alsoUnloadContent = true)
         {
             screens.Remove(screen);
