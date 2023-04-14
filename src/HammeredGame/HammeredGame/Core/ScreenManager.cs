@@ -15,6 +15,12 @@ namespace HammeredGame.Core
         private readonly List<Screen> screens = new();
 
         /// <summary>
+        /// Whether we are past the LoadContent() step. Until this is true, AddScreen() will not
+        /// load content, but will batch them up to load them all when LoadContent() is called.
+        /// </summary>
+        private bool passedLoadContent;
+
+        /// <summary>
         /// Game services, graphics device, and the main render target that all Screens can access.
         /// </summary>
         private readonly GameServices services;
@@ -39,6 +45,7 @@ namespace HammeredGame.Core
             for (int i = 0; i < screens.Count; i++) {
                 screens[i].LoadContent();
             }
+            passedLoadContent = true;
         }
 
         /// <summary>
@@ -118,8 +125,11 @@ namespace HammeredGame.Core
         }
 
         /// <summary>
-        /// Add a screen to the stack (rendered on top of everything else). If the screen is already
-        /// preloaded, this function is very cheap. Otherwise, it calls LoadContent() and could be expensive.
+        /// Add a screen to the stack (rendered on top of everything else). If this function is
+        /// called prior to LoadContent(), then the screen will be added to the stack but without
+        /// its contents loaded. They will be loaded when LoadContent is called. If this function is
+        /// called with a screen that is already preloaded, this function also will not call reload
+        /// its contents. Otherwise, this function will call LoadContent() and may be expensive at runtime.
         /// </summary>
         /// <param name="screen"></param>
         public void AddScreen(Screen screen)
@@ -127,7 +137,10 @@ namespace HammeredGame.Core
             screen.GameServices = services;
             screen.ScreenManager = this;
 
-            if (!screen.IsLoaded)
+            // Load the content only if we have not loaded it before, and we are past LoadContent().
+            // Otherwise, we'll load all content within LoadContent since we might still be in the
+            // game Initialize() step.
+            if (!screen.IsLoaded && passedLoadContent)
             {
                 screen.LoadContent();
             }
