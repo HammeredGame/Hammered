@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
 using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries;
-using Hammered_Physics.Core;
 using HammeredGame.Core;
 using BEPUphysics.Entities;
 

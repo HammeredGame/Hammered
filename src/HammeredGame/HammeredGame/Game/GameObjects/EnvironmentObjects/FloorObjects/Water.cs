@@ -10,7 +10,6 @@ using ImGuiNET;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
 using HammeredGame.Game;
 using BEPUphysics.BroadPhaseEntries;
-using Hammered_Physics.Core;
 using BEPUphysics;
 using HammeredGame.Core;
 using BEPUphysics.Entities;
