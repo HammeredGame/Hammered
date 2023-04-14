@@ -6,7 +6,7 @@ namespace HammeredGame.Game.Scenes.Island1
 {
     internal class TreeTutorial : Scene
     {
-        public TreeTutorial(GameServices services) : base(services)
+        public TreeTutorial(GameServices services, GameScreen screen) : base(services, screen)
         {
             CreateFromXML($"Content/SceneDescriptions/Island1/TreeTutorial.xml");
             OnSceneStart();

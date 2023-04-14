@@ -60,9 +60,9 @@ namespace HammeredGame
         /// all visible UI as well and show only the UIs relevant to the new objects.
         /// </summary>
         /// <param name="levelToLoad"></param>
-        private void InitializeLevel(string levelToLoad)
+        public void InitializeLevel(string levelToLoad)
         {
-            currentScene = (Scene)Activator.CreateInstance(Type.GetType(levelToLoad), GameServices);
+            currentScene = (Scene)Activator.CreateInstance(Type.GetType(levelToLoad), GameServices, this);
         }
 
         /// <summary>
