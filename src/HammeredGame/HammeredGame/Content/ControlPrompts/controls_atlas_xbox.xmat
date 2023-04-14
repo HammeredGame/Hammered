@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas Image="controls_atlas_xbox.png">
+  <TextureRegion Id="XboxSeriesX_A" Left="0" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_B" Left="100" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Diagram" Left="200" Top="0" Width="1452" Height="940" />
+  <TextureRegion Id="XboxSeriesX_Diagram_Simple" Left="0" Top="940" Width="1452" Height="940" />
+  <TextureRegion Id="XboxSeriesX_Dpad" Left="1652" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Dpad_Down" Left="1752" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Dpad_Left" Left="1852" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Dpad_Right" Left="1652" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Dpad_Up" Left="1752" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_LB" Left="1852" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Left_Stick" Left="1652" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Left_Stick_Click" Left="1752" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_LT" Left="1852" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Menu" Left="1652" Top="300" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_RB" Left="1752" Top="300" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Right_Stick" Left="1852" Top="300" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Right_Stick_Click" Left="1652" Top="400" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_RT" Left="1752" Top="400" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Share" Left="1852" Top="400" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_View" Left="1652" Top="500" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_X" Left="1752" Top="500" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Y" Left="1852" Top="500" Width="100" Height="100" />
+</TextureAtlas>

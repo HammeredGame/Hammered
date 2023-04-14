@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Media;
 using System;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace HammeredGame
 {
@@ -71,6 +72,9 @@ namespace HammeredGame
             // UI layout)
             pauseScreen = new PauseScreen();
             ScreenManager.PreloadScreen(pauseScreen);
+
+            promptsScreen = new ControlPromptsScreen();
+            ScreenManager.AddScreen(promptsScreen);
         }
 
         /// <summary>
@@ -82,6 +86,11 @@ namespace HammeredGame
         public void InitializeLevel(string levelToLoad)
         {
             currentScene = (Scene)Activator.CreateInstance(Type.GetType(levelToLoad), GameServices, this);
+        }
+
+        public void ShowPromptsFor(List<string> controls, CancellationToken stopToken)
+        {
+            promptsScreen.ShowPromptsFor(controls, stopToken);
         }
 
         /// <summary>
