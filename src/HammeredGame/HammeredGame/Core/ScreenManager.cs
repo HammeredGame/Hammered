@@ -65,8 +65,11 @@ namespace HammeredGame.Core
             bool isBelowAnotherScreen = false;
             bool isCoveredByNonPartialScreen = false;
 
-            foreach (Screen screen in screensWorkingCopy)
+            // Traverse backwards, so from the top of the stack. This way we can tell the ones on
+            // the bottom that they are covered and don't have focus.
+            for (int i = screensWorkingCopy.Count - 1; i >= 0; i--)
             {
+                Screen screen = screensWorkingCopy[i];
                 screen.Update(gameTime, isBelowAnotherScreen, isCoveredByNonPartialScreen);
 
                 // If the screen is in the foreground and doing fine, don't give focus to the rest
