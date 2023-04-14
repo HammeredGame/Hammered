@@ -132,10 +132,13 @@ namespace HammeredGame.Game
             // Update screen state and HasFocus (= active state && is on top) so we can use it
             base.Update(gameTime, isBelowAnotherScreen, isCoveredByNonPartialScreen);
 
-            Input input = GameServices.GetService<Input>();
-
             // Do nothing if the screen doesn't have focus
             if (!HasFocus) return;
+
+            Input input = GameServices.GetService<Input>();
+
+            // Update the UI based on input, handling any handlers
+            desktop.UpdateInput();
 
             VerticalStackPanel panel = desktop.Root as VerticalStackPanel;
             VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
@@ -172,6 +175,9 @@ namespace HammeredGame.Game
                     menuItem.Color = new Color(255, 255, 255, 198);
                 }
             }
+
+            // Update the UI layout based on any changes to it above
+            desktop.UpdateLayout();
         }
 
         public override void Draw(GameTime gameTime)
@@ -208,7 +214,7 @@ namespace HammeredGame.Game
             GameServices.GetService<SpriteBatch>().End();
 
             // Render the UI
-            desktop.Render();
+            desktop.RenderVisual();
         }
     }
 }
