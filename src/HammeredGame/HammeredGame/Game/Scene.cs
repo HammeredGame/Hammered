@@ -69,7 +69,7 @@ namespace HammeredGame.Game
             //Set the gravity of the simulation by accessing the simulation settings of the space.
             //It defaults to (0,0,0); this changes it to an 'earth like' gravity.
             //Try looking around in the space's simulationSettings to familiarize yourself with the various options.
-            Space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -98.1f, 0);
+            Space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -200f, 0);
             CollisionDetectionSettings.AllowedPenetration = 0.001f;
 
             // Add the physics space to be a globally accessible service

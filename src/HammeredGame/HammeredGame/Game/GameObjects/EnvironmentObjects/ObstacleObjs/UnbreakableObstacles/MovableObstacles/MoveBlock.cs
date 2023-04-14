@@ -52,7 +52,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
                 this.Entity.CollisionInformation.CollisionRules.Personal = CollisionRule.Defer;
                 this.SetStationary();
-                this.Entity.Material.KineticFriction = 1.5f;
+                this.Entity.Material.KineticFriction = 1f;
                 this.ActiveSpace.Add(this.Entity);
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollisionDetected;
             }
