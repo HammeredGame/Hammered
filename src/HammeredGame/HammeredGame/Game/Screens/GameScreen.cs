@@ -147,8 +147,7 @@ namespace HammeredGame.Game.Screens
                 ScreenManager.AddScreen(pauseScreen);
             }
 
-            // Update each game object (TODO: pass HasFocus, or some way to stop responding to input
-            // if screen not focused?)
+            // Update each game object
             foreach (GameObject gameObject in currentScene.GameObjectsList)
             {
                 gameObject.Update(gameTime, HasFocus);
