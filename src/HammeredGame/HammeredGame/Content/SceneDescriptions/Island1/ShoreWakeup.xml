@@ -194,4 +194,17 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="hammer_trigger">
+    <model />
+    <position>30 40 0</position>
+    <rotation>0.000 -0.437 0.000 0.899</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>32</width>
+      <height>93.900</height>
+      <length>254.300</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
 </scene>

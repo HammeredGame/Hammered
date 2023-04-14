@@ -19,17 +19,26 @@ namespace HammeredGame.Game.Scenes.Island1
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
 
-            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            await Services.GetService<ScriptUtils>().WaitSeconds(1);
+            CancellationTokenSource movementPromptTokenSource = new();
+            ParentGameScreen.ShowPromptsFor(new List<string>() { "Move" }, movementPromptTokenSource.Token);
+
+            CancellationTokenSource summonPromptTokenSource = new();
+            Get<TriggerObject>("hammer_trigger").OnTrigger += (_, _) =>
             {
-                ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName);
+                Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
+                movementPromptTokenSource.Cancel();
+
+                ParentGameScreen.ShowPromptsFor(new List<string>() { "Summon Hammer" }, summonPromptTokenSource.Token);
             };
 
-            await Services.GetService<ScriptUtils>().WaitSeconds(5);
-            CancellationTokenSource tokenSource = new();
-            ParentGameScreen.ShowPromptsFor(new List<string>() { "XboxSeriesX_Left_Stick" }, tokenSource.Token);
 
-            await Services.GetService<ScriptUtils>().WaitSeconds(5);
-            tokenSource.Cancel();
+            // completion trigger to load next level
+            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            {
+                summonPromptTokenSource.Cancel();
+                ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName);
+            };
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
