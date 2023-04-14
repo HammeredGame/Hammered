@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HammeredGame.Core
@@ -119,6 +121,31 @@ namespace HammeredGame.Core
         {
             TaskCompletionSource<object> completionSource = new();
             scheduledScripts.Add(new ScheduledScript(TimeSpan.FromMilliseconds(milliSecs), completionSource));
+            return completionSource.Task;
+        }
+
+        /// <summary>
+        /// Create a new await-able Task that waits until the specified event property of an object
+        /// is triggered, and then removes itself from the handler. Essentially, this changes an
+        /// EventHandler that you have to use callbacks for, into an async/await pattern.
+        /// </summary>
+        /// <param name="sender">Object that has the event</param>
+        /// <param name="eventName">Event property name, found using reflection</param>
+        /// <param name="cancellationToken">Token to cancel the listener if any</param>
+        /// <returns></returns>
+        public Task<EventArgs> WaitEvent(object sender, string eventName, CancellationToken cancellationToken = default)
+        {
+            // Adapted from https://learn.microsoft.com/en-us/previous-versions/windows/silverlight/dotnet-windows-silverlight/ms228976(v=vs.95)
+            TaskCompletionSource<EventArgs> completionSource = new();
+            EventInfo target = sender.GetType().GetEvent(eventName);
+            cancellationToken.Register(() => completionSource.SetCanceled());
+            EventHandler handler = null;
+            handler = (s, args) =>
+            {
+                completionSource.SetResult(args);
+                target.RemoveEventHandler(sender, handler);
+            };
+            target.AddEventHandler(sender, handler);
             return completionSource.Task;
         }
     }
