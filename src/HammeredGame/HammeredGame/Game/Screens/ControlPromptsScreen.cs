@@ -116,6 +116,9 @@ namespace HammeredGame.Game.Screens
         {
             base.Update(gameTime);
 
+            // Don't update prompts if there is something above that is taking focus, like a paused menu
+            if (!HasFocus) return;
+
             int tenthPercentageHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
 
             desktop.UpdateInput();
@@ -192,6 +195,9 @@ namespace HammeredGame.Game.Screens
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+
+            // Don't draw prompts if there is something above that is taking focus, like a paused menu
+            if (!HasFocus) return;
 
             desktop.RenderVisual();
         }
