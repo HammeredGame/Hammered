@@ -109,7 +109,8 @@ namespace HammeredGame.Game.GameObjects
                 {
                     input.VibrateController(0.75f, 0.75f);
                     // TODO: Add asynchronous wait here? (to have the vibration last a little longer?)
-                    input.StopControllerVibration();
+                    // DONE!
+                    Services.GetService<ScriptUtils>().WaitMilliseconds(50).ContinueWith((_) => input.StopControllerVibration());
                 }
             }
         }
