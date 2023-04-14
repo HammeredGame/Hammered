@@ -12,13 +12,17 @@ using System.Threading.Tasks;
 
 namespace HammeredGame.Game
 {
+    /// <summary>
+    /// This screen is a partial non-focus-stealing screen that shows screen overlays for input
+    /// prompts. ShowPromptsFor() decides what prompts to show.
+    /// </summary>
     internal class ControlPromptsScreen : Screen
     {
         private Desktop desktop;
 
         private Dictionary<CancellationToken, List<string>> shownControls = new();
         private HorizontalStackPanel controlsPanel;
-        private string inputType = "keyboard"; // todo: use enum
+        private string inputType; // todo: use enum
         private Dictionary<string, TextureRegionAtlas> controlsAtlas = new();
         private FontSystem barlowFontSystem;
 
@@ -47,6 +51,11 @@ namespace HammeredGame.Game
             PassesFocusThrough = true;
         }
 
+        /// <summary>
+        /// Show input prompts for a list of actions. Provide a cancellation token to stop showing it.
+        /// </summary>
+        /// <param name="actions"></param>
+        /// <param name="stopToken"></param>
         public void ShowPromptsFor(List<string> actions, CancellationToken stopToken)
         {
             shownControls[stopToken] = actions;
@@ -58,19 +67,25 @@ namespace HammeredGame.Game
 
             int tenthPercentageHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
 
+            // Detect upon first launch which type of input method is used if possible
             if (GameServices.GetService<Input>().GamePadState.IsConnected)
             {
                 inputType = "xbox";
+            } else
+            {
+                inputType = "keyboard";
             }
 
             // Myra uses its own asset manager. The default one uses a File stream based
             // implementation that reads from the directory of the currently executing assembly.
             controlsAtlas[inputType] = MyraEnvironment.DefaultAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/controls_atlas_" + inputType + ".xmat");
 
+            // Load font
             byte[] barlowTtfData = System.IO.File.ReadAllBytes("Content/Barlow-Medium.ttf");
             barlowFontSystem = new FontSystem();
             barlowFontSystem.AddFont(barlowTtfData);
 
+            // The horizontal layout at the bottom to add the various simultaneous prompts
             controlsPanel = new HorizontalStackPanel()
             {
                 VerticalAlignment = VerticalAlignment.Bottom,
