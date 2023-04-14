@@ -9,7 +9,7 @@ namespace HammeredGame.Game.Scenes.Island1
 {
     internal class TwoIslandPuzzle : Scene
     {
-        public TwoIslandPuzzle(GameServices services) : base(services)
+        public TwoIslandPuzzle(GameServices services, GameScreen screen) : base(services, screen)
         {
             CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle.xml");
             OnSceneStart();

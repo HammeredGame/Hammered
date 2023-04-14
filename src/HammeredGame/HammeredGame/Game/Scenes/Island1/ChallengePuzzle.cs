@@ -5,7 +5,7 @@ namespace HammeredGame.Game.Scenes.Island1
 {
     internal class ChallengePuzzle : Scene
     {
-        public ChallengePuzzle(GameServices services) : base(services)
+        public ChallengePuzzle(GameServices services, GameScreen screen) : base(services, screen)
         {
             CreateFromXML($"Content/SceneDescriptions/Island1/ChallengePuzzle.xml");
             OnSceneStart();

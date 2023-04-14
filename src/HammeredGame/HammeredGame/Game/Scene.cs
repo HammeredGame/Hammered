@@ -44,11 +44,20 @@ namespace HammeredGame.Game
         /// </summary>
         public Space Space;
 
+        /// <summary>
+        /// The game services that all objects in the scene and any scripts can access.
+        /// </summary>
         protected GameServices Services;
 
-        protected Scene(GameServices services)
+        /// <summary>
+        /// The game screen that this scene belongs to.
+        /// </summary>
+        protected GameScreen ParentGameScreen;
+
+        protected Scene(GameServices services, GameScreen screen)
         {
             this.Services = services;
+            this.ParentGameScreen = screen;
             InitNewSpace();
         }
 
