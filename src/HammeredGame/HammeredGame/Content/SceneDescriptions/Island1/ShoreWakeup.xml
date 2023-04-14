@@ -2,7 +2,7 @@
   <camera mode="follow">
     <follow_distance>257.000</follow_distance>
     <follow_angle>0.341</follow_angle>
-    <target>140.406 9.040 25.122</target>
+    <target>128.526 11.501 24.425</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.455</fov>
   </camera>
@@ -34,13 +34,14 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>temp_hammer2</model>
-    <position>70.000 7.600 -70.000</position>
+    <position>70.178 4.967 -70.178</position>
     <rotation>0.737 0.000 0.000 0.675</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>2.200</width>
       <height>1.300</height>
       <length>1.000</length>
+      <mass>10000.000</mass>
       <shift_graphic>0.000 -0.339 0.000</shift_graphic>
     </body>
   </object>
@@ -196,15 +197,145 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="hammer_trigger">
     <model />
-    <position>30 40 0</position>
-    <rotation>0.000 -0.437 0.000 0.899</rotation>
+    <position>50.000 40.000 40.000</position>
+    <rotation>0.000 -0.388 0.000 0.922</rotation>
     <scale>1.000</scale>
     <visibility>False</visibility>
     <body type="box">
-      <width>32</width>
+      <width>24.500</width>
       <height>93.900</height>
       <length>254.300</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree5">
+    <model>tree_alt</model>
+    <texture type="texture2d">tree_alt_albedo</texture>
+    <position>80.000 10.050 90.000</position>
+    <rotation>0.000 0.237 0.000 0.972</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>10.000</width>
+      <height>35.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree6">
+    <model>tree_alt</model>
+    <texture type="texture2d">tree_alt_albedo</texture>
+    <position>-20.000 10.050 20.000</position>
+    <rotation>0.000 0.237 0.000 0.972</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>10.000</width>
+      <height>35.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree7">
+    <model>tree_alt</model>
+    <texture type="texture2d">tree_alt_albedo</texture>
+    <position>20.000 5.150 20.000</position>
+    <rotation>0.000 -0.308 0.000 0.951</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>10.000</width>
+      <height>35.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree8">
+    <model>tree_alt</model>
+    <texture type="texture2d">tree_alt_albedo</texture>
+    <position>-30.000 42.550 80.000</position>
+    <rotation>0.000 -0.651 0.000 0.759</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>10.000</width>
+      <height>35.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree9">
+    <model>tree_alt</model>
+    <texture type="texture2d">tree_alt_albedo</texture>
+    <position>50.000 0.450 -110.000</position>
+    <rotation>0.000 -0.308 0.000 0.951</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>10.000</width>
+      <height>35.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree10">
+    <model>tree_alt</model>
+    <texture type="texture2d">tree_alt_albedo</texture>
+    <position>-70.000 25.850 60.000</position>
+    <rotation>0.000 -0.774 0.000 0.633</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>10.000</width>
+      <height>35.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree11">
+    <model>tree_alt</model>
+    <texture type="texture2d">tree_alt_albedo</texture>
+    <position>-120.000 28.050 -100.000</position>
+    <rotation>0.000 -0.774 0.000 0.633</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>10.000</width>
+      <height>35.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree12">
+    <model>tree_alt</model>
+    <texture type="texture2d">tree_alt_albedo</texture>
+    <position>-100.000 35.350 -120.000</position>
+    <rotation>0.000 -0.947 0.000 0.320</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>10.000</width>
+      <height>35.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree13">
+    <model>tree_alt</model>
+    <texture type="texture2d">tree_alt_albedo</texture>
+    <position>-50.000 27.550 -120.000</position>
+    <rotation>0.000 -0.995 0.000 0.104</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>10.000</width>
+      <height>35.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree14">
+    <model>tree_alt</model>
+    <texture type="texture2d">tree_alt_albedo</texture>
+    <position>-110.000 24.150 10.000</position>
+    <rotation>0.000 -0.947 0.000 0.320</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>10.000</width>
+      <height>35.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
     </body>
   </object>
 </scene>
