@@ -19,6 +19,8 @@ namespace HammeredGame
         // RENDER TARGET
         private Scene currentScene;
 
+        PauseScreen pauseScreen;
+
         // Music variables
         private Song bgMusic;
         private AudioListener listener = new AudioListener();
@@ -34,6 +36,8 @@ namespace HammeredGame
         /// </summary>
         public override void LoadContent()
         {
+            base.LoadContent();
+
             InitializeLevel("HammeredGame.Game.Scenes.Island1.ShoreWakeup");
 
             ContentManager Content = GameServices.GetService<ContentManager>();
@@ -52,6 +56,9 @@ namespace HammeredGame
             MediaPlayer.Play(bgMusic);
 
             SoundEffect.MasterVolume = 0.2f;
+
+            pauseScreen = new PauseScreen();
+            ScreenManager.PreloadScreen(pauseScreen);
         }
 
         /// <summary>
@@ -78,7 +85,8 @@ namespace HammeredGame
 
             if (!otherScreenHasFocus && (input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape)))
             {
-                ScreenManager.AddScreen(new PauseScreen(() => InitializeLevel(currentScene.GetType().FullName)));
+                pauseScreen.RestartLevelFunc = () => InitializeLevel(currentScene.GetType().FullName);
+                ScreenManager.AddScreen(pauseScreen);
             }
 
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))

@@ -14,13 +14,14 @@ namespace HammeredGame.Game
     {
         private Desktop desktop;
 
-        private Action restartLevelFunc;
+        public Action RestartLevelFunc;
 
         Texture2D whiteRectangle;
 
-        public PauseScreen(Action restartLevelFunc) {
+        int maxWidthMenuUI;
+
+        public PauseScreen() {
             IsPartial = true;
-            this.restartLevelFunc = restartLevelFunc;
         }
 
         public override void LoadContent()
@@ -54,7 +55,7 @@ namespace HammeredGame.Game
                 Text = "Continue",
                 Id = "menuItemContinue",
             };
-            menuItemContinue.Selected += (s, a) => ExitScreen();
+            menuItemContinue.Selected += (s, a) => ExitScreen(alsoUnloadContent: false);
 
             MenuItem menuItemRestartLevel = new()
             {
@@ -63,8 +64,8 @@ namespace HammeredGame.Game
             };
             menuItemRestartLevel.Selected += (s, a) =>
             {
-                restartLevelFunc.Invoke();
-                ExitScreen();
+                RestartLevelFunc?.Invoke();
+                ExitScreen(alsoUnloadContent: false);
             };
 
             MenuItem menuItemOptions = new()
@@ -112,6 +113,11 @@ namespace HammeredGame.Game
             {
                 a.Cancel = HasFocus;
             };
+
+            // Precalculate layout once so we know the width of the text to draw the background for
+            desktop.UpdateLayout();
+
+            maxWidthMenuUI = (desktop.Root as VerticalStackPanel).Widgets[1].Bounds.Width;
         }
 
         public override void UnloadContent()
@@ -127,7 +133,7 @@ namespace HammeredGame.Game
             Input input = GameServices.GetService<Input>();
             if (!otherScreenHasFocus && (input.ButtonPress(Buttons.B) || input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape)))
             {
-                ExitScreen();
+                ExitScreen(alsoUnloadContent: false);
             }
 
             if (!otherScreenHasFocus && (MathF.Abs(input.GamePadState.ThumbSticks.Left.Y) > 0.5))
@@ -159,7 +165,6 @@ namespace HammeredGame.Game
                     }
                 }
             }
-
         }
 
         public override void Draw(GameTime gameTime)
@@ -169,8 +174,6 @@ namespace HammeredGame.Game
             Color bgColor = new(75, 43, 58);
 
             GameServices.GetService<SpriteBatch>().Begin();
-
-            int maxWidthMenuUI = (desktop.Root as VerticalStackPanel).Widgets[1].Bounds.Width;
 
             GameServices.GetService<SpriteBatch>().Draw(whiteRectangle, Vector2.Zero, null, bgColor, 0f, Vector2.Zero, new Vector2(maxWidthMenuUI, ScreenManager.GraphicsDevice.Viewport.Height), SpriteEffects.None, 0f);
 
