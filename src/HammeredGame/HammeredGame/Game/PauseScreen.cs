@@ -129,10 +129,10 @@ namespace HammeredGame.Game
             whiteRectangle.Dispose();
         }
 
-        public override void Update(GameTime gameTime, bool isBelowAnotherScreen, bool isCoveredByNonPartialScreen)
+        public override void Update(GameTime gameTime)
         {
-            // Update screen state and HasFocus (= active state && is on top) so we can use it
-            base.Update(gameTime, isBelowAnotherScreen, isCoveredByNonPartialScreen);
+            // Update screen state and HasFocus so we can use it
+            base.Update(gameTime);
 
             // Do nothing if the screen doesn't have focus
             if (!HasFocus) return;
