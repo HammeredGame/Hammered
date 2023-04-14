@@ -137,6 +137,10 @@ namespace HammeredGame.Core
             screen.GameServices = services;
             screen.ScreenManager = this;
 
+            // Add the screen first before calling LoadContent on it, since it may add new screens,
+            // thereby making an undesired order of addition.
+            screens.Add(screen);
+
             // Load the content only if we have not loaded it before, and we are past LoadContent().
             // Otherwise, we'll load all content within LoadContent since we might still be in the
             // game Initialize() step.
@@ -144,8 +148,6 @@ namespace HammeredGame.Core
             {
                 screen.LoadContent();
             }
-
-            screens.Add(screen);
         }
 
         /// <summary>
