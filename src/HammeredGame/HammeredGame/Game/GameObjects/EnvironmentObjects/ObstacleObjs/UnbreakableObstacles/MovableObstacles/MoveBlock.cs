@@ -13,6 +13,7 @@ using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
 using BEPUphysics.CollisionRuleManagement;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using BEPUutilities;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles
 {
@@ -42,7 +43,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private MBState mbState;
         private BEPUutilities.Vector3 initialMovementVelocity = BEPUutilities.Vector3.Zero;
 
-        public MoveBlock(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
+        public MoveBlock(GameServices services, Model model, Texture2D t, Microsoft.Xna.Framework.Vector3 pos, Microsoft.Xna.Framework.Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             if (this.Entity != null)
             {
@@ -143,6 +144,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         public override void Update(GameTime gameTime)
         {
             //if (this.mbState == MBState.Moving) this.Entity.LinearVelocity = initialMovementVelocity;
+
+            if (this.mbState == MBState.Moving)
+            {
+                var speed = this.Entity.LinearVelocity.Length();
+                if (speed <= 0.01f) this.SetStationary();
+            }
 
             //base.Update(gameTime);
         }
