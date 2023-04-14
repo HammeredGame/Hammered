@@ -32,20 +32,25 @@ namespace HammeredGame.Game.Scenes.Island1
             ParentGameScreen.ShowPromptsFor(new List<string>() { "Move" }, movementPromptTokenSource.Token);
 
             // On entering hammer vicinity show hammer prompt
-            CancellationTokenSource summonPromptTokenSource = new();
+            CancellationTokenSource hammerPromptTokenSource = new();
             Get<TriggerObject>("hammer_trigger").OnTrigger += (_, _) =>
             {
                 Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
                 movementPromptTokenSource.Cancel();
 
-                ParentGameScreen.ShowPromptsFor(new List<string>() { "Summon Hammer" }, summonPromptTokenSource.Token);
+                ParentGameScreen.ShowPromptsFor(new List<string>() { "Summon Hammer" }, hammerPromptTokenSource.Token);
             };
 
+            // upon summon, add the drop prompt too
+            Get<Hammer>("hammer").OnSummon += (_, _) =>
+            {
+                ParentGameScreen.ShowPromptsFor(new List<string>() { "Drop Hammer" }, hammerPromptTokenSource.Token);
+            };
 
             // completion trigger to load next level
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
-                summonPromptTokenSource.Cancel();
+                hammerPromptTokenSource.Cancel();
                 ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName);
             };
         }

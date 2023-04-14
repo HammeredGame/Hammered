@@ -42,6 +42,13 @@ namespace HammeredGame.Game.Screens
                     { "xbox", "XboxSeriesX_A" },
                     { "keyboard", "Space_Key_Dark" }
                 }
+            },
+            {
+                "Drop Hammer", new()
+                {
+                    { "xbox", "XboxSeriesX_A" },
+                    { "keyboard", "Space_Key_Dark" }
+                }
             }
         };
 
@@ -58,7 +65,13 @@ namespace HammeredGame.Game.Screens
         /// <param name="stopToken"></param>
         public void ShowPromptsFor(List<string> actions, CancellationToken stopToken)
         {
-            shownControls[stopToken] = actions;
+            if (shownControls.ContainsKey(stopToken))
+            {
+                shownControls[stopToken].AddRange(actions);
+            } else
+            {
+                shownControls.Add(stopToken, actions);
+            }
         }
 
         public override void LoadContent()
