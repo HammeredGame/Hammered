@@ -3,7 +3,6 @@ using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Entities;
 using BEPUphysics.PositionUpdating;
-using Hammered_Physics.Core;
 using HammeredGame.Core;
 using Microsoft.Xna.Framework.Graphics;
 using System;

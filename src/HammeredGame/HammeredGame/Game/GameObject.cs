@@ -1,7 +1,6 @@
 ﻿using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
-using Hammered_Physics.Core;
 using HammeredGame.Core;
 using ImGuiNET;
 using ImMonoGame.Thing;

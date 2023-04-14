@@ -1,6 +1,5 @@
 ﻿using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
-using Hammered_Physics.Core;
 using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;

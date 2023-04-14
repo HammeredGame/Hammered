@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hammered_Physics.Core
+namespace HammeredGame.Core
 {
     /// <summary>
     /// This is a helper function pulled from the bepuphysics v1 repository to help with conversions between
