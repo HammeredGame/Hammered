@@ -102,8 +102,8 @@ namespace HammeredGame.Game.Screens
             base.UnloadContent();
 
             // Make sure we have exited screens that we created.
-            pauseScreen.ExitScreen();
-            promptsScreen.ExitScreen();
+            pauseScreen?.ExitScreen();
+            promptsScreen?.ExitScreen();
 
             MediaPlayer.Stop();
         }
@@ -116,6 +116,9 @@ namespace HammeredGame.Game.Screens
         /// <param name="sceneToLoad"></param>
         public void InitializeLevel(string sceneToLoad)
         {
+            // Clear all prompts shown on screen
+            promptsScreen?.ClearAllPrompts();
+
             currentSceneName = sceneToLoad;
             currentScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
         }

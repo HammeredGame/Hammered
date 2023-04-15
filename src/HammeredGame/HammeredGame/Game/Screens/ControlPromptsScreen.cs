@@ -88,6 +88,14 @@ namespace HammeredGame.Game.Screens
             }
         }
 
+        /// <summary>
+        /// Removes all shown prompts.
+        /// </summary>
+        public void ClearAllPrompts()
+        {
+            shownControls.Clear();
+        }
+
         public override void LoadContent()
         {
             base.LoadContent();
