@@ -147,7 +147,7 @@ namespace HammeredGame.Game.GameObjects
             }
 
             // Get the input via keyboard or gamepad
-            KeyboardInput(); GamePadInput();
+            HandleInput();
 
             // If hammer is called back (successfully), update its position
             // and handle interactions along the way - ending once the hammer is back with player
@@ -195,12 +195,12 @@ namespace HammeredGame.Game.GameObjects
             }
         }
 
-        public void KeyboardInput()
+        public void HandleInput()
         {
             Input input = Services.GetService<Input>();
             // Keyboard input (E - drop hammer, Q - Call back hammer)
             // Hammer Drop Mechanic
-            if (hammerState == HammerState.WithCharacter && input.KeyDown(Keys.E))
+            if (hammerState == HammerState.WithCharacter && UserAction.Pressed(input, UserAction.DropHammer))
             {
                 //hammerState = HammerState.Dropped;
                 DropHammer();
@@ -212,7 +212,7 @@ namespace HammeredGame.Game.GameObjects
             // And if the owner player is defined
             // And the hammer has a physics entity attached to it
             // Otherwise 'Q' does nothing
-            if (hammerState == HammerState.Dropped && player != null && Entity != null && input.KeyDown(Keys.Q))
+            else if (hammerState == HammerState.Dropped && player != null && Entity != null && UserAction.Pressed(input, UserAction.SummonHammer))
             {
                 hammerState = HammerState.Enroute;
                 OnSummon?.Invoke(this, null);
@@ -222,33 +222,6 @@ namespace HammeredGame.Game.GameObjects
                 // handle collisions
                 this.Entity.BecomeKinematic();
                 this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
-            }
-        }
-
-        public void GamePadInput()
-        {
-            Input input = Services.GetService<Input>();
-            // GamePad Control (A - Hammer drop, B - Hammer call back)
-            // Same functionality as with above keyboard check
-            if (input.GamePadState.IsConnected)
-            {
-                if (hammerState == HammerState.WithCharacter && input.ButtonPress(Buttons.A))
-                {
-                    DropHammer();
-                    //hammerState = HammerState.Dropped;
-                    //this.ComputeBounds();
-                }
-                if (hammerState == HammerState.Dropped && player != null && Entity != null && input.ButtonPress(Buttons.B))
-                {
-                    hammerState = HammerState.Enroute;
-                    OnSummon?.Invoke(this, null);
-
-                    // When hammer is enroute, the physics engine shouldn't solve for
-                    // collision constraints with it --> rather we want to manually
-                    // handle collisions
-                    this.Entity.BecomeKinematic();
-                    this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
-                }
             }
         }
 

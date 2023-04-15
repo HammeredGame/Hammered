@@ -149,28 +149,16 @@ namespace HammeredGame.Game
             {
                 // In the case of follow mode, we modify the 2D vector that is multiplied onto the
                 // base camera offset. This controls the 4 isometric directions that the camera can take.
-
-                #region TEMPORARY_CAMERA_CONTROLS
-
-                Input inp = services.GetService<Input>();
-                if (inp.ButtonPress(Buttons.DPadUp) || inp.KeyDown(Keys.D1))
+                if (UserAction.Pressed(services.GetService<Input>(), UserAction.RotateCameraLeft))
                 {
-                    followDir2D = new Vector2(1, -1);
-                }
-                if (inp.ButtonPress(Buttons.DPadLeft) || inp.KeyDown(Keys.D2))
+                    // I found a pattern for the 2D camera directions  (1,1)(-1,1)(-1,-1)(1,-1)
+                    // where each successive one is flipping the previous one's elements and
+                    // switching the sign on the first element. So we use that!
+                    followDir2D = new Vector2(-followDir2D.Y, followDir2D.X);
+                } else if (UserAction.Pressed(services.GetService<Input>(), UserAction.RotateCameraRight))
                 {
-                    followDir2D = new Vector2(-1, -1);
+                    followDir2D = new Vector2(followDir2D.Y, -followDir2D.X);
                 }
-                if (inp.ButtonPress(Buttons.DPadDown) || inp.KeyDown(Keys.D3))
-                {
-                    followDir2D = new Vector2(-1, 1);
-                }
-                if (inp.ButtonPress(Buttons.DPadRight) || inp.KeyDown(Keys.D4))
-                {
-                    followDir2D = new Vector2(1, 1);
-                }
-
-                #endregion TEMPORARY_CAMERA_CONTROLS
 
                 // Calculate the base follow offset position (from the follow target) using the
                 // followAngle, between 0 (horizon) and 90 (top down)
@@ -191,27 +179,14 @@ namespace HammeredGame.Game
             {
                 // In static camera mode, we use the input to select the static camera.
 
-                #region TEMPORARY_CAMERA_CONTROLS
-
-                Input inp = services.GetService<Input>();
-                if (inp.ButtonPress(Buttons.DPadUp) || inp.KeyDown(Keys.D1))
+                if (UserAction.Pressed(services.GetService<Input>(), UserAction.RotateCameraLeft))
                 {
-                    currentCameraPosIndex = 0;
+                    currentCameraPosIndex = (currentCameraPosIndex + 3) % 4;
                 }
-                if (inp.ButtonPress(Buttons.DPadLeft) || inp.KeyDown(Keys.D2))
+                else if (UserAction.Pressed(services.GetService<Input>(), UserAction.RotateCameraRight))
                 {
-                    currentCameraPosIndex = 1;
+                    currentCameraPosIndex = (currentCameraPosIndex + 1) % 4;
                 }
-                if (inp.ButtonPress(Buttons.DPadDown) || inp.KeyDown(Keys.D3))
-                {
-                    currentCameraPosIndex = 2;
-                }
-                if (inp.ButtonPress(Buttons.DPadRight) || inp.KeyDown(Keys.D4))
-                {
-                    currentCameraPosIndex = 3;
-                }
-
-                #endregion TEMPORARY_CAMERA_CONTROLS
 
                 ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
 
