@@ -89,7 +89,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
 
             // Set the default state / variables
-            this.laserState = LaserState.FullBlocking;
+            this.laserState = LaserState.PlayerBlocking;
             this.laserDefaultLength = (this.Entity as Box).Height;
             this.laserDefaultScale = this.Scale;
             this.laserScale = this.Scale;

@@ -52,8 +52,18 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
                 this.Entity.CollisionInformation.CollisionRules.Personal = CollisionRule.Defer;
                 this.SetStationary();
-                this.Entity.Material.KineticFriction = 1f;
+
+                // Setting base kinetic friction and higher gravitational force
+                // These settings are meant to help the rock stay on the ground 
+                // when moving, while still moving as desired along the hammer's direction
+                // TODO: these settings may need tweaking
+                this.Entity.Material.KineticFriction = 0.5f;
+                float downwardForceY = (this.Scale / 2.0f) * (-1000f);
+                this.Entity.Gravity = new BEPUutilities.Vector3(0f, downwardForceY, 0f);
+                //this.Entity.LinearDamping = 0f;
+
                 this.ActiveSpace.Add(this.Entity);
+                
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollisionDetected;
             }
 
