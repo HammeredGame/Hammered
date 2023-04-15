@@ -34,30 +34,55 @@ namespace HammeredGame.Game.Scenes.Island1
 
             // On entering hammer vicinity show hammer prompt
             CancellationTokenSource hammerPromptTokenSource = new();
-            EventHandler hammerOnTriggerJustOnce = null;
-            Get<TriggerObject>("hammer_trigger").OnTrigger += hammerOnTriggerJustOnce = async (_, _) =>
-            {
-                // remove trigger after once
-                Get<TriggerObject>("hammer_trigger").OnTrigger -= hammerOnTriggerJustOnce;
 
-                // set hammer owner so we can now summon it
-                Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
+            await Services.GetService<ScriptUtils>().WaitEvent(Get<TriggerObject>("hammer_trigger"), "OnTrigger");
 
-                // hide movement controls
-                movementPromptTokenSource.Cancel();
+            // set hammer owner so we can now summon it
+            Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
 
-                // show summon controls, and after summoning it, show drop controls
-                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.SummonHammer }, hammerPromptTokenSource.Token);
-                await Services.GetService<ScriptUtils>().WaitEvent(Get<Hammer>("hammer"), "OnSummon");
-                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.DropHammer }, hammerPromptTokenSource.Token);
-            };
+            // hide movement controls
+            movementPromptTokenSource.Cancel();
 
-            // completion trigger to load next level
+            // show summon controls
+            ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.SummonHammer }, hammerPromptTokenSource.Token);
+
+            // On summon, show cut scene
+            // Keep track of current physics space time and camera distance
+            float normalPhysicsTimeDuration = Space.TimeStepSettings.TimeStepDuration;
+            float normalCameraDistance = Camera.FollowDistance;
+
+            // Start following the hammer very closely, in very slow motion
+            await Services.GetService<ScriptUtils>().WaitEvent(Get<Hammer>("hammer"), "OnSummon");
+            Space.TimeStepSettings.TimeStepDuration = normalPhysicsTimeDuration * 0.01f;
+            Camera.FollowDistance = 20f;
+            Get<Player>("player1").SetActiveCamera(null);
+            Camera.SetFollowTarget(Get<Hammer>("hammer"));
+
+            // After three seconds, speed up the slow motion a little bit
+            await Services.GetService<ScriptUtils>().WaitSeconds(3);
+            Space.TimeStepSettings.TimeStepDuration = normalPhysicsTimeDuration * 0.1f;
+
+            // Once it reaches the player, reset to normal physics time and camera distance
+            await Services.GetService<ScriptUtils>().WaitEvent(Get<Player>("player1"), "OnHammerRetrieved");
+            Space.TimeStepSettings.TimeStepDuration = normalPhysicsTimeDuration;
+            Camera.FollowDistance = normalCameraDistance;
+            Get<Player>("player1").SetActiveCamera(Camera);
+            Camera.SetFollowTarget(Get<Player>("player1"));
+
+            // Now show prompts for dropping too
+            ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.DropHammer }, hammerPromptTokenSource.Token);
+
+            // Make completion trigger available to load next level
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
                 hammerPromptTokenSource.Cancel();
                 ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName);
             };
+
+            // Also hide the prompt if it's been retrieved two more times
+            await Services.GetService<ScriptUtils>().WaitEvent(Get<Player>("player1"), "OnHammerRetrieved");
+            await Services.GetService<ScriptUtils>().WaitEvent(Get<Player>("player1"), "OnHammerRetrieved");
+            hammerPromptTokenSource.Cancel();
         }
     }
 }
