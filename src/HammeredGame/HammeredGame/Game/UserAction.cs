@@ -75,6 +75,8 @@ namespace HammeredGame.Game
         public static readonly UserAction Dash = new("Dash", Buttons.LeftTrigger, Keys.LeftShift);
         public static readonly UserAction RotateCameraLeft = new("Rotate Camera Left", Buttons.LeftShoulder, Keys.Q);
         public static readonly UserAction RotateCameraRight = new("Rotate Camera Right", Buttons.RightShoulder, Keys.E);
+        public static readonly UserAction MenuItemUp = new("Move Menu Selection Up", Buttons.LeftThumbstickUp, Keys.W);
+        public static readonly UserAction MenuItemDown = new("Move Menu Selection Up", Buttons.LeftThumbstickDown, Keys.S);
 
         public static bool Pressed(Input input, UserAction action)
         {
