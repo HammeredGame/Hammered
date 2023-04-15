@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using static HammeredGame.Game.UserAction;
 
 namespace HammeredGame.Game.Screens
 {
@@ -20,37 +21,49 @@ namespace HammeredGame.Game.Screens
     {
         private Desktop desktop;
 
-        private Dictionary<CancellationToken, List<string>> shownControls = new();
+        private Dictionary<CancellationToken, HashSet<UserAction>> shownControls = new();
         private HorizontalStackPanel controlsPanel;
         private string inputType; // todo: use enum
         private Dictionary<string, TextureRegionAtlas> controlsAtlas = new();
         private FontSystem barlowFontSystem;
 
-        private Dictionary<string, Dictionary<string, string>> controlImageMapping = new()
+        /// <summary>
+        /// Create an image (that you can set in Image.Renderable) for the controls associated with
+        /// the specified UserAction. The return value of this depends on the current value of
+        /// inputType too.
+        /// </summary>
+        /// <param name="action">The action to return the image for</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Action was null</exception>
+        /// <exception cref="NotSupportedException"></exception>
+        public TextureRegion GetImageForAction(UserAction action)
         {
+            switch (action)
             {
-                // TODO: abstract possible input actions with an enum instead of string
-                "Move", new()
-                {
-                    { "xbox", "XboxSeriesX_Left_Stick" },
-                    { "keyboard", "W_Key_Dark" }
-                }
-            },
-            {
-                "Summon Hammer", new()
-                {
-                    { "xbox", "XboxSeriesX_A" },
-                    { "keyboard", "Space_Key_Dark" }
-                }
-            },
-            {
-                "Drop Hammer", new()
-                {
-                    { "xbox", "XboxSeriesX_A" },
-                    { "keyboard", "Space_Key_Dark" }
-                }
+                case ContinuousUserAction { GamepadContinuousStickSide: var side, KeyboardContinuousKeys: var keys }:
+                    if (inputType == "keyboard")
+                    {
+                        // todo: for keyboard, create an image with all four keys somehow
+                        return controlsAtlas[inputType][keys.Item1.ToString() + "_Key_Dark"];
+                    }
+                    // for controller, show either XboxSeriesX_Left_Stick or XboxSeriesX_Right_Stick
+                    return controlsAtlas[inputType]["XboxSeriesX_" + side + "_Stick"];
+
+                case DiscreteUserAction { GamepadButton: var button, KeyboardKey: var key }:
+                    // For discrete actions, the key or button enum name is enough
+                    if (inputType == "keyboard")
+                    {
+                        return controlsAtlas["keyboard"][key.ToString() + "_Key_Dark"];
+                    }
+                    return controlsAtlas[inputType]["XboxSeriesX_" + button.ToString()];
+
+                case null:
+                    throw new ArgumentNullException();
+
+                default:
+                    throw new NotSupportedException();
             }
-        };
+        }
 
         public ControlPromptsScreen()
         {
@@ -63,14 +76,15 @@ namespace HammeredGame.Game.Screens
         /// </summary>
         /// <param name="actions"></param>
         /// <param name="stopToken"></param>
-        public void ShowPromptsFor(List<string> actions, CancellationToken stopToken)
+        public void ShowPromptsFor(List<UserAction> actions, CancellationToken stopToken)
         {
             if (shownControls.ContainsKey(stopToken))
             {
-                shownControls[stopToken].AddRange(actions);
-            } else
+                shownControls[stopToken].UnionWith(actions);
+            }
+            else
             {
-                shownControls.Add(stopToken, actions);
+                shownControls.Add(stopToken, new HashSet<UserAction>(actions));
             }
         }
 
@@ -135,12 +149,12 @@ namespace HammeredGame.Game.Screens
                 else
                 {
                     // Loop over each action to be shown with this cancellation token, and add it to the UI
-                    foreach (string action in shownControls[token])
+                    foreach (UserAction action in shownControls[token])
                     {
                         var image = new Image
                         {
                             // Choose the image suited for the current input type
-                            Renderable = controlsAtlas[inputType][controlImageMapping[action][inputType]],
+                            Renderable = GetImageForAction(action),
                             Opacity = 0.5f,
                             HorizontalAlignment = HorizontalAlignment.Center,
                             MaxHeight = tenthPercentageHeight
@@ -150,7 +164,7 @@ namespace HammeredGame.Game.Screens
                         {
                             // Dark purple
                             TextColor = new(75, 43, 58),
-                            Text = action,
+                            Text = action.Name,
                             Font = barlowFontSystem.GetFont(tenthPercentageHeight * 0.5f),
                             HorizontalAlignment = HorizontalAlignment.Center
                         };
@@ -179,7 +193,7 @@ namespace HammeredGame.Game.Screens
                     inputType = "xbox";
                 }).Start();
             }
-            else if (!controlsAtlas.ContainsKey("keyboard"))
+            else if (!GameServices.GetService<Input>().GamePadState.IsConnected && !controlsAtlas.ContainsKey("keyboard"))
             {
                 new Task(() =>
                 {

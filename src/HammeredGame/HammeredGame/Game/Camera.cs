@@ -149,13 +149,13 @@ namespace HammeredGame.Game
             {
                 // In the case of follow mode, we modify the 2D vector that is multiplied onto the
                 // base camera offset. This controls the 4 isometric directions that the camera can take.
-                if (UserAction.Pressed(services.GetService<Input>(), UserAction.RotateCameraLeft))
+                if (UserAction.RotateCameraLeft.Pressed(services.GetService<Input>()))
                 {
                     // I found a pattern for the 2D camera directions  (1,1)(-1,1)(-1,-1)(1,-1)
                     // where each successive one is flipping the previous one's elements and
                     // switching the sign on the first element. So we use that!
                     followDir2D = new Vector2(-followDir2D.Y, followDir2D.X);
-                } else if (UserAction.Pressed(services.GetService<Input>(), UserAction.RotateCameraRight))
+                } else if (UserAction.RotateCameraRight.Pressed(services.GetService<Input>()))
                 {
                     followDir2D = new Vector2(followDir2D.Y, -followDir2D.X);
                 }
@@ -179,11 +179,11 @@ namespace HammeredGame.Game
             {
                 // In static camera mode, we use the input to select the static camera.
 
-                if (UserAction.Pressed(services.GetService<Input>(), UserAction.RotateCameraLeft))
+                if (UserAction.RotateCameraLeft.Pressed(services.GetService<Input>()))
                 {
                     currentCameraPosIndex = (currentCameraPosIndex + 3) % 4;
                 }
-                else if (UserAction.Pressed(services.GetService<Input>(), UserAction.RotateCameraRight))
+                else if (UserAction.RotateCameraRight.Pressed(services.GetService<Input>()))
                 {
                     currentCameraPosIndex = (currentCameraPosIndex + 1) % 4;
                 }

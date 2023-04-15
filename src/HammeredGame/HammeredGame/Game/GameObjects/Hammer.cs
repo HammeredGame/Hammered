@@ -200,7 +200,7 @@ namespace HammeredGame.Game.GameObjects
             Input input = Services.GetService<Input>();
             // Keyboard input (E - drop hammer, Q - Call back hammer)
             // Hammer Drop Mechanic
-            if (hammerState == HammerState.WithCharacter && UserAction.Pressed(input, UserAction.DropHammer))
+            if (hammerState == HammerState.WithCharacter && UserAction.DropHammer.Pressed(input))
             {
                 //hammerState = HammerState.Dropped;
                 DropHammer();
@@ -212,7 +212,7 @@ namespace HammeredGame.Game.GameObjects
             // And if the owner player is defined
             // And the hammer has a physics entity attached to it
             // Otherwise 'Q' does nothing
-            else if (hammerState == HammerState.Dropped && player != null && Entity != null && UserAction.Pressed(input, UserAction.SummonHammer))
+            else if (hammerState == HammerState.Dropped && player != null && Entity != null && UserAction.SummonHammer.Pressed(input))
             {
                 hammerState = HammerState.Enroute;
                 OnSummon?.Invoke(this, null);
