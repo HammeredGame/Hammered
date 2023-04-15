@@ -383,6 +383,7 @@ namespace HammeredGame.Game
                 // A button to launch the popup for creating a new object
                 if (ImGui.Button("Create New Object", new System.Numerics.Vector2(sideBarWidth, 0f)))
                 {
+                    objectCreationEntity = null;
                     ImGui.OpenPopup("create_new_object");
                 }
 
