@@ -24,18 +24,41 @@ namespace HammeredGame.Game
         /// <typeparam name="T">Supports bool, float, XNA.Vector3, and XNA.Quaternion</typeparam>
         /// <param name="text">String to parse</param>
         /// <returns>null if the parsing failed, otherwise contains the parsed object</returns>
+        /// 
+
+        /// <remarks>
+        /// Support "int" data type as well.
+        /// </remarks>
         internal static T Parse<T>(string text)
         {
-            string[] tokens;
+            /// <value>
+            /// The <code>string[] tokens</code> variable is used to split the singlue input string <code>text</code>
+            /// of the XML file into multiple values.
+            /// This is required in cases where classes are determined by more than one parameters.
+            /// 
+            /// <example>
+            /// Input: "position" == in XML == <position>X Y Z</position> 
+            /// 1) Split "X Y Z" into <code>float tokens[3] = {"X", "Y", "Z"} </code>
+            /// 2) Parse each element of "tokens" independently as scalars.
+            /// 3) Create the Vector3 object.
+            /// </example>
+            /// 
+            /// </value>
+            string[] tokens; // Is used to split the single input string in the XML file to multiple values.only in where the class requires mul
             switch (typeof(T).Name)
             {
                 case "Boolean":
                     return (T)(object)bool.Parse(text);
 
                 case "Single":
-                    // Make sure to parse floats with a culture-agnostic way that treats dots as
-                    // decimal point
+                    // Make sure to parse floats with a culture-agnostic way that treats dots as decimal point.
+                    // This is to successfully load data to systems with different locale s.
                     return (T)(object)float.Parse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture);
+                    /// <remarks>
+                    /// a) "Scalar" is the more standard terminology.
+                    /// b) In the documentation above, is it mentioned that "float" is supported. Renaming it here into "Single" does not serve any purpose. More importantly:
+                    /// c) The characterization of "Single" may confuse the XML writer as to whether the value is "int" or "float" and in which form the numbers should be written, if they haven't read the code.
+                    /// </remarks>
 
                 case "Vector3":
                     tokens = text.Split(" ");
@@ -58,6 +81,10 @@ namespace HammeredGame.Game
         /// <returns>
         /// Empty string if the conversion failed, otherwise the string representation of the object
         /// </returns>
+        
+        /// <remaks>
+        /// Support "int" data type as well.
+        /// </remaks>
         internal static string Show<T>(T obj)
         {
             switch (typeof(T).Name)
@@ -110,8 +137,8 @@ namespace HammeredGame.Game
         /// <summary>
         /// Find the single top-level camera tag and parse it, returning the instantiated Camera object.
         /// </summary>
-        /// <param name="gpu">The gpu parameter to pass to the Camera constructor</param>
-        /// <param name="input">The input parameter to pass to the Camera constructor</param>
+        /// <param name="gpu">The gpu parameter to pass to the Camera constructor</param> TODO: CHANGE PARAMETER EXPLANATION IN DOCUMENTATION! THIS IS DEPRECATED!
+        /// <param name="input">The input parameter to pass to the Camera constructor</param> TODO: CHANGE PARAMETER EXPLANATION IN DOCUMENTATION! THIS IS DEPRECATED!
         /// <returns>The instantiated Camera object</returns>
         private static Camera GetCamera(XDocument targetXML, GameServices services)
         {
@@ -157,9 +184,9 @@ namespace HammeredGame.Game
         /// identifiers are either taken from the XML if specified via the "id" attribute, or
         /// otherwise generated.
         /// </summary>
-        /// <param name="cm">ContentManager used for loading Models and Textures</param>
-        /// <param name="input">Input parameter to pass to the constructors if necessary</param>
-        /// <param name="cam">Camera parameter to pass to the constructors if necessary</param>
+        /// <param name="cm">ContentManager used for loading Models and Textures</param> // TODO: CHANGE DOCUMENTATION! THIS IS DEPRECATED (probably before <class>GameServices</class> was implemented)!
+        /// <param name="input">Input parameter to pass to the constructors if necessary</param> TODO: CHANGE DOCUMENTATION! THIS IS DEPRECATED!
+        /// <param name="cam">Camera parameter to pass to the constructors if necessary</param> TODO: UNUSED VARIABLE! Probably remnant of previous implementation.
         /// <returns>A dictionary of unique IDs and parsed GameObjects</returns>
         /// <exception cref="Exception">When some trouble arises trying to create the object</exception>
         private static Dictionary<string, GameObject> GetGameObjects(XDocument targetXML, GameServices services, Camera cam)
@@ -251,7 +278,7 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Generate a physics body Entity using the body tag specified in the XML. Supports box types.
+        /// Generate a physics body Entity using the body tag specified in the XML. Supports box and sphere types.
         /// </summary>
         /// <param name="modelPosition">The position of the model</param>
         /// <param name="bodyElement">The XML element for the body tag</param>
