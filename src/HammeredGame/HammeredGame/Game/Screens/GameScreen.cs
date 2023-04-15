@@ -141,7 +141,7 @@ namespace HammeredGame.Game.Screens
 
             Input input = GameServices.GetService<Input>();
 
-            if (HasFocus && (input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape)))
+            if (HasFocus && UserAction.Pressed(input, UserAction.Pause))
             {
                 pauseScreen.RestartLevelFunc = () => InitializeLevel(currentSceneName);
                 ScreenManager.AddScreen(pauseScreen);

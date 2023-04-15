@@ -119,19 +119,19 @@ namespace HammeredGame.Game.Screens
             VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
 
             // Back out of pause menu without unloading content
-            if (input.ButtonPress(Buttons.B) || input.ButtonPress(Buttons.Start) || input.KeyPress(Keys.Escape))
+            if (UserAction.Pressed(input, UserAction.Pause) || UserAction.Pressed(input, UserAction.Back))
             {
                 ExitScreen(alsoUnloadContent: false);
             }
 
-            // Scroll with left thumbstick on controller
-            if (MathF.Abs(input.GamePadState.ThumbSticks.Left.Y) > 0.5)
+            float yInput = ContinuousUserAction.GetValue(input, ContinuousUserAction.Movement).Y;
+            if (MathF.Abs(yInput) > 0.5)
             {
-                mainMenu.HoverIndex = (mainMenu.HoverIndex - MathF.Sign(input.GamePadState.ThumbSticks.Left.Y) + mainMenu.Items.Count) % mainMenu.Items.Count;
+                mainMenu.HoverIndex = (mainMenu.HoverIndex - MathF.Sign(yInput) + mainMenu.Items.Count) % mainMenu.Items.Count;
             }
 
             // Controller selection support
-            if (input.ButtonPress(Buttons.A))
+            if (UserAction.Pressed(input, UserAction.Confirm))
             {
                 ((Desktop.Root as VerticalStackPanel)?.Widgets[1] as VerticalMenu)?.OnKeyDown(Keys.Enter);
             }

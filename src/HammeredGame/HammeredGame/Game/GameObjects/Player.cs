@@ -230,13 +230,7 @@ namespace HammeredGame.Game.GameObjects
             }
 
             // Handling input from keyboard.
-            moveDirty = this.KeyboardInput(forwardDirection);
-
-            // Handling input from gamepad.
-            if (Services.GetService<Input>().GamePadState.IsConnected)
-            {
-                moveDirty = moveDirty || GamepadInput(forwardDirection);
-            }
+            moveDirty = this.HandleInput(forwardDirection);
 
             // Animate player
 
@@ -354,51 +348,21 @@ namespace HammeredGame.Game.GameObjects
 
         }
 
-        private bool KeyboardInput(Vector3 forwardDirectionFromCamera)
-        {
-            // Adjust player velocity based on input
-            // Keyboard input (W - forward, S - back, A - left, D - right)
-
-            bool moveDirty = false;
-            Input input = Services.GetService<Input>();
-
-            if (input.KeyDown(Keys.W))
-            {
-                this.player_vel += forwardDirectionFromCamera;
-                moveDirty = true;
-            }
-            if (input.KeyDown(Keys.S))
-            {
-                this.player_vel += -forwardDirectionFromCamera;
-                moveDirty = true;
-            }
-            if (input.KeyDown(Keys.A))
-            {
-                this.player_vel += -Vector3.Cross(forwardDirectionFromCamera, Vector3.Up);
-                moveDirty = true;
-            }
-            if (input.KeyDown(Keys.D))
-            {
-                this.player_vel += Vector3.Cross(forwardDirectionFromCamera, Vector3.Up);
-                moveDirty = true;
-            }
-
-            return moveDirty;
-        }
-
-        private bool GamepadInput(Vector3 forwardDirectionFromCamera)
+        private bool HandleInput(Vector3 forwardDirectionFromCamera)
         {
             bool moveDirty = false;
             Input input = Services.GetService<Input>();
 
-            float MovePad_LeftRight = input.GamePadState.ThumbSticks.Left.X;
-            float MovePad_UpDown = input.GamePadState.ThumbSticks.Left.Y;
+            // Returns [-1, 1] on X and Y axis, continuous on controllers and discrete {-1, 0, 1} on keyboard.
+            Vector2 inputAmount = ContinuousUserAction.GetValue(input, ContinuousUserAction.Movement);
+
+            float MovePad_LeftRight = inputAmount.X;
+            float MovePad_UpDown = inputAmount.Y;
             if (MovePad_UpDown < -Input.DEADZONE || MovePad_UpDown > Input.DEADZONE || MovePad_LeftRight < -Input.DEADZONE || MovePad_LeftRight > Input.DEADZONE)
             {
-                player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera) * baseControllerSpeed;
+                player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera);
                 moveDirty = true;
             }
-
             return moveDirty;
         }
 
