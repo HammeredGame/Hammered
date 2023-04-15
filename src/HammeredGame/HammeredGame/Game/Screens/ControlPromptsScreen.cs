@@ -36,7 +36,7 @@ namespace HammeredGame.Game.Screens
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Action was null</exception>
         /// <exception cref="NotSupportedException"></exception>
-        public TextureRegion GetImageForAction(UserAction action)
+        public List<TextureRegion> GetImagesForAction(UserAction action)
         {
             switch (action)
             {
@@ -44,18 +44,23 @@ namespace HammeredGame.Game.Screens
                     if (inputType == "keyboard")
                     {
                         // todo: for keyboard, create an image with all four keys somehow
-                        return controlsAtlas[inputType][keys.Item1.ToString() + "_Key_Dark"];
+                        return new List<TextureRegion>() {
+                            controlsAtlas[inputType][keys.Item1.ToString() + "_Key_Dark"],
+                            controlsAtlas[inputType][keys.Item2.ToString() + "_Key_Dark"],
+                            controlsAtlas[inputType][keys.Item3.ToString() + "_Key_Dark"],
+                            controlsAtlas[inputType][keys.Item4.ToString() + "_Key_Dark"]
+                        };
                     }
                     // for controller, show either XboxSeriesX_Left_Stick or XboxSeriesX_Right_Stick
-                    return controlsAtlas[inputType]["XboxSeriesX_" + side + "_Stick"];
+                    return new List<TextureRegion>() { controlsAtlas[inputType]["XboxSeriesX_" + side + "_Stick"] };
 
                 case DiscreteUserAction { GamepadButton: var button, KeyboardKey: var key }:
                     // For discrete actions, the key or button enum name is enough
                     if (inputType == "keyboard")
                     {
-                        return controlsAtlas["keyboard"][key.ToString() + "_Key_Dark"];
+                        return new List<TextureRegion>() { controlsAtlas["keyboard"][key.ToString() + "_Key_Dark"] };
                     }
-                    return controlsAtlas[inputType]["XboxSeriesX_" + button.ToString()];
+                    return new List<TextureRegion>() { controlsAtlas[inputType]["XboxSeriesX_" + button.ToString()] };
 
                 case null:
                     throw new ArgumentNullException();
@@ -156,18 +161,28 @@ namespace HammeredGame.Game.Screens
                 }
                 else
                 {
-                    // Loop over each action to be shown with this cancellation token, and add it to the UI
+                    // Loop over each action to be shown with this cancellation token, and add it to
+                    // the horizontal UI
                     foreach (UserAction action in shownControls[token])
                     {
-                        var image = new Image
+                        // Show all the images (1 or 4 of them) in a horizontal layout
+                        var singleControlMultipleImagesLayout = new HorizontalStackPanel
                         {
-                            // Choose the image suited for the current input type
-                            Renderable = GetImageForAction(action),
-                            Opacity = 0.5f,
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            MaxHeight = tenthPercentageHeight
+                            HorizontalAlignment = HorizontalAlignment.Center
                         };
-
+                        foreach (TextureRegion image in GetImagesForAction(action))
+                        {
+                            var imageElement = new Image
+                            {
+                                // Choose the image suited for the current input type
+                                Renderable = image,
+                                Opacity = 0.5f,
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                MaxHeight = tenthPercentageHeight
+                            };
+                            singleControlMultipleImagesLayout.AddChild(imageElement);
+                        }
+                        // We also want to show a label for the action name
                         var label = new Label
                         {
                             // Dark purple
@@ -177,12 +192,13 @@ namespace HammeredGame.Game.Screens
                             HorizontalAlignment = HorizontalAlignment.Center
                         };
 
+                        // Layout is such that the horizontal image list is above the label
                         var singleControlLayout = new VerticalStackPanel()
                         {
                             HorizontalAlignment = HorizontalAlignment.Center,
                             Margin = new Thickness(100, 0)
                         };
-                        singleControlLayout.AddChild(image);
+                        singleControlLayout.AddChild(singleControlMultipleImagesLayout);
                         singleControlLayout.AddChild(label);
 
                         controlsPanel.AddChild(singleControlLayout);
