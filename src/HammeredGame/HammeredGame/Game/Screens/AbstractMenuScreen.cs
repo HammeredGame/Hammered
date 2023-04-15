@@ -121,13 +121,13 @@ namespace HammeredGame.Game.Screens
             VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
 
             // Back out of pause menu without unloading content
-            if (UserAction.Pressed(input, UserAction.Pause) || UserAction.Pressed(input, UserAction.Back))
+            if (UserAction.Pause.Pressed(input) || UserAction.Back.Pressed(input))
             {
                 ExitScreen(alsoUnloadContent: false);
             }
 
             // Allow selection with keyboard or controller instead of just mouse
-            if (UserAction.Pressed(input, UserAction.Confirm))
+            if (UserAction.Confirm.Pressed(input))
             {
                 ((Desktop.Root as VerticalStackPanel)?.Widgets[1] as VerticalMenu)?.OnKeyDown(Keys.Enter);
             }
@@ -136,22 +136,22 @@ namespace HammeredGame.Game.Screens
             // then we want to slowly go through each item, so we use a cooldown timer that is reset
             // whenever any of the actions are handled.
             TimeSpan scrollCooldown = TimeSpan.FromMilliseconds(500);
-            if (UserAction.Pressed(input, UserAction.MenuItemUp))
+            if (UserAction.MenuItemUp.Pressed(input))
             {
                 mainMenu.HoverIndex = (mainMenu.HoverIndex + mainMenu.Items.Count - 1) % mainMenu.Items.Count;
                 lastContinuousInput = gameTime.TotalGameTime;
             }
-            else if (UserAction.Held(input, UserAction.MenuItemUp) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
+            else if (UserAction.MenuItemUp.Held(input) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
             {
                 mainMenu.HoverIndex = (mainMenu.HoverIndex + mainMenu.Items.Count - 1) % mainMenu.Items.Count;
                 lastContinuousInput = gameTime.TotalGameTime;
             }
-            else if (UserAction.Pressed(input, UserAction.MenuItemDown))
+            else if (UserAction.MenuItemDown.Pressed(input))
             {
                 mainMenu.HoverIndex = (mainMenu.HoverIndex + 1) % mainMenu.Items.Count;
                 lastContinuousInput = gameTime.TotalGameTime;
             }
-            else if (UserAction.Held(input, UserAction.MenuItemDown) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
+            else if (UserAction.MenuItemDown.Held(input) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
             {
                 mainMenu.HoverIndex = (mainMenu.HoverIndex + 1) % mainMenu.Items.Count;
                 lastContinuousInput = gameTime.TotalGameTime;

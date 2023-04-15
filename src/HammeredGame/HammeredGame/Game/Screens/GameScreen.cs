@@ -125,7 +125,7 @@ namespace HammeredGame.Game.Screens
         /// </summary>
         /// <param name="controls"></param>
         /// <param name="stopToken"></param>
-        public void ShowPromptsFor(List<string> controls, CancellationToken stopToken)
+        public void ShowPromptsFor(List<UserAction> controls, CancellationToken stopToken)
         {
             promptsScreen.ShowPromptsFor(controls, stopToken);
         }
@@ -141,7 +141,7 @@ namespace HammeredGame.Game.Screens
 
             Input input = GameServices.GetService<Input>();
 
-            if (HasFocus && UserAction.Pressed(input, UserAction.Pause))
+            if (HasFocus && UserAction.Pause.Pressed(input))
             {
                 pauseScreen.RestartLevelFunc = () => InitializeLevel(currentSceneName);
                 ScreenManager.AddScreen(pauseScreen);

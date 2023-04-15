@@ -30,7 +30,7 @@ namespace HammeredGame.Game.Scenes.Island1
             // Show movement prompt 1 second after launch
             await Services.GetService<ScriptUtils>().WaitSeconds(1);
             CancellationTokenSource movementPromptTokenSource = new();
-            ParentGameScreen.ShowPromptsFor(new List<string>() { "Move" }, movementPromptTokenSource.Token);
+            ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Movement }, movementPromptTokenSource.Token);
 
             // On entering hammer vicinity show hammer prompt
             CancellationTokenSource hammerPromptTokenSource = new();
@@ -47,9 +47,9 @@ namespace HammeredGame.Game.Scenes.Island1
                 movementPromptTokenSource.Cancel();
 
                 // show summon controls, and after summoning it, show drop controls
-                ParentGameScreen.ShowPromptsFor(new List<string>() { "Summon Hammer" }, hammerPromptTokenSource.Token);
+                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.SummonHammer }, hammerPromptTokenSource.Token);
                 await Services.GetService<ScriptUtils>().WaitEvent(Get<Hammer>("hammer"), "OnSummon");
-                ParentGameScreen.ShowPromptsFor(new List<string>() { "Drop Hammer" }, hammerPromptTokenSource.Token);
+                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.DropHammer }, hammerPromptTokenSource.Token);
             };
 
             // completion trigger to load next level

@@ -354,7 +354,7 @@ namespace HammeredGame.Game.GameObjects
             Input input = Services.GetService<Input>();
 
             // Returns [-1, 1] on X and Y axis, continuous on controllers and discrete {-1, 0, 1} on keyboard.
-            Vector2 inputAmount = ContinuousUserAction.GetValue(input, ContinuousUserAction.Movement);
+            Vector2 inputAmount = UserAction.Movement.GetValue(input);
 
             float MovePad_LeftRight = inputAmount.X;
             float MovePad_UpDown = inputAmount.Y;
