@@ -19,6 +19,8 @@ namespace HammeredGame.Game.Screens
 
         private int maxWidthMenuUI;
 
+        private TimeSpan lastContinuousInput = TimeSpan.Zero;
+
         public AbstractMenuScreen()
         {
             IsPartial = true;
@@ -124,16 +126,35 @@ namespace HammeredGame.Game.Screens
                 ExitScreen(alsoUnloadContent: false);
             }
 
-            float yInput = ContinuousUserAction.GetValue(input, ContinuousUserAction.Movement).Y;
-            if (MathF.Abs(yInput) > 0.5)
-            {
-                mainMenu.HoverIndex = (mainMenu.HoverIndex - MathF.Sign(yInput) + mainMenu.Items.Count) % mainMenu.Items.Count;
-            }
-
-            // Controller selection support
+            // Allow selection with keyboard or controller instead of just mouse
             if (UserAction.Pressed(input, UserAction.Confirm))
             {
                 ((Desktop.Root as VerticalStackPanel)?.Widgets[1] as VerticalMenu)?.OnKeyDown(Keys.Enter);
+            }
+
+            // If the keybind for menu-item-up/down is pressed once, shift the index. If it is held,
+            // then we want to slowly go through each item, so we use a cooldown timer that is reset
+            // whenever any of the actions are handled.
+            TimeSpan scrollCooldown = TimeSpan.FromMilliseconds(500);
+            if (UserAction.Pressed(input, UserAction.MenuItemUp))
+            {
+                mainMenu.HoverIndex = (mainMenu.HoverIndex + mainMenu.Items.Count - 1) % mainMenu.Items.Count;
+                lastContinuousInput = gameTime.TotalGameTime;
+            }
+            else if (UserAction.Held(input, UserAction.MenuItemUp) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
+            {
+                mainMenu.HoverIndex = (mainMenu.HoverIndex + mainMenu.Items.Count - 1) % mainMenu.Items.Count;
+                lastContinuousInput = gameTime.TotalGameTime;
+            }
+            else if (UserAction.Pressed(input, UserAction.MenuItemDown))
+            {
+                mainMenu.HoverIndex = (mainMenu.HoverIndex + 1) % mainMenu.Items.Count;
+                lastContinuousInput = gameTime.TotalGameTime;
+            }
+            else if (UserAction.Held(input, UserAction.MenuItemDown) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
+            {
+                mainMenu.HoverIndex = (mainMenu.HoverIndex + 1) % mainMenu.Items.Count;
+                lastContinuousInput = gameTime.TotalGameTime;
             }
 
             // Change text color and show a ">" cursor on the currently active item
