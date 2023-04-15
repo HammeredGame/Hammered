@@ -68,6 +68,8 @@ namespace HammeredGame.Game.GameObjects
         private AudioListener listener;
         private AudioEmitter emitter;
 
+        public event EventHandler OnHammerRetrieved;
+
         // Initialize player class
         public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -172,6 +174,7 @@ namespace HammeredGame.Game.GameObjects
                     if (hammer.IsEnroute())
                     {
                         hammer.SetState(Hammer.HammerState.WithCharacter);
+                        OnHammerRetrieved?.Invoke(this, null);
                         otherEntityInformation.Entity.BecomeKinematic();
                         otherEntityInformation.Entity.LinearVelocity = BEPUutilities.Vector3.Zero;
                         otherEntityInformation.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoBroadPhase;
