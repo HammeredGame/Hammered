@@ -96,8 +96,9 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
 
                 animations = this.Model.GetAnimations();
-                var clip = animations.Clips["Armature|Armature|mixamo.com|Layer0"];
-                animations.SetClip(clip);
+                var clip_walk = animations.Clips["Armature|Armature|mixamo.com|Layer0.001"];
+                var clip_run = animations.Clips["Armature|Armature|mixamo.com|Layer0.002"];
+                animations.SetClip(clip_run);
             }
         }
 
@@ -213,7 +214,7 @@ namespace HammeredGame.Game.GameObjects
                 float angle = (float)Math.Atan2(player_vel.X, player_vel.Z);
                 this.Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle);
 
-                animations.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
+                animations.Update(gameTime.ElapsedGameTime*2, true, Matrix.Identity);
             }
             else
             {
@@ -348,7 +349,7 @@ namespace HammeredGame.Game.GameObjects
             {
                 foreach (var part in mesh.MeshParts)
                 {
-                    //((BasicEffect)part.Effect).SpecularColor = Vector3.Zero;
+                    ((BasicEffect)part.Effect).SpecularColor = Vector3.Zero;
                     //((SkinnedEffect)part.Effect).SpecularColor = Vector3.Zero;
                     //ConfigureEffectMatrices((IEffectMatrices)part.Effect, Matrix.Identity, view, projection);
                     //ConfigureEffectLighting((IEffectLights)part.Effect);
