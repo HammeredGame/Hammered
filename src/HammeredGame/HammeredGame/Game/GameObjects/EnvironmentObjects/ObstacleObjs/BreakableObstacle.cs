@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
-using Hammered_Physics.Core;
 using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using HammeredGame.Core;

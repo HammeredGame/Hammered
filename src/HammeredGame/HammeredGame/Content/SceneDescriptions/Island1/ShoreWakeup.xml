@@ -181,4 +181,17 @@
       <shift_graphic>0.000 2.955 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="end_trigger">
+    <model />
+    <position>-260.000 110.000 -40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>68.200</width>
+      <height>166.500</height>
+      <length>174.700</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
 </scene>

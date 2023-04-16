@@ -10,8 +10,8 @@ using HammeredGame.Core;
 using BEPUphysics;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
-using Hammered_Physics.Core;
 using BEPUphysics.Entities;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -48,7 +48,7 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Hammer specific variables
-        private float hammerSpeed = 10f;
+        private float hammerSpeed = 7f;
         private HammerState hammerState;
 
         public Vector3 OldPosition { get; private set; }
@@ -87,6 +87,30 @@ namespace HammeredGame.Game.GameObjects
 
                 // Add entity to the level's active physics space
                 this.ActiveSpace.Add(this.Entity);
+
+                // Initialize the collision handlers based on the associated collision events
+                this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+            }
+        }
+
+        // Collision Handling Event for any initial collisions detected
+        private void Events_DetectingInitialCollision(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            //This type of event can occur when an entity hits any other object which can be collided with.
+            //They aren't always entities; for example, hitting a StaticMesh would trigger this.
+            //Entities use EntityCollidables as collision proxies; see if the thing we hit is one.
+            var otherEntityInformation = other as EntityCollidable;
+            if (otherEntityInformation != null)
+            {
+                if (other.Tag is Player) return;
+                Input input = Services.GetService<Input>();
+                if (input.GamePadState.IsConnected)
+                {
+                    input.VibrateController(0.75f, 0.75f);
+                    // TODO: Add asynchronous wait here? (to have the vibration last a little longer?)
+                    // DONE!
+                    Services.GetService<ScriptUtils>().WaitMilliseconds(50).ContinueWith((_) => input.StopControllerVibration());
+                }
             }
         }
 

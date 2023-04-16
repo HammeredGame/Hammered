@@ -1,14 +1,13 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
-using HammeredGame.Game.GameObjects.EmptyGameObjects;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
-    internal class ShoreWakeup : Scene
+    internal class ChallengePuzzle : Scene
     {
-        public ShoreWakeup(GameServices services) : base(services)
+        public ChallengePuzzle(GameServices services) : base(services)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/ShoreWakeup.xml");
+            CreateFromXML($"Content/SceneDescriptions/Island1/ChallengePuzzle.xml");
             OnSceneStart();
         }
 
@@ -16,11 +15,7 @@ namespace HammeredGame.Game.Scenes.Island1
         {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
-
-            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
-            {
-                Services.GetService<HammeredGame>().InitializeLevel(typeof(TreeTutorial).FullName);
-            };
+            Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");

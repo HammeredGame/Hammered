@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
 using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries;
-using Hammered_Physics.Core;
 using HammeredGame.Core;
 using BEPUphysics.Entities;
 
@@ -33,6 +32,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
             ModelDataExtractor.GetVerticesAndIndicesFromModel(this.Model, out vertices, out indices);
             // Give the mesh information to a new StaticMesh.
             var mesh = new StaticMesh(vertices, indices, new BEPUutilities.AffineTransform(new BEPUutilities.Vector3(scale, scale, scale), MathConverter.Convert(this.Rotation), MathConverter.Convert(this.Position)));
+            mesh.Tag = this;
 
             //Add it to the space!
             ActiveSpace.Add(mesh);
