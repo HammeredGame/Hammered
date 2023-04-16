@@ -1,10 +1,10 @@
-﻿using BEPUphysics;
+﻿using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
-using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.NarrowPhaseSystems.Pairs;
 using BEPUphysics.PositionUpdating;
-using Hammered_Physics.Core;
+using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -26,28 +26,30 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
     /// </remarks>
     public class PressurePlate : ImmovableInteractable
     {
-        private readonly EnvironmentObject triggerObject;
-        private bool playerOn, hammerOn;
-        private bool pressureActivated;
+        private EnvironmentObject triggerObject;
+        private bool playerOn = false, hammerOn = false;
+        private bool pressureActivated = false;
 
-        public PressurePlate(Model model, Vector3 pos, float scale, Texture2D t, Space space, EnvironmentObject triggerObject) :
-            base(model, pos, scale, t, space)
+        public PressurePlate(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
+        {
+            if (this.Entity != null)
+            {
+                this.Entity.Tag = "ImmovableInteractableBounds";
+                this.Entity.CollisionInformation.Tag = this;
+                this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+                this.ActiveSpace.Add(this.Entity);
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+                this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+
+                //this.entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollision;
+                this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
+                this.Entity.CollisionInformation.Events.CollisionEnded += this.Events_CollisionEnded;
+            }
+        }
+
+        public void SetTriggerObject(EnvironmentObject triggerObject)
         {
             this.triggerObject = triggerObject;
-            playerOn = false; hammerOn = false;
-            pressureActivated = false;
-
-            this.Entity = new Box(MathConverter.Convert(this.Position), 6, 3, 6);
-            this.Entity.Tag = "ImmovableInteractableBounds";
-            this.Entity.CollisionInformation.Tag = this;
-            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
-            this.ActiveSpace.Add(this.Entity);
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
-            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
-
-            //this.entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollision;
-            this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
-            this.Entity.CollisionInformation.Events.CollisionEnded += this.Events_CollisionEnded;
         }
 
         private void Events_PairTouching(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
@@ -65,7 +67,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             }
         }
 
-        void Events_InitialCollision(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        private void Events_InitialCollision(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
         {
             //This type of event can occur when an entity hits any other object which can be collided with.
             //They aren't always entities; for example, hitting a StaticMesh would trigger this.
@@ -78,7 +80,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             }
         }
 
-        void Events_CollisionEnded(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        private void Events_CollisionEnded(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
         {
             //This type of event can occur when an entity hits any other object which can be collided with.
             //They aren't always entities; for example, hitting a StaticMesh would trigger this.
@@ -105,16 +107,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //{
             //    triggerObject.SetVisible(true);
             //}
-            if (this.pressureActivated)
+            if (this.pressureActivated && triggerObject != null)
             {
-                triggerObject.SetVisible(false);
+                triggerObject.Visible = false;
                 if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
                     this.ActiveSpace.Remove(triggerObject.Entity);
             }
-            else
+            else if (triggerObject != null)
             {
-                triggerObject.SetVisible(true);
-                if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                triggerObject.Visible = true;
+                if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
                     this.ActiveSpace.Add(triggerObject.Entity);
             }
         }

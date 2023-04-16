@@ -1,9 +1,11 @@
 ﻿using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.CollisionRuleManagement;
+using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
-using Hammered_Physics.Core;
 using HammeredGame.Core;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using ImGuiNET;
 using ImMonoGame.Thing;
@@ -42,62 +44,96 @@ namespace HammeredGame.Game.GameObjects
     public class Player : GameObject, IImGui
     {
         // Private variables specific to the player class
-        private float baseSpeed = 20f;
+        private float baseSpeed = 50f;
 
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
 
-        public Vector3 PreviousPosition;
+        // Last known ground position, used to reset player's position
+        // if the player comes into contact with a water object
+        private Vector3 lastGroundPosition;
 
         // TEMPORARY (FOR TESTING)
         public bool OnTree = false;
         public bool ReachedGoal = false;
 
-        private readonly Input input;
-        private readonly Camera activeCamera;
+        private Camera activeCamera;
 
         // Initialize player class
-        public Player(Model model, Vector3 pos, float scale, Texture2D t, Space space, Input inp, Camera cam) : base(model, pos, scale, t, space)
+        public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
-            this.input = inp;
-            this.activeCamera = cam;
+            if (this.Entity != null)
+            {
+                // Adding a tag to the entity, to allow us to potentially filter and
+                // view bounding volumes (for debugging)
+                this.Entity.Tag = "PlayerBounds";
 
-            // Defining the bounding volume entity (currently a box, but this could be
-            // defined as a capsule/cylinder/compound/etc. --> see bepuphysics1 repo)
-            this.Entity = new Box(MathConverter.Convert(Position), 2, 6, 2, 50);
+                // Setting the entity's collision information tag to the game object itself.
+                // This will help in checking for specific collisions in object-specific
+                // collision handling. --> See the Events_DetectingInitialCollision function in
+                // this file to see an example of how this might be used
+                this.Entity.CollisionInformation.Tag = this;
 
-            // Adding a tag to the entity, to allow us to potentially filter and
-            // view bounding volumes (for debugging)
-            this.Entity.Tag = "PlayerBounds";
+                // Making the character a continuous object prevents it from flying through
+                // walls which would be pretty jarring from a player's perspective.
+                this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
 
-            // Setting the entity's collision information tag to the game object itself.
-            // This will help in checking for specific collisions in object-specific 
-            // collision handling. --> See the Events_DetectingInitialCollision function in 
-            // this file to see an example of how this might be used
-            this.Entity.CollisionInformation.Tag = this;
+                // Set the entity's local inverse intertia tensor --> this ensures that the
+                // player character doesn't just fall over due to gravity
+                this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
 
-            // Making the character a continuous object prevents it from flying through
-            // walls which would be pretty jarring from a player's perspective.
-            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+                // Increase the entity's kinetic friction variable --> currently being used to
+                // reduce the character sliding along the surface. Also, not setting it too high
+                // since higher values make the player get stuck on certain parts of an uneven ground mesh.
+                // TODO: May want the flat ground meshes be as even and flat as possible
+                // (except ramps/stairs/ladders to reach higher elevations --> these can maybe be
+                // handled separately within collision handling <-- more testing needed for these settings)
+                this.Entity.Material.KineticFriction = 1.0f;
 
-            // Set the entity's local inverse intertia tensor --> this ensures that the 
-            // player character doesn't just fall over due to gravity
-            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+                // Add the entity to the level's physics space - this ensures that this game object
+                // will be considered for collision constraint solving (handled by the physics engine)
+                this.ActiveSpace.Add(this.Entity);
 
-            // Increase the entity's kinetic friction variable --> currently being used to 
-            // reduce the character sliding along the surface. Also, not setting it too high
-            // since higher values make the player get stuck on certain parts of an uneven ground mesh.
-            // TODO: May want the flat ground meshes be as even and flat as possible
-            // (except ramps/stairs/ladders to reach higher elevations --> these can maybe be
-            // handled separately within collision handling <-- more testing needed for these settings)
-            this.Entity.Material.KineticFriction = 1.5f;
+                // Initialize the collision handlers based on the associated collision events
+                this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+                this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
+                this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
+            }
 
-            // Add the entity to the level's physics space - this ensures that this game object 
-            // will be considered for collision constraint solving (handled by the physics engine)
-            this.ActiveSpace.Add(this.Entity);
+            // Initial position should be on/over ground
+            this.lastGroundPosition = this.Position;
+        }
 
-            // Initialize the collision handlers based on the associated collision events
-            this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+        private void Events_ContactCreated(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair, BEPUphysics.CollisionTests.ContactData contact)
+        {
+            // If the player touches water, return the player to the last
+            // known ground position
+            // Comment this section out, if testing requires walking on water
+            if (other.Tag is Water)
+            {
+                this.Position = this.lastGroundPosition;
+            }
+        }
+
+        private void Events_PairTouching(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            // Make some checks to identify if the last ground position should be updated
+            if (other.Tag is Ground)
+            {
+                // If the player is also touching water, then don't update ground position
+                foreach (var contactPair in sender.Pairs)
+                {
+                    if (contactPair.CollidableA.Tag is Water || contactPair.CollidableB.Tag is Water)
+                    {
+                        return;
+                    }
+                }
+
+                // If player isn't falling, update last known ground position
+                // Falling is currently being determined via a linear y velocity threshold
+                if (Math.Abs(this.Entity.LinearVelocity.Y) < 2.5f)
+                    this.lastGroundPosition = this.Position;
+            }
         }
 
         // Collision Handling Event for any initial collisions detected
@@ -127,6 +163,15 @@ namespace HammeredGame.Game.GameObjects
             }
         }
 
+        /// <summary>
+        /// Set the active camera in use, which determines the movement vector for the player.
+        /// </summary>
+        /// <param name="camera"></param>
+        public void SetActiveCamera(Camera camera)
+        {
+            activeCamera = camera;
+        }
+
         // Update (called every tick)
         public override void Update(GameTime gameTime)
         {
@@ -142,120 +187,49 @@ namespace HammeredGame.Game.GameObjects
             // previous computations accumulating/carrying over)
             player_vel = Vector3.Zero;
 
-            // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
-            // "forward" from the current camera perspective. Calculated by projecting the vector of
-            // the current camera position to the player position, onto the ground, and normalising it.
-            Vector3 forwardDirectionFromCamera = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
-
-            // Handling input from keyboard.
-            moveDirty = this.KeyboardInput(forwardDirectionFromCamera);
-
-            // Handling input from gamepad.
-            if (input.GamePadState.IsConnected)
+            Vector3 forwardDirection;
+            if (activeCamera != null) {
+                // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
+                // "forward" from the current camera perspective. Calculated by projecting the vector of
+                // the current camera position to the player position, onto the ground, and normalising it.
+                forwardDirection = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
+            } else
             {
-                moveDirty = moveDirty || GamepadInput(forwardDirectionFromCamera);
+                forwardDirection = Vector3.UnitX;
             }
 
-            // After checking for inputs, if the player velocity vector is still a zero vector,
-            // simply return and don't do anything else, since there is no movement
-            if (player_vel.Equals(Vector3.Zero)) return;
+            // Handling input from keyboard.
+            moveDirty = this.KeyboardInput(forwardDirection);
+
+            // Handling input from gamepad.
+            if (Services.GetService<Input>().GamePadState.IsConnected)
+            {
+                moveDirty = moveDirty || GamepadInput(forwardDirection);
+            }
 
             // If there was movement, normalize speed and edit rotation of character model
             // Also account for collisions
-            if (moveDirty)
+            if (moveDirty && this.Entity != null && player_vel != Vector3.Zero)
             {
                 BEPUutilities.Vector3 Pos = this.Entity.Position;
-                this.PreviousPosition = MathConverter.Convert(Pos);
 
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
                 // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
                 player_vel.Normalize();
                 player_vel *= baseSpeed;
 
-                Pos += MathConverter.Convert(player_vel);
                 this.Entity.LinearVelocity = MathConverter.Convert(new Vector3(player_vel.X, this.Entity.LinearVelocity.Y, player_vel.Z));
 
                 // At this point, also rotate the player to the direction of movement
-                BEPUutilities.Vector3 lookDirection = Pos - MathConverter.Convert(this.PreviousPosition);
-                lookDirection.Normalize(); // Normalizing for good measure.
+
                 ///<remark>
                 /// The "angle" variable and the subsequent "rotation" variable below
                 /// currently handle rotations in the xz plane.
                 /// There might be a need to decide whether the character rotation should account for slopes
                 /// <example>When walking up an inclined piece of land, the character might be facing upwards.</example>
                 ///</remark>
-                float angle = (float)Math.Atan2(lookDirection.X, lookDirection.Z);
+                float angle = (float)Math.Atan2(player_vel.X, player_vel.Z);
                 this.Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle);
-
-
-
-                //// Set the player's old position (as of previous tick)
-                //// Memorizing this state has multiple uses, including:
-                //// a) velocity direction computation (current - old)
-                //// b) reverting to the previous position in case of an unwanted state (e.g. character cannot enter water)
-                //this.PreviousPosition = this.Position;
-
-                //// Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
-                //// Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
-                //player_vel.Normalize();
-                //player_vel *= baseSpeed;
-
-                //Position += player_vel;
-
-                //// At this point, also rotate the player to the direction of movement
-                //Vector3 lookDirection = Position - PreviousPosition; lookDirection.Normalize(); // Normalizing for good measure.
-                /////<remark>
-                ///// The "angle" variable and the subsequent "rotation" variable below
-                ///// currently handle rotations in the xz plane.
-                ///// There might be a need to decide whether the character rotation should account for slopes
-                ///// <example>When walking up an inclined piece of land, the character might be facing upwards.</example>
-                /////</remark>
-                //float angle = (float)Math.Atan2(lookDirection.X, lookDirection.Z);
-                //Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, angle);
-
-                //// The bounding box of the character when they move (translated and/or rotated AABB)
-                //// is recomputed inside the "foreach" loop
-
-                //this.OnTree = false;
-                //// Obstacle collision detection - will be modified/removed later
-                //foreach (EnvironmentObject gO in HammeredGame.ActiveLevelObstacles)
-                //{
-                //    // Very very basic collision detection
-                //    // Check for collisions by checking for bounding box intersections
-                //    if (gO != null && gO.IsVisible())
-                //    {
-                //        // We only care for the bounding box of the character if there *is* an obstacle in the scene.
-                //        // Otherwise it is wasted computational time.
-                //        this.ComputeBounds();
-
-                //        // If the player intersects with another game object
-                //        // trigger the hitByPlayer function of that gameobject
-                //        if (this.BoundingBox.Intersects(gO.BoundingBox))
-                //        {
-                //            gO.TouchingPlayer(this);
-                //            // TEMPORARY: if the player is not on tree
-                //            // and intersects with water (onGround returns if the player has hit a groundobject,
-                //            // currently water is the only ground object being considered for collisions),
-                //            // then set player back to old position
-                //            // There might be a better solution to this
-                //            if (gO.IsGround && !this.OnTree)
-                //            {
-                //                //System.Diagnostics.Debug.WriteLine(this.PreviousPosition + " -> " + this.Position);
-                //                this.Position = this.PreviousPosition;
-                //                //this.position = Vector3.Zero;
-                //            }
-                //        }
-                //        else
-                //        {
-                //            gO.NotTouchingPlayer(this);
-                //        }
-
-                //        if (gO is Tree t)
-                //        {
-                //            if (t.isPlayerOn()) this.OnTree = true;
-                //        }
-                //    }
-                //}
             }
             else
             {
@@ -322,15 +296,6 @@ namespace HammeredGame.Game.GameObjects
 
             #endregion TEMPORARY_MOUSE_BASED_ROTATION
 
-            ///<remarks>
-            /// This is a temporary measure which works for the rectangular map included in the tutorial level of the functional minimum.
-            /// To capture map boundaries in an arbitrarily shaped world (e.g. island),
-            /// the need to integrate an (external) physics library for precise bounding checks arises.
-            ///
-            /// TODO: Integrate an (external) physics library in the project.
-            /// TODO: Remember to change the clamping values to match the final tutorial level that will be constructed.
-            ///</remarks>
-            //this.Position = Vector3.Clamp(this.Position, new Vector3(-60f, -60f, -60f), new Vector3(60f, 60f, 60f));
         }
 
         private bool KeyboardInput(Vector3 forwardDirectionFromCamera)
@@ -339,6 +304,7 @@ namespace HammeredGame.Game.GameObjects
             // Keyboard input (W - forward, S - back, A - left, D - right)
 
             bool moveDirty = false;
+            Input input = Services.GetService<Input>();
 
             if (input.KeyDown(Keys.W))
             {
@@ -367,6 +333,7 @@ namespace HammeredGame.Game.GameObjects
         private bool GamepadInput(Vector3 forwardDirectionFromCamera)
         {
             bool moveDirty = false;
+            Input input = Services.GetService<Input>();
 
             float MovePad_LeftRight = input.GamePadState.ThumbSticks.Left.X;
             float MovePad_UpDown = input.GamePadState.ThumbSticks.Left.Y;
@@ -379,14 +346,12 @@ namespace HammeredGame.Game.GameObjects
             return moveDirty;
         }
 
-        public void UI()
+        new public void UI()
         {
-            ImGui.Begin("Player", ImGuiWindowFlags.AlwaysAutoResize);
-
+            base.UI();
+            ImGui.Separator();
             ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
-
-            ImGui.End();
         }
     }
 }

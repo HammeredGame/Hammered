@@ -1,13 +1,12 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BEPUphysics;
 using BEPUphysics.Entities;
-using BEPUphysics;
-using Hammered_Physics.Core;
+using BEPUphysics.Entities.Prefabs;
+using HammeredGame.Core;
+using ImGuiNET;
+using ImMonoGame.Thing;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace HammeredGame.Game
 {
@@ -25,54 +24,81 @@ namespace HammeredGame.Game
     /// <para />
     /// In addition, a shape (as defined above) may be cosmetically enhanced with a (.png) texture -> <code>Texture2D tex</code> variable.
     /// <para />
-    /// For collision detection, each <c>GameObject</c> has bounding box attached
-    /// -> <code>BoundingBox boundingBox</code> variable.
-    /// <remark>To be exact the current implementation supports an "Axis-Aligned Bounding Box" or "AABB" for short)</remark>
+    /// For collision detection, each <c>GameObject</c> is attached to a physics Space. All
+    /// non-terrain objects also have an Entity representation (a physics bounding shape) that
+    /// handles collisions and physics-based behaviour.
     /// </summary>
     ///
     /// <remarks>
     /// TODO: Add "class_skeleton_class_diagram.jpg" to game files
     /// </remarks>
-    public abstract class GameObject
+    public abstract class GameObject : IImGui
     {
-        // Common variables for any object in the game (will be modified as we develop further)
+        // Common variables for any object in the game
         public Model Model;
 
+        public Texture2D Texture;
+        private Vector3 position;
+
+        // Use the private position vector only if we don't have a physics entity attached.
+        // Otherwise, we delegate the position property entirely to the physics body position and
+        // never use our own private value.
+        public Vector3 Position
+        {
+            get { if (Entity != null) { return MathConverter.Convert(Entity.Position); } else { return position; } }
+            set { if (Entity != null) { Entity.Position = MathConverter.Convert(value); } position = value; }
+        }
+
+        private Quaternion rotation;
+
+        // Use the private rotation quaternion only if we don't have a physics entity attached.
+        // Otherwise, we delegate the rotation property entirely to the physics body orientation and
+        // never use our own private value.
+        public Quaternion Rotation
+        {
+            get { if (Entity != null) { return MathConverter.Convert(Entity.Orientation); } else { return rotation; } }
+            set { if (Entity != null) { Entity.Orientation = MathConverter.Convert(value); } rotation = value; }
+        }
+
+        public float Scale;
+
         /// <summary>
-        /// Physics Entity that this model follows.
+        /// Physics Entity that this model follows. Could be null for e.g. terrain.
         /// </summary>
         public Entity Entity;
 
-        public Vector3 Position;
-        public Quaternion Rotation;
-        public float Scale;
+        /// <summary>
+        /// A model may have its origin somewhere other than its center of mass. In this case, the
+        /// graphic display and the physics body calculations will not match. This vector is used to
+        /// shift the model drawing so it matches the physics body.
+        /// </summary>
+        public Vector3 EntityModelOffset = Vector3.Zero;
 
-        public Texture2D Texture;
-
-        // Probably unnecessary now, since we're shifting to using a physics engine
-        public BoundingBox BoundingBox { get; private set; }
+        protected GameServices Services;
 
         // The active level physics space to add and remove entities for physics constraint solving
-        public Space ActiveSpace;
+        protected Space ActiveSpace;
 
         /// <summary>
         ///  The "flag" variable <code>bool visible</code> is used to indicate the state in which the <c>GameObject</c>
         ///  instance is in.
         ///  If its value is true, then the instance will be drawn on the screen (utilizing the <code>DrawModel()</code> function)
         /// </summary>
-        protected bool Visible = true;
+        public bool Visible = true;
 
         private List<(int, float[])> allVertexData;
 
-        protected GameObject(Model model, Vector3 pos, float scale, Texture2D t, Space space)
+        protected GameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
         {
+            this.Entity = entity;
+            this.Services = services;
             this.Model = model;
             this.Position = pos;
-            this.Rotation = Quaternion.Identity;
+            this.Rotation = rotation;
             this.Scale = scale;
             this.Texture = t;
 
-            this.ActiveSpace = space;
+            this.ActiveSpace = services.GetService<Space>();
 
             if (this.Model != null)
             {
@@ -94,18 +120,6 @@ namespace HammeredGame.Game
                     }
                 }
             }
-
-            //this.ComputeBounds();
-        }
-
-        public bool IsVisible()
-        {
-            return this.Visible;
-        }
-
-        public void SetVisible(bool vis)
-        {
-            this.Visible = vis;
         }
 
         public abstract void Update(GameTime gameTime);
@@ -114,7 +128,7 @@ namespace HammeredGame.Game
         // get world matrix and then call draw model to draw the mesh on screen
         public virtual void Draw(Matrix view, Matrix projection)
         {
-            if (this.IsVisible())
+            if (Visible)
                 DrawModel(Model, view, projection, Texture);
         }
 
@@ -184,55 +198,15 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Method to get bounding box for the mesh - for basic collision detection
-        /// Probably not going to be necessary for later iterations
-        /// (once we bring in an external library to handle collisions)
-        /// </summary>
-        public void ComputeBounds()
-        {
-            Matrix world = GetWorldMatrix();
-            Matrix[] boneTransforms = new Matrix[Model.Bones.Count];
-            Model.CopyAbsoluteBoneTransformsTo(boneTransforms);
-
-            Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-            Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-
-            int partCount = 0;
-            // Get bounding box min/max from each mesh part's vertices
-            foreach (ModelMesh mesh in Model.Meshes)
-            {
-                foreach (ModelMeshPart meshPart in mesh.MeshParts)
-                {
-                    // Get mesh transform with respect to world
-                    Matrix meshTransform = boneTransforms[mesh.ParentBone.Index] * world;
-
-                    (int vertexStride, float[] vertexData) = allVertexData[partCount];
-                    for (int i = 0; i < vertexData.Length; i += vertexStride/ sizeof(float))
-                    {
-                        //Vector3 vertex = new Vector3(vertexData[i], vertexData[i + 1], vertexData[i + 2]);
-                        Vector3 vertex = Vector3.Transform(new Vector3(vertexData[i], vertexData[i + 1], vertexData[i + 2]), meshTransform);
-                        min = Vector3.Min(min, vertex);
-                        max = Vector3.Max(max, vertex);
-                    }
-                    partCount++;
-                }
-            }
-
-            this.BoundingBox = new BoundingBox(min, max);
-        }
-
-
-        /// <summary>
         /// Get the world matrix for the object's current position in the world. Mainly used for drawing.
         /// </summary>
         /// <returns></returns>
-        public Matrix GetWorldMatrix()
+        public virtual Matrix GetWorldMatrix()
         {
-            Vector3 pos = GetPosition();
-            Quaternion rot = GetRotation();
-
-            Matrix rotationMatrix = Matrix.CreateFromQuaternion(rot);
-            Matrix translationMatrix = Matrix.CreateTranslation(pos);
+            Matrix rotationMatrix = Matrix.CreateFromQuaternion(Rotation);
+            // For translation, include the model's origin offset so that the collision body
+            // position matches with the rendered model
+            Matrix translationMatrix = Matrix.CreateTranslation(Position + EntityModelOffset);
             Matrix scaleMatrix = Matrix.CreateScale(Scale);
 
             // Construct world matrix
@@ -247,31 +221,60 @@ namespace HammeredGame.Game
             ///</example>
 
             // World matrix = S -> R -> T
-            Matrix world = scaleMatrix * rotationMatrix * translationMatrix;
-            return world;
+            return scaleMatrix * rotationMatrix * translationMatrix;
         }
 
         /// <summary>
-        /// Getter function for game object position
+        /// A default game object property UI, shown in the debug UI for editing the basic position,
+        /// rotation, scale, and any physics entity properties at runtime.
         /// </summary>
-        /// <returns></returns>
-        public virtual Vector3 GetPosition()
+        public void UI()
         {
-            // If an 'Entity' is attached to the game object, return its position.
-            // Otherwise, return the mesh/model's position (this is usually only the
-            // case for Static Meshes - typically used for static ground models)
-            if (this.Entity != null) return MathConverter.Convert(this.Entity.Position);
-            else return Position;
-        }
+            ImGui.Text($"Texture: {Texture?.ToString() ?? "None"}");
 
-        /// <summary>
-        /// Getter function for game object rotation
-        /// </summary>
-        /// <returns></returns>
-        public virtual Quaternion GetRotation()
-        {
-            if (this.Entity != null) return MathConverter.Convert(this.Entity.Orientation);
-            else return Rotation;
+            // ImGui accepts only system.numerics.vectorX and not MonoGame VectorX, so
+            // we need to temporarily convert.
+            System.Numerics.Vector3 pos = Position.ToNumerics();
+            ImGui.DragFloat3("Position", ref pos, 10f);
+            Position = pos;
+
+            System.Numerics.Vector4 rot = Rotation.ToVector4().ToNumerics();
+            ImGui.DragFloat4("Rotation", ref rot, 0.01f, -1.0f, 1.0f);
+            Rotation = Quaternion.Normalize(new Quaternion(rot));
+
+            ImGui.DragFloat("Scale", ref Scale, 0.01f);
+            ImGui.TextWrapped("* Changing scale only changes the rendering scale and not the collision entity scale.");
+
+            ImGui.NewLine();
+
+            ImGui.Text($"Collision body: {Entity?.GetType()?.Name ?? "None"}");
+            if (Entity != null)
+            {
+                System.Numerics.Vector3 modelOffset = EntityModelOffset.ToNumerics();
+                ImGui.DragFloat3("Origin offset (between Graphic & Physics)", ref modelOffset, 0.01f);
+                EntityModelOffset = modelOffset;
+
+                // Setting IgnoreShapeChanges makes sure that editing body properties don't randomly
+                // start causing the body to tip over or lose its center of mass. We're disobeying
+                // the laws of physics by editing these, so it makes sense to disable the change triggers.
+                Entity.IgnoreShapeChanges = true;
+                // Display some entity-specific parameters
+                if (Entity is Box box)
+                {
+                    System.Numerics.Vector3 whl = new(box.Width, box.Height, box.Length);
+                    ImGui.DragFloat3("Box W,H,L", ref whl, 0.1f, 0.1f, float.MaxValue);
+                    box.Width = whl.X;
+                    box.Height = whl.Y;
+                    box.Length = whl.Z;
+                }
+                else if (Entity is Sphere sph)
+                {
+                    float radius = sph.Radius;
+                    ImGui.DragFloat("Sphere R", ref radius, 0.1f, 0.1f, float.MaxValue);
+                    sph.Radius = radius;
+                }
+                Entity.IgnoreShapeChanges = false;
+            }
         }
     }
 }

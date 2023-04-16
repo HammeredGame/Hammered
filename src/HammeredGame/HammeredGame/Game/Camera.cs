@@ -16,9 +16,10 @@ namespace HammeredGame.Game
         public Matrix ViewMatrix, ProjMatrix, ViewProjMatrix;        // View Matrix, Projection Matrix
         public Vector3 Up;                          // Vector that points up
 
-        private Vector3 unit_direction;                     // direction of camera (normalized to distance of 1 unit)
+        // Core game services for access to the GPU aspect ratio and Input handlers
+        private GameServices services;
 
-        private Input inp;                                  // Input class for camera controls
+        private Vector3 unit_direction;                     // direction of camera (normalized to distance of 1 unit)
 
         // Camera positions
         public Vector3[] StaticPositions = new Vector3[4]
@@ -31,11 +32,13 @@ namespace HammeredGame.Game
 
         private int currentCameraPosIndex = 0;
 
-        // Camera follow direction for follow mode
-        private float followDistance = 49f;
+        // Camera follow properties, like distance, angle, and what to follow
+        private GameObject followTarget;
+        public float FollowDistance = 49f;
+        public float FollowAngle = 0.551f;
+        private Vector2 followDir2D = new Vector2(1, -1);
 
-        private float followAngle = 0.551f;
-        private Vector2 followDir = new Vector2(1, -1);
+        public float FieldOfView = MathHelper.PiOver4;
 
         public enum CameraMode
         {
@@ -53,18 +56,28 @@ namespace HammeredGame.Game
         /// <param name="focusPoint"></param>
         /// <param name="upDirection"></param>
         /// <param name="input"></param>
-        public Camera(GraphicsDevice gpu, Vector3 focusPoint, Vector3 upDirection, Input input)
+        public Camera(GameServices services, Vector3 focusPoint, Vector3 upDirection)
         {
             Up = upDirection;
             Position = StaticPositions[0];
             Target = focusPoint;
             ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
-            ProjMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, gpu.Viewport.AspectRatio, 0.1f, FAR_PLANE);
+            ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
-            inp = input;
             unit_direction = ViewMatrix.Forward; unit_direction.Normalize();
 
             Mode = CameraMode.FourPointStatic;
+
+            this.services = services;
+        }
+
+        /// <summary>
+        /// Set the game object for the camera to follow.
+        /// </summary>
+        /// <param name="target"></param>
+        public void SetFollowTarget(GameObject target)
+        {
+            followTarget = target;
         }
 
         /// <summary>
@@ -78,14 +91,14 @@ namespace HammeredGame.Game
         {
             // Calculate the base follow offset position (from the player) using the followAngle,
             // between 0 (horizon) and 90 (top down)
-            var sinCos = Math.SinCos(followAngle);
+            var sinCos = Math.SinCos(FollowAngle);
             Vector3 followOffset = new Vector3((float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos), (float)sinCos.Sin, (float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos));
 
             // Multiply by the diagonal direction
             followOffset.X *= followDir2D.X;
             followOffset.Z *= followDir2D.Y;
 
-            Vector3 newPosition = player.Position + Vector3.Normalize(followOffset) * followDistance;
+            Vector3 newPosition = player.Position + Vector3.Normalize(followOffset) * FollowDistance;
             UpdatePositionTarget(newPosition, player.Position);
         }
 
@@ -130,7 +143,7 @@ namespace HammeredGame.Game
         /// TEMPORARY - needs to be modified Update the camera position and look-at Currently just
         /// switches between 4 predetermined positions given the corresponding keyboard input
         /// </summary>
-        public void UpdateCamera(Player player)
+        public void UpdateCamera()
         {
             if (Mode == CameraMode.Follow)
             {
@@ -139,26 +152,37 @@ namespace HammeredGame.Game
 
                 #region TEMPORARY_CAMERA_CONTROLS
 
+                Input inp = services.GetService<Input>();
                 if (inp.ButtonPress(Buttons.DPadUp) || inp.KeyDown(Keys.D1))
                 {
-                    followDir = new Vector2(1, -1);
+                    followDir2D = new Vector2(1, -1);
                 }
                 if (inp.ButtonPress(Buttons.DPadLeft) || inp.KeyDown(Keys.D2))
                 {
-                    followDir = new Vector2(-1, -1);
+                    followDir2D = new Vector2(-1, -1);
                 }
                 if (inp.ButtonPress(Buttons.DPadDown) || inp.KeyDown(Keys.D3))
                 {
-                    followDir = new Vector2(-1, 1);
+                    followDir2D = new Vector2(-1, 1);
                 }
                 if (inp.ButtonPress(Buttons.DPadRight) || inp.KeyDown(Keys.D4))
                 {
-                    followDir = new Vector2(1, 1);
+                    followDir2D = new Vector2(1, 1);
                 }
 
-                FollowPlayer(player, followDir);
-
                 #endregion TEMPORARY_CAMERA_CONTROLS
+
+                // Calculate the base follow offset position (from the follow target) using the
+                // followAngle, between 0 (horizon) and 90 (top down)
+                var sinCos = Math.SinCos(FollowAngle);
+                Vector3 followOffset = new Vector3((float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos), (float)sinCos.Sin, (float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos));
+
+                // Multiply by the diagonal direction
+                followOffset.X *= followDir2D.X;
+                followOffset.Z *= followDir2D.Y;
+
+                Vector3 newPosition = followTarget.Position + Vector3.Normalize(followOffset) * FollowDistance;
+                UpdatePositionTarget(newPosition, followTarget.Position);
             }
             else
             {
@@ -166,6 +190,7 @@ namespace HammeredGame.Game
 
                 #region TEMPORARY_CAMERA_CONTROLS
 
+                Input inp = services.GetService<Input>();
                 if (inp.ButtonPress(Buttons.DPadUp) || inp.KeyDown(Keys.D1))
                 {
                     currentCameraPosIndex = 0;
@@ -195,6 +220,9 @@ namespace HammeredGame.Game
             ImGui.Text($"Camera Coordinates: {Position}");
             ImGui.Text($"Camera Focus: {Target}");
 
+            ImGui.DragFloat("Field of View (rad): ", ref FieldOfView, 0.01f, 0.01f, MathHelper.Pi - 0.01f);
+            ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
+
             bool isStatic = Mode == CameraMode.FourPointStatic;
             if (ImGui.Checkbox("Static Camera Mode", ref isStatic))
             {
@@ -212,8 +240,8 @@ namespace HammeredGame.Game
             }
             else
             {
-                ImGui.DragFloat("Follow Offset", ref followDistance);
-                ImGui.DragFloat("Follow Angle", ref followAngle, 0.01f, 0, MathHelper.Pi / 2.0f);
+                ImGui.DragFloat("Follow Offset", ref FollowDistance);
+                ImGui.DragFloat("Follow Angle", ref FollowAngle, 0.01f, 0, MathHelper.Pi / 2.0f);
             }
             ImGui.End();
         }
