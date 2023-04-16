@@ -10,15 +10,15 @@
 
 #-------------------------------- References --------------------------------#
 
-/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\Animation.dll
-/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\AnimationImporters.dll
-/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\Atlas.dll
-/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\AtlasImporter.dll
-/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\DDSImporter.dll
-/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\Graphics.dll
-/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\GraphicsImporters.dll
-/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\RawModelProcessor.dll
-/reference:..\..\..\..\..\Aether_Extras_for_Net_6\CustomAetherExtras\ResultingDLLs\SLMCImporter.dll
+/reference:..\lib\CustomAetherExtras\Animation.dll
+/reference:..\lib\CustomAetherExtras\AnimationImporters.dll
+/reference:..\lib\CustomAetherExtras\Atlas.dll
+/reference:..\lib\CustomAetherExtras\AtlasImporter.dll
+/reference:..\lib\CustomAetherExtras\DDSImporter.dll
+/reference:..\lib\CustomAetherExtras\Graphics.dll
+/reference:..\lib\CustomAetherExtras\GraphicsImporters.dll
+/reference:..\lib\CustomAetherExtras\RawModelProcessor.dll
+/reference:..\lib\CustomAetherExtras\SLMCImporter.dll
 
 #---------------------------------- Content ---------------------------------#
 
