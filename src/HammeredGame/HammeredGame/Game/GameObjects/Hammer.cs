@@ -64,6 +64,9 @@ namespace HammeredGame.Game.GameObjects
         /// </summary>
         private UniformGrid grid;
 
+        private readonly Queue<BEPUutilities.Vector3> route = new();
+        private BEPUutilities.Vector3 nextRoutePosition;
+
         public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
             : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -164,7 +167,18 @@ namespace HammeredGame.Game.GameObjects
                 if (hammerState == HammerState.Enroute && player != null)
                 {
                     // Update Hammer's Linear Velocity
-                    this.Entity.LinearVelocity = hammerSpeed * (player.Entity.Position - Entity.Position);
+                    // this.Entity.LinearVelocity = hammerSpeed * (player.Entity.Position - Entity.Position);
+                    BEPUutilities.Vector3 currentToNextPosition = this.nextRoutePosition - Entity.Position;
+                    // If the two points are too far apart
+                    if (currentToNextPosition.Length() > 0.5)
+                    {
+                        this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
+                    }
+                    // If the hammer hasn't reached its destination, travel towards the next position of the route.
+                    else if (route.Count() > 0)
+                    {
+                        this.nextRoutePosition = route.Peek(); route.Dequeue();
+                    }
 
                     //// Update position
                     //Position += hammerSpeed * (player.GetPosition() - Position);
@@ -219,6 +233,15 @@ namespace HammeredGame.Game.GameObjects
             {
                 hammerState = HammerState.Enroute;
 
+                // Precautiously empty the previous route.
+                // It should be empty by the time it finishes its previous route, but just in case.
+                this.route.Clear();
+                // Compute the shortest path using the A* algorithm and taking into account obstacles.
+                Vector3[] routeArray = this.grid.FindShortestPathAStar(this.Position, player.Position);
+                for (int i = 0; i < routeArray.Length ; i++) { this.route.Enqueue(MathConverter.Convert(routeArray[i])); }
+                // Initialize the next position in 3D space to visit.
+                this.nextRoutePosition = this.route.Peek(); this.route.Dequeue();
+
                 // When hammer is enroute, the physics engine shouldn't solve for
                 // collision constraints with it --> rather we want to manually
                 // handle collisions
@@ -243,6 +266,15 @@ namespace HammeredGame.Game.GameObjects
                 if (hammerState == HammerState.Dropped && player != null && Entity != null && input.ButtonPress(Buttons.B))
                 {
                     hammerState = HammerState.Enroute;
+
+                    // Precautiously empty the previous route.
+                    // It should be empty by the time it finishes its previous route, but just in case.
+                    this.route.Clear();
+                    // Compute the shortest path using the A* algorithm and taking into account obstacles.
+                    Vector3[] routeArray = this.grid.FindShortestPathAStar(this.Position, player.Position);
+                    for (int i = 0; i < routeArray.Length; i++) { this.route.Enqueue(MathConverter.Convert(routeArray[i])); }
+                    // Initialize the next position in 3D space to visit.
+                    this.nextRoutePosition = this.route.Peek(); this.route.Dequeue();
 
                     // When hammer is enroute, the physics engine shouldn't solve for
                     // collision constraints with it --> rather we want to manually
