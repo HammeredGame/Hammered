@@ -4,6 +4,7 @@ using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Settings;
 using BEPUutilities.Threading;
 using HammeredGame.Core;
+using HammeredGame.Game.PathPlanning.Grid;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -28,6 +29,11 @@ namespace HammeredGame.Game
         /// The camera in the scene.
         /// </summary>
         public Camera Camera { get; private set; }
+
+        /// <summary>
+        /// The uniform grid of the scene.
+        /// </summary>
+        public UniformGrid Grid { get; private set; } 
 
         /// <summary>
         /// The objects loaded in the scene, keyed by unique identifier strings.
@@ -146,7 +152,7 @@ namespace HammeredGame.Game
         /// <param name="fileName"></param>
         public void CreateFromXML(string fileName)
         {
-            (Camera, GameObjects) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            (Camera, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
         }
 
         /// <summary>
@@ -255,7 +261,7 @@ namespace HammeredGame.Game
             // Button to export to XML
             if (ImGui.Button("Export Scene"))
             {
-                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, GameObjects, Services);
+                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, GameObjects, Grid, Services);
             }
 
             // Show a dual pane layout, with the scene object list on the left and details on the
