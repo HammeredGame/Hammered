@@ -131,7 +131,7 @@
 #begin character-walking-with-hammer.fbx
 /importer:FbxImporter
 /processor:CpuAnimatedModelProcessor
-/processorParam:VertexBufferType=Default
+/processorParam:VertexBufferType=DynamicWriteOnly
 /processorParam:IndexBufferType=Default
 /processorParam:MaxBones=72
 /processorParam:GenerateKeyframesFrequency=0

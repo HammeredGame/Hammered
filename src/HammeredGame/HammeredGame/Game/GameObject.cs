@@ -1,4 +1,5 @@
-﻿using BEPUphysics;
+﻿using Aether.Animation;
+using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using Hammered_Physics.Core;
@@ -101,7 +102,7 @@ namespace HammeredGame.Game
 
             this.ActiveSpace = services.GetService<Space>();
 
-            if (this.Model != null)
+            if (this.Model != null && model.GetAnimations() == null)
             {
                 // Precalculate the vertex buffer data, since VertextBuffer.GetData is very
                 // expensive to perform on every Update. We can find the bounding box of the
@@ -192,9 +193,9 @@ namespace HammeredGame.Game
                         _effect.Texture = tex;
 
                         _effect.FogEnabled = false;
-                        /*_effect.FogStart = 400.0f;
+                        _effect.FogStart = 400.0f;
                         _effect.FogEnd = 450.0f;
-                        _effect.FogColor = Color.AliceBlue.ToVector3();*/
+                        _effect.FogColor = Color.AliceBlue.ToVector3();
                     }
                 }
 
