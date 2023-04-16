@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HammeredGame.Game.PathPlanning.AStar;
 using HammeredGame.Game.PathPlanning.AStar.GraphComponents;
+using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 
 namespace HammeredGame.Game.PathPlanning.Grid
@@ -16,8 +17,10 @@ namespace HammeredGame.Game.PathPlanning.Grid
         private BidirectionalDictionary<Vector3, Vertex> biMap  = new BidirectionalDictionary<Vector3, Vertex>();
         private Graph graph;
 
-        private float sideLength;
-        private Vector3 originPoint;
+        // The following three fields can uniquely define a uniform grid.
+        public float sideLength { get; private set; }
+        public Vector3 originPoint { get; private set; }
+        public Vector3 endPoint { get; private set; }
 
         /// <remarks>
         /// The current implementations of the constructors suggest that the point characterizing a cell is its "bottom-left" one,
@@ -37,6 +40,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
         public UniformGrid(int nrCellsX, int nrCellsY, int nrCellsZ, float sideLength)
         {
             originPoint = Vector3.Zero;
+            endPoint = new Vector3(nrCellsX * sideLength, nrCellsY * sideLength, nrCellsZ * sideLength);
             this.sideLength = sideLength;
 
             grid = new Vector3[Math.Max(1, nrCellsX), Math.Max(1, nrCellsY), Math.Max(1, nrCellsZ)];
@@ -78,6 +82,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
                 throw new ArgumentException(String.Format("First input must be closer to origin than the second input. Instead, {0} > {1} was provided", bottomLeftClosePoint.Z, topRightAwayPoint.Z));
 
             originPoint = bottomLeftClosePoint;
+            endPoint = topRightAwayPoint;
             this.sideLength = sideLength;
 
             int nrCellsX = (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.X - topRightAwayPoint.X) / sideLength);
