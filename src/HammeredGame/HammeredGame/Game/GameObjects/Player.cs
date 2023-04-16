@@ -1,4 +1,5 @@
-﻿using BEPUphysics;
+﻿using Aether.Animation;
+using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
@@ -54,6 +55,8 @@ namespace HammeredGame.Game.GameObjects
 
         private Camera activeCamera;
 
+        private Animations animations;
+
         // Initialize player class
         public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -91,6 +94,10 @@ namespace HammeredGame.Game.GameObjects
 
                 // Initialize the collision handlers based on the associated collision events
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+
+                animations = this.Model.GetAnimations();
+                var clip = animations.Clips["Armature|Armature|mixamo.com|Layer0"];
+                animations.SetClip(clip);
             }
         }
 
@@ -128,6 +135,23 @@ namespace HammeredGame.Game.GameObjects
         public void SetActiveCamera(Camera camera)
         {
             activeCamera = camera;
+        }
+
+        private void ConfigureEffectMatrices(IEffectMatrices effect, Matrix world, Matrix view, Matrix projection)
+        {
+            effect.World = world;
+            effect.View = view;
+            effect.Projection = projection;
+        }
+
+        private void ConfigureEffectLighting(IEffectLights effect)
+        {
+            effect.EnableDefaultLighting();
+            effect.DirectionalLight0.Direction = Vector3.Backward;
+            effect.DirectionalLight0.Enabled = true;
+            effect.DirectionalLight1.Enabled = false;
+            effect.DirectionalLight2.Enabled = false;
+            effect.AmbientLightColor = Vector3.One;
         }
 
         // Update (called every tick)
@@ -188,6 +212,8 @@ namespace HammeredGame.Game.GameObjects
                 ///</remark>
                 float angle = (float)Math.Atan2(player_vel.X, player_vel.Z);
                 this.Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle);
+
+                animations.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
             }
             else
             {
@@ -310,6 +336,31 @@ namespace HammeredGame.Game.GameObjects
             ImGui.Separator();
             ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
+        }
+
+        public override void Draw(Matrix view, Matrix projection)
+        {
+            // Animate mesh
+            //Matrix[] transforms = new Matrix[this.Model.Bones.Count];
+            //this.Model.CopyAbsoluteBoneTransformsTo(transforms);
+
+            foreach (ModelMesh mesh in this.Model.Meshes)
+            {
+                foreach (var part in mesh.MeshParts)
+                {
+                    ((BasicEffect)part.Effect).SpecularColor = Vector3.Zero;
+                    //((SkinnedEffect)part.Effect).SpecularColor = Vector3.Zero;
+                    ConfigureEffectMatrices((IEffectMatrices)part.Effect, Matrix.Identity, view, projection);
+                    ConfigureEffectLighting((IEffectLights)part.Effect);
+                    part.UpdateVertices(animations.AnimationTransforms); // animate vertices on CPU
+                    //((SkinnedEffect)part.Effect).SetBoneTransforms(animations.AnimationTransforms);// animate vertices on GPU
+                }
+            }
+
+            if (Visible)
+            {
+                DrawModel(Model, view, projection, Texture);
+            }
         }
     }
 }
