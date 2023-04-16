@@ -157,8 +157,30 @@ namespace HammeredGame.Game
             }
 
             Camera cam = GetCamera(xml, services);
-            Dictionary<string, GameObject> objs = GetGameObjects(xml, services, cam);
             UniformGrid grid = GetUniformGrid(xml, services);
+            /// <remarks>
+            /// 1)  It is IMPERATIVE that --with the current implementation-- the <c>UniformGrid</c> instance is added
+            ///     to the <c>services</c> BEFORE the game objects are instantiated!
+            ///     That is because the <c>Hammer</c> instance requires the <c>UniformGrid</c> service in its constructor,
+            ///     after which point the <c>Hammer</c> constructor removes it from the <c>services</c>, for information
+            ///     security (as much as possible, at least).
+            ///     <seealso cref="Game.GameObjects.Hammer.Hammer(GameServices, Model, Texture2D, Vector3, Quaternion, float, Entity)"/>
+            ///     IMPACT ASSESSMENT LEVEL: 1 (catastrophic)
+            ///     
+            /// 2) TODO:Adding the grid into the global variables container <c>services</c> is not intuitive.
+            ///         More importantly, however, many more classes than its destination: the (unique) <c>hammer</c>
+            ///         <see cref="GameObjects.Hammer"/> are being granted access to the <c>grid</c> instance.
+            ///         A sloppy solution to this is deleting it from the services after the constructor of <c>hammer</c>
+            ///         has been called, which is what has been currently implemented.
+            ///         Ideally, a more information-secure solution should be found (e.g. having <c>grid</c> be a parameter
+            ///         of (a) <c>Hammer</c> constructor.
+            /// </remarks>
+            services.AddService<UniformGrid>(grid);
+            /// <remarks>
+            /// After the execution of the following command, the UniformGrid service is removed.
+            /// <see cref="Game.GameObjects.Hammer.Hammer(GameServices, Model, Texture2D, Vector3, Quaternion, float, Entity)"/> 
+            /// </remarks>
+            Dictionary<string, GameObject> objs = GetGameObjects(xml, services, cam);
 
             return (cam, objs, grid);
         }
