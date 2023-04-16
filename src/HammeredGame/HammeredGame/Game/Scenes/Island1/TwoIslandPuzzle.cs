@@ -27,6 +27,8 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
 
+            // No further initialization required for the <c>UniformGrid</c> instance.
+
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
             //     services.GetService<ScriptUtils>.WaitSeconds(5);
