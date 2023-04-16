@@ -7,9 +7,9 @@
     <fov>0.425</fov>
   </camera>
   <uniform_grid>
-	<bottom_left_close>-1000.0 -1000.0 -1000.0</bottom_left_close>
-	<top_right_away>1000.0 1000.0 1000.0</top_right_away>
-	<side_length>50.0</side_length>
+	<bottom_left_close>-300.0 -30.0 -150.0</bottom_left_close>
+	<top_right_away>300.0 30.0 100.0</top_right_away>
+	<side_length>5.0</side_length>
   </uniform_grid>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water">
     <model>temp_water_big</model>
