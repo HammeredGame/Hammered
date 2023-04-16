@@ -114,6 +114,18 @@ namespace HammeredGame.Core
         public bool ButtonHeld(Buttons button)
         { if (GamePadState.IsButtonDown(button)) return true; return false; }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void VibrateController(float leftVibration, float rightVibration)
+        {
+            GamePad.SetVibration(PlayerIndex.One, leftVibration, rightVibration);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void StopControllerVibration()
+        {
+            GamePad.SetVibration(PlayerIndex.One, 0f, 0f);
+        }
+
         /// <summary>
         /// Update the internal variables for keyboard, gamepad, and mouse current states.
         /// Then update the numerous public booleans for the new state of input.

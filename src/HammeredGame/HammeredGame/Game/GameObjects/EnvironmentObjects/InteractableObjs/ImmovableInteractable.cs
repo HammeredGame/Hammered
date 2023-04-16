@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BEPUphysics;
+using HammeredGame.Core;
+using BEPUphysics.Entities;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
 {
@@ -23,11 +25,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
     /// The specific change in environment is to be defined inside classes which inherit from this class.
     /// </para>
     /// </summary>
-    /// 
+    ///
 
     /// <remarks>
     /// <para>
-    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/> 
+    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/>
     ///                         ---> <see cref="InteractableObject "/> ---> <see cref="ImmovableInteractable"/>
     /// </para>
     /// </remarks>
@@ -35,7 +37,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs
     {
         // Any Unbreakable Obstacle specific variables go here
 
-        public ImmovableInteractable(Model model, Vector3 pos, float scale, Texture2D t, Space space) : base(model, pos, scale, t, space)
+
+        public ImmovableInteractable(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
         }
 

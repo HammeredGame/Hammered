@@ -10,7 +10,8 @@ using HammeredGame.Core;
 using BEPUphysics;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
-using Hammered_Physics.Core;
+using BEPUphysics.Entities;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -47,51 +48,75 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Hammer specific variables
-        private float hammerSpeed = 10f;
+        private float hammerSpeed = 7f;
         private HammerState hammerState;
 
         public Vector3 OldPosition { get; private set; }
 
-        private readonly Input input;
-        private readonly Player player;
+        private Player player;
 
-        public Hammer(Model model, Vector3 pos, float scale, Texture2D t, Space space, Input inp, Player p)
-            : base(model, pos, scale, t, space)
+        public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
+            : base(services, model, t, pos, rotation, scale, entity)
         {
-            this.input = inp;
-            player = p;
-
             hammerState = HammerState.WithCharacter;
 
-            // Defining the bounding volume entity (currently a box, but this could be
-            // defined as a capsule/cylinder/compound/etc. --> see bepuphysics1 repo)
-            this.Entity = new Box(MathConverter.Convert(this.player.Position), 1, 3, 1);
+            if (this.Entity != null)
+            {
+                // Adding a tag to the entity, to allow us to potentially filter and
+                // view bounding volumes (for debugging)
+                this.Entity.Tag = "HammerBounds";
 
-            // Adding a tag to the entity, to allow us to potentially filter and
-            // view bounding volumes (for debugging)
-            this.Entity.Tag = "HammerBounds";
+                // Setting the entity's collision information tag to the game object itself.
+                // This will help in checking for specific collisions in object-specific
+                // collision handling.
+                this.Entity.CollisionInformation.Tag = this;
 
-            // Setting the entity's collision information tag to the game object itself.
-            // This will help in checking for specific collisions in object-specific 
-            // collision handling.
-            this.Entity.CollisionInformation.Tag = this;
+                // Set hammer to continuous collision detection
+                this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
 
-            // Set hammer to continuous collision detection
-            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+                // Set the entity's collision rule to 'NoBroadPhase' -->
+                // This will ensure that the hammer will not be considered for collision
+                // constraint solving while attached to the player character
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoBroadPhase;
 
-            // Set the entity's collision rule to 'NoBroadPhase' -->
-            // This will ensure that the hammer will not be considered for collision
-            // constraint solving while attached to the player character
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoBroadPhase;
+                // Set the entity's local inverse intertia tensor --> this ensures that the
+                // player character doesn't just fall over due to gravity
+                this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
 
-            // Set the entity's local inverse intertia tensor --> this ensures that the 
-            // player character doesn't just fall over due to gravity
-            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+                this.Entity.Material.KineticFriction = 1.0f;
 
-            this.Entity.Material.KineticFriction = 1.0f;
+                // Add entity to the level's active physics space
+                this.ActiveSpace.Add(this.Entity);
 
-            // Add entity to the level's active physics space
-            this.ActiveSpace.Add(this.Entity);
+                // Initialize the collision handlers based on the associated collision events
+                this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+            }
+        }
+
+        // Collision Handling Event for any initial collisions detected
+        private void Events_DetectingInitialCollision(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            //This type of event can occur when an entity hits any other object which can be collided with.
+            //They aren't always entities; for example, hitting a StaticMesh would trigger this.
+            //Entities use EntityCollidables as collision proxies; see if the thing we hit is one.
+            var otherEntityInformation = other as EntityCollidable;
+            if (otherEntityInformation != null)
+            {
+                if (other.Tag is Player) return;
+                Input input = Services.GetService<Input>();
+                if (input.GamePadState.IsConnected)
+                {
+                    input.VibrateController(0.75f, 0.75f);
+                    // TODO: Add asynchronous wait here? (to have the vibration last a little longer?)
+                    // DONE!
+                    Services.GetService<ScriptUtils>().WaitMilliseconds(50).ContinueWith((_) => input.StopControllerVibration());
+                }
+            }
+        }
+
+        public void SetOwnerPlayer(Player player)
+        {
+            this.player = player;
         }
 
         // Update function (called every tick)
@@ -101,10 +126,9 @@ namespace HammeredGame.Game.GameObjects
 
             // Ensure hammer follows/sticks with the player,
             // if hammer has not yet been dropped / if hammer is not being called back
-            if (hammerState == HammerState.WithCharacter)
+            if (hammerState == HammerState.WithCharacter && player != null)
             {
-                Position = player.GetPosition();
-                this.Entity.Position = MathConverter.Convert(player.GetPosition());
+                Position = player.Position;
             }
 
             // Get the input via keyboard or gamepad
@@ -118,10 +142,10 @@ namespace HammeredGame.Game.GameObjects
             /// </remark>
             if (hammerState != HammerState.WithCharacter)
             {
-                if (hammerState == HammerState.Enroute)
+                if (hammerState == HammerState.Enroute && player != null)
                 {
                     // Update Hammer's Linear Velocity
-                    this.Entity.LinearVelocity = hammerSpeed * MathConverter.Convert(player.GetPosition() - this.GetPosition());
+                    this.Entity.LinearVelocity = hammerSpeed * (player.Entity.Position - Entity.Position);
 
                     //// Update position
                     //Position += hammerSpeed * (player.GetPosition() - Position);
@@ -157,6 +181,7 @@ namespace HammeredGame.Game.GameObjects
 
         public void KeyboardInput()
         {
+            Input input = Services.GetService<Input>();
             // Keyboard input (E - drop hammer, Q - Call back hammer)
             // Hammer Drop Mechanic
             if (hammerState == HammerState.WithCharacter && input.KeyDown(Keys.E))
@@ -168,12 +193,14 @@ namespace HammeredGame.Game.GameObjects
 
             // Hammer Call Back Mechanic
             // Call back only possible if hammer has already been dropped
+            // And if the owner player is defined
+            // And the hammer has a physics entity attached to it
             // Otherwise 'Q' does nothing
-            if (hammerState == HammerState.Dropped && input.KeyDown(Keys.Q))
+            if (hammerState == HammerState.Dropped && player != null && Entity != null && input.KeyDown(Keys.Q))
             {
                 hammerState = HammerState.Enroute;
 
-                // When hammer is enroute, the physics engine shouldn't solve for 
+                // When hammer is enroute, the physics engine shouldn't solve for
                 // collision constraints with it --> rather we want to manually
                 // handle collisions
                 this.Entity.BecomeKinematic();
@@ -183,6 +210,7 @@ namespace HammeredGame.Game.GameObjects
 
         public void GamePadInput()
         {
+            Input input = Services.GetService<Input>();
             // GamePad Control (A - Hammer drop, B - Hammer call back)
             // Same functionality as with above keyboard check
             if (input.GamePadState.IsConnected)
@@ -193,11 +221,11 @@ namespace HammeredGame.Game.GameObjects
                     //hammerState = HammerState.Dropped;
                     //this.ComputeBounds();
                 }
-                if (hammerState == HammerState.Dropped && input.ButtonPress(Buttons.B))
+                if (hammerState == HammerState.Dropped && player != null && Entity != null && input.ButtonPress(Buttons.B))
                 {
                     hammerState = HammerState.Enroute;
 
-                    // When hammer is enroute, the physics engine shouldn't solve for 
+                    // When hammer is enroute, the physics engine shouldn't solve for
                     // collision constraints with it --> rather we want to manually
                     // handle collisions
                     this.Entity.BecomeKinematic();
@@ -211,20 +239,23 @@ namespace HammeredGame.Game.GameObjects
             // Set hammer state to dropped
             hammerState = HammerState.Dropped;
 
-            // Add a lot of mass to the hammer, so it becomes a dynamic entity
-            // --> this was to ensure that the hammer interacts properly with
-            // pressure plates... However, this may also be the cause of other
-            // issues, so this bit of code may need to be tweaked.
-            this.Entity.BecomeDynamic(10000);
-            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+            if (this.Entity != null)
+            {
+                // Add a lot of mass to the hammer, so it becomes a dynamic entity
+                // --> this was to ensure that the hammer interacts properly with
+                // pressure plates... However, this may also be the cause of other
+                // issues, so this bit of code may need to be tweaked.
+                this.Entity.BecomeDynamic(10000);
+                this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
 
-            // Only gravitational force being applied to the entity, velocity in the other
-            // directions are zeroed out --> hammer is dropped, so it shouldn't move
-            this.Entity.LinearVelocity = new BEPUutilities.Vector3(0, -98.1f, 0);
+                // Only gravitational force being applied to the entity, velocity in the other
+                // directions are zeroed out --> hammer is dropped, so it shouldn't move
+                this.Entity.LinearVelocity = new BEPUutilities.Vector3(0, -98.1f, 0);
 
-            // Normal collisions to ensure the physics engine solves collision constraint with 
-            // this entity --> Also, probably a cause for issues
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+                // Normal collisions to ensure the physics engine solves collision constraint with
+                // this entity --> Also, probably a cause for issues
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+            }
         }
 
         public bool IsEnroute()

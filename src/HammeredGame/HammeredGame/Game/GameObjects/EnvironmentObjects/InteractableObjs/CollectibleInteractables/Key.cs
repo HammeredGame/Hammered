@@ -1,8 +1,9 @@
 ﻿using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
-using Hammered_Physics.Core;
+﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -40,28 +41,31 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
     {
         /* Provisionally
         */
-        private readonly Door correspondingDoor;
+        private Door correspondingDoor;
         private bool keyPickedUp = false;
 
-        public Key(Model model, Vector3 pos, float scale, Texture2D t, Space space, Door correspondingDoor) :
-            base(model, pos, scale, t, space)
+        public Key(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
+        {
+            if (this.Entity != null)
+            {
+                this.Entity.Tag = "CollectibleBounds";
+
+                this.Entity.CollisionInformation.Tag = this;
+
+                this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
+
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+                this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
+
+                this.ActiveSpace.Add(this.Entity);
+
+                this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+            }
+        }
+
+        public void SetCorrespondingDoor(Door correspondingDoor)
         {
             this.correspondingDoor = correspondingDoor;
-
-            this.Entity = new Box(MathConverter.Convert(this.Position), 5, 1, 5);
-
-            this.Entity.Tag = "CollectibleBounds";
-
-            this.Entity.CollisionInformation.Tag = this;
-
-            this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
-
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
-            this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
-
-            this.ActiveSpace.Add(this.Entity);
-
-            this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
         }
 
         private void Events_DetectingInitialCollision(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
@@ -77,7 +81,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
                 if (other.Tag is Player)
                 {
                     correspondingDoor.SetKeyFound(true);
-                    this.SetVisible(false);
+                    this.Visible = false;
                     this.ActiveSpace.Remove(this.Entity);
                     keyPickedUp = true;
                 }

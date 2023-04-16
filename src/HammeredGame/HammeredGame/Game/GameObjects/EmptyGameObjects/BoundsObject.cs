@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HammeredGame.Core;
 
 namespace HammeredGame.Game.GameObjects.EmptyGameObjects
 {
@@ -21,8 +22,7 @@ namespace HammeredGame.Game.GameObjects.EmptyGameObjects
     /// </remarks>
     public class BoundsObject : EmptyGameObject
     {
-        public BoundsObject(Model model, Vector3 pos, float scale, Texture2D t, Space space, Entity entity)
-            : base(model, pos, scale, t, space, entity)
+        public BoundsObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             this.Entity.Tag = "BoundsObjectBounds";
 

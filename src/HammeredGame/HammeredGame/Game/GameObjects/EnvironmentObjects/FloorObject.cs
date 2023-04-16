@@ -10,6 +10,8 @@ using ImGuiNET;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game;
 using BEPUphysics;
+using HammeredGame.Core;
+using BEPUphysics.Entities;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
@@ -20,7 +22,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 
     /// <remarks>
     /// <para>
-    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/> ---> <see cref="FloorObject "/> 
+    /// REMINDER (class tree): <see cref="GameObject "/> ---> <see cref="EnvironmentObject "/> ---> <see cref="FloorObject "/>
     /// </para>
     /// <para>
     /// TODO: Currently, the <see cref="Player"/> is responsible for handling their own movement
@@ -36,7 +38,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
     {
         // Any Interactable specific variables go here
 
-        public FloorObject(Model model, Vector3 pos, float scale, Texture2D t, Space space) : base(model, pos, scale, t, space)
+        public FloorObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             IsGround = true;
         }
