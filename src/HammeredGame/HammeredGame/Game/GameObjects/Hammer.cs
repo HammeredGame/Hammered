@@ -12,6 +12,7 @@ using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using BEPUphysics.Entities;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using HammeredGame.Game.PathPlanning.Grid;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -55,6 +56,14 @@ namespace HammeredGame.Game.GameObjects
 
         private Player player;
 
+        /// <summary>
+        /// The <c>grid</c> instance is an imaginary partition of a (3D) orthogonal parallelepiped enclosing the whole
+        /// (currently active) scene into identical (uniform) cubes.
+        /// Its functionality is the computation of the shortest path between the hammer (<c>this</c>)
+        /// and the Player instance <c>player</c> while avoiding any obstacles in the scene.
+        /// </summary>
+        private UniformGrid grid;
+
         public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
             : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -91,6 +100,16 @@ namespace HammeredGame.Game.GameObjects
                 // Initialize the collision handlers based on the associated collision events
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
             }
+
+            // Adding the grid reference to the hammer.
+            /// <remarks>
+            /// TODO:   Storing the grid into the <c>services</c> object is NOT an information-secure solution!
+            ///         Find a better way to insert a parameter which will be used to instantiate <c>grid</c>.
+            ///         <seealso cref="SceneDescriptionIO.ParseFromXML(string, GameServices)"/>
+            ///         IMPACT ASSESSMENT LEVEL: 2 (critical)
+            /// </remarks>
+            this.grid = services.GetService<UniformGrid>();
+            services.RemoveService<UniformGrid>(); // Removing the "UniformGrid" service so that as little as classes possible can access it.
         }
 
         // Collision Handling Event for any initial collisions detected
