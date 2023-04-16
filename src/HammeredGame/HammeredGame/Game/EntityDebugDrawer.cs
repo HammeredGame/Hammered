@@ -1,5 +1,5 @@
 ﻿using BEPUphysics.Entities;
-using Hammered_Physics.Core;
+using HammeredGame.Core;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System;

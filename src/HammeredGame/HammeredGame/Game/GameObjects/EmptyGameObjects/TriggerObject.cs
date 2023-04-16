@@ -24,17 +24,22 @@ namespace HammeredGame.Game.GameObjects.EmptyGameObjects
     /// </remarks>
     public class TriggerObject : EmptyGameObject
     {
+
+        public event EventHandler OnTrigger;
+
         public TriggerObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             this.Entity.Tag = "TriggerObjectBounds";
-
             this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
         }
 
         // Event Handler to initiate triggered in game event
         private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
-            throw new NotImplementedException();
+            if (other.Tag is Player)
+            {
+                OnTrigger?.Invoke(this, null);
+            }
         }
 
         public override void Update(GameTime gameTime)

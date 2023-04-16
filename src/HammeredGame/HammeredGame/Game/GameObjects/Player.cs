@@ -1,11 +1,12 @@
 ﻿using Aether.Animation;
 using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.CollisionRuleManagement;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
-using Hammered_Physics.Core;
 using HammeredGame.Core;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using ImGuiNET;
 using ImMonoGame.Thing;
@@ -49,6 +50,10 @@ namespace HammeredGame.Game.GameObjects
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
 
+        // Last known ground position, used to reset player's position
+        // if the player comes into contact with a water object
+        private Vector3 lastGroundPosition;
+
         // TEMPORARY (FOR TESTING)
         public bool OnTree = false;
         public bool ReachedGoal = false;
@@ -86,7 +91,7 @@ namespace HammeredGame.Game.GameObjects
                 // TODO: May want the flat ground meshes be as even and flat as possible
                 // (except ramps/stairs/ladders to reach higher elevations --> these can maybe be
                 // handled separately within collision handling <-- more testing needed for these settings)
-                this.Entity.Material.KineticFriction = 1.5f;
+                this.Entity.Material.KineticFriction = 1.0f;
 
                 // Add the entity to the level's physics space - this ensures that this game object
                 // will be considered for collision constraint solving (handled by the physics engine)
@@ -94,11 +99,48 @@ namespace HammeredGame.Game.GameObjects
 
                 // Initialize the collision handlers based on the associated collision events
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+                this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
+                this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
 
                 animations = this.Model.GetAnimations();
                 var clip_walk = animations.Clips["Armature|Armature|mixamo.com|Layer0.001"];
                 var clip_run = animations.Clips["Armature|Armature|mixamo.com|Layer0.002"];
                 animations.SetClip(clip_run);
+            }
+
+            // Initial position should be on/over ground
+            this.lastGroundPosition = this.Position;
+        }
+
+        private void Events_ContactCreated(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair, BEPUphysics.CollisionTests.ContactData contact)
+        {
+            // If the player touches water, return the player to the last
+            // known ground position
+            // Comment this section out, if testing requires walking on water
+            if (other.Tag is Water)
+            {
+                this.Position = this.lastGroundPosition;
+            }
+        }
+
+        private void Events_PairTouching(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            // Make some checks to identify if the last ground position should be updated
+            if (other.Tag is Ground)
+            {
+                // If the player is also touching water, then don't update ground position
+                foreach (var contactPair in sender.Pairs)
+                {
+                    if (contactPair.CollidableA.Tag is Water || contactPair.CollidableB.Tag is Water)
+                    {
+                        return;
+                    }
+                }
+
+                // If player isn't falling, update last known ground position
+                // Falling is currently being determined via a linear y velocity threshold
+                if (Math.Abs(this.Entity.LinearVelocity.Y) < 2.5f)
+                    this.lastGroundPosition = this.Position;
             }
         }
 

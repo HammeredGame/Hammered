@@ -9,10 +9,10 @@
     <fov>0.205</fov>
   </camera>
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
-    <model>character-colored</model>
+    <model>player-run-hammer</model>
     <position>20.183 1.425 -38.674</position>
     <rotation>0.000 0.924 0.000 0.383</rotation>
-    <scale>1.000</scale>
+    <scale>0.005</scale>
     <body type="box">
       <width>2.000</width>
       <height>6.000</height>

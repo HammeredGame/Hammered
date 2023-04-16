@@ -3,7 +3,6 @@ using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Settings;
 using BEPUutilities.Threading;
-using Hammered_Physics.Core;
 using HammeredGame.Core;
 using ImGuiNET;
 using ImMonoGame.Thing;
@@ -70,7 +69,7 @@ namespace HammeredGame.Game
             //Set the gravity of the simulation by accessing the simulation settings of the space.
             //It defaults to (0,0,0); this changes it to an 'earth like' gravity.
             //Try looking around in the space's simulationSettings to familiarize yourself with the various options.
-            Space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -98.1f, 0);
+            Space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -200f, 0);
             CollisionDetectionSettings.AllowedPenetration = 0.001f;
 
             // Add the physics space to be a globally accessible service
@@ -275,7 +274,20 @@ namespace HammeredGame.Game
                     {
                         if (ImGui.Selectable($"{key}: {gameObject.GetType().Name}", objectListCurrentSelection == key))
                         {
+                            // When item in list selected, set the selection variable used in the
+                            // details pane to show its details.
                             objectListCurrentSelection = key;
+
+                            // Also highlight the item on screen by changing its texture to red for
+                            // 500 milliseconds
+                            var currentTexture = gameObject.Texture;
+                            var redRectangle = new Texture2D(Services.GetService<GraphicsDevice>(), 1, 1);
+                            redRectangle.SetData(new[] { Color.Red });
+                            gameObject.Texture = redRectangle;
+
+                            Services.GetService<ScriptUtils>()
+                                .WaitMilliseconds(500)
+                                .ContinueWith((_) => gameObject.Texture = currentTexture);
                         }
                         // Define the menu that pops up when right clicking an object in the tree
                         if (ImGui.BeginPopupContextItem())
@@ -287,12 +299,20 @@ namespace HammeredGame.Game
                                 // Generate a new name for the object
                                 string name = GenerateUniqueNameWithPrefix(gameObject.GetType().Name.ToLower());
 
+                                // Copy the entity
+                                Entity entity = null;
+                                if (gameObject.Entity is Box box) {
+                                    entity = new Box(box.Position, box.Width, box.Height, box.Length, box.Mass);
+                                } else if (gameObject.Entity is Sphere sph)
+                                {
+                                    entity = new Sphere(sph.Position, sph.Radius, sph.Mass);
+                                }
                                 // We want to call Create<T>() with T being the type of gameObject.
                                 // However, we can't use variables for generic type parameters, so
                                 // instead we will create a specific version of the method and invoke it
                                 // manually. This causes some changes to how variadic "params dynamic[]"
                                 // behaves, outlined below.
-                                GetType().GetMethod(nameof(Create)).MakeGenericMethod(gameObject.GetType()).Invoke(this, new object[] {
+                                GameObject newObj = (GameObject)GetType().GetMethod(nameof(Create)).MakeGenericMethod(gameObject.GetType()).Invoke(this, new object[] {
                                     name,
                                     new object[] {
                                         Services,
@@ -303,9 +323,12 @@ namespace HammeredGame.Game
                                         gameObject.Texture,
                                         gameObject.Position,
                                         gameObject.Rotation,
-                                        gameObject.Scale
+                                        gameObject.Scale,
+                                        entity
                                     }
                                 });
+                                // Apply the same model offset as the original
+                                newObj.EntityModelOffset = gameObject.EntityModelOffset;
 
                                 // Set sidebar focus to created object
                                 objectListCurrentSelection = name;

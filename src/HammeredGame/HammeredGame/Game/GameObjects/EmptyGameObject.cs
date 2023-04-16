@@ -31,7 +31,7 @@ namespace HammeredGame.Game.GameObjects
 
             this.Entity = entity;
             this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoBroadPhase;
+            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
 
             this.ActiveSpace.Add(this.Entity);
         }
