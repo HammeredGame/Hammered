@@ -1,6 +1,7 @@
 ﻿using BEPUphysics.CollisionRuleManagement;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
+using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using System;
@@ -42,6 +43,11 @@ namespace HammeredGame.Game.Scenes.Island1
             laser2.Entity.CollisionInformation.CollisionRules.Group= laserRockGroup;
             rock1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
             //rock2.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+
+            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            {
+                Services.GetService<HammeredGame>().InitializeLevel(typeof(ChallengePuzzle).FullName);
+            };
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
