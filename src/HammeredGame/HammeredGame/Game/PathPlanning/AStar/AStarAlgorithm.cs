@@ -43,6 +43,8 @@ namespace HammeredGame.Game.PathPlanning
             // instead of returning an empty <c>Stack<Vertex></c>, a null pointer is returned instead.
             if (!graph.vertices.Contains(start) || !graph.vertices.Contains(destination)) return null;
 
+            start.TraveledDistance = 0; // Initialization step.
+
             /// <value>
             /// The <c>Dictionary<Vertex, Vertex> origin</c> data structure is a map M(V) -> V ∪ ∅.
             /// M(v) := which vertex u leads to v in such a way that the total path --which includes u and v--
@@ -74,14 +76,14 @@ namespace HammeredGame.Game.PathPlanning
             Stack<Vertex> result = new Stack<Vertex>();
 
             /// <value>
-            /// The "HashSet<Vertex> finished" data structure contains all vertices which have been examined by A*.
+            /// The "Dictionary<Vertex> finished" data structure contains all vertices which have been examined/branched out fully
+            /// by A* at least once.
             /// Due to the nature of the algorithm, once these vertices have been "popped" from the priority queue,
-            /// it is impossible for a next reoccurance of it to achieve better results.
-            /// This quality of the algorithm allows it to prevent the tree going back-and-forth between nodes already visited needlessly.
+            /// it is possible for a next reoccurance of it to achieve better results.
             /// </value>
 
             // Initializing the data structure which keeps track of which vertices have been examined/finalized.
-            HashSet<Vertex> finished = new HashSet<Vertex>();
+            Dictionary<Vertex, double> finished = new Dictionary<Vertex, double>();
 
             /// <value>
             /// The "SimplePriorityQueue<Vertex, double> priorityQueue" object serves as the indespensable priority queue of A*.
@@ -100,13 +102,17 @@ namespace HammeredGame.Game.PathPlanning
             Dictionary<Vertex, double> priorityOfVertex = new Dictionary<Vertex, double>();
 
             // Initialize the algorithm to have the starting node as the firts vertex to be examined.
-            priorityQueue.Enqueue(start, 0 + start.HeuristicValue);
-            priorityOfVertex.Add(start, 0 + start.HeuristicValue);
+            priorityQueue.Enqueue(start, start.TraveledDistance + start.HeuristicValue);
+            priorityOfVertex.Add(start, start.TraveledDistance + start.HeuristicValue);
 
             while (priorityQueue.Count > 0)
             {
                 // Popping the best element of the priority queue
                 Vertex topElement = priorityQueue.First;
+                // Remove the "topElement" (i.e. the vertex which was fully branched out above) from the priority queue.
+                // The removal is being done here, instead of the bottom of the while loop
+                // --where the vertex "topElement" is added to the "finished" set-- so as to account for the possiblity
+                // of a self-connecting edge (an edge which connects a vertex to itself).
                 priorityQueue.Remove(topElement);
                 priorityOfVertex.Remove(topElement);
 
@@ -132,39 +138,61 @@ namespace HammeredGame.Game.PathPlanning
                 for (LinkedListNode<Edge> e = topElement.Edges.First; e != null; e = e.Next)
                 {
                     Vertex target = e.Value.TargetVertex;
+                    double edgeWeight = e.Value.Weight;
 
-                    // See the explanation of "finished" variable.
-                    // In short, the "target" vertex has already been examined by A*.
-                    if (finished.Contains(target)) { continue; }
+                    // Priority := distance traveled from the source until this vertex + heuristic value of this vertex
+                    double targetPriority = (topElement.TraveledDistance + edgeWeight) + target.HeuristicValue;
+
+                    bool inPriorityQueue = priorityQueue.Contains(target), inFinished = finished.ContainsKey(target);
 
 
-                    double targetPriority = topElement.TraveledDistance + target.HeuristicValue;
-                    if (!priorityQueue.Contains(target)) // If "target" vertex has never been in the priority queue, add it.
+                    // If "target" vertex has never been in the priority queue, add it.
+                    if (!inPriorityQueue && !inFinished)
                     {
-                        target.TraveledDistance = topElement.TraveledDistance + e.Value.Weight; // Calculate the total traveled distance 
+                        target.TraveledDistance = topElement.TraveledDistance + edgeWeight; // Calculate the total traveled distance 
                         origin.Add(target, topElement); // Making the mapping connection M(target) -> topElement.
                         priorityQueue.Enqueue(target, targetPriority); // Inserting the vertex to the priority queue.
                         priorityOfVertex.Add(target, targetPriority);
                     }
                     else
-                    { 
-
-                        // Only update in the case of a better entry.
-                        if (targetPriority < priorityOfVertex[target])
+                    {
+                        if (inPriorityQueue)
                         {
-                            // Update vertex "target" information.
-                            target.TraveledDistance = topElement.TraveledDistance + e.Value.Weight;
-                            origin[target] = topElement;
-                            // Update the priority queue entry (by re-inserting it).
-                            priorityQueue.UpdatePriority(target, targetPriority);
-                            priorityOfVertex[target] = targetPriority;
+                            // Only update in the case of a better entry.
+                            if (targetPriority < priorityOfVertex[target])
+                            {
+                                // Update vertex "target" information.
+                                target.TraveledDistance = topElement.TraveledDistance + edgeWeight;
+                                origin[target] = topElement;
+                                // Update the priority queue entry.
+                                priorityQueue.UpdatePriority(target, targetPriority);
+                                priorityOfVertex[target] = targetPriority;
+                            }
+                        }
+                        else if (inFinished) // "inPriorityQueue" and "inFinished" should be mutually exclusive.
+                        {
+                            // Re-insert the vertex into the priority queue only in the case of a better entry.
+                            if (targetPriority < finished[target])
+                            {
+                                // Update vertex "target" information.
+                                target.TraveledDistance = topElement.TraveledDistance + edgeWeight;
+                                origin[target] = topElement;
+                                // Re-inserting into the priority queue.
+                                priorityQueue.Enqueue(target, targetPriority);
+                                priorityOfVertex.Add(target, targetPriority);
+
+                                // Removing "target" from the "finished" set, because it has been re-inserted.
+                                finished.Remove(target);
+
+
+                            }
                         }
                     }
                 }
 
-                // Keep track that "topElement" has been popped by the priority queue
-                // (read description of "finished" object for more details). 
-                finished.Add(topElement);
+                // Insert the "topElement" in the "finished" set (read description of "finished" object for more details).
+                finished.Add(topElement, topElement.TraveledDistance + topElement.HeuristicValue);
+
 
 
             }
