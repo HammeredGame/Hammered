@@ -49,6 +49,7 @@ namespace HammeredGame.Game.GameObjects
 
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
+        private bool previously_moving = false;
 
         // Last known ground position, used to reset player's position
         // if the player comes into contact with a water object
@@ -103,9 +104,8 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
 
                 animations = this.Model.GetAnimations();
-                var clip_walk = animations.Clips["Armature|Armature|mixamo.com|Layer0.001"];
-                var clip_run = animations.Clips["Armature|Armature|mixamo.com|Layer0.002"];
-                animations.SetClip(clip_run);
+                var clip_idle = animations.Clips["Armature|idle-hammer"];
+                animations.SetClip(clip_idle);
             }
 
             // Initial position should be on/over ground
@@ -232,6 +232,8 @@ namespace HammeredGame.Game.GameObjects
                 moveDirty = moveDirty || GamepadInput(forwardDirection);
             }
 
+            // Animate player
+
             // If there was movement, normalize speed and edit rotation of character model
             // Also account for collisions
             if (moveDirty && this.Entity != null && player_vel != Vector3.Zero)
@@ -256,10 +258,23 @@ namespace HammeredGame.Game.GameObjects
                 float angle = (float)Math.Atan2(player_vel.X, player_vel.Z);
                 this.Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle);
 
-                animations.Update(gameTime.ElapsedGameTime*2, true, Matrix.Identity);
+                if(!previously_moving)
+                {
+                    // Start running animation when player starts moving
+                    var clip_run = animations.Clips["Armature|run-hammer"];
+                    animations.SetClip(clip_run);
+                    previously_moving = true;
+                }
             }
             else
             {
+                if(previously_moving)
+                {
+                    // Start idle animation when player stops moving
+                    var clip_idle = animations.Clips["Armature|idle-hammer"];
+                    animations.SetClip(clip_idle);
+                    previously_moving = false;
+                }
                 ///<remark>
                 /// Leaving the following code chunk on purpose to remind us of possible bugs.
                 /// It resulted in the character managing to move when the keys were released.
@@ -272,6 +287,8 @@ namespace HammeredGame.Game.GameObjects
 
                 //position += player_vel;
             }
+
+            animations.Update(gameTime.ElapsedGameTime * 2, true, Matrix.Identity);
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
 
