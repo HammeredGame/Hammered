@@ -191,7 +191,7 @@ namespace HammeredGame.Game
                         _effect.TextureEnabled = tex != null;
                         _effect.Texture = tex;
 
-                        _effect.FogEnabled = false;
+                        _effect.FogEnabled = true;
                         _effect.FogStart = 400.0f;
                         _effect.FogEnd = 450.0f;
                         _effect.FogColor = Color.AliceBlue.ToVector3();
