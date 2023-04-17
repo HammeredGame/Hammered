@@ -238,8 +238,29 @@ namespace HammeredGame.Game.GameObjects
                 // Precautiously empty the previous route.
                 // It should be empty by the time it finishes its previous route, but just in case.
                 this.route.Clear();
-                // Compute the shortest path using the A* algorithm and taking into account obstacles.
-                Vector3[] routeArray = this.grid.FindShortestPathAStar(this.Position, player.Position);
+
+                // Array which will include the trajectory the hammer will follow.
+                Vector3[] routeArray;
+
+                // Scenario 1: A straight line is achievable.
+                // "[In Euclidean space] The shortest distance between two points is a straight line"
+                // ~ Archimedes of Syracuse (Αρχιμήδης ο Συρακούσιος)
+                // Therefore, if the shortest path is unobstructed, there is no reason to follow a more complex path planning scheme.
+                Vector3[] provisionalRoute; bool straightPathAchievable = this.StraightLinePath(out provisionalRoute);
+                if (straightPathAchievable)
+                {
+                    routeArray = provisionalRoute;
+                }
+                // Scenario 2: A straight line is not achievable.
+                // A more complex path planning scheme must be used.
+                // Currently, "raw" A* has been implemented.
+                else
+                {
+                    // Compute the shortest path using the A* algorithm and taking into account obstacles.
+                    routeArray = this.grid.FindShortestPathAStar(this.Position, player.Position);
+                }
+                
+                // Casting the trajectory into the appropriate (physics engine) type.
                 for (int i = 0; i < routeArray.Length ; i++) { this.route.Enqueue(MathConverter.Convert(routeArray[i])); }
                 // Initialize the next position in 3D space to visit.
                 this.nextRoutePosition = this.route.Peek(); this.route.Dequeue();
@@ -319,6 +340,31 @@ namespace HammeredGame.Game.GameObjects
         public void SetState(HammerState newState)
         {
             hammerState = newState;
+        }
+
+
+        private bool StraightLinePath(out Vector3[] route)
+        {
+            Vector3 lineSegment = this.player.Position - this.Position;
+            double lineSegmentLength = lineSegment.Length();
+            lineSegment.Normalize(); // Make the vector denote a direction.
+
+            LinkedList<Vector3> path = new LinkedList<Vector3>();
+
+            path.AddLast(this.Position);
+            for (int i = 0; i < Math.Ceiling(lineSegmentLength / this.grid.sideLength); i++)
+            {
+                Vector3 samplePoint = this.Position + i * this.grid.sideLength * lineSegment;
+                // If there is at least one cell which is not available in the straight line,
+                // then inform that a more complex path planning method is required.
+                if (!this.grid.GetCellMark(samplePoint)) { route = null; return false; }
+                path.AddLast(samplePoint);
+            }
+            path.AddLast(this.player.Position);
+
+            route = path.ToArray();
+            return true;
+
         }
     }
 }
