@@ -9,12 +9,12 @@
   <TextureRegion Id="XboxSeriesX_Dpad_Left" Left="1852" Top="0" Width="100" Height="100" />
   <TextureRegion Id="XboxSeriesX_Dpad_Right" Left="1652" Top="100" Width="100" Height="100" />
   <TextureRegion Id="XboxSeriesX_Dpad_Up" Left="1752" Top="100" Width="100" Height="100" />
-  <TextureRegion Id="XboxSeriesX_LB" Left="1852" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_LeftShoulder" Left="1852" Top="100" Width="100" Height="100" />
   <TextureRegion Id="XboxSeriesX_Left_Stick" Left="1652" Top="200" Width="100" Height="100" />
   <TextureRegion Id="XboxSeriesX_Left_Stick_Click" Left="1752" Top="200" Width="100" Height="100" />
   <TextureRegion Id="XboxSeriesX_LT" Left="1852" Top="200" Width="100" Height="100" />
   <TextureRegion Id="XboxSeriesX_Menu" Left="1652" Top="300" Width="100" Height="100" />
-  <TextureRegion Id="XboxSeriesX_RB" Left="1752" Top="300" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_RightShoulder" Left="1752" Top="300" Width="100" Height="100" />
   <TextureRegion Id="XboxSeriesX_Right_Stick" Left="1852" Top="300" Width="100" Height="100" />
   <TextureRegion Id="XboxSeriesX_Right_Stick_Click" Left="1652" Top="400" Width="100" Height="100" />
   <TextureRegion Id="XboxSeriesX_RT" Left="1752" Top="400" Width="100" Height="100" />

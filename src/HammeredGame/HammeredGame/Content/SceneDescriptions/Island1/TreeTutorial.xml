@@ -1,8 +1,8 @@
 <scene>
   <camera mode="follow">
     <follow_distance>257.000</follow_distance>
-    <follow_angle>0.731</follow_angle>
-    <target>360.954 -15.173 6.441</target>
+    <follow_angle>0.641</follow_angle>
+    <target>343.114 -11.745 5.532</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.425</fov>
   </camera>
@@ -21,8 +21,8 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>player-animated-hammer</model>
-    <position>360.952 -15.173 6.441</position>
-    <rotation>0.000 -0.707 0.000 0.707</rotation>
+    <position>343.114 -11.745 5.532</position>
+    <rotation>0.000 -0.924 0.000 0.383</rotation>
     <scale>0.005</scale>
     <body type="box">
       <width>5.000</width>
@@ -34,7 +34,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>temp_hammer2</model>
-    <position>360.952 -15.173 6.441</position>
+    <position>343.114 -11.745 5.532</position>
     <rotation>0.737 0.000 0.000 0.675</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -466,6 +466,19 @@
       <width>68.200</width>
       <height>166.500</height>
       <length>174.700</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="camera_hint_trigger">
+    <model />
+    <position>290.000 20.000 -10.000</position>
+    <rotation>0.000 -0.120 0.000 0.993</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>24.500</width>
+      <height>93.900</height>
+      <length>254.300</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
