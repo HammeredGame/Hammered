@@ -72,7 +72,9 @@ namespace HammeredGame.Game.Scenes.Island1
             // Now show prompts for dropping too
             ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.DropHammer }, hammerPromptTokenSource.Token);
 
-            // Make completion trigger available to load next level
+            // Once the user has summoned the hammer at least once, make completion trigger
+            // available to load next level. This disallows users exploring before interacting and
+            // accidentally loading the next level.
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
                 hammerPromptTokenSource.Cancel();
