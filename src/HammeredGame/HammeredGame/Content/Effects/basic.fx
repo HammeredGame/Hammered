@@ -11,13 +11,13 @@ float4x4 View;
 float4x4 Projection;
 
 float4 AmbientColor;
-float AmbientIntensity = 0.1;
+float AmbientIntensity;
 
 float4x4 WorldInverseTranspose;
 
 float3 DiffuseLightDirection;
 float4 DiffuseColor;
-float DiffuseIntensity = 0.1;
+float DiffuseIntensity;
 
 float Shininess;
 float4 SpecularColor;

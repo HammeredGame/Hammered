@@ -193,11 +193,13 @@ namespace HammeredGame.Game
                     this.Effect.Parameters["Projection"].SetValue(projection);
 
                     // Precompute the inverse transpose of the world matrix to use in shader
-                    Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
+                    Matrix worldInverseTranspose = Matrix.Transpose(mesh.ParentBone.Transform * world);
                     this.Effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTranspose);
 
                     // Set light parameters
                     this.Effect.Parameters["AmbientColor"].SetValue(new Vector3(0.1f));
+                    this.Effect.Parameters["AmbientIntensity"].SetValue(1.0f);
+                    this.Effect.Parameters["DiffuseIntensity"].SetValue(1.0f);
                     this.Effect.Parameters["DiffuseLightDirection"].SetValue(Vector3.Normalize(new Vector3(1, -1, 0)));
                     this.Effect.Parameters["DiffuseColor"].SetValue(Vector3.One * 0.1f);
 
