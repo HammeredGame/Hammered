@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Net.Mime;
 using System;
 using System.IO;
+using Microsoft.Xna.Framework.Content;
+using HammeredGame.Game.Screens;
 
 namespace HammeredGame.Game
 {
@@ -112,8 +114,9 @@ namespace HammeredGame.Game
             this.GPU = services.GetService<GraphicsDevice>();
 
             // Load in Shader
-            var shaderPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\Content\\Effects\\basic.mgfx");
-            this.Effect = new Effect(GPU, File.ReadAllBytes(shaderPath));
+            this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/basic");
+            //var shaderPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\Content\\Effects\\basic.mgfx");
+            //this.Effect = new Effect(GPU, File.ReadAllBytes(shaderPath));
 
             if (this.Model != null && model.GetAnimations() == null)
             {
@@ -146,10 +149,10 @@ namespace HammeredGame.Game
 
         // get position and rotation of the object - extract the scale, rotation, and translation matrices
         // get world matrix and then call draw model to draw the mesh on screen
-        public virtual void Draw(Matrix view, Matrix projection)
+        public virtual void Draw(Matrix view, Matrix projection, Light l)
         {
             if (Visible)
-                DrawModel(Model, view, projection, Texture);
+                DrawModel(Model, view, projection, Texture, l);
         }
 
         /// <summary>
@@ -159,10 +162,10 @@ namespace HammeredGame.Game
         /// <param name="view"></param>
         /// <param name="projection"></param>
         /// <param name="tex"></param>
-        public void DrawModel(Model model, Matrix view, Matrix projection, Texture2D tex)
+        public void DrawModel(Model model, Matrix view, Matrix projection, Texture2D tex, Light l)
         {
-            DrawModeShader(model, view, projection);
-            //DrawModeBasic(model, view, projection, tex);
+            DrawModeShader(model, view, projection, tex);
+            //DrawModeBasic(model, view, projection, tex, l);
         }
 
         /// <summary>
@@ -172,7 +175,7 @@ namespace HammeredGame.Game
         /// <param name="view"></param>
         /// <param name="projection"></param>
         /// <param name="tex"></param>
-        public void DrawModeShader(Model model, Matrix view, Matrix projection)
+        public void DrawModeShader(Model model, Matrix view, Matrix projection, Texture2D tex)
         {
             Matrix world = GetWorldMatrix();
 
@@ -194,9 +197,18 @@ namespace HammeredGame.Game
                     this.Effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTranspose);
 
                     // Set light parameters
-                    this.Effect.Parameters["AmbientColor"].SetValue(new Vector3(0.5f, 0.5f, 0.5f));
+                    this.Effect.Parameters["AmbientColor"].SetValue(new Vector3(0.1f));
                     this.Effect.Parameters["DiffuseLightDirection"].SetValue(Vector3.Normalize(new Vector3(1, -1, 0)));
-                    this.Effect.Parameters["DiffuseColor"].SetValue(Vector3.One * 0.7f);
+                    this.Effect.Parameters["DiffuseColor"].SetValue(Vector3.One * 0.1f);
+
+                    // Set material properties
+                    this.Effect.Parameters["Shininess"].SetValue(0.1f);
+                    this.Effect.Parameters["SpecularColor"].SetValue(Vector4.One * 0.1f);
+                    this.Effect.Parameters["SpecularIntensity"].SetValue(0.1f);
+
+                    // Set texture
+                    this.Effect.Parameters["ModelTexture"].SetValue(tex);
+
                 }
                 mesh.Draw();
             }
@@ -209,7 +221,7 @@ namespace HammeredGame.Game
         /// <param name="view"></param>
         /// <param name="projection"></param>
         /// <param name="tex"></param>
-        public void DrawModeBasic(Model model, Matrix view, Matrix projection, Texture2D tex)
+        public void DrawModeBasic(Model model, Matrix view, Matrix projection, Texture2D tex, Light l)
         {
             Matrix world = GetWorldMatrix();
 
@@ -244,7 +256,7 @@ namespace HammeredGame.Game
 
                         _effect.DirectionalLight0.Enabled = true;
                         _effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
-                        _effect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1, -1, 0));
+                        _effect.DirectionalLight0.Direction = Vector3.Normalize(-l.Direction);
                         _effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
 
                         _effect.DirectionalLight1.Enabled = true;

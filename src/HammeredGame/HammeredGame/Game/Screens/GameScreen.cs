@@ -14,6 +14,19 @@ using System.Threading;
 
 namespace HammeredGame.Game.Screens
 {
+    public struct Light
+    {
+        public Vector3 Position;
+        public Vector3 Direction;
+        public Vector3 Normal;
+
+        public Light(Vector3 lp, Vector3 ld, Vector3 up) : this()
+        {
+            this.Position = lp;
+            this.Direction = ld;
+            this.Normal = up;
+        }
+    }
 
     /// <summary>
     /// The game screen shows the main gameplay. It has one active scene at a time, and may add a
@@ -212,11 +225,15 @@ namespace HammeredGame.Game.Screens
 
             Set3DStates();
 
+            Light l = new Light(new Vector3(10.0f), new Vector3(1.0f, -1.0f, 0.0f), Vector3.Up);
+            Matrix lightView = Matrix.CreateLookAt(l.Position, l.Position + l.Direction, l.Normal);
+            Matrix lightProjection = Matrix.CreateOrthographic(2048, 2048, 0, 71.0f); // this is randomly set tbh
+
             GraphicsDevice gpu = GameServices.GetService<GraphicsDevice>();
             // Render all the scene objects (given that they are not destroyed)
             foreach (GameObject gameObject in currentScene.GameObjectsList)
             {
-                gameObject.Draw(currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
+                gameObject.Draw(currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix, l);
             }
 
             if (drawBounds)
