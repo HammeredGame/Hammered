@@ -1,4 +1,4 @@
-﻿using HammeredGame.Game.PathPlanning.AStar;
+using HammeredGame.Game.PathPlanning.AStar;
 using HammeredGame.Game.PathPlanning.AStar.GraphComponents;
 using Priority_Queue; // https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp
 using System.Collections.Generic;
@@ -102,8 +102,8 @@ namespace HammeredGame.Game.PathPlanning
             Dictionary<Vertex, double> priorityOfVertex = new Dictionary<Vertex, double>();
 
             // Initialize the algorithm to have the starting node as the firts vertex to be examined.
-            priorityQueue.Enqueue(start, start.TraveledDistance + start.HeuristicValue);
-            priorityOfVertex.Add(start, start.TraveledDistance + start.HeuristicValue);
+            priorityQueue.Enqueue(start, start.TraveledDistance + start.HeuristicValue); // start.TraveledDistance = 0
+            priorityOfVertex.Add(start, start.TraveledDistance + start.HeuristicValue); // start.TraveledDistance = 0
 
             while (priorityQueue.Count > 0)
             {
