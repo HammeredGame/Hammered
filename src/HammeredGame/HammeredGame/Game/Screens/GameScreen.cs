@@ -47,8 +47,8 @@ namespace HammeredGame.Game.Screens
         {
             base.LoadContent();
 
-            InitializeLevel("HammeredGame.Game.Scenes.Island1.ShoreWakeup");
-
+            // Load sound effects before initialising the first scene, since the scene setup
+            // script might already use some of the sound effects.
             ContentManager Content = GameServices.GetService<ContentManager>();
             List<SoundEffect> sfx = GameServices.GetService<List<SoundEffect>>();
             bgMusic = Content.Load<Song>("Audio/BGM_V2_4x");
@@ -59,6 +59,8 @@ namespace HammeredGame.Game.Screens
             sfx.Add(Content.Load<SoundEffect>("Audio/ding"));
             sfx.Add(Content.Load<SoundEffect>("Audio/door_open"));
             sfx.Add(Content.Load<SoundEffect>("Audio/door_close"));
+
+            InitializeLevel("HammeredGame.Game.Scenes.Island1.ShoreWakeup");
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 0.1f;
