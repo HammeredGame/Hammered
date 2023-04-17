@@ -153,6 +153,20 @@ namespace HammeredGame.Game.GameObjects
                 if (Math.Abs(this.Entity.LinearVelocity.Y) < 2.5f)
                     this.lastGroundPosition = this.Position;
             }
+            else if (other.Tag is Hammer)
+            {
+                // If player character collides with hammer, set hammer to with character state
+                // This should only happen when hammer is called back
+                var hammer = other.Tag as Hammer;
+                if (hammer.IsEnroute())
+                {
+                    hammer.SetState(Hammer.HammerState.WithCharacter);
+                    OnHammerRetrieved?.Invoke(this, null);
+                    hammer.Entity.BecomeKinematic();
+                    hammer.Entity.LinearVelocity = BEPUutilities.Vector3.Zero;
+                    hammer.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoBroadPhase;
+                }
+            }
         }
 
         // Collision Handling Event for any initial collisions detected
