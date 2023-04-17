@@ -123,7 +123,7 @@ namespace HammeredGame
             gameServices.AddService<AudioManager>(audioManager);
 
             manager = new ScreenManager(gameServices, gpu, mainRenderTarget);
-            manager.AddScreen(new GameScreen());
+            manager.AddScreen(new Game.Screens.GameScreen());
 
             base.Initialize();
         }

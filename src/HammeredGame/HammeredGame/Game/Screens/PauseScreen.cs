@@ -8,7 +8,7 @@ using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using System;
 
-namespace HammeredGame.Game
+namespace HammeredGame.Game.Screens
 {
     internal class PauseScreen : Screen
     {
@@ -211,7 +211,7 @@ namespace HammeredGame.Game
             foreach (var pass in basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                ScreenManager.GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertices, 0, 1);
+                ScreenManager.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, 1);
             }
             GameServices.GetService<SpriteBatch>().End();
 
