@@ -1,4 +1,4 @@
-﻿using BEPUphysics.Settings;
+using BEPUphysics.Settings;
 using BEPUphysics;
 using HammeredGame.Core;
 using HammeredGame.Game;
@@ -8,6 +8,7 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Collecti
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -54,6 +55,11 @@ namespace HammeredGame
 
         // Music variables
         private Song bgMusic;
+        private List<SoundEffect> sfx = new List<SoundEffect>();
+        private AudioListener listener = new AudioListener();
+        private AudioEmitter emitter = new AudioEmitter();
+        private AudioManager audioManager;
+        
 
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
@@ -115,6 +121,9 @@ namespace HammeredGame
             // Set title for game window
             Window.Title = "HAMMERED";
 
+            //initialize audio manager
+            audioManager = new AudioManager(this); 
+
             // Initialize ImGui's internal renderer and build its font atlas
             imGuiRenderer = new ImGuiRenderer(this);
             imGuiRenderer.RebuildFontAtlas();
@@ -125,6 +134,9 @@ namespace HammeredGame
             gameServices.AddService<Input>(input);
             gameServices.AddService<ContentManager>(Content);
             gameServices.AddService<ScriptUtils>(new ScriptUtils());
+            gameServices.AddService<List<SoundEffect>>(sfx);
+            gameServices.AddService<AudioManager>(audioManager);
+            
 
             base.Initialize();
         }
@@ -139,10 +151,22 @@ namespace HammeredGame
 
             InitializeLevel("HammeredGame.Game.Scenes.Island1.ShoreWakeup");
 
-            bgMusic = Content.Load<Song>("Audio/BGM_V1");
+            
+            bgMusic = Content.Load<Song>("Audio/BGM_V2_4x");
+            sfx.Add(Content.Load<SoundEffect>("Audio/step"));
+            sfx.Add(Content.Load<SoundEffect>("Audio/hammer_drop"));
+            sfx.Add(Content.Load<SoundEffect>("Audio/lohi_whoosh"));
+            sfx.Add(Content.Load<SoundEffect>("Audio/tree_fall"));
+            sfx.Add(Content.Load<SoundEffect>("Audio/ding"));
+            sfx.Add(Content.Load<SoundEffect>("Audio/door_open"));
+            sfx.Add(Content.Load<SoundEffect>("Audio/door_close"));
+            
 
             MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = 0.1f; 
             MediaPlayer.Play(bgMusic);
+
+            SoundEffect.MasterVolume = 0.2f; 
         }
 
         /// <summary>

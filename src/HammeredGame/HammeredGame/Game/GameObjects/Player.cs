@@ -11,6 +11,7 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableO
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -63,6 +64,10 @@ namespace HammeredGame.Game.GameObjects
 
         private Animations animations;
 
+        private List<SoundEffect> player_sfx = new List<SoundEffect>();
+        private AudioListener listener;
+        private AudioEmitter emitter;
+
         // Initialize player class
         public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -106,6 +111,10 @@ namespace HammeredGame.Game.GameObjects
                 animations = this.Model.GetAnimations();
                 var clip_idle = animations.Clips["Armature|idle-hammer"];
                 animations.SetClip(clip_idle);
+
+                player_sfx = Services.GetService<List<SoundEffect>>();
+                listener = Services.GetService<AudioListener>();
+                emitter = Services.GetService<AudioEmitter>();
             }
 
             // Initial position should be on/over ground
@@ -239,6 +248,12 @@ namespace HammeredGame.Game.GameObjects
             if (moveDirty && this.Entity != null && player_vel != Vector3.Zero)
             {
                 BEPUutilities.Vector3 Pos = this.Entity.Position;
+
+                //FIX: sound effect itself is too grainy (composed of many smaller sounds), awful when layered
+                //SoundEffectInstance step = player_sfx[0].CreateInstance();
+                //step.IsLooped = true;
+                //step.Play();
+
 
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
                 // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN

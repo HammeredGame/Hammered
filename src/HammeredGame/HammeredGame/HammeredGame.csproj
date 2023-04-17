@@ -17,6 +17,8 @@
   <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
+    <None Remove="Content\Audio\BGM_V2_4x.mp3" />
+    <None Remove="Content\Audio\footstep1.wav" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico" />
