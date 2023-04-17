@@ -258,8 +258,11 @@ namespace HammeredGame.Game.GameObjects
         public bool IsEnroute()
         {
             //sound effect instance to try and manipulate the pitch, but not working
-            SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
-            whoosh.Play();
+            if (hammerState == HammerState.Enroute)
+            {
+                SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
+                whoosh.Play();
+            }
             return hammerState == HammerState.Enroute;
         }
 
