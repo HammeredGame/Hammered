@@ -12,6 +12,7 @@ using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using BEPUphysics.Entities;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using Microsoft.Xna.Framework.Audio;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -55,11 +56,19 @@ namespace HammeredGame.Game.GameObjects
 
         private Player player;
 
+        private List<SoundEffect> hammer_sfx = new List<SoundEffect>(); 
+        //how long till trigger next sound 
+        //TimeSpan audioDelay = TimeSpan.Zero;
+
+        private AudioManager audioManager; 
+
         public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
             : base(services, model, t, pos, rotation, scale, entity)
         {
             hammerState = HammerState.WithCharacter;
-
+            hammer_sfx = Services.GetService<List<SoundEffect>>();
+            audioManager = Services.GetService<AudioManager>();
+            
             if (this.Entity != null)
             {
                 // Adding a tag to the entity, to allow us to potentially filter and
@@ -176,6 +185,7 @@ namespace HammeredGame.Game.GameObjects
                 //        }
                 //    }
                 //}
+                
             }
         }
 
@@ -238,6 +248,12 @@ namespace HammeredGame.Game.GameObjects
         {
             // Set hammer state to dropped
             hammerState = HammerState.Dropped;
+            
+            hammer_sfx[1].Play();
+            
+            //audioManager.Play3DSound("Audio/hammer_drop", false);
+            
+            
 
             if (this.Entity != null)
             {
@@ -260,6 +276,9 @@ namespace HammeredGame.Game.GameObjects
 
         public bool IsEnroute()
         {
+            //sound effect instance to try and manipulate the pitch, but not working
+            SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
+            whoosh.Play();
             return hammerState == HammerState.Enroute;
         }
 

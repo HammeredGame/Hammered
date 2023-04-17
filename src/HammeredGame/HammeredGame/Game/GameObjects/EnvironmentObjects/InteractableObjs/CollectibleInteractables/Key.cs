@@ -1,11 +1,13 @@
-﻿using BEPUphysics;
+﻿using System.Collections.Generic;
+using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
-﻿using HammeredGame.Core;
+using HammeredGame.Core;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables
@@ -44,6 +46,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         private Door correspondingDoor;
         private bool keyPickedUp = false;
 
+        private List<SoundEffect> chime;  
+
         public Key(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             if (this.Entity != null)
@@ -60,6 +64,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
                 this.ActiveSpace.Add(this.Entity);
 
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+                
+                chime = Services.GetService<List<SoundEffect>>();
             }
         }
 
@@ -84,6 +90,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
                     this.Visible = false;
                     this.ActiveSpace.Remove(this.Entity);
                     keyPickedUp = true;
+                    chime[4].Play();
                 }
 
             }
