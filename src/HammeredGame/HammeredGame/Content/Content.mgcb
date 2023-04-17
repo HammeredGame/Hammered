@@ -79,6 +79,12 @@
 /processorParam:Quality=Best
 /build:Audio/single_step.wav
 
+#begin Audio/step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/step.wav
+
 #begin Audio/tree_fall.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
