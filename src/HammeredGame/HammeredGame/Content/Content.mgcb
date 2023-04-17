@@ -25,11 +25,65 @@
 /processorParam:Quality=Best
 /build:Audio/BGM_V2_4x.mp3
 
+#begin Audio/const_water.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/const_water.wav
+
+#begin Audio/ding.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/ding.wav
+
+#begin Audio/door_close.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/door_close.wav
+
+#begin Audio/door_open.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/door_open.wav
+
 #begin Audio/footstep1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/footstep1.wav
+
+#begin Audio/hammer_drop.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/hammer_drop.wav
+
+#begin Audio/lohi_whoosh.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/lohi_whoosh.wav
+
+#begin Audio/rock_water.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/rock_water.wav
+
+#begin Audio/single_step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/single_step.wav
+
+#begin Audio/tree_fall.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/tree_fall.wav
 
 #begin awesome_goal_texture.jpg
 /importer:TextureImporter
