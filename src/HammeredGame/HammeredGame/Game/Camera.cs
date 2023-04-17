@@ -48,6 +48,9 @@ namespace HammeredGame.Game
 
         public CameraMode Mode;
 
+        public event EventHandler OnRotateLeft;
+        public event EventHandler OnRotateRight;
+
         /// <summary>
         /// Initialize a new Camera object, placed at the predefined location 50,60,-50 and facing
         /// the direction of focusPoint, with the rotation determined by the upDirection.
@@ -155,9 +158,11 @@ namespace HammeredGame.Game
                     // where each successive one is flipping the previous one's elements and
                     // switching the sign on the first element. So we use that!
                     followDir2D = new Vector2(-followDir2D.Y, followDir2D.X);
+                    OnRotateLeft?.Invoke(this, null);
                 } else if (UserAction.RotateCameraRight.Pressed(services.GetService<Input>()))
                 {
                     followDir2D = new Vector2(followDir2D.Y, -followDir2D.X);
+                    OnRotateRight?.Invoke(this, null);
                 }
 
                 // Calculate the base follow offset position (from the follow target) using the
@@ -182,10 +187,12 @@ namespace HammeredGame.Game
                 if (UserAction.RotateCameraLeft.Pressed(services.GetService<Input>()))
                 {
                     currentCameraPosIndex = (currentCameraPosIndex + 3) % 4;
+                    OnRotateLeft?.Invoke(this, null);
                 }
                 else if (UserAction.RotateCameraRight.Pressed(services.GetService<Input>()))
                 {
                     currentCameraPosIndex = (currentCameraPosIndex + 1) % 4;
+                    OnRotateRight?.Invoke(this, null);
                 }
 
                 ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);

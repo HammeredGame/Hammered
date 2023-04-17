@@ -2,6 +2,10 @@
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.Screens;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -13,14 +17,39 @@ namespace HammeredGame.Game.Scenes.Island1
             OnSceneStart();
         }
 
-        protected override void OnSceneStart()
+        protected override async void OnSceneStart()
         {
+            ScriptUtils utils = Services.GetService<ScriptUtils>();
+
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
 
+            // Show a hint for camera controls upon entering its trigger area, but set up the event
+            // handler without blocking further script execution. This is so that the end trigger
+            // can be activated without doing the camera actions.
+            CancellationTokenSource cameraHintTokenSource = new();
+            EventHandler cameraHintTriggerOnce = null;
+            Get<TriggerObject>("camera_hint_trigger").OnTrigger += cameraHintTriggerOnce = async (_, _) =>
+            {
+                // remove the handler so we don't keep prompting repeatedly
+                Get<TriggerObject>("camera_hint_trigger").OnTrigger -= cameraHintTriggerOnce;
+
+                // Show prompts
+                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.RotateCameraLeft, UserAction.RotateCameraRight }, cameraHintTokenSource.Token);
+
+                // Player must perform one of each action to get rid of the hint
+                await Task.WhenAll(
+                    utils.WaitEvent(Camera, "OnRotateLeft"),
+                    utils.WaitEvent(Camera, "OnRotateRight")
+                );
+                cameraHintTokenSource.Cancel();
+            };
+
+            // End trigger will be active regardless of camera actions
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
+                cameraHintTokenSource.Cancel();
                 ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName);
             };
 
