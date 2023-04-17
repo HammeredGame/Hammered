@@ -17,6 +17,7 @@ using BEPUutilities.Threading;
 using System;
 using BEPUphysics.Entities.Prefabs;
 using Microsoft.Xna.Framework.Content;
+using System.Diagnostics;
 
 namespace HammeredGame
 {
@@ -212,6 +213,7 @@ namespace HammeredGame
             }
         }
 
+
         /// <summary>
         /// Called on each game loop after Update(). Should not contain expensive computation but
         /// rather just rendering and drawing to the GPU.
@@ -278,6 +280,7 @@ namespace HammeredGame
             imGuiRenderer.AfterLayout();
 #endif
         }
+
 
         // Prepare the entities for debugging visualization
         private void SetupDebugBounds()

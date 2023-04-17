@@ -1,4 +1,5 @@
-﻿using BEPUphysics;
+﻿using Aether.Animation;
+using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using HammeredGame.Core;
@@ -100,7 +101,7 @@ namespace HammeredGame.Game
 
             this.ActiveSpace = services.GetService<Space>();
 
-            if (this.Model != null)
+            if (this.Model != null && model.GetAnimations() == null)
             {
                 // Precalculate the vertex buffer data, since VertextBuffer.GetData is very
                 // expensive to perform on every Update. We can find the bounding box of the
@@ -150,47 +151,51 @@ namespace HammeredGame.Game
             {
                 // Set the effect class for each mesh part in the model
                 // This is most likely where we attach shaders to the model/mesh
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (Effect effect in mesh.Effects)
                 {
-                    effect.World = meshTransforms[mesh.ParentBone.Index] * world;
-                    effect.View = view;
-                    effect.Projection = projection;
+                    if(effect.GetType() == typeof(BasicEffect))
+                    {
+                        BasicEffect _effect = (BasicEffect) effect;
+                        _effect.World = meshTransforms[mesh.ParentBone.Index] * world;
+                        _effect.View = view;
+                        _effect.Projection = projection;
 
-                    effect.EnableDefaultLighting();
-                    //effect.LightingEnabled = Keyboard.GetState().IsKeyUp(Keys.L);
-                    effect.LightingEnabled = true;
+                        _effect.EnableDefaultLighting();
+                        //effect.LightingEnabled = Keyboard.GetState().IsKeyUp(Keys.L);
+                        _effect.LightingEnabled = true;
 
-                    //effect.DiffuseColor = new Vector3(0.25f, 0.25f, 0.25f);
-                    //effect.SpecularColor = new Vector3(0.25f, 0.25f, 0.25f);
-                    //effect.SpecularPower = 0.1f;
-                    effect.AmbientLightColor = new Vector3(0.5f, 0.5f, 0.5f);
+                        //effect.DiffuseColor = new Vector3(0.25f, 0.25f, 0.25f);
+                        //effect.SpecularColor = new Vector3(0.25f, 0.25f, 0.25f);
+                        //effect.SpecularPower = 0.1f;
+                        _effect.AmbientLightColor = new Vector3(0.5f, 0.5f, 0.5f);
 
-                    //effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
-                    //effect.DirectionalLight0.Direction = new Vector3(-1, -1, 0);
-                    //effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
+                        //effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
+                        //effect.DirectionalLight0.Direction = new Vector3(-1, -1, 0);
+                        //effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
 
-                    effect.DirectionalLight0.Enabled = true;
-                    effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
-                    effect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1, -1, 0));
-                    effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
+                        _effect.DirectionalLight0.Enabled = true;
+                        _effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
+                        _effect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1, -1, 0));
+                        _effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
 
-                    effect.DirectionalLight1.Enabled = true;
-                    effect.DirectionalLight1.DiffuseColor = Vector3.One * 0.2f;
-                    effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1, -1, 0));
-                    effect.DirectionalLight1.SpecularColor = Vector3.One * 0.1f;
+                        _effect.DirectionalLight1.Enabled = true;
+                        _effect.DirectionalLight1.DiffuseColor = Vector3.One * 0.2f;
+                        _effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1, -1, 0));
+                        _effect.DirectionalLight1.SpecularColor = Vector3.One * 0.1f;
 
-                    effect.DirectionalLight2.Enabled = true;
-                    effect.DirectionalLight2.DiffuseColor = Vector3.One * 0.15f;
-                    effect.DirectionalLight2.Direction = Vector3.Normalize(new Vector3(-1, -1, -1));
-                    effect.DirectionalLight2.SpecularColor = Vector3.One * 0.1f;
+                        _effect.DirectionalLight2.Enabled = true;
+                        _effect.DirectionalLight2.DiffuseColor = Vector3.One * 0.15f;
+                        _effect.DirectionalLight2.Direction = Vector3.Normalize(new Vector3(-1, -1, -1));
+                        _effect.DirectionalLight2.SpecularColor = Vector3.One * 0.1f;
 
-                    effect.TextureEnabled = tex != null;
-                    effect.Texture = tex;
+                        _effect.TextureEnabled = tex != null;
+                        _effect.Texture = tex;
 
-                    effect.FogEnabled = true;
-                    effect.FogStart = 400.0f;
-                    effect.FogEnd = 450.0f;
-                    effect.FogColor = Color.AliceBlue.ToVector3();
+                        _effect.FogEnabled = true;
+                        _effect.FogStart = 400.0f;
+                        _effect.FogEnd = 450.0f;
+                        _effect.FogColor = Color.AliceBlue.ToVector3();
+                    }
                 }
 
                 mesh.Draw();

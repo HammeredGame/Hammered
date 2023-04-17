@@ -1,4 +1,5 @@
-﻿using BEPUphysics;
+﻿using Aether.Animation;
+using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using BEPUphysics.CollisionRuleManagement;
 using BEPUphysics.Entities;
@@ -48,6 +49,7 @@ namespace HammeredGame.Game.GameObjects
 
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
+        private bool previously_moving = false;
 
         // Last known ground position, used to reset player's position
         // if the player comes into contact with a water object
@@ -58,6 +60,8 @@ namespace HammeredGame.Game.GameObjects
         public bool ReachedGoal = false;
 
         private Camera activeCamera;
+
+        private Animations animations;
 
         // Initialize player class
         public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
@@ -98,6 +102,10 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
                 this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
                 this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
+
+                animations = this.Model.GetAnimations();
+                var clip_idle = animations.Clips["Armature|idle-hammer"];
+                animations.SetClip(clip_idle);
             }
 
             // Initial position should be on/over ground
@@ -172,6 +180,23 @@ namespace HammeredGame.Game.GameObjects
             activeCamera = camera;
         }
 
+        private void ConfigureEffectMatrices(IEffectMatrices effect, Matrix world, Matrix view, Matrix projection)
+        {
+            effect.World = world;
+            effect.View = view;
+            effect.Projection = projection;
+        }
+
+        private void ConfigureEffectLighting(IEffectLights effect)
+        {
+            effect.EnableDefaultLighting();
+            effect.DirectionalLight0.Direction = Vector3.Backward;
+            effect.DirectionalLight0.Enabled = true;
+            effect.DirectionalLight1.Enabled = false;
+            effect.DirectionalLight2.Enabled = false;
+            effect.AmbientLightColor = Vector3.One;
+        }
+
         // Update (called every tick)
         public override void Update(GameTime gameTime)
         {
@@ -207,6 +232,8 @@ namespace HammeredGame.Game.GameObjects
                 moveDirty = moveDirty || GamepadInput(forwardDirection);
             }
 
+            // Animate player
+
             // If there was movement, normalize speed and edit rotation of character model
             // Also account for collisions
             if (moveDirty && this.Entity != null && player_vel != Vector3.Zero)
@@ -230,9 +257,24 @@ namespace HammeredGame.Game.GameObjects
                 ///</remark>
                 float angle = (float)Math.Atan2(player_vel.X, player_vel.Z);
                 this.Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle);
+
+                if(!previously_moving)
+                {
+                    // Start running animation when player starts moving
+                    var clip_run = animations.Clips["Armature|run-hammer"];
+                    animations.SetClip(clip_run);
+                    previously_moving = true;
+                }
             }
             else
             {
+                if(previously_moving)
+                {
+                    // Start idle animation when player stops moving
+                    var clip_idle = animations.Clips["Armature|idle-hammer"];
+                    animations.SetClip(clip_idle);
+                    previously_moving = false;
+                }
                 ///<remark>
                 /// Leaving the following code chunk on purpose to remind us of possible bugs.
                 /// It resulted in the character managing to move when the keys were released.
@@ -245,6 +287,8 @@ namespace HammeredGame.Game.GameObjects
 
                 //position += player_vel;
             }
+
+            animations.Update(gameTime.ElapsedGameTime * 2, true, Matrix.Identity);
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
 
@@ -352,6 +396,31 @@ namespace HammeredGame.Game.GameObjects
             ImGui.Separator();
             ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
+        }
+
+        public override void Draw(Matrix view, Matrix projection)
+        {
+            // Animate mesh
+            //Matrix[] transforms = new Matrix[this.Model.Bones.Count];
+            //this.Model.CopyAbsoluteBoneTransformsTo(transforms);
+
+            foreach (ModelMesh mesh in this.Model.Meshes)
+            {
+                foreach (var part in mesh.MeshParts)
+                {
+                    //BasicEffect)part.Effect).SpecularColor = Vector3.Zero;
+                    //((SkinnedEffect)part.Effect).SpecularColor = Vector3.Zero;
+                    //ConfigureEffectMatrices((IEffectMatrices)part.Effect, Matrix.Identity, view, projection);
+                    //ConfigureEffectLighting((IEffectLights)part.Effect);
+                    part.UpdateVertices(animations.AnimationTransforms); // animate vertices on CPU
+                    //((SkinnedEffect)part.Effect).SetBoneTransforms(animations.AnimationTransforms);// animate vertices on GPU
+                }
+            }
+
+            if (Visible)
+            {
+                DrawModel(Model, view, projection, Texture);
+            }
         }
     }
 }
