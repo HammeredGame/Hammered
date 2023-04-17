@@ -191,21 +191,22 @@ namespace HammeredGame.Game
                     this.Effect.Parameters["World"].SetValue(world * mesh.ParentBone.Transform);
                     this.Effect.Parameters["View"].SetValue(view);
                     this.Effect.Parameters["Projection"].SetValue(projection);
+                    this.Effect.Parameters["ViewVector"].SetValue(new Vector3(1.0f, -1.0f, 0.0f));
 
                     // Precompute the inverse transpose of the world matrix to use in shader
                     Matrix worldInverseTranspose = Matrix.Transpose(mesh.ParentBone.Transform * world);
                     this.Effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTranspose);
 
                     // Set light parameters
-                    this.Effect.Parameters["AmbientColor"].SetValue(new Vector3(0.1f));
+                    this.Effect.Parameters["AmbientColor"].SetValue(new Vector3(1.0f));
                     this.Effect.Parameters["AmbientIntensity"].SetValue(1.0f);
                     this.Effect.Parameters["DiffuseIntensity"].SetValue(1.0f);
                     this.Effect.Parameters["DiffuseLightDirection"].SetValue(Vector3.Normalize(new Vector3(1, -1, 0)));
-                    this.Effect.Parameters["DiffuseColor"].SetValue(Vector3.One * 0.1f);
+                    this.Effect.Parameters["DiffuseColor"].SetValue(Vector3.One * 1.0f);
 
                     // Set material properties
                     this.Effect.Parameters["Shininess"].SetValue(0.1f);
-                    this.Effect.Parameters["SpecularColor"].SetValue(Vector4.One * 0.1f);
+                    this.Effect.Parameters["SpecularColor"].SetValue(Vector4.One * 1.0f);
                     this.Effect.Parameters["SpecularIntensity"].SetValue(0.1f);
 
                     // Set texture
