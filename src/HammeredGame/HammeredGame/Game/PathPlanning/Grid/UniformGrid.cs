@@ -188,12 +188,16 @@ namespace HammeredGame.Game.PathPlanning.Grid
             HashSet<Vertex> verticesOfGraph = new HashSet<Vertex>();
             // Isolate the vertices which will be taken into consideration for the A* algorithm.
             // Define the heuristic value of each vertex.
-            // CURRENT HEURISTIC FUNCTION: EUCLIDEAN DISTANCE
+            // LEAVE UNCOMMENTED ONLY THE HEURISTIC FUNCTION WHICH WILL BE USED
             foreach (Vector3 point in pointsConsidered)
             {
                 Vertex correspondingVertex = biMap.Forward[point];
                 verticesOfGraph.Add(correspondingVertex);
-                correspondingVertex.HeuristicValue = (point - finishCell).Length(); // Euclidean distance heuristic function
+                Vector3 differenceVector = point - finishCell;
+                //correspondingVertex.HeuristicValue = differenceVector.Length(); // Euclidean distance heuristic function
+                //correspondingVertex.HeuristicValue = differenceVector.LengthSquared(); // Squared euclidean distance heuristic function. In hopes of punishing detours.
+                correspondingVertex.HeuristicValue = Math.Abs(differenceVector.X) + Math.Abs(differenceVector.Y) + Math.Abs(differenceVector.Z); // Manhattan distance. In hopes of punishing detours even more.
+
             }
 
             Stack<Vertex> aResultVertex = AStarAlgorithm.GetMinimumPath(biMap.Forward[startCell], biMap.Forward[finishCell], new Graph(verticesOfGraph));
