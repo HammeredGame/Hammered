@@ -22,7 +22,7 @@ float DiffuseIntensity;
 float Shininess;
 float4 SpecularColor;
 float SpecularIntensity;
-float3 ViewVector = float3(1, 0, 0);
+float3 ViewVector;
 
 texture ModelTexture;
 sampler2D textureSampler = sampler_state {
