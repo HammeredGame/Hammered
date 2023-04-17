@@ -1,10 +1,12 @@
-﻿using BEPUphysics;
+﻿using System.Collections.Generic;
+using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 ﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio; 
 using Microsoft.Xna.Framework.Graphics;
 using BEPUphysics.Entities;
 
@@ -47,6 +49,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         // Any Unbreakable Obstacle specific variables go here
         private bool keyFound = false;
         private bool isGoal = false; // TEMPORARY
+        //private List<SoundEffect> doorSfx = new List<SoundEffect>();
         public Door(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             if (this.Entity != null)
@@ -60,6 +63,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
+                //doorSfx = Services.GetService<List<SoundEffect>>(); 
             }
         }
 

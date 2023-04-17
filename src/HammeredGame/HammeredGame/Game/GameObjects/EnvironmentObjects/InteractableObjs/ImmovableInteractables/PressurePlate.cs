@@ -115,17 +115,25 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //}
             if (this.pressureActivated && triggerObject != null)
             {
-                // pressSfx[5].Play();
+                //pressSfx[5].Play();
                 triggerObject.Visible = false;
                 if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                {
                     this.ActiveSpace.Remove(triggerObject.Entity);
+                    pressSfx[5].Play();
+                }
+                   
+                    
             }
             else if (triggerObject != null)
             {
-                // pressSfx[6].Play();
                 triggerObject.Visible = true;
                 if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
+                {
+                    pressSfx[6].Play();
                     this.ActiveSpace.Add(triggerObject.Entity);
+                }
+                    
             }
         }
 
