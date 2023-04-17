@@ -8,6 +8,7 @@ using BEPUphysics.PositionUpdating;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
+using HammeredGame.Game.Screens;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -391,7 +392,7 @@ namespace HammeredGame.Game.GameObjects
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
         }
 
-        public override void Draw(Matrix view, Matrix projection)
+        public override void Draw(Matrix view, Matrix projection, Light l)
         {
             // Animate mesh
             //Matrix[] transforms = new Matrix[this.Model.Bones.Count];
@@ -412,7 +413,7 @@ namespace HammeredGame.Game.GameObjects
 
             if (Visible)
             {
-                DrawModel(Model, view, projection, Texture);
+                DrawModel(Model, view, projection, Texture, l);
             }
         }
     }

@@ -32,6 +32,9 @@ namespace HammeredGame
 
         // RENDER TARGET
         private RenderTarget2D mainRenderTarget;
+        public RenderTarget2D shadowRenderTarget;
+
+        private Effect ShadowMapGen;
 
         // RECTANGLES (need to modify to allow modifiable resolutions, etc.)
         private Rectangle desktopRect;
@@ -78,6 +81,7 @@ namespace HammeredGame
 
             // Set Render Target to SCREENWIDTH x SCREENHEIGHT
             mainRenderTarget = new RenderTarget2D(gpu, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, DepthFormat.Depth24);
+            shadowRenderTarget = new RenderTarget2D(gpu, 2048, 2048, false, SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
             ScreenW = mainRenderTarget.Width;
             ScreenH = mainRenderTarget.Height;
             desktopRect = new Rectangle(0, 0, pp.BackBufferWidth, pp.BackBufferHeight);
