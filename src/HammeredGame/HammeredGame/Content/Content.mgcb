@@ -297,7 +297,7 @@
 #begin level3.xml
 /copy:level3.xml
 
-#begin player-run-hammer.fbx
+#begin player-animated-hammer.fbx
 /importer:FbxImporter
 /processor:CpuAnimatedModelProcessor
 /processorParam:VertexBufferType=DynamicWriteOnly
@@ -319,7 +319,7 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:player-run-hammer.fbx
+/build:player-animated-hammer.fbx
 
 #begin rock.fbx
 /importer:FbxImporter
