@@ -120,12 +120,6 @@ namespace HammeredGame.Game.Screens
             VerticalStackPanel panel = Desktop.Root as VerticalStackPanel;
             VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
 
-            // Back out of pause menu without unloading content
-            if (UserAction.Pause.Pressed(input) || UserAction.Back.Pressed(input))
-            {
-                ExitScreen(alsoUnloadContent: false);
-            }
-
             // Allow selection with keyboard or controller instead of just mouse
             if (UserAction.Confirm.Pressed(input))
             {

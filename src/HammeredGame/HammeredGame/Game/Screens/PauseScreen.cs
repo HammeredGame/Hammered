@@ -67,6 +67,17 @@ namespace HammeredGame.Game.Screens
         {
             // Update screen state and HasFocus so we can use it
             base.Update(gameTime);
+
+            // Do nothing if the screen doesn't have focus
+            if (!HasFocus) return;
+
+            Input input = GameServices.GetService<Input>();
+
+            // Back out of pause menu without unloading content
+            if (UserAction.Pause.Pressed(input) || UserAction.Back.Pressed(input))
+            {
+                ExitScreen(alsoUnloadContent: false);
+            }
         }
 
     }
