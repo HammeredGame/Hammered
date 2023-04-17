@@ -8,6 +8,7 @@ using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HammeredGame.Game.Screens
 {
@@ -73,7 +74,9 @@ namespace HammeredGame.Game.Screens
             {
                 mainMenu.Items.Add(menuItem);
             }
-            mainMenu.HoverIndex = 0;
+            // Select first non-disabled menu item (TODO: this may return MenuItems.Count if all
+            // items are disabled, which would be index out of bounds)
+            mainMenu.HoverIndex = MenuItems.TakeWhile(i => !i.Enabled).Count();
 
             var panel = new VerticalStackPanel();
             panel.Widgets.Add(label1);
