@@ -279,7 +279,7 @@ namespace HammeredGame.Game.GameObjects
                 /// <example>When walking up an inclined piece of land, the character might be facing upwards.</example>
                 ///</remark>
                 float angle = (float)Math.Atan2(player_vel.X, player_vel.Z);
-                this.Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle);
+                this.Entity.Orientation = BEPUutilities.Quaternion.Slerp(this.Entity.Orientation, BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle), 0.25f);
 
                 if(!previously_moving)
                 {
