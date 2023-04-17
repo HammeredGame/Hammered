@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HammeredGame.Game
+namespace HammeredGame.Game.Screens
 {
     /// <summary>
     /// This screen is a partial non-focus-stealing screen that shows screen overlays for input
@@ -71,7 +71,8 @@ namespace HammeredGame.Game
             if (GameServices.GetService<Input>().GamePadState.IsConnected)
             {
                 inputType = "xbox";
-            } else
+            }
+            else
             {
                 inputType = "keyboard";
             }
@@ -161,7 +162,8 @@ namespace HammeredGame.Game
                     controlsAtlas["xbox"] = MyraEnvironment.DefaultAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/controls_atlas_xbox.xmat");
                     inputType = "xbox";
                 }).Start();
-            } else if (!controlsAtlas.ContainsKey("keyboard"))
+            }
+            else if (!controlsAtlas.ContainsKey("keyboard"))
             {
                 new Task(() =>
                 {

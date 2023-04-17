@@ -1,6 +1,7 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
+using HammeredGame.Game.Screens;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -20,7 +21,7 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
-                // Services.GetService<HammeredGame>().InitializeLevel(typeof(TwoIslandPuzzle).FullName);
+                ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName);
             };
 
             // Get<Player>("player").OnMove += async _ => {

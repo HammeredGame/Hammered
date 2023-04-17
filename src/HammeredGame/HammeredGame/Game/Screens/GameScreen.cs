@@ -1,7 +1,6 @@
 ﻿using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using HammeredGame.Core;
-using HammeredGame.Game;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -13,7 +12,7 @@ using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace HammeredGame
+namespace HammeredGame.Game.Screens
 {
 
     /// <summary>

@@ -4,6 +4,7 @@ using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
+using HammeredGame.Game.Screens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
-                //Services.GetService<HammeredGame>().InitializeLevel(typeof(ChallengePuzzle).FullName);
+                ParentGameScreen.InitializeLevel(typeof(ChallengePuzzle).FullName);
             };
 
             // Get<Player>("player").OnMove += async _ => {
