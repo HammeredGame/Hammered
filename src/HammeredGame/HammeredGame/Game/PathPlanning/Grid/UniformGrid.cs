@@ -146,6 +146,9 @@ namespace HammeredGame.Game.PathPlanning.Grid
 
         }
 
+        public bool GetCellMark(uint[] cellIndex) { return this.mask[cellIndex[0], cellIndex[1], cellIndex[2]]; }
+        public bool GetCellMark(Vector3 position) { return GetCellMark(GetCellIndex(position)); }
+
         /// <summary>
         /// Sets the availability of a specific cell of the grid. 
         /// </summary>
