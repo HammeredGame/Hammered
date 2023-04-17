@@ -249,8 +249,9 @@ namespace HammeredGame.Game.GameObjects
             // Set hammer state to dropped
             hammerState = HammerState.Dropped;
             
-            //hammer_sfx[1].Play();
-            audioManager.Play3DSound("Audio/hammer_drop", false);
+            hammer_sfx[1].Play();
+            
+            //audioManager.Play3DSound("Audio/hammer_drop", false);
             
             
 

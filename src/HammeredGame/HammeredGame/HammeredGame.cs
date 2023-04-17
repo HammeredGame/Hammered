@@ -152,13 +152,13 @@ namespace HammeredGame
 
             
             bgMusic = Content.Load<Song>("Audio/BGM_V2_4x");
-            sfx.Add(Content.Load<SoundEffect>("Audio/single_step"));
+            sfx.Add(Content.Load<SoundEffect>("Audio/step"));
             sfx.Add(Content.Load<SoundEffect>("Audio/hammer_drop"));
             sfx.Add(Content.Load<SoundEffect>("Audio/lohi_whoosh"));
             sfx.Add(Content.Load<SoundEffect>("Audio/tree_fall"));
             sfx.Add(Content.Load<SoundEffect>("Audio/ding"));
-            sfx.Add(Content.Load<SoundEffect>("Audio/const_water"));
-
+            sfx.Add(Content.Load<SoundEffect>("Audio/door_open"));
+            sfx.Add(Content.Load<SoundEffect>("Audio/door_close"));
             
 
             MediaPlayer.IsRepeating = true;

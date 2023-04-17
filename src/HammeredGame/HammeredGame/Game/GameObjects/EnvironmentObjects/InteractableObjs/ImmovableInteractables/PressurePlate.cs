@@ -1,4 +1,5 @@
-﻿using BEPUphysics.BroadPhaseEntries;
+﻿using System.Collections.Generic;
+using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
@@ -7,6 +8,7 @@ using BEPUphysics.PositionUpdating;
 using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio; 
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
 {
@@ -30,6 +32,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         private bool playerOn = false, hammerOn = false;
         private bool pressureActivated = false;
 
+        private List<SoundEffect> pressSfx = new List<SoundEffect>();
+
         public PressurePlate(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             if (this.Entity != null)
@@ -44,6 +48,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                 //this.entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollision;
                 this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
                 this.Entity.CollisionInformation.Events.CollisionEnded += this.Events_CollisionEnded;
+
+                pressSfx = Services.GetService<List<SoundEffect>>();
             }
         }
 
@@ -109,12 +115,14 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //}
             if (this.pressureActivated && triggerObject != null)
             {
+                pressSfx[5].Play();
                 triggerObject.Visible = false;
                 if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
                     this.ActiveSpace.Remove(triggerObject.Entity);
             }
             else if (triggerObject != null)
             {
+                pressSfx[6].Play();
                 triggerObject.Visible = true;
                 if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
                     this.ActiveSpace.Add(triggerObject.Entity);
