@@ -10,6 +10,7 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableO
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -58,6 +59,10 @@ namespace HammeredGame.Game.GameObjects
         public bool ReachedGoal = false;
 
         private Camera activeCamera;
+        
+        private List<SoundEffect> player_sfx = new List<SoundEffect>();
+        private AudioListener listener;
+        private AudioEmitter emitter; 
 
         // Initialize player class
         public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
@@ -98,6 +103,10 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
                 this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
                 this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
+                
+                player_sfx = Services.GetService<List<SoundEffect>>();
+                listener = Services.GetService<AudioListener>();
+                emitter = Services.GetService<AudioEmitter>();
             }
 
             // Initial position should be on/over ground
@@ -212,6 +221,10 @@ namespace HammeredGame.Game.GameObjects
             if (moveDirty && this.Entity != null && player_vel != Vector3.Zero)
             {
                 BEPUutilities.Vector3 Pos = this.Entity.Position;
+                
+                //FIX: sound effect itself is too grainy (composed of many smaller sounds), awful when layered
+                //player_sfx[0].Play(volume: 0.5f, pitch: 0.1f, pan: 0.0f); 
+                
 
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
                 // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
