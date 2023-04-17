@@ -2,7 +2,7 @@
   <camera mode="follow">
     <follow_distance>272.000</follow_distance>
     <follow_angle>0.730</follow_angle>
-    <target>369.255 -0.695 -18.059</target>
+    <target>375.811 -0.151 -11.758</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.425</fov>
   </camera>
@@ -21,7 +21,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>character-colored</model>
-    <position>369.255 -0.695 -18.059</position>
+    <position>375.810 -0.151 -11.758</position>
     <rotation>0.000 -0.383 0.000 0.924</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -34,7 +34,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>temp_hammer2</model>
-    <position>369.255 -0.695 -18.059</position>
+    <position>375.810 -0.151 -11.758</position>
     <rotation>0.737 0.000 0.000 0.675</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -125,7 +125,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="rock1">
     <model>rock</model>
-    <position>185.555 -7.768 3.694</position>
+    <position>185.564 -7.768 3.694</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>3.000</scale>
     <body type="box">
@@ -143,7 +143,7 @@
     <scale>3.000</scale>
     <body type="box">
       <width>15.500</width>
-      <height>100.000</height>
+      <height>60.000</height>
       <length>15.500</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
@@ -173,7 +173,7 @@
     <scale>3.000</scale>
     <body type="box">
       <width>15.500</width>
-      <height>100.000</height>
+      <height>60.000</height>
       <length>15.500</length>
       <shift_graphic>1.000 0.000 0.000</shift_graphic>
     </body>
@@ -589,6 +589,19 @@
       <height>35.000</height>
       <length>10.000</length>
       <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="end_trigger">
+    <model />
+    <position>-332.000 10.000 -22.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>68.200</width>
+      <height>166.500</height>
+      <length>174.700</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
 </scene>
