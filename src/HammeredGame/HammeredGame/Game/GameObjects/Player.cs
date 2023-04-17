@@ -408,7 +408,7 @@ namespace HammeredGame.Game.GameObjects
             {
                 foreach (var part in mesh.MeshParts)
                 {
-                    ((BasicEffect)part.Effect).SpecularColor = Vector3.Zero;
+                    //BasicEffect)part.Effect).SpecularColor = Vector3.Zero;
                     //((SkinnedEffect)part.Effect).SpecularColor = Vector3.Zero;
                     //ConfigureEffectMatrices((IEffectMatrices)part.Effect, Matrix.Identity, view, projection);
                     //ConfigureEffectLighting((IEffectLights)part.Effect);

@@ -1,5 +1,6 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
+using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
@@ -26,6 +27,11 @@ namespace HammeredGame.Game.Scenes.Island1
             Get<PressurePlate>("pressureplate").SetTriggerObject(Get<Door>("door_pp"));
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
+
+            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            {
+                Services.GetService<HammeredGame>().InitializeLevel(typeof(LaserTutorial).FullName);
+            };
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
