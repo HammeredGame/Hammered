@@ -169,8 +169,10 @@ namespace HammeredGame.Game.GameObjects
                     // Update Hammer's Linear Velocity
                     // this.Entity.LinearVelocity = hammerSpeed * (player.Entity.Position - Entity.Position);
                     BEPUutilities.Vector3 currentToNextPosition = this.nextRoutePosition - Entity.Position;
+                    float distanceBetweenCurrentAndNext = currentToNextPosition.Length();
+                    currentToNextPosition.Normalize();
                     // If the two points are too far apart
-                    if (currentToNextPosition.Length() > 0.5)
+                    if (distanceBetweenCurrentAndNext > 0.5)
                     {
                         this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
                     }
