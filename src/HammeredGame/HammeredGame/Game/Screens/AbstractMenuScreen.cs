@@ -8,6 +8,7 @@ using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HammeredGame.Game.Screens
 {
@@ -73,7 +74,9 @@ namespace HammeredGame.Game.Screens
             {
                 mainMenu.Items.Add(menuItem);
             }
-            mainMenu.HoverIndex = 0;
+            // Select first non-disabled menu item (TODO: this may return MenuItems.Count if all
+            // items are disabled, which would be index out of bounds)
+            mainMenu.HoverIndex = MenuItems.TakeWhile(i => !i.Enabled).Count();
 
             var panel = new VerticalStackPanel();
             panel.Widgets.Add(label1);
@@ -119,12 +122,6 @@ namespace HammeredGame.Game.Screens
 
             VerticalStackPanel panel = Desktop.Root as VerticalStackPanel;
             VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
-
-            // Back out of pause menu without unloading content
-            if (UserAction.Pause.Pressed(input) || UserAction.Back.Pressed(input))
-            {
-                ExitScreen(alsoUnloadContent: false);
-            }
 
             // Allow selection with keyboard or controller instead of just mouse
             if (UserAction.Confirm.Pressed(input))

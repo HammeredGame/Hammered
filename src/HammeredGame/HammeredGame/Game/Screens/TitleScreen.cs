@@ -25,12 +25,13 @@ namespace HammeredGame.Game.Screens
             {
                 Text = "Continue",
                 Id = "menuItemContinue",
+                Enabled = false
             };
-            menuItemContinue.Selected += (s, a) =>
-            {
-                ContinueFunc?.Invoke();
-                ExitScreen(alsoUnloadContent: true);
-            };
+            //menuItemContinue.Selected += (s, a) =>
+            //{
+            //    ContinueFunc?.Invoke();
+            //    ExitScreen(alsoUnloadContent: true);
+            //};
 
             MenuItem menuItemRestartLevel = new()
             {
