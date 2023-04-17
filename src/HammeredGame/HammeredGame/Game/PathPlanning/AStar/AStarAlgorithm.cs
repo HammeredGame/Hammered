@@ -34,7 +34,7 @@ namespace HammeredGame.Game.PathPlanning
     public class AStarAlgorithm
     {
 
-        public Stack<Vertex> GetMinimumPath(Vertex start, Vertex destination, Graph graph)
+        public static Stack<Vertex> GetMinimumPath(Vertex start, Vertex destination, Graph graph)
         {
             // Dynamic sanity check.
             // If the graph does not contain both the starting node s and the destination node g,
