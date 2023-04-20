@@ -61,8 +61,8 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     // Compute Diffuse lighting using cosine weighting
     float4 normal = float4(normalize(mul(input.Normal.xyz, WorldInverseTranspose)), 1);
     float lightIntensity = dot(normal.xyz, DiffuseLightDirection);
-    output.Color = saturate(DiffuseColor * DiffuseIntensity * lightIntensity);
-
+    // Keep alpha at 1
+    output.Color = float4(saturate(DiffuseColor.xyz * DiffuseIntensity * lightIntensity), 1.0);
     // Push normal and texture to fragment shader
     output.Normal = normal;
     output.TextureCoordinate = input.TextureCoordinate;
