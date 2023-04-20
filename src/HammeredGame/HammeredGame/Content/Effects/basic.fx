@@ -13,7 +13,7 @@ float4x4 Projection;
 float4 AmbientColor;
 float AmbientIntensity;
 
-float4x4 WorldInverseTranspose;
+float3x3 WorldInverseTranspose;
 
 float3 DiffuseLightDirection;
 float4 DiffuseColor;
@@ -22,7 +22,7 @@ float DiffuseIntensity;
 float Shininess;
 float4 SpecularColor;
 float SpecularIntensity;
-float3 ViewVector;
+float4 ViewVector;
 
 texture ModelTexture;
 sampler2D textureSampler = sampler_state {
@@ -59,7 +59,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     output.Position = mul(viewPosition, Projection);
 
     // Compute Diffuse lighting using cosine weighting
-    float4 normal = mul(input.Normal, WorldInverseTranspose);
+    float4 normal = float4(normalize(mul(input.Normal.xyz, WorldInverseTranspose)), 1);
     float lightIntensity = dot(normal.xyz, DiffuseLightDirection);
     output.Color = saturate(DiffuseColor * DiffuseIntensity * lightIntensity);
 
@@ -75,9 +75,9 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     float3 light = normalize(DiffuseLightDirection);
     float3 normal = normalize(input.Normal);
 
-    // Compute reflected light direction 
+    // Compute reflected light direction
     float3 r = normalize(2 * dot(light, normal) * normal - light);
-    float3 v = normalize(mul(normalize(ViewVector), World));
+    float3 v = normalize(mul(normalize(ViewVector), World).xyz);
 
     // Get reflection angle
     float cosThetaR = dot(r, v);
