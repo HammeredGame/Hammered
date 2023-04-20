@@ -188,34 +188,35 @@ namespace HammeredGame.Game
                 {
                     // Load in the shader and set its parameters
                     part.Effect = this.Effect;
-                    this.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform * world);
-                    this.Effect.Parameters["View"]?.SetValue(view);
-                    this.Effect.Parameters["Projection"]?.SetValue(projection);
-                    this.Effect.Parameters["ViewVector"]?.SetValue(new Vector3(1.0f, -1.0f, 0.0f));
 
-                    // Precompute the inverse transpose of the world matrix to use in shader
+                    part.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform * world);
+                    part.Effect.Parameters["View"]?.SetValue(view);
+                    part.Effect.Parameters["Projection"]?.SetValue(projection);
+                    part.Effect.Parameters["ViewVector"]?.SetValue(new Vector3(1.0f, -1.0f, 0.0f));
+
+                    // Pre-compute the inverse transpose of the world matrix to use in shader
                     Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
 
-                    this.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
+                    part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
 
                     // Set light parameters
-                    this.Effect.Parameters["AmbientColor"]?.SetValue(Color.White.ToVector4());
-                    this.Effect.Parameters["AmbientIntensity"]?.SetValue(0.01f);
-                    this.Effect.Parameters["DiffuseIntensity"]?.SetValue(1f);
-                    this.Effect.Parameters["DiffuseLightDirection"]?.SetValue(Vector3.Normalize(new Vector3(1, 1, 1)));
+                    part.Effect.Parameters["AmbientColor"]?.SetValue(Color.White.ToVector4());
+                    part.Effect.Parameters["AmbientIntensity"]?.SetValue(0.01f);
+                    part.Effect.Parameters["DiffuseIntensity"]?.SetValue(1f);
+                    part.Effect.Parameters["DiffuseLightDirection"]?.SetValue(Vector3.Normalize(new Vector3(1, 1, 1)));
 
-                    // todo: this sets all models without an explicit texture as white
-                    // but BasicEffect somehow reads embedded diffuse colors and uses those.
-                    // either we do something similar somehow (idk how), or we always use external texture files
-                    this.Effect.Parameters["DiffuseColor"]?.SetValue(Color.White.ToVector4());
+                    // This sets all models to have a 1.0 diffuse, which means essentially it'll
+                    // behave as the identity when multiplied with the texture color within the
+                    // shader. Models with no texture will have 0 as the texture color, so when
+                    // multiplied, the final color will be black.
+                    part.Effect.Parameters["DiffuseColor"]?.SetValue(Color.White.ToVector4());
 
                     // Set material properties
-                    this.Effect.Parameters["Shininess"]?.SetValue(0.1f);
-                    this.Effect.Parameters["SpecularColor"]?.SetValue(Color.White.ToVector4());
-                    this.Effect.Parameters["SpecularIntensity"]?.SetValue(0.1f);
+                    part.Effect.Parameters["Shininess"]?.SetValue(0.01f);
+                    part.Effect.Parameters["SpecularColor"]?.SetValue(Color.White.ToVector4());
+                    part.Effect.Parameters["SpecularIntensity"]?.SetValue(0.1f);
 
-                    // Set texture
-                    this.Effect.Parameters["ModelTexture"]?.SetValue(tex);
+                    part.Effect.Parameters["ModelTexture"]?.SetValue(tex);
                 }
                 mesh.Draw();
             }
