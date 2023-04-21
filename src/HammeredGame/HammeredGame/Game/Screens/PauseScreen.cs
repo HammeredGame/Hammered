@@ -7,16 +7,17 @@ using System.Collections.Generic;
 
 namespace HammeredGame.Game.Screens
 {
+    /// <summary>
+    /// The pause screen is a menu screen that shows Paused stuff. In general, whenever
+    /// ExitScreen() is called within PauseScreen, it shouldn't unload its contents. This
+    /// is because GameScreen reuses the same pause screen and removes/adds it, to save
+    /// on expensive content-loading at runtime.
+    /// </summary>
     internal class PauseScreen : AbstractMenuScreen
     {
 
         public Action RestartLevelFunc;
         public Action QuitToTitleFunc;
-
-        public PauseScreen()
-        {
-            IsPartial = true;
-        }
 
         public override void LoadContent()
         {
@@ -29,6 +30,7 @@ namespace HammeredGame.Game.Screens
                 Text = "Continue",
                 Id = "menuItemContinue",
             };
+            // Keep screen contents loaded since the Pause Screen will be re-added again
             menuItemContinue.Selected += (s, a) => ExitScreen(alsoUnloadContent: false);
 
             MenuItem menuItemRestartLevel = new()
@@ -39,6 +41,7 @@ namespace HammeredGame.Game.Screens
             menuItemRestartLevel.Selected += (s, a) =>
             {
                 RestartLevelFunc?.Invoke();
+                // Keep screen contents loaded since the Pause Screen will be re-added again
                 ExitScreen(alsoUnloadContent: false);
             };
 
@@ -68,7 +71,7 @@ namespace HammeredGame.Game.Screens
             // Update screen state and HasFocus so we can use it
             base.Update(gameTime);
 
-            // Do nothing if the screen doesn't have focus
+            // Do nothing if the screen doesn't have focus.
             if (!HasFocus) return;
 
             Input input = GameServices.GetService<Input>();
