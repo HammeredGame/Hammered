@@ -5,15 +5,13 @@ using System.Collections.Generic;
 
 namespace HammeredGame.Game.Screens
 {
+    /// <summary>
+    /// The title screen is a menu screen that shows options to start a new game or continue.
+    /// </summary>
     internal class TitleScreen : AbstractMenuScreen
     {
         public Action ContinueFunc;
         public Action StartNewFunc;
-
-        public TitleScreen()
-        {
-            IsPartial = true;
-        }
 
         public override void LoadContent()
         {
@@ -27,6 +25,9 @@ namespace HammeredGame.Game.Screens
                 Id = "menuItemContinue",
                 Enabled = false
             };
+            // Setting Enabled = false when creating a MenuItem doesn't seem to disable its
+            // click handler events, so it's commented for now:
+            //
             //menuItemContinue.Selected += (s, a) =>
             //{
             //    ContinueFunc?.Invoke();
