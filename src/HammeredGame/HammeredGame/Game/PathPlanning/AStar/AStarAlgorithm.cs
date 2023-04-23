@@ -135,10 +135,12 @@ namespace HammeredGame.Game.PathPlanning
 
 
                 // Explore all connected vertices connected to "topElement" vertex.
-                for (LinkedListNode<Edge> e = topElement.Edges.First; e != null; e = e.Next)
+                for (int eIndex = 0; eIndex < topElement.Edges.Count; ++eIndex)
                 {
-                    Vertex target = e.Value.TargetVertex;
-                    double edgeWeight = e.Value.Weight;
+                    Edge e = topElement.Edges[eIndex];
+
+                    Vertex target = e.TargetVertex;
+                    double edgeWeight = e.Weight;
 
                     // Priority := distance traveled from the source until this vertex + heuristic value of this vertex
                     double targetPriority = (topElement.TraveledDistance + edgeWeight) + target.HeuristicValue;

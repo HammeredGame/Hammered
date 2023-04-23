@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
 {
@@ -22,7 +19,7 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
         /// The elements "Edges" will be only accessed sequentally during the execution of the A* algorithm.
         /// Therefore a <c>LinkedList</c> data structure will suffice.
         /// </value>
-        public LinkedList<Edge> Edges { get; set; } = new LinkedList<Edge>();
+        public List<Edge> Edges { get; set; } = new List<Edge>();
 
         private static string IncrementNumberIn(string s)
         {
@@ -64,12 +61,44 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
             HeuristicValue = heuristic;
         }
 
-        public Vertex(string id, double traveled, double heuristic, LinkedList<Edge> edges) : this(id, traveled, heuristic)
+        public Vertex(string id, double traveled, double heuristic, List<Edge> edges) : this(id, traveled, heuristic)
         {
             Edges = edges;
         }
 
-        public void AddEdge(Vertex target, double weight) { this.Edges.AddLast(new Edge(target, weight)); }
+        public void AddEdge(Vertex target, double weight) { this.Edges.Add(new Edge(target, weight)); }
+
+        public void RemoveEdgeTo(Vertex target)
+        {
+            for (int i = 0; i <  this.Edges.Count; i++)
+            {
+                if (this.Edges[i].TargetVertex == target) {  this.Edges.RemoveAt(i); break; }
+            }
+        }
+
+        /// <summary>
+        /// Creates an edge from all vertices to which the current one is connected towards itself.
+        /// </summary>
+        public void CreateIncidentEdges()
+        {
+            for (int i = 0; i < this.Edges.Count; ++i)
+            {
+                // Currently considering symmetric weights.
+                // The original plan was for the edges to be bi/undirectional, so it makes sense.
+                this.Edges[i].TargetVertex.AddEdge(this, this.Edges[i].Weight);
+            }
+        }
+
+        /// <summary>
+        /// Removes the first reference of this vertex from all incident edges.
+        /// </summary>
+        public void RemoveIncidentEdges()
+        {
+            for (int i = 0; i < this.Edges.Count; ++i)
+            {
+                this.Edges[i].TargetVertex.RemoveEdgeTo(this);
+            }
+        }
 
         public bool Equals(Vertex other)
         {
