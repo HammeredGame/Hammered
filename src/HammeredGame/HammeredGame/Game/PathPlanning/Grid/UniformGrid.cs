@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using HammeredGame.Game.PathPlanning.AStar;
 using HammeredGame.Game.PathPlanning.AStar.GraphComponents;
 using Microsoft.Xna.Framework;
+using static BEPUphysics.CollisionTests.Manifolds.TriangleMeshConvexContactManifold;
 
 namespace HammeredGame.Game.PathPlanning.Grid
 {
@@ -469,32 +470,37 @@ namespace HammeredGame.Game.PathPlanning.Grid
             LinkedList<Vector3> finalPositions = new LinkedList<Vector3>();
             finalPositions.AddLast(ShortestPathResult[0]); // Initialization
 
-            int behindIndex = 0, intermediateIndex = 1, frontIndex = 2;
+            int behindIndex = 0, intermediateIndex = 1, frontIndex = 2; // behind+intermediate = E1, intermediate+front = E2 
 
             while (frontIndex < ShortestPathResult.Length)
             {
-                Vector3 e1 = ShortestPathResult[1] - ShortestPathResult[0], e2 = ShortestPathResult[2] - ShortestPathResult[1], e12 = ShortestPathResult[2] - ShortestPathResult[0];
-                double e12Length = e12.Length(); e12.Normalize(); // Now e12 is a direction.
+                Vector3 linearSegment = ShortestPathResult[frontIndex] - ShortestPathResult[behindIndex];
+                double linearSegmentLength = linearSegment.Length(); linearSegment.Normalize(); // Now "linearSegment" is a direction.
 
                 bool linearPathIsUnobstructed = true;
                 // Sample the linear segment connecting "behind" position and "front" position.
-                for (int i = 0; i < Math.Ceiling(e12Length / this.sideLength); i++)
+                for (int i = 0; i < Math.Ceiling(linearSegmentLength / this.sideLength); i++)
                 {
-                    Vector3 samplePoint = ShortestPathResult[behindIndex] + i * sideLength * e12;
+                    Vector3 samplePoint = ShortestPathResult[behindIndex] + i * sideLength * linearSegment;
                     if (!this.GetCellMark(samplePoint)) { linearPathIsUnobstructed = false; break; }
                 }
 
                 if (linearPathIsUnobstructed)
                 {
-                    finalPositions.AddLast(ShortestPathResult[frontIndex]);
-                    behindIndex = frontIndex; intermediateIndex = behindIndex + 1; frontIndex = behindIndex + 2;
+                    // Prepare to check whether there is an available straight path between the current "behind node"
+                    // and the next "front node".
+                    intermediateIndex = frontIndex; // 3a. assign the destination of E1 to that of E2.
+                    frontIndex += 1; // 3c.reassign E2 to the new edge following E1.
                 }
                 else
                 {
                     finalPositions.AddLast(ShortestPathResult[intermediateIndex]);
-                    behindIndex = intermediateIndex; intermediateIndex = behindIndex + 1; frontIndex = behindIndex + 2;
+
+                    behindIndex = intermediateIndex; intermediateIndex = frontIndex; // 4a.assign E2 to E1
+                    frontIndex += 1; // 4b.advance E2
                 }
             }
+            finalPositions.AddLast(ShortestPathResult.Last()); // Termination
 
             Vector3[] result = finalPositions.ToArray();
 
