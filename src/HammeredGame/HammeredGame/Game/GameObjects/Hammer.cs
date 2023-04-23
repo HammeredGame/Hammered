@@ -49,7 +49,7 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Hammer specific variables
-        private float hammerSpeed = 7f;
+        private float hammerSpeed = 40f;
         private HammerState hammerState;
 
         public Vector3 OldPosition { get; private set; }
@@ -240,28 +240,42 @@ namespace HammeredGame.Game.GameObjects
                 this.route.Clear();
 
                 // Array which will include the trajectory the hammer will follow.
-                Vector3[] routeArray;
+                Vector3[] completeRoute;
+
 
                 // Scenario 1: A straight line is achievable.
                 // "[In Euclidean space] The shortest distance between two points is a straight line"
                 // ~ Archimedes of Syracuse (Αρχιμήδης ο Συρακούσιος)
                 // Therefore, if the shortest path is unobstructed, there is no reason to follow a more complex path planning scheme.
-                Vector3[] provisionalRoute; bool straightPathAchievable = this.StraightLinePath(out provisionalRoute);
-                if (straightPathAchievable)
-                {
-                    routeArray = provisionalRoute;
-                }
+                Vector3[] straightLineRoute; bool straightPathAchievable = this.StraightLinePath(out straightLineRoute);
+                /// <remarks> According to a few benchmarks, this takes an insignificat amount of time (a couple dozen ms at most).
+                /// Good to have it.</remarks>
+
                 // Scenario 2: A straight line is not achievable.
                 // A more complex path planning scheme must be used.
                 // Currently, "raw" A* has been implemented.
-                else
-                {
-                    // Compute the shortest path using the A* algorithm and taking into account obstacles.
-                    routeArray = this.grid.FindShortestPathAStar(this.Position, player.Position);
-                }
+                Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
+                /// <remarks>
+                /// The above call is very expensive (takes a few seconds to execute).
+                /// This is true even in cases where A* algorithm completes almost instantly (e.g. 60ms or less).
+                /// This is because time (seconds) are required to iterate through the data.
+                /// <see cref=UniformGrid.FindShortestPathAStar(Vector3, Vector3, HashSet)"> comments (private function)."/>
+                /// </remarks>
+
+                /// <remarks>
+                /// If an "if-else" structure is adopted
+                /// (i.e. <c>if straightPathAchievable => follow straight path, else execute A*</c>),
+                /// then instant response from the game is achieved.
+                /// The reasoning behind the above sequential calls is that many a times, in order to reduce the A* exploration
+                /// space, the hammer may follow the straight path until it reaches the first obstacle.
+                /// </remarks>
+                
+
+
+                completeRoute = straightLineRoute.Concat(aStarRoute).ToArray();
                 
                 // Casting the trajectory into the appropriate (physics engine) type.
-                for (int i = 0; i < routeArray.Length ; i++) { this.route.Enqueue(MathConverter.Convert(routeArray[i])); }
+                for (int i = 0; i < completeRoute.Length ; i++) { this.route.Enqueue(MathConverter.Convert(completeRoute[i])); }
                 // Initialize the next position in 3D space to visit.
                 this.nextRoutePosition = this.route.Peek(); this.route.Dequeue();
 
@@ -357,10 +371,10 @@ namespace HammeredGame.Game.GameObjects
                 Vector3 samplePoint = this.Position + i * this.grid.sideLength * lineSegment;
                 // If there is at least one cell which is not available in the straight line,
                 // then inform that a more complex path planning method is required.
-                if (!this.grid.GetCellMark(samplePoint)) { route = null; return false; }
+                if (!this.grid.GetCellMark(samplePoint)) { break; }
                 path.AddLast(samplePoint);
             }
-            path.AddLast(this.player.Position);
+            //path.AddLast(this.player.Position);
 
             route = path.ToArray();
             return true;

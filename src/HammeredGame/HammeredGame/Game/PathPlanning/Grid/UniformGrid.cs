@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 using HammeredGame.Game.PathPlanning.AStar;
 using HammeredGame.Game.PathPlanning.AStar.GraphComponents;
-using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 
 namespace HammeredGame.Game.PathPlanning.Grid
@@ -21,6 +22,10 @@ namespace HammeredGame.Game.PathPlanning.Grid
         public float sideLength { get; private set; }
         public Vector3 originPoint { get; private set; }
         public Vector3 endPoint { get; private set; }
+
+
+        private HashSet<Vector3> pointsConsidered = new HashSet<Vector3>();
+        private HashSet<Vertex> verticesOfGraph = new HashSet<Vertex>(); 
 
         /// <remarks>
         /// The current implementations of the constructors suggest that the point characterizing a cell is its "bottom-left" one,
@@ -159,7 +164,27 @@ namespace HammeredGame.Game.PathPlanning.Grid
         /// <param name="value">The value which will be assigned to the cell mask:
         /// true denotes "free", while false denotes "unavailable".
         /// </param>
-        public void MarkCellAs(uint[] index, bool value) { mask[index[0], index[1], index[2]] = value; }
+        public void MarkCellAs(uint[] index, bool value) {
+            mask[index[0], index[1], index[2]] = value; // Remove cell from mask.
+
+
+            Vector3 pointOfInterest = grid[index[0], index[1], index[2]];
+
+            if (value) pointsConsidered.Add(pointOfInterest);
+            else pointsConsidered.Remove(pointOfInterest);
+
+            Vertex correspondingVertex = biMap.Forward[pointOfInterest];
+            if (value)
+            {
+                verticesOfGraph.Add(correspondingVertex);
+                correspondingVertex.CreateIncidentEdges(); // Connect all neighbouring cells to this one.
+            }
+            else 
+            {
+                verticesOfGraph.Remove(correspondingVertex);
+                correspondingVertex.RemoveIncidentEdges(); // Disconnect all neighbouring cells from this one.
+            }
+        }
 
         /// <summary>
         /// Finds the shortest available path from first input position to the second input by travelling only between a set of provided points.
@@ -188,22 +213,28 @@ namespace HammeredGame.Game.PathPlanning.Grid
             Vector3 startCell = this.grid[startCellIndex[0], startCellIndex[1], startCellIndex[2]];
             Vector3 finishCell = this.grid[finishCellIndex[0], finishCellIndex[1], finishCellIndex[2]];
 
-            HashSet<Vertex> verticesOfGraph = new HashSet<Vertex>();
+            //HashSet<Vertex> verticesOfGraph = new HashSet<Vertex>(); // Is replaced by local variable.
             // Isolate the vertices which will be taken into consideration for the A* algorithm.
             // Define the heuristic value of each vertex.
             // LEAVE UNCOMMENTED ONLY THE HEURISTIC FUNCTION WHICH WILL BE USED
             foreach (Vector3 point in pointsConsidered)
             {
                 Vertex correspondingVertex = biMap.Forward[point];
-                verticesOfGraph.Add(correspondingVertex);
+                //verticesOfGraph.Add(correspondingVertex);
                 Vector3 differenceVector = point - finishCell;
                 //correspondingVertex.HeuristicValue = differenceVector.Length(); // Euclidean distance heuristic function
                 //correspondingVertex.HeuristicValue = differenceVector.LengthSquared(); // Squared euclidean distance heuristic function. In hopes of punishing detours.
                 correspondingVertex.HeuristicValue = Math.Abs(differenceVector.X) + Math.Abs(differenceVector.Y) + Math.Abs(differenceVector.Z); // Manhattan distance. In hopes of punishing detours even more.
 
             }
+            /// <remarks>
+            /// The "foreach" loop requires 2.941 seconds for the fully open map...i.e. most of the computational time...
+            /// Update: by adding the private variable "verticesOfGraph", this got reduced to 1.9 seconds. Still too slow...
+            /// </remarks>
+
 
             Stack<Vertex> aResultVertex = AStarAlgorithm.GetMinimumPath(biMap.Forward[startCell], biMap.Forward[finishCell], new Graph(verticesOfGraph));
+            /// <remarks> For zero (0) distance --which is the case when a straight path is available-- this took 15ms to run...</remarks>
             // Transform the vertex result (which is independent from any geographical meaning) to a 3D point result.
             int pathLength = aResultVertex.Count();
             Vector3[] shortestPath = new Vector3[1 + pathLength + 1];
@@ -231,6 +262,9 @@ namespace HammeredGame.Game.PathPlanning.Grid
 
             HashSet<Vector3> pointsConsidered = new HashSet<Vector3>();
 
+
+            // In "Debug" mode, just this triple loop requires 1.745 seconds for a fully open grid!
+            // Wait too slow for real time!
             for (int i = 0; i < grid.GetLength(0); ++i)
             {
                 for (int j = 0; j < grid.GetLength(1); ++j)
@@ -248,7 +282,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
             // This may have its own implementation weaknesses and may lead to the software showing unexpected behaviour,
             // e.g. the edges are not updated.
             // The efficiency and maintainability of such an approach needs to be programmed to conclude somewhere.
-            this.MakeVerticesConnections(mask);
+            // this.MakeVerticesConnections(mask); // Comment this line if you consider to be unchanging OR changed somewhere else (the latter being a more realistic scenario).
 
 
             return FindShortestPathAStar(start, finish, pointsConsidered);
@@ -262,7 +296,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
         /// <param name="finish">The 3D destination position</param>
         /// <returns>A sequence of 3D positions which consists the shortest path in temporal order.</returns>
         public Vector3[] FindShortestPathAStar(Vector3 start, Vector3 finish) {
-            return this.FindShortestPathAStar(start, finish, this.mask);
+            return this.FindShortestPathAStar(start, finish, this.pointsConsidered);
         }
 
         // Assistance function for constructor.
@@ -270,6 +304,8 @@ namespace HammeredGame.Game.PathPlanning.Grid
         // Theoretically, this function can be broken into two pieces: I) fill in the grid entries II) make the mapping
         // However, it was considered to be too much of a waste to iterate through a 3D data structure twice.
         {
+
+            // Sequential implementation.
             for (int i = 0; i < grid.GetLength(0); i++)
             {
                 for (int j = 0; j < grid.GetLength(1); j++)
@@ -283,6 +319,23 @@ namespace HammeredGame.Game.PathPlanning.Grid
                     }
                 }
             }
+
+            // IDEA: For efficiency, parallelize the execution of the mapping, as the procedure needs not be sequential.
+            // Programming NOTE: Currently, only the i-th index is parallelized, because parallelizing in itself has an overhead.
+            // Experiment results: The overhead of the data structure required (ConcurrentDictionary) actually leads to slower times than sequential.
+            //Parallel.For(0, grid.GetLength(0), i =>
+            //{
+            //    for (int j = 0; j < grid.GetLength(1); j++)
+            //    {
+            //        for (int k = 0; k < grid.GetLength(2); k++)
+            //        {
+            //            grid[i, j, k] = new Vector3(bottomLeftClosePoint.X + i * sideLength,
+            //                                        bottomLeftClosePoint.Y + j * sideLength,
+            //                                        bottomLeftClosePoint.Z + k * sideLength); // Define 3D point
+            //            biMap.Add(grid[i, j, k], new Vertex()); // Make 3D mapping.
+            //        }
+            //    }
+            //});
         }
 
         /// <summary>
@@ -302,6 +355,10 @@ namespace HammeredGame.Game.PathPlanning.Grid
         /// </remarks>
         private void MakeVerticesConnections(bool[, ,] mask)
         {
+            // TODO: Make a faster implementation, where only the cells included in the <c>this.pointsConsidered</c> variable
+            // are considered for connections. Could number reduce loops signigicantly.
+
+            // Dynamic sanity check.
             if (mask.GetLength(0) != grid.GetLength(0) || mask.GetLength(1) != grid.GetLength(1) || mask.GetLength(2) != grid.GetLength(2))
                 throw new ArgumentException("The mask provided is not the same dimensions as the grid");
 
@@ -342,7 +399,11 @@ namespace HammeredGame.Game.PathPlanning.Grid
         private void MakeVerticesConnections() { MakeVerticesConnections(this.mask); }
 
         // The default value of boolean variables in C# is "false".
-        public void MarkAllCellsAsOccupied() { this.mask = new bool[grid.GetLength(0), grid.GetLength(1), grid.GetLength(2)]; }
+        public void MarkAllCellsAsOccupied() { 
+            this.mask = new bool[grid.GetLength(0), grid.GetLength(1), grid.GetLength(2)];
+            this.pointsConsidered.Clear();
+            this.verticesOfGraph.Clear();
+        }
 
         // Assistance function for constructors.
         public void MarkAllCellsAsFree()
@@ -354,6 +415,8 @@ namespace HammeredGame.Game.PathPlanning.Grid
                     for (int k = 0; k < grid.GetLength(2); ++k)
                     {
                         mask[i, j, k] = true;
+                        pointsConsidered.Add(grid[i, j, k]);
+                        verticesOfGraph.Add(biMap.Forward[grid[i, j, k]]);
                     }
                 }
             }
@@ -432,7 +495,10 @@ namespace HammeredGame.Game.PathPlanning.Grid
             {
                 private IDictionary<Key, Value> dictionary;
 
-                public Indexer() { dictionary = new Dictionary<Key, Value>(); }
+                public Indexer() {
+                    dictionary = new Dictionary<Key, Value>();
+                    //dictionary = new ConcurrentDictionary<Key, Value>(); // The overhead actually leads to slower times than sequential.
+                }
                 public Indexer(IDictionary<Key, Value> dictionary) { this.dictionary = dictionary; }
                 public Value this[Key index] { get { return dictionary[index]; } }
 
