@@ -423,6 +423,86 @@ namespace HammeredGame.Game.PathPlanning.Grid
 
         }
 
+        // Below shall follow functions whose purpose is to smoothen the trajectory of the path.
+
+
+        /// <remarks>
+        /// Before a path planner can search for a path it must find the graph nodes closest to the start and destination positions,
+        /// and these will not always be the ones that give a natural-looking path. The solution is to post-process paths to "smooth"
+        /// out the unwanted kinks.
+        /// </remarks>
+
+        // ============================== Post-processing functions smoothing START ==============================
+
+        /// <summary>
+        /// A fast algorithm which smoothens out the shortest path computed by the A* algorithm --according to the underlying
+        /// graph-- by taking into consideration the real space's geometric information, which is store inside the grid.
+        /// (i.e. availability or not of cells of the grid).
+        /// <param name="ShortestPathResult"/>The positions in 3D space which constitute the shortest path according to the A* algorithm.</param>
+        /// <returns>A smooth(er) path in 3D space.
+        /// The index of the resulting array denotes the temporal visit of the positions,
+        /// i.e. 0-th position is the first position visited, then the agent visits the 1st position, then the 2nd
+        /// and so on and so forth.</returns>
+        /// </summary>
+        private Vector3[] RoughShortestPathSmoothing(Vector3[] ShortestPathResult)
+        {
+            /* Algorithm outline
+             * -----------------
+             * 1. Grab the source position of edge E1.
+             * 2. Grab the destination position of edge E2.
+             * 3. If the agent **can** move between those two positions unobstructed by the world geometry:
+             *  3a. assign the destination of E1 to that of E2
+             *  3b. remove E2 from the path.
+             *  3c. reassign E2 to the new edge following E1.
+             * NOTE FOR A MORE ADVANCED IMPLEMENTATION:
+             * This should not be a simple line-of-sight test (as is being done here) as an entity’s size must be taken into consideration
+             * -—it must be able to move between the two positions without bumping into any walls.)
+             * 4. If the agent cannot move unobstructed between the two positions:
+             *  4a. assign E2 to E1 and
+             *  4b. advance E2.
+             * 5. Repeat steps until the destination of E2 is equal to the destination of the path.
+            */
+
+            // Edge case.
+            if (ShortestPathResult.Length <= 2) { return ShortestPathResult.ToArray(); }
+
+            LinkedList<Vector3> finalPositions = new LinkedList<Vector3>();
+            finalPositions.AddLast(ShortestPathResult[0]); // Initialization
+
+            int behindIndex = 0, intermediateIndex = 1, frontIndex = 2;
+
+            while (frontIndex < ShortestPathResult.Length)
+            {
+                Vector3 e1 = ShortestPathResult[1] - ShortestPathResult[0], e2 = ShortestPathResult[2] - ShortestPathResult[1], e12 = ShortestPathResult[2] - ShortestPathResult[0];
+                double e12Length = e12.Length(); e12.Normalize(); // Now e12 is a direction.
+
+                bool linearPathIsUnobstructed = true;
+                // Sample the linear segment connecting "behind" position and "front" position.
+                for (int i = 0; i < Math.Ceiling(e12Length / this.sideLength); i++)
+                {
+                    Vector3 samplePoint = ShortestPathResult[behindIndex] + i * sideLength * e12;
+                    if (!this.GetCellMark(samplePoint)) { linearPathIsUnobstructed = false; break; }
+                }
+
+                if (linearPathIsUnobstructed)
+                {
+                    finalPositions.AddLast(ShortestPathResult[frontIndex]);
+                    behindIndex = frontIndex; intermediateIndex = behindIndex + 1; frontIndex = behindIndex + 2;
+                }
+                else
+                {
+                    finalPositions.AddLast(ShortestPathResult[intermediateIndex]);
+                    behindIndex = intermediateIndex; intermediateIndex = behindIndex + 1; frontIndex = behindIndex + 2;
+                }
+            }
+
+            Vector3[] result = finalPositions.ToArray();
+
+            return result;
+        }
+
+        // ============================== Post-processing functions smoothing FINSH ==============================
+
 
 
 
@@ -432,7 +512,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
         // Supporting class: <c>BidirectionalDictionary</c>
 
         public class BidirectionalDictionary<TForwardKey, TReverseKey> : IEnumerable<KeyValuePair<TForwardKey, TReverseKey>>
-        {
+            {
             public Indexer<TForwardKey, TReverseKey> Forward { get; private set; } = new Indexer<TForwardKey, TReverseKey>();
             public Indexer<TReverseKey, TForwardKey> Reverse { get; private set; } = new Indexer<TReverseKey, TForwardKey>();
 
