@@ -104,15 +104,17 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
             }
 
-            // Adding the grid reference to the hammer.
-            /// <remarks>
-            /// TODO:   Storing the grid into the <c>services</c> object is NOT an information-secure solution!
-            ///         Find a better way to insert a parameter which will be used to instantiate <c>grid</c>.
-            ///         <seealso cref="SceneDescriptionIO.ParseFromXML(string, GameServices)"/>
-            ///         IMPACT ASSESSMENT LEVEL: 2 (critical)
-            /// </remarks>
-            this.grid = services.GetService<UniformGrid>();
-            services.RemoveService<UniformGrid>(); // Removing the "UniformGrid" service so that as little as classes possible can access it.
+            //// Adding the grid reference to the hammer.
+            ///// <remarks>
+            ///// TODO:   Storing the grid into the <c>services</c> object is NOT an information-secure solution!
+            /////         Find a better way to insert a parameter which will be used to instantiate <c>grid</c>.
+            /////         <seealso cref="SceneDescriptionIO.ParseFromXML(string, GameServices)"/>
+            /////         IMPACT ASSESSMENT LEVEL: 2 (critical)
+            ///// </remarks>
+            //this.grid = services.GetService<UniformGrid>();
+            //services.RemoveService<UniformGrid>(); // Removing the "UniformGrid" service so that as little as classes possible can access it.
+            /// Update: The grid reference is passed to the hammer via the <see cref="Scene.OnSceneStart"/> ("protected" function)
+            /// <seealso cref="Hammer.SetSceneUniformGrid(UniformGrid)"/>
         }
 
         // Collision Handling Event for any initial collisions detected
@@ -140,6 +142,8 @@ namespace HammeredGame.Game.GameObjects
         {
             this.player = player;
         }
+
+        public void SetSceneUniformGrid(UniformGrid grid) { this.grid = grid; }
 
         // Update function (called every tick)
         public override void Update(GameTime gameTime)
@@ -234,6 +238,9 @@ namespace HammeredGame.Game.GameObjects
             if (hammerState == HammerState.Dropped && player != null && Entity != null && input.KeyDown(Keys.Q))
             {
                 hammerState = HammerState.Enroute;
+
+
+
 
                 // Precautiously empty the previous route.
                 // It should be empty by the time it finishes its previous route, but just in case.
