@@ -4,15 +4,15 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using HammeredGame.Core;
-using BEPUphysics;
-using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using BEPUphysics.Entities;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using HammeredGame.Game.PathPlanning.Grid;
+using BEPUutilities;
+using Vector3 = Microsoft.Xna.Framework.Vector3; // How is it that this ambigouity results in an error after adding comments???
+using Quaternion = Microsoft.Xna.Framework.Quaternion; // How is it that this ambigouity results in an error after adding comments???
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -238,10 +238,8 @@ namespace HammeredGame.Game.GameObjects
                 // Precautiously empty the previous route.
                 // It should be empty by the time it finishes its previous route, but just in case.
                 this.route.Clear();
-
-                // Array which will include the trajectory the hammer will follow.
-                Vector3[] completeRoute;
-
+                
+                // First find the straight line path so as to get the hammer moving and, in the meantime, find best path with A*.
 
                 // Scenario 1: A straight line is achievable.
                 // "[In Euclidean space] The shortest distance between two points is a straight line"
@@ -251,33 +249,53 @@ namespace HammeredGame.Game.GameObjects
                 /// <remarks> According to a few benchmarks, this takes an insignificat amount of time (a couple dozen ms at most).
                 /// Good to have it.</remarks>
 
+                // Casting the trajectory into the appropriate (physics engine) type.
+                for (int i = 0; i < straightLineRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(straightLineRoute[i])); }
+                // Initialize the first position in 3D space to visit.
+                this.nextRoutePosition = this.route.Peek(); this.route.Dequeue();
+
                 // Scenario 2: A straight line is not achievable.
                 // A more complex path planning scheme must be used.
                 // Currently, "raw" A* has been implemented.
-                Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
-                /// <remarks>
-                /// The above call is very expensive (takes a few seconds to execute).
-                /// This is true even in cases where A* algorithm completes almost instantly (e.g. 60ms or less).
-                /// This is because time (seconds) are required to iterate through the data.
-                /// <see cref=UniformGrid.FindShortestPathAStar(Vector3, Vector3, HashSet)"> comments (private function)."/>
-                /// </remarks>
+                // Programming note: as of the time of writing (23/04/2023), everything inside the "Run" is thread-safe.
+                // As such, no errors should arise.
+                Task.Run(() =>
+                {
+                    Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
+                    for (int i = 0; i < aStarRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(aStarRoute[i])); }
 
+                });
                 /// <remarks>
-                /// If an "if-else" structure is adopted
-                /// (i.e. <c>if straightPathAchievable => follow straight path, else execute A*</c>),
+                /// INSPIRATION FOR AS TO WHY THE ABOVE IS EXECUTED ASYNCHRONOUSLY (using C# "Tasks").
+                /// 
+                /// Observation 1
+                /// =============
+                /// The call
+                /// <c>Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);</c>
+                /// is very expensive (takes a few seconds to execute).
+                /// This is true even in cases where A* algorithm completes almost instantly(e.g. 60ms or less).
+                /// This is because time (seconds)are required to iterate through the data.
+                /// 
+                /// Observation 2
+                /// =============
+                /// If an "if-else" structure is adopted i.e.
+                /// IF straightPathAchievable => FOLLOW STRAIGHT PATH
+                /// ELSE => EXECUTE A*
                 /// then instant response from the game is achieved.
-                /// The reasoning behind the above sequential calls is that many a times, in order to reduce the A* exploration
-                /// space, the hammer may follow the straight path until it reaches the first obstacle.
+                /// 
+                /// Combining observrations 1 and 2
+                /// ===============================
+                /// The hammer may start travelling towards the straight line as much as it can.
+                /// WHILE it is travelling in a straight line,
+                /// the software should compute the non-linear continuation of the path by executing the A*algorithm.
+                /// In this case:
+                /// 1) the game is responsive(the hammer has started some path instantly)
+                /// 2) the full path is computed in the background, without altering the game experience.
                 /// </remarks>
                 
 
 
-                completeRoute = straightLineRoute.Concat(aStarRoute).ToArray();
-                
-                // Casting the trajectory into the appropriate (physics engine) type.
-                for (int i = 0; i < completeRoute.Length ; i++) { this.route.Enqueue(MathConverter.Convert(completeRoute[i])); }
-                // Initialize the next position in 3D space to visit.
-                this.nextRoutePosition = this.route.Peek(); this.route.Dequeue();
+
 
                 // When hammer is enroute, the physics engine shouldn't solve for
                 // collision constraints with it --> rather we want to manually
