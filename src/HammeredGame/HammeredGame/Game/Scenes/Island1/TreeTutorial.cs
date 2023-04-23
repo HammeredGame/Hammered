@@ -16,6 +16,7 @@ namespace HammeredGame.Game.Scenes.Island1
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
+            Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
