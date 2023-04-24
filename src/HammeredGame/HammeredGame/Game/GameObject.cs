@@ -149,10 +149,10 @@ namespace HammeredGame.Game
 
         // get position and rotation of the object - extract the scale, rotation, and translation matrices
         // get world matrix and then call draw model to draw the mesh on screen
-        public virtual void Draw(Matrix view, Matrix projection, SceneLightSetup lights)
+        public virtual void Draw(Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
         {
             if (Visible)
-                DrawModel(Model, view, projection, Texture, lights);
+                DrawModel(Model, view, projection, cameraPosition, Texture, lights);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace HammeredGame.Game
         /// <param name="view"></param>
         /// <param name="projection"></param>
         /// <param name="tex"></param>
-        public void DrawModel(Model model, Matrix view, Matrix projection, Texture2D tex, SceneLightSetup lights)
+        public void DrawModel(Model model, Matrix view, Matrix projection, Vector3 cameraPosition, Texture2D tex, SceneLightSetup lights)
         {
             Matrix world = GetWorldMatrix();
 
@@ -179,7 +179,7 @@ namespace HammeredGame.Game
                     part.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform * world);
                     part.Effect.Parameters["View"]?.SetValue(view);
                     part.Effect.Parameters["Projection"]?.SetValue(projection);
-                    part.Effect.Parameters["ViewVector"]?.SetValue(new Vector3(1.0f, -1.0f, 0.0f));
+                    part.Effect.Parameters["CameraPosition"]?.SetValue(cameraPosition);
 
                     // Pre-compute the inverse transpose of the world matrix to use in shader
                     Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
@@ -191,19 +191,18 @@ namespace HammeredGame.Game
                     part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
                     part.Effect.Parameters["DirectionalLightDirections"]?.SetValue(lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray());
 
-                    part.Effect.Parameters["AmbientColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
-                    part.Effect.Parameters["AmbientIntensity"]?.SetValue(lights.Ambient.Intensity);
+                    part.Effect.Parameters["AmbientLightColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
+                    part.Effect.Parameters["AmbientLightIntensity"]?.SetValue(lights.Ambient.Intensity);
 
-                    // This sets all models to have a 1.0 diffuse, which means essentially it'll
-                    // behave as the identity when multiplied with the texture color within the
-                    // shader. Models with no texture will have 0 as the texture color, so when
-                    // multiplied, the final color will be black.
-                    part.Effect.Parameters["DiffuseColor"]?.SetValue(Color.White.ToVector4());
-
-                    // Set material properties
-                    part.Effect.Parameters["Shininess"]?.SetValue(0.01f);
-                    part.Effect.Parameters["SpecularColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["SpecularIntensity"]?.SetValue(0.1f);
+                    // Set tints for the diffuse color, ambient color, and specular color. These are
+                    // multiplied in the shader by the light color and intensity, as well as each
+                    // component's weight.
+                    part.Effect.Parameters["MaterialDiffuseColor"]?.SetValue(Color.White.ToVector4());
+                    part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
+                    part.Effect.Parameters["MaterialHasSpecular"].SetValue(false);
+                    // Uncomment if specular; will use Blinn-Phong.
+                    // part.Effect.Parameters["MaterialSpecularColor"]?.SetValue(Color.White.ToVector4());
+                    // part.Effect.Parameters["MaterialShininess"]?.SetValue(20f);
 
                     part.Effect.Parameters["ModelTexture"]?.SetValue(tex);
                 }
