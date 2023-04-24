@@ -12,10 +12,7 @@ namespace HammeredGame.Graphics
     {
 
         private RenderTarget2D diffuseTarget;
-        private RenderTarget2D normalsTarget;
         private RenderTarget2D depthTarget;
-
-        private RenderTarget2D lightsTarget;
 
         private RenderTarget2D finalTarget;
 

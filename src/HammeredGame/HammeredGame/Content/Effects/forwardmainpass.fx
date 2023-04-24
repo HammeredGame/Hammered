@@ -41,6 +41,8 @@ sampler2D textureSampler = sampler_state
     AddressV = Clamp;
 };
 
+bool PerformTextureGammaCorrection;
+
 struct VertexShaderInput
 {
     float4 Position : POSITION0;
@@ -101,7 +103,10 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
     // Account for gamma (transform from srgb to linear, so that the hdr tonemapping will bring it back to srgb)
     // Reference: https://gamedev.stackexchange.com/questions/74324/gamma-space-and-linear-space-with-shader
     // Reference: (Section on sRGB textures) https://learnopengl.com/Advanced-Lighting/Gamma-Correction
-    textureColor = pow(textureColor, 2.2);
+    if (PerformTextureGammaCorrection)
+    {
+        textureColor = pow(textureColor, 2.2);
+    }
 
     // Ambient component, added once at the very end
     float4 ambient = MaterialAmbientColor * AmbientLightColor * AmbientLightIntensity;
