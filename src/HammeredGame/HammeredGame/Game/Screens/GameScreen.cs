@@ -217,7 +217,7 @@ namespace HammeredGame.Game.Screens
             // Render all the scene objects (given that they are not destroyed)
             foreach (GameObject gameObject in currentScene.GameObjectsList)
             {
-                gameObject.Draw(currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix, currentScene.Lights);
+                gameObject.Draw(currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix, currentScene.Camera.Position, currentScene.Lights);
             }
 
             if (drawBounds)

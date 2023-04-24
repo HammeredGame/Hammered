@@ -16,15 +16,16 @@ float4 DirectionalLightColors[5];
 float DirectionalLightIntensities[5];
 float3 DirectionalLightDirections[5];
 
-float4 AmbientColor;
-float AmbientIntensity;
+float4 AmbientLightColor;
+float AmbientLightIntensity;
 
-float4 DiffuseColor;
+float4 MaterialDiffuseColor;
+float4 MaterialAmbientColor;
+float MaterialHasSpecular;
+float4 MaterialSpecularColor;
+float MaterialShininess;
 
-float Shininess;
-float4 SpecularColor;
-float SpecularIntensity;
-float4 ViewVector;
+float4 CameraPosition;
 
 texture ModelTexture;
 sampler2D textureSampler = sampler_state
@@ -50,6 +51,7 @@ struct VertexShaderOutput
     float3 Normal : TEXCOORD0;
     float2 TextureCoordinate : TEXCOORD1;
     float2 Depth : TEXCOORD2;
+    float4 PositionOut : TEXCOORD3;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -60,6 +62,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     float4 worldPosition = mul(input.Position, World);
     float4 viewPosition = mul(worldPosition, View);
     output.Position = mul(viewPosition, Projection);
+    output.PositionOut = output.Position;
 
     // Compute effects of directional lighting using cosine weighting
     float3 normal = normalize(mul(input.Normal.xyz, WorldInverseTranspose));
@@ -83,26 +86,40 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
 
 	float4 textureColor = tex2D(textureSampler, input.TextureCoordinate);
 
-    // Get light direction and normal
+    float4 ambient = MaterialAmbientColor * AmbientLightColor * AmbientLightIntensity;
 
 	float3 normal = normalize(input.Normal);
 	for (int i = 0; i < 5; i++)
 	{
 		float3 toLight = normalize(DirectionalLightDirections[i]);
 
-		float3 r = normalize(2 * dot(toLight, normal) * normal - toLight);
-		float3 v = normalize(mul(normalize(ViewVector), World).xyz);
+        // Diffuse component
+        float diffuseWeight = saturate(dot(normal, toLight));
+        float4 diffuse = DirectionalLightColors[i] * DirectionalLightIntensities[i] * diffuseWeight * MaterialDiffuseColor;
 
-         // Get reflection angle
-		float cosThetaR = dot(r, v);
-		float4 specular = SpecularIntensity * SpecularColor * max(pow(cosThetaR, Shininess), 0);
+        // Specular component
+        float3 viewDir = normalize(CameraPosition - input.PositionOut).xyz;
 
-		float cosineWeight = saturate(dot(normal.xyz, toLight));
-		output.Color += DirectionalLightColors[i] * DirectionalLightIntensities[i] * cosineWeight;
-//		+specular;
-	}
+        // Original phong: doesn't work with low shininess
+        // float3 reflectDir = reflect(-toLight, normal);
+        // float specularWeight = pow(max(dot(reflectDir, viewDir), 0.0f), MaterialShininess);
 
-	output.Color += AmbientColor * AmbientIntensity;
+        // Blinn-Phong using half vectors
+        if (diffuseWeight > 0 && MaterialHasSpecular)
+        {
+            float3 halfDir = normalize(toLight + viewDir);
+            float specularWeight = pow(max(dot(normal, halfDir), 0.0f), MaterialShininess);
+
+            float4 specular = DirectionalLightColors[i] * DirectionalLightIntensities[i] * specularWeight * MaterialSpecularColor;
+            output.Color += diffuse + specular;
+        }
+        else
+        {
+            output.Color += diffuse;
+        }
+    }
+
+    output.Color += ambient;
 
     output.Color *= textureColor;
 
