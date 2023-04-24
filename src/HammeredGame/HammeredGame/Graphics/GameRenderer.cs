@@ -23,6 +23,7 @@ namespace HammeredGame.Graphics
         private SpriteBatch spriteBatch;
 
         private Effect tonemapEffect;
+        private float exposure = 1.0f;
 
         private bool showDebugTargets;
 
@@ -70,6 +71,7 @@ namespace HammeredGame.Graphics
         {
             gpu.SetRenderTarget(finalTarget);
 
+            tonemapEffect.Parameters["Exposure"].SetValue(exposure);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, tonemapEffect, null);
             spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
             spriteBatch.End();
@@ -100,6 +102,9 @@ namespace HammeredGame.Graphics
         public void UI()
         {
             ImGui.Checkbox("Show intermediate targets", ref showDebugTargets);
+            ImGui.Text("Exposure:");
+            ImGui.SameLine();
+            ImGui.DragFloat("##exposure", ref exposure, 0.1f, 0f, 5f);
         }
     }
 }
