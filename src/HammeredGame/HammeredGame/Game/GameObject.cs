@@ -15,6 +15,7 @@ using System.IO;
 using Microsoft.Xna.Framework.Content;
 using HammeredGame.Game.Screens;
 using System.Linq;
+using HammeredGame.Graphics;
 
 namespace HammeredGame.Game
 {
@@ -161,7 +162,9 @@ namespace HammeredGame.Game
         /// <param name="model"></param>
         /// <param name="view"></param>
         /// <param name="projection"></param>
+        /// <param name="cameraPosition"></param>
         /// <param name="tex"></param>
+        /// <param name="lights"></param>
         public void DrawModel(Model model, Matrix view, Matrix projection, Vector3 cameraPosition, Texture2D tex, SceneLightSetup lights)
         {
             Matrix world = GetWorldMatrix();

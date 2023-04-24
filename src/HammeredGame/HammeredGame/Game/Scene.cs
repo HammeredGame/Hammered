@@ -6,6 +6,7 @@ using BEPUutilities.Threading;
 using HammeredGame.Core;
 using HammeredGame.Game.PathPlanning.Grid;
 using HammeredGame.Game.Screens;
+using HammeredGame.Graphics;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;

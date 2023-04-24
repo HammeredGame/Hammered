@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
-namespace HammeredGame.Game
+namespace HammeredGame.Graphics
 {
     // All lights can be enabled or disabled, have a single color (for simplicity,
     // both the diffuse and specular colours are the same) and have an intensity.
@@ -24,9 +24,4 @@ namespace HammeredGame.Game
 
     // Spot lights are not implemented yet.
     public record SpotLight(bool Enabled, Color LightColor, Vector3 Position, Vector3 Direction, float Angle, float Falloff, float Intensity) : Light(Enabled, LightColor, Intensity);
-
-    // The SceneLightSetup type ensures that a scene must have one sunlight for
-    // drawing shadows, several directional lights, one ambient light, several
-    // point lights and several spotlights.
-    public record SceneLightSetup(SunLight Sun, List<InfiniteDirectionalLight> Directionals, AmbientLight Ambient, List<PointLight> Points, List<SpotLight> Spots);
 }
