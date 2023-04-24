@@ -34,7 +34,12 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
     float3 hdrColor = tex2D(hdrBufferSampler, input.TexCoord).rgb;
     float3 mapped = float3(1.0, 1.0, 1.0) - exp(-hdrColor * Exposure);
+
+    // Also gamma correct to sRGB. When using this, make sure that all loaded material textures are
+    // inverse-gamma-corrected from sRGB to linear, otherwise they'll be corrected twice and will
+    // appear very washed out.
     mapped = pow(mapped, float3(1.0 / gamma, 1.0 / gamma, 1.0 / gamma));
+
     return float4(mapped, 1.0);
 };
 
