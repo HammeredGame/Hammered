@@ -55,12 +55,6 @@ namespace HammeredGame.Graphics
             }
         }
 
-        public void SetupDrawTargets() {
-            // set up geometry (g) buffer
-            gpu.SetRenderTargets(diffuseTarget, depthTarget);
-            Set3DStates();
-        }
-
         public void DrawScene(Scene scene)
         {
             if (scene == null)
@@ -68,7 +62,11 @@ namespace HammeredGame.Graphics
                 return;
             }
 
-            // Render all the scene objects (given that they are not destroyed)
+            // Perform a main forward render pass but also store depth information
+            gpu.SetRenderTargets(diffuseTarget, depthTarget);
+            Set3DStates();
+
+            // Render all the scene objects
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
                 gameObject.Draw(scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
