@@ -51,6 +51,7 @@ namespace HammeredGame.Game.Screens
 
         // Bounding Volume debugging variables
         private bool drawBounds = false;
+
         private List<EntityDebugDrawer> debugEntities = new();
 
         // Uniform Grid debugging variables
@@ -212,36 +213,7 @@ namespace HammeredGame.Game.Screens
             base.Draw(gameTime);
 
             gameRenderer.SetupDrawTargets();
-
-            GraphicsDevice gpu = GameServices.GetService<GraphicsDevice>();
-            // Render all the scene objects (given that they are not destroyed)
-            foreach (GameObject gameObject in currentScene.GameObjectsList)
-            {
-                gameObject.Draw(currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix, currentScene.Camera.Position, currentScene.Lights);
-            }
-
-            if (drawBounds)
-            {
-                RasterizerState currentRS = gpu.RasterizerState;
-                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
-                foreach (EntityDebugDrawer entity in debugEntities)
-                {
-                    entity.Draw(gameTime, currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
-                }
-                gpu.RasterizerState = currentRS;
-            }
-
-            if (drawGrid)
-            {
-                RasterizerState currentRS = gpu.RasterizerState;
-                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
-                foreach (GridDebugDrawer gdd in debugGridCells)
-                {
-                    gdd.Draw(gameTime, currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
-                }
-                gpu.RasterizerState = currentRS;
-            }
-
+            gameRenderer.DrawScene(currentScene);
             gameRenderer.PostProcess();
             gameRenderer.CopyOutputTo(ScreenManager.MainRenderTarget);
         }
@@ -312,9 +284,6 @@ namespace HammeredGame.Game.Screens
                 ImGui.EndCombo();
             }
             ImGui.Separator();
-
-            ImGui.Checkbox("DrawBounds", ref drawBounds);
-            ImGui.Checkbox("DrawGrid", ref drawGrid);
 
             // Show the scene's UI within the same window
             currentScene.UI();
