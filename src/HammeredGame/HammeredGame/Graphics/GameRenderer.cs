@@ -22,8 +22,7 @@ namespace HammeredGame.Graphics
         private GraphicsDevice gpu;
         private SpriteBatch spriteBatch;
 
-        private Effect lightingPassEffect;
-        private Effect combinePassEffect;
+        private Effect tonemapEffect;
 
         private bool showDebugTargets;
 
@@ -31,16 +30,12 @@ namespace HammeredGame.Graphics
             this.gpu = gpu;
             this.spriteBatch = new SpriteBatch(gpu);
 
-            diffuseTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
-            normalsTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
+            this.tonemapEffect = content.Load<Effect>("Effects/tonemap");
+
+            diffuseTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
             depthTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Single, DepthFormat.Depth24);
 
-            lightsTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
-
             finalTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
-
-            lightingPassEffect = content.Load<Effect>("Effects/deferredlighting");
-            combinePassEffect = content.Load<Effect>("Effects/finalcombine");
         }
 
         /// <summary>
@@ -63,52 +58,22 @@ namespace HammeredGame.Graphics
 
         public void SetupDrawTargets() {
             // set up geometry (g) buffer
-            gpu.SetRenderTargets(diffuseTarget, normalsTarget, depthTarget);
+            gpu.SetRenderTargets(diffuseTarget, depthTarget);
             Set3DStates();
         }
 
         public void ApplyDeferredLighting(List<GameObject> objects) {
-            // lighting pass for directional light & point lights & emissive materials
-            gpu.SetRenderTarget(lightsTarget);
-            Vector2 halfPixel = new(
-                0.5f / (float)gpu.PresentationParameters.BackBufferWidth,
-                0.5f / (float)gpu.PresentationParameters.BackBufferHeight
-            );
 
-            lightingPassEffect.Parameters["lightDirection"]?.SetValue(new Vector3(0, -1, 0));
-            lightingPassEffect.Parameters["lightColor"]?.SetValue(Color.White.ToVector3());
-            lightingPassEffect.Parameters["lightIntensity"]?.SetValue(0.5f);
-            lightingPassEffect.Parameters["diffuseMap"]?.SetValue(diffuseTarget);
-            lightingPassEffect.Parameters["normalMap"]?.SetValue(normalsTarget);
-            lightingPassEffect.Parameters["depthMap"]?.SetValue(depthTarget);
-
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, lightingPassEffect, null);
-            spriteBatch.Draw(normalsTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
-            spriteBatch.End();
-
-            lightingPassEffect.Parameters["lightDirection"]?.SetValue(new Vector3(0,-1, 1));
-            lightingPassEffect.Parameters["lightColor"]?.SetValue(Color.White.ToVector3());
-            lightingPassEffect.Parameters["lightIntensity"]?.SetValue(0.5f);
-            lightingPassEffect.Parameters["diffuseMap"]?.SetValue(diffuseTarget);
-            lightingPassEffect.Parameters["normalMap"]?.SetValue(normalsTarget);
-            lightingPassEffect.Parameters["depthMap"]?.SetValue(depthTarget);
-
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, lightingPassEffect, null);
-            spriteBatch.Draw(normalsTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
-            spriteBatch.End();
-
-            gpu.SetRenderTarget(finalTarget);
-            combinePassEffect.Parameters["diffuseMap"]?.SetValue(diffuseTarget);
-            combinePassEffect.Parameters["lightMap"]?.SetValue(lightsTarget);
-            combinePassEffect.Parameters["AmbientColor"]?.SetValue(Color.White.ToVector4());
-            combinePassEffect.Parameters["AmbientIntensity"]?.SetValue(0.1f);
-
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, combinePassEffect, null);
-            spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.SkyBlue);
-            spriteBatch.End();
         }
 
-        public void PostProcess() {
+        public void PostProcess()
+        {
+            gpu.SetRenderTarget(finalTarget);
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, tonemapEffect, null);
+            spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
+            spriteBatch.End();
+
             if (showDebugTargets)
             {
                 RenderDebugTargets();
@@ -119,9 +84,7 @@ namespace HammeredGame.Graphics
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
             spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, 160, 90), Color.SkyBlue);
-            spriteBatch.Draw(normalsTarget, new Rectangle(160, 0, 160, 90), Color.SkyBlue);
-            spriteBatch.Draw(depthTarget, new Rectangle(320, 0, 160, 90), Color.SkyBlue);
-            spriteBatch.Draw(lightsTarget, new Rectangle(480, 0, 160, 90), Color.SkyBlue);
+            spriteBatch.Draw(depthTarget, new Rectangle(160, 0, 160, 90), Color.SkyBlue);
             spriteBatch.End();
         }
 

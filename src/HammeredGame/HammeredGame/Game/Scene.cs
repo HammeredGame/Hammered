@@ -46,6 +46,16 @@ namespace HammeredGame.Game
             get { return GameObjects.Values.ToList(); }
         }
 
+        public SceneLightSetup Lights = new(
+            new SunLight(true, Color.LightYellow, 1f, new Vector3(0.20f, 0.97f, 0f)),
+            new List<InfiniteDirectionalLight> {
+                new InfiniteDirectionalLight(true, Color.Blue, 0.6f, new Vector3(-0.2f, -0.97f, 0f))
+            },
+            new AmbientLight(true, Color.DarkBlue, 0.01f),
+            new List<PointLight>(),
+            new List<SpotLight>()
+        );
+
         /// <summary>
         /// The physics space for the scene.
         /// </summary>
