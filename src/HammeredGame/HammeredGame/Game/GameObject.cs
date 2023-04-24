@@ -6,6 +6,7 @@ using HammeredGame.Core;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Net.Mime;
@@ -115,8 +116,6 @@ namespace HammeredGame.Game
 
             // Load in Shader
             this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/basic");
-            //var shaderPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\Content\\Effects\\basic.mgfx");
-            //this.Effect = new Effect(GPU, File.ReadAllBytes(shaderPath));
 
             if (this.Model != null && model.GetAnimations() == null)
             {
@@ -231,64 +230,7 @@ namespace HammeredGame.Game
         /// <param name="tex"></param>
         public void DrawModeBasic(Model model, Matrix view, Matrix projection, Texture2D tex, Light l)
         {
-            Matrix world = GetWorldMatrix();
-
-            Matrix[] meshTransforms = new Matrix[model.Bones.Count];
-            model.CopyAbsoluteBoneTransformsTo(meshTransforms);
-
-            foreach (ModelMesh mesh in model.Meshes)
-            {
-                // Set the effect class for each mesh part in the model
-                // This is most likely where we attach shaders to the model/mesh
-                foreach (Effect effect in mesh.Effects)
-                {
-                    if(effect.GetType() == typeof(BasicEffect))
-                    {
-                        BasicEffect _effect = (BasicEffect) effect;
-                        _effect.World = meshTransforms[mesh.ParentBone.Index] * world;
-                        _effect.View = view;
-                        _effect.Projection = projection;
-
-                        _effect.EnableDefaultLighting();
-                        //effect.LightingEnabled = Keyboard.GetState().IsKeyUp(Keys.L);
-                        _effect.LightingEnabled = true;
-
-                        //effect.DiffuseColor = new Vector3(0.25f, 0.25f, 0.25f);
-                        //effect.SpecularColor = new Vector3(0.25f, 0.25f, 0.25f);
-                        //effect.SpecularPower = 0.1f;
-                        _effect.AmbientLightColor = new Vector3(0.5f, 0.5f, 0.5f);
-
-                        //effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
-                        //effect.DirectionalLight0.Direction = new Vector3(-1, -1, 0);
-                        //effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
-
-                        _effect.DirectionalLight0.Enabled = true;
-                        _effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
-                        _effect.DirectionalLight0.Direction = Vector3.Normalize(-l.Direction);
-                        _effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
-
-                        _effect.DirectionalLight1.Enabled = true;
-                        _effect.DirectionalLight1.DiffuseColor = Vector3.One * 0.2f;
-                        _effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1, -1, 0));
-                        _effect.DirectionalLight1.SpecularColor = Vector3.One * 0.1f;
-
-                        _effect.DirectionalLight2.Enabled = true;
-                        _effect.DirectionalLight2.DiffuseColor = Vector3.One * 0.15f;
-                        _effect.DirectionalLight2.Direction = Vector3.Normalize(new Vector3(-1, -1, -1));
-                        _effect.DirectionalLight2.SpecularColor = Vector3.One * 0.1f;
-
-                        _effect.TextureEnabled = tex != null;
-                        _effect.Texture = tex;
-
-                        _effect.FogEnabled = true;
-                        _effect.FogStart = 400.0f;
-                        _effect.FogEnd = 450.0f;
-                        _effect.FogColor = Color.AliceBlue.ToVector3();
-                    }
-                }
-
-                mesh.Draw();
-            }
+            DrawModeShader(model, view, projection, tex);
         }
 
         /// <summary>

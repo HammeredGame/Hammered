@@ -259,6 +259,18 @@
 /processorParam:DebugMode=Auto
 /build:Effects/basic.fx
 
+#begin Effects/deferredlighting.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/deferredlighting.fx
+
+#begin Effects/finalcombine.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/finalcombine.fx
+
 #begin fence.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
