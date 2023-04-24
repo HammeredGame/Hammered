@@ -4,6 +4,7 @@ using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace HammeredGame.Graphics
@@ -60,6 +61,20 @@ namespace HammeredGame.Graphics
             Set3DStates();
         }
 
+        public void DrawScene(Scene scene)
+        {
+            if (scene == null)
+            {
+                return;
+            }
+
+            // Render all the scene objects (given that they are not destroyed)
+            foreach (GameObject gameObject in scene.GameObjectsList)
+            {
+                gameObject.Draw(scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
+            }
+        }
+
         public void PostProcess()
         {
             gpu.SetRenderTarget(finalTarget);
@@ -68,14 +83,9 @@ namespace HammeredGame.Graphics
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, tonemapEffect, null);
             spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
             spriteBatch.End();
-
-            if (showDebugTargets)
-            {
-                RenderDebugTargets();
-            }
         }
 
-        private void RenderDebugTargets()
+        private void DisplayIntermediateTargets()
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
             spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, 160, 90), Color.SkyBlue);
@@ -90,6 +100,11 @@ namespace HammeredGame.Graphics
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
             spriteBatch.Draw(finalTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
             spriteBatch.End();
+
+            if (showDebugTargets)
+            {
+                DisplayIntermediateTargets();
+            }
         }
 
         public void UI()
