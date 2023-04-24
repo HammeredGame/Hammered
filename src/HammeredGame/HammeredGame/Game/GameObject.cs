@@ -14,6 +14,7 @@ using System;
 using System.IO;
 using Microsoft.Xna.Framework.Content;
 using HammeredGame.Game.Screens;
+using System.Linq;
 
 namespace HammeredGame.Game
 {
@@ -115,7 +116,7 @@ namespace HammeredGame.Game
             this.GPU = services.GetService<GraphicsDevice>();
 
             // Load in Shader
-            this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/basic");
+            this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/forwardmainpass");
 
             if (this.Model != null && model.GetAnimations() == null)
             {
@@ -148,10 +149,10 @@ namespace HammeredGame.Game
 
         // get position and rotation of the object - extract the scale, rotation, and translation matrices
         // get world matrix and then call draw model to draw the mesh on screen
-        public virtual void Draw(Matrix view, Matrix projection, Light l)
+        public virtual void Draw(Matrix view, Matrix projection, SceneLightSetup lights)
         {
             if (Visible)
-                DrawModel(Model, view, projection, Texture, l);
+                DrawModel(Model, view, projection, Texture, lights);
         }
 
         /// <summary>
@@ -161,20 +162,7 @@ namespace HammeredGame.Game
         /// <param name="view"></param>
         /// <param name="projection"></param>
         /// <param name="tex"></param>
-        public void DrawModel(Model model, Matrix view, Matrix projection, Texture2D tex, Light l)
-        {
-            DrawModeShader(model, view, projection, tex);
-            //DrawModeBasic(model, view, projection, tex, l);
-        }
-
-        /// <summary>
-        /// Common method to draw 3D models
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="view"></param>
-        /// <param name="projection"></param>
-        /// <param name="tex"></param>
-        public void DrawModeShader(Model model, Matrix view, Matrix projection, Texture2D tex)
+        public void DrawModel(Model model, Matrix view, Matrix projection, Texture2D tex, SceneLightSetup lights)
         {
             Matrix world = GetWorldMatrix();
 
@@ -199,10 +187,12 @@ namespace HammeredGame.Game
                     part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
 
                     // Set light parameters
-                    part.Effect.Parameters["AmbientColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["AmbientIntensity"]?.SetValue(0.01f);
-                    part.Effect.Parameters["DiffuseIntensity"]?.SetValue(1f);
-                    part.Effect.Parameters["DiffuseLightDirection"]?.SetValue(Vector3.Normalize(new Vector3(1, 1, 1)));
+                    part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());
+                    part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
+                    part.Effect.Parameters["DirectionalLightDirections"]?.SetValue(lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray());
+
+                    part.Effect.Parameters["AmbientColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
+                    part.Effect.Parameters["AmbientIntensity"]?.SetValue(lights.Ambient.Intensity);
 
                     // This sets all models to have a 1.0 diffuse, which means essentially it'll
                     // behave as the identity when multiplied with the texture color within the
@@ -219,18 +209,6 @@ namespace HammeredGame.Game
                 }
                 mesh.Draw();
             }
-        }
-
-        /// <summary>
-        /// Common method to draw 3D models
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="view"></param>
-        /// <param name="projection"></param>
-        /// <param name="tex"></param>
-        public void DrawModeBasic(Model model, Matrix view, Matrix projection, Texture2D tex, Light l)
-        {
-            DrawModeShader(model, view, projection, tex);
         }
 
         /// <summary>
