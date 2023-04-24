@@ -6,6 +6,10 @@
     #define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
+// Reference: https://learnopengl.com/Lighting/Materials
+// Reference: https://learnopengl.com/Lighting/Basic-Lighting
+// Reference: https://learnopengl.com/Advanced-Lighting/Advanced-Lighting
+
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
@@ -21,7 +25,7 @@ float AmbientLightIntensity;
 
 float4 MaterialDiffuseColor;
 float4 MaterialAmbientColor;
-float MaterialHasSpecular;
+bool MaterialHasSpecular;
 float4 MaterialSpecularColor;
 float MaterialShininess;
 
@@ -36,7 +40,6 @@ sampler2D textureSampler = sampler_state
     AddressU = Clamp;
     AddressV = Clamp;
 };
-
 
 struct VertexShaderInput
 {
@@ -85,6 +88,9 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
     PixelShaderOutput output;
 
 	float4 textureColor = tex2D(textureSampler, input.TextureCoordinate);
+
+    // Account for gamma (transform from srgb to linear, so that the hdr tonemapping will bring it back to srgb)
+    textureColor = pow(textureColor, 2.2);
 
     float4 ambient = MaterialAmbientColor * AmbientLightColor * AmbientLightIntensity;
 
