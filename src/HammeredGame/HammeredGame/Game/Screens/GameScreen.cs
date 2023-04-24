@@ -59,7 +59,7 @@ namespace HammeredGame.Game.Screens
 
         private string currentSceneName;
 
-        private GameRenderer graphicsManager;
+        private GameRenderer gameRenderer;
 
         public GameScreen(string startScene)
         {
@@ -77,7 +77,7 @@ namespace HammeredGame.Game.Screens
 
             ContentManager Content = GameServices.GetService<ContentManager>();
 
-            graphicsManager = new GameRenderer(GameServices.GetService<GraphicsDevice>(), Content);
+            gameRenderer = new GameRenderer(GameServices.GetService<GraphicsDevice>(), Content);
 
             // Load sound effects before initialising the first scene, since the scene setup
             // script might already use some of the sound effects.
@@ -211,7 +211,7 @@ namespace HammeredGame.Game.Screens
         {
             base.Draw(gameTime);
 
-            graphicsManager.SetupDrawTargets();
+            gameRenderer.SetupDrawTargets();
 
             GraphicsDevice gpu = GameServices.GetService<GraphicsDevice>();
             // Render all the scene objects (given that they are not destroyed)
@@ -242,9 +242,8 @@ namespace HammeredGame.Game.Screens
                 gpu.RasterizerState = currentRS;
             }
 
-            graphicsManager.ApplyDeferredLighting(currentScene.GameObjectsList);
-            graphicsManager.PostProcess();
-            graphicsManager.CopyOutputTo(ScreenManager.MainRenderTarget);
+            gameRenderer.PostProcess();
+            gameRenderer.CopyOutputTo(ScreenManager.MainRenderTarget);
         }
 
         // Prepare the entities for debugging visualization
@@ -321,7 +320,7 @@ namespace HammeredGame.Game.Screens
             currentScene.UI();
 
             ImGui.Begin("Graphics");
-            graphicsManager.UI();
+            gameRenderer.UI();
             ImGui.End();
         }
     }

@@ -63,10 +63,6 @@ namespace HammeredGame.Graphics
             Set3DStates();
         }
 
-        public void ApplyDeferredLighting(List<GameObject> objects) {
-
-        }
-
         public void PostProcess()
         {
             gpu.SetRenderTarget(finalTarget);
