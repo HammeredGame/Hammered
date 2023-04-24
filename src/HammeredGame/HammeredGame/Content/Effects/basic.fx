@@ -10,9 +10,6 @@ float4x4 World;
 float4x4 View;
 float4x4 Projection;
 
-float4 AmbientColor;
-float AmbientIntensity;
-
 float3x3 WorldInverseTranspose;
 
 float3 DiffuseLightDirection;
@@ -25,7 +22,8 @@ float SpecularIntensity;
 float4 ViewVector;
 
 texture ModelTexture;
-sampler2D textureSampler = sampler_state {
+sampler2D textureSampler = sampler_state
+{
     Texture = (ModelTexture);
     MinFilter = Linear;
     MagFilter = Linear;
@@ -47,6 +45,7 @@ struct VertexShaderOutput
     float4 Color : COLOR0;
     float3 Normal : TEXCOORD0;
     float2 TextureCoordinate : TEXCOORD1;
+    float2 Depth : TEXCOORD2;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -66,11 +65,20 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     // Push normal and texture to fragment shader
     output.Normal = normal;
     output.TextureCoordinate = input.TextureCoordinate;
+    output.Depth.xy = output.Position.zw;
     return output;
 }
 
-float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
+struct PixelShaderOutput
 {
+    float4 Color : COLOR0;
+    float4 Normal : COLOR1;
+    half4 Depth : COLOR2;
+};
+
+PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
+{
+    PixelShaderOutput output;
     // Get light direction and normal
     float3 light = normalize(DiffuseLightDirection);
     float3 normal = normalize(input.Normal);
@@ -89,8 +97,11 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     float4 textureColor = tex2D(textureSampler, input.TextureCoordinate);
     textureColor.a = 1;
 
-    float4 color = saturate(textureColor * (input.Color) + AmbientColor * AmbientIntensity + specular);
-    return color;
+//    float4 color = saturate(textureColor * (input.Color) + AmbientColor * AmbientIntensity + specular);
+    output.Color = textureColor;
+    output.Normal = float4(0.5 * normal + 1.0, 1.0);
+    output.Depth = input.Depth.x / input.Depth.y;
+    return output;
 }
 
 technique Basic

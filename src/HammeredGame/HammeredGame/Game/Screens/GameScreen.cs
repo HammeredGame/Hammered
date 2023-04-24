@@ -11,6 +11,8 @@ using System;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using System.Threading;
+using HammeredGame.Graphics;
+using ImMonoGame.Thing;
 
 namespace HammeredGame.Game.Screens
 {
@@ -57,6 +59,8 @@ namespace HammeredGame.Game.Screens
 
         private string currentSceneName;
 
+        private GameRenderer graphicsManager;
+
         public GameScreen(string startScene)
         {
             // Don't load the scene yet, since it's expensive. Do it in LoadContent()
@@ -71,9 +75,12 @@ namespace HammeredGame.Game.Screens
         {
             base.LoadContent();
 
+            ContentManager Content = GameServices.GetService<ContentManager>();
+
+            graphicsManager = new GameRenderer(GameServices.GetService<GraphicsDevice>(), Content);
+
             // Load sound effects before initialising the first scene, since the scene setup
             // script might already use some of the sound effects.
-            ContentManager Content = GameServices.GetService<ContentManager>();
             List<SoundEffect> sfx = GameServices.GetService<List<SoundEffect>>();
             bgMusic = Content.Load<Song>("Audio/BGM_V2_4x");
             sfx.Add(Content.Load<SoundEffect>("Audio/step"));
@@ -196,25 +203,6 @@ namespace HammeredGame.Game.Screens
         }
 
         /// <summary>
-        /// Adapted from AlienScribble Make 3D Games with Monogame playlist: https://www.youtube.com/playlist?list=PLG6XrMFqMJUBOPVTJrGJnIDDHHF1HTETc
-        /// <para/>
-        /// To set state variables within graphics device back to default (in case they are changed
-        /// at any point) to ensure we are correctly drawing in 3D space
-        /// </summary>
-        private void Set3DStates()
-        {
-            GraphicsDevice gpu = ScreenManager.GraphicsDevice;
-            gpu.BlendState = BlendState.AlphaBlend; // Potentially needs to be modified depending on our textures
-            gpu.DepthStencilState = DepthStencilState.Default; // Ensure we are using depth buffer (Z-buffer) for 3D
-            if (gpu.RasterizerState.CullMode == CullMode.None)
-            {
-                // Cull back facing polygons
-                RasterizerState rs = new RasterizerState { CullMode = CullMode.CullCounterClockwiseFace };
-                gpu.RasterizerState = rs;
-            }
-        }
-
-        /// <summary>
         /// Called on each game loop after Update(). Should not contain expensive computation but
         /// rather just rendering and drawing to the GPU. Shader effects are done here.
         /// </summary>
@@ -223,7 +211,7 @@ namespace HammeredGame.Game.Screens
         {
             base.Draw(gameTime);
 
-            Set3DStates();
+            graphicsManager.SetupDrawTargets();
 
             Light l = new Light(new Vector3(10.0f), new Vector3(1.0f, -1.0f, 0.0f), Vector3.Up);
             Matrix lightView = Matrix.CreateLookAt(l.Position, l.Position + l.Direction, l.Normal);
@@ -257,6 +245,10 @@ namespace HammeredGame.Game.Screens
                 }
                 gpu.RasterizerState = currentRS;
             }
+
+            graphicsManager.ApplyDeferredLighting(currentScene.GameObjectsList);
+            graphicsManager.PostProcess();
+            graphicsManager.CopyOutputTo(ScreenManager.MainRenderTarget);
         }
 
         // Prepare the entities for debugging visualization
@@ -331,6 +323,10 @@ namespace HammeredGame.Game.Screens
 
             // Show the scene's UI within the same window
             currentScene.UI();
+
+            ImGui.Begin("Graphics");
+            graphicsManager.UI();
+            ImGui.End();
         }
     }
 }
