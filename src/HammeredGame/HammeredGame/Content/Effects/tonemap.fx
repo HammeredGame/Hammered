@@ -9,6 +9,10 @@
 
 #define gamma 2.2
 
+// Reference: https://learnopengl.com/Advanced-Lighting/HDR
+
+float Exposure;
+
 texture HDRTexture;
 sampler2D hdrBufferSampler = sampler_state
 {
@@ -29,7 +33,7 @@ struct VertexShaderOutput
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
     float3 hdrColor = tex2D(hdrBufferSampler, input.TexCoord).rgb;
-    float3 mapped = hdrColor / (hdrColor + float3(1.0, 1.0, 1.0));
+    float3 mapped = float3(1.0, 1.0, 1.0) - exp(-hdrColor * Exposure);
     mapped = pow(mapped, float3(1.0 / gamma, 1.0 / gamma, 1.0 / gamma));
     return float4(mapped, 1.0);
 };
