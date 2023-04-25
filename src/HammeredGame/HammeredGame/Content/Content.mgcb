@@ -253,35 +253,29 @@
 /processorParam:TextureFormat=Compressed
 /build:diffuse_tree.fbx
 
-#begin Effects/basic.fx
+#begin Effects/DeferredRendering/deferredlighting.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/basic.fx
+/build:Effects/DeferredRendering/deferredlighting.fx
 
-#begin Effects/deferredlighting.fx
+#begin Effects/DeferredRendering/finalcombine.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/deferredlighting.fx
+/build:Effects/DeferredRendering/finalcombine.fx
 
-#begin Effects/finalcombine.fx
+#begin Effects/ForwardRendering/MainShading.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/finalcombine.fx
+/build:Effects/ForwardRendering/MainShading.fx
 
-#begin Effects/forwardmainpass.fx
+#begin Effects/PostProcess/ColorCorrection.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Effects/forwardmainpass.fx
-
-#begin Effects/tonemap.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:Effects/tonemap.fx
+/build:Effects/PostProcess/ColorCorrection.fx
 
 #begin fence.fbx
 /importer:FbxImporter

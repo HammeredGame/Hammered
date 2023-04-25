@@ -22,7 +22,7 @@ namespace HammeredGame.Graphics
         private GraphicsDevice gpu;
         private SpriteBatch spriteBatch;
 
-        private Effect tonemapEffect;
+        private Effect colorCorrectionEffect;
         private float exposure = 1.0f;
         private float shadowMapDepthBias = 1.0f / 2048.0f * 2f;
         private float shadowMapNormalOffset = 2f;
@@ -33,7 +33,7 @@ namespace HammeredGame.Graphics
             this.gpu = gpu;
             this.spriteBatch = new SpriteBatch(gpu);
 
-            this.tonemapEffect = content.Load<Effect>("Effects/tonemap");
+            this.colorCorrectionEffect = content.Load<Effect>("Effects/PostProcess/ColorCorrection");
 
             diffuseTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
             depthTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Single, DepthFormat.Depth24);
@@ -80,9 +80,9 @@ namespace HammeredGame.Graphics
             Matrix sunProj = Matrix.CreateOrthographic(1000, 1000, 0.01f, 2000f);
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
-                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques[1];
-                gameObject.Draw(sunView, sunProj, sunPos, scene.Lights);
                 gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques[0];
+                gameObject.Draw(sunView, sunProj, sunPos, scene.Lights);
+                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques[1];
             }
 
             // Perform a main forward render pass but also store depth information
@@ -105,8 +105,8 @@ namespace HammeredGame.Graphics
         {
             gpu.SetRenderTarget(finalTarget);
 
-            tonemapEffect.Parameters["Exposure"].SetValue(exposure);
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, tonemapEffect, null);
+            colorCorrectionEffect.Parameters["Exposure"].SetValue(exposure);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, colorCorrectionEffect, null);
             spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
             spriteBatch.End();
         }
