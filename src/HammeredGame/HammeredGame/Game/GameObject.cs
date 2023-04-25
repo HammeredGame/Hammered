@@ -117,7 +117,7 @@ namespace HammeredGame.Game
             this.GPU = services.GetService<GraphicsDevice>();
 
             // Load in Shader
-            this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/forwardmainpass");
+            this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/MainShading");
 
             if (this.Model != null && model.GetAnimations() == null)
             {
