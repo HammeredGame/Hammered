@@ -11,21 +11,26 @@ namespace HammeredGame.Graphics
 {
     internal class GameRenderer
     {
+        // Targets that the light's shadow depth generation pass will write to
+        private readonly RenderTarget2D lightDepthTarget;
 
-        private RenderTarget2D diffuseTarget;
-        private RenderTarget2D depthTarget;
-
-        private RenderTarget2D lightDepthTarget;
-
-        private RenderTarget2D finalTarget;
-
-        private GraphicsDevice gpu;
-        private SpriteBatch spriteBatch;
-
-        private Effect colorCorrectionEffect;
-        private float exposure = 1.0f;
+        // Targets that the main shading pass will write to and any of its
+        // customizable parameters
+        private readonly RenderTarget2D diffuseTarget;
+        private readonly RenderTarget2D depthTarget;
         private float shadowMapDepthBias = 1.0f / 2048.0f * 2f;
         private float shadowMapNormalOffset = 2f;
+
+        // Final target that contains post-processed color data
+        private readonly RenderTarget2D finalTarget;
+
+        // References to the global stuff
+        private readonly GraphicsDevice gpu;
+        private readonly SpriteBatch spriteBatch;
+
+        // The color correction post-processing effect and its parameters
+        private readonly Effect colorCorrectionEffect;
+        private float exposure = 1.0f;
 
         private bool showDebugTargets;
 
@@ -35,13 +40,18 @@ namespace HammeredGame.Graphics
 
             this.colorCorrectionEffect = content.Load<Effect>("Effects/PostProcess/ColorCorrection");
 
+            // Set up the target where the sunlight's depth generation pass will write to. This
+            // doesn't need to equal the back buffer size, and in fact, we use a square to get
+            // uniform UV-mapping.
+            lightDepthTarget = new RenderTarget2D(gpu, 2048, 2048, false, SurfaceFormat.HalfVector4, DepthFormat.Depth24);
+
+            // Set up the main shading pass targets. The diffuse target will be HDR with each color
+            // component being [0, Inf], so set it up right.
             diffuseTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
             depthTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Single, DepthFormat.Depth24);
 
-            // todo: the size of this target doesn't have to be equal to the back buffer size; experiment
-            // todo: find out why this works with halfvector4 but not Single despite storing only one fp number
-            lightDepthTarget = new RenderTarget2D(gpu, 2048, 2048, false, SurfaceFormat.HalfVector4, DepthFormat.Depth24);
-
+            // The target for the final tone-mapped and post-processed image. Format is Color, i.e.
+            // 8 bit RGBA.
             finalTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
         }
 
@@ -53,16 +63,20 @@ namespace HammeredGame.Graphics
         /// </summary>
         private void Set3DStates()
         {
-            gpu.BlendState = BlendState.AlphaBlend; // Potentially needs to be modified depending on our textures
+            gpu.BlendState = BlendState.AlphaBlend;
             gpu.DepthStencilState = DepthStencilState.Default; // Ensure we are using depth buffer (Z-buffer) for 3D
             if (gpu.RasterizerState.CullMode == CullMode.None)
             {
                 // Cull back facing polygons
-                RasterizerState rs = new RasterizerState { CullMode = CullMode.CullCounterClockwiseFace };
-                gpu.RasterizerState = rs;
+                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.CullCounterClockwiseFace };
             }
         }
 
+        /// <summary>
+        /// Draw a scene, with shadows and lighting. this.PostProcess() should be called after this
+        /// is called, to copy the post-processed and tone-mapped images into the final render target.
+        /// </summary>
+        /// <param name="scene"></param>
         public void DrawScene(Scene scene)
         {
             if (scene == null)
@@ -92,6 +106,7 @@ namespace HammeredGame.Graphics
             // Render all the scene objects
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
+                // TODO: move these parameter-setting into GameObject's Draw() so everything is in one place
                 gameObject.Effect.Parameters["SunDepthTexture"]?.SetValue(lightDepthTarget);
                 gameObject.Effect.Parameters["SunView"]?.SetValue(sunView);
                 gameObject.Effect.Parameters["SunProj"]?.SetValue(sunProj);
@@ -101,6 +116,10 @@ namespace HammeredGame.Graphics
             }
         }
 
+        /// <summary>
+        /// Post-process the scene rendered with this.DrawScene(). You should call
+        /// this.CopyOutputTo() after this function to copy the final render output.
+        /// </summary>
         public void PostProcess()
         {
             gpu.SetRenderTarget(finalTarget);
@@ -111,6 +130,9 @@ namespace HammeredGame.Graphics
             spriteBatch.End();
         }
 
+        /// <summary>
+        /// Draw any intermediate render targets in the top left corner for debugging purposes.
+        /// </summary>
         private void DisplayIntermediateTargets()
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
@@ -120,6 +142,12 @@ namespace HammeredGame.Graphics
             spriteBatch.End();
         }
 
+        /// <summary>
+        /// Copy the output of the scene rendering to the specified target. This function must be
+        /// called after this.DrawScene() and this.PostProcess() in order for it to contain
+        /// meaningful information.
+        /// </summary>
+        /// <param name="target"></param>
         public void CopyOutputTo(RenderTarget2D target)
         {
             gpu.SetRenderTarget(target);
