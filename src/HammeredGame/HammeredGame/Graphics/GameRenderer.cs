@@ -80,9 +80,9 @@ namespace HammeredGame.Graphics
             Matrix sunProj = Matrix.CreateOrthographic(1000, 1000, 0.01f, 2000f);
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
-                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques[0];
+                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques["RenderLightDepthMap"];
                 gameObject.Draw(sunView, sunProj, sunPos, scene.Lights);
-                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques[1];
+                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques["MainShading"];
             }
 
             // Perform a main forward render pass but also store depth information
