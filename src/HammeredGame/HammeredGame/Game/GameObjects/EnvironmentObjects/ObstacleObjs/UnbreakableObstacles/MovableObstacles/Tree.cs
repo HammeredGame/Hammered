@@ -60,7 +60,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         private List<SoundEffect> tree_sfx;
 
-        //private Model fallenLog;
+        private Model fallenLog;
         private bool isFalling = false;
         private BEPUutilities.Vector3 fallDirection;
         private int fallingAngle = 0;
@@ -72,7 +72,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 tree_sfx = Services.GetService<List<SoundEffect>>();
 
-                //fallenLog = services.GetService<ContentManager>().Load<Model>("trunk");
+                fallenLog = services.GetService<ContentManager>().Load<Model>("trunk");
 
                 if (this.Entity is not Box)
                 {
@@ -155,6 +155,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
 
             // Swap models
+            this.Model = fallenLog;
             //(fallenLog, this.Model) = (this.Model, fallenLog);
         }
 
@@ -172,7 +173,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.Entity.Orientation = BEPUutilities.Quaternion.Identity *
                     BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection),
                     BEPUutilities.MathHelper.ToRadians(fallingAngle));
-                if(fallingAngle == 90)
+                if(fallingAngle >= 90)
                 {
                     SetTreeFallen(true);
                     isFalling = false;
