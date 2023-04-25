@@ -43,6 +43,19 @@ sampler2D textureSampler = sampler_state
 
 bool PerformTextureGammaCorrection;
 
+texture SunDepthTexture;
+sampler2D sunDepthSampler = sampler_state
+{
+    Texture = (SunDepthTexture);
+    MinFilter = Linear;
+    MagFilter = Linear;
+    AddressU = Clamp;
+    AddressV = Clamp;
+};
+
+float4x4 SunView;
+float4x4 SunProj;
+
 struct VertexShaderInput
 {
     float4 Position : POSITION0;
@@ -57,6 +70,7 @@ struct VertexShaderOutput
     float2 TextureCoordinate : TEXCOORD1;
     float2 Depth : TEXCOORD2;
     float4 WorldSpacePosition : TEXCOORD3;
+    float4 SunSpacePosition : TEXCOORD4;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -85,13 +99,16 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     // This will be interpolated as it goes into the pixel shader (since it has the TEXCOORD semantic),
     // and then in the pixel shader, we'll use the value of z / w as the pixel depth value.
     output.Depth.xy = output.Position.zw;
+
+    float4 sunViewPosition = mul(worldPosition, SunView);
+    output.SunSpacePosition = mul(sunViewPosition, SunProj);
     return output;
 }
 
 struct PixelShaderOutput
 {
     float4 Color : COLOR0;
-    half4 Depth : COLOR1;
+    float4 Depth : COLOR1;
 };
 
 PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
@@ -143,6 +160,17 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
         }
     }
 
+    // Find the distance to the sunlight
+    float2 sunProjCoords = input.SunSpacePosition.xy / input.SunSpacePosition.w;
+    sunProjCoords = sunProjCoords * 0.5 + float2(0.5, 0.5);
+    sunProjCoords.y = 1.0 - sunProjCoords.y;
+    float sunClosestDepth = tex2D(sunDepthSampler, sunProjCoords).r;
+    float sunCurrentDepth = input.SunSpacePosition.z / input.SunSpacePosition.w;
+    float bias = max(0.05 * (1.0 - dot(normal, normalize(DirectionalLightDirections[1]))), 0.005);
+    float shadow = (sunCurrentDepth - 0.001) > sunClosestDepth ? 1.0 : 0.0;
+
+    output.Color *= (1 - shadow);
+
     // Add the ambient component
     output.Color += ambient;
 
@@ -154,6 +182,7 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
 
     // Write to a depth buffer too, for use in post-processing shaders
     output.Depth = input.Depth.x / input.Depth.y;
+
     return output;
 }
 
@@ -163,5 +192,48 @@ technique Basic
     {
         VertexShader = compile VS_SHADERMODEL VertexShaderFunction();
         PixelShader = compile PS_SHADERMODEL PixelShaderFunction();
+    }
+}
+
+struct JustDepthVertexShaderInput
+{
+    float4 Position : POSITION0;
+    float4 Normal : NORMAL0;
+};
+
+struct JustDepthVertexShaderOutput
+{
+    float4 Position : POSITION0;
+    float2 Depth : TEXCOORD2;
+};
+
+
+JustDepthVertexShaderOutput JustDepthVertexShader(JustDepthVertexShaderInput input)
+{
+
+    JustDepthVertexShaderOutput output;
+
+    // Transform vertex coordinates into screen-space
+    float4 worldPosition = mul(input.Position, World);
+    float4 viewPosition = mul(worldPosition, View);
+    output.Position = mul(viewPosition, Projection);
+    output.Depth.xy = output.Position.zw;
+    return output;
+}
+
+float4 JustDepthPixelShader(JustDepthVertexShaderOutput input) : COLOR0
+{
+    float4 output = input.Depth.x / input.Depth.y;
+    output.a = 1;
+    return output;
+}
+
+technique JustDepth
+{
+    pass Pass1
+    {
+        VertexShader = compile VS_SHADERMODEL JustDepthVertexShader();
+        PixelShader = compile PS_SHADERMODEL JustDepthPixelShader();
+
     }
 }

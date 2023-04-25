@@ -51,7 +51,7 @@ namespace HammeredGame.Game
         /// TODO: move this into XML
         /// </summary>
         public SceneLightSetup Lights = new(
-            new SunLight(true, Color.LightYellow, 1f, new Vector3(0.20f, 0.97f, 0f)),
+            new SunLight(true, Color.LightYellow, 1f, new Vector3(0, 0.97f, 0.20f)),
             new List<InfiniteDirectionalLight> {
                 new InfiniteDirectionalLight(true, Color.White, 0.01f, new Vector3(-0.2f, -0.97f, 0f))
             },
