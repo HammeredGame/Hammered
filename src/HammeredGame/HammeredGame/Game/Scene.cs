@@ -307,10 +307,11 @@ namespace HammeredGame.Game
             // Show the camera UI
             Camera.UI();
 
+            // Show the scene editor
+
             ImGui.Text($"{GameObjects.Count} objects in scene, {Services.GetService<Space>().Entities.Count} entities in physics space");
             ImGui.SameLine();
             // Button to load from XML. This will replace all the scene objects
-            // TODO: update Space and bounding boxes?
             if (ImGui.Button("Load Scene XML"))
             {
                 // open a cross platform file dialog
@@ -331,6 +332,13 @@ namespace HammeredGame.Game
             if (ImGui.Button("Export Scene"))
             {
                 SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, GameObjects, Grid, Services);
+            }
+
+            // Show UI for lights
+            {
+                System.Numerics.Vector3 sunDir = Lights.Sun.Direction.ToNumerics();
+                ImGui.DragFloat3("Sun Direction", ref sunDir, 0.01f);
+                Lights.Sun.Direction = Vector3.Normalize(sunDir);
             }
 
             // Show a dual pane layout, with the scene object list on the left and details on the
