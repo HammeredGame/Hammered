@@ -13,8 +13,8 @@ namespace HammeredGame.Game.PathPlanning.Grid
 {
     public class UniformGrid
     {
-        private Vector3[, ,] grid;
-        private bool[,,] mask;
+        public Vector3[,,] grid { get; private set; }
+        public bool[,,] mask { get; private set; }
 
         private BidirectionalDictionary<Vector3, Vertex> biMap  = new BidirectionalDictionary<Vector3, Vertex>();
         private Graph graph;
@@ -208,7 +208,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
         ///      and finishing at the grid point in which the real goal point resides in.
         /// iv) the provided finishing/goal position is inserted into the list of points.
         /// </remarks>
-        private Vector3[] FindShortestPathAStar(Vector3 start, Vector3 finish, HashSet<Vector3> pointsConsidered)
+        private Vector3[] FindShortestPathAStar(Vector3 start, Vector3 finish, HashSet<Vector3> pointsConsidered, bool smoothPath=true)
         {
             uint[] startCellIndex = this.GetCellIndex(start), finishCellIndex = this.GetCellIndex(finish);
             Vector3 startCell = this.grid[startCellIndex[0], startCellIndex[1], startCellIndex[2]];
@@ -244,7 +244,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
             for (int i = 0; i < pathLength; ++i) { shortestPath[1 + i] = biMap.Reverse[aResultVertex.Pop()]; }
             shortestPath[1 + pathLength] = finish;
 
-            return shortestPath;
+            return smoothPath ? this.RoughShortestPathSmoothing(shortestPath) : shortestPath;
 
         }
 

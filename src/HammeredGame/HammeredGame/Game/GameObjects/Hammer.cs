@@ -266,12 +266,15 @@ namespace HammeredGame.Game.GameObjects
                 // Currently, "raw" A* has been implemented.
                 // Programming note: as of the time of writing (23/04/2023), everything inside the "Run" is thread-safe.
                 // As such, no errors should arise.
-                Task.Run(() =>
+                if (!straightPathAchievable)
                 {
-                    Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
-                    for (int i = 0; i < aStarRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(aStarRoute[i])); }
+                    Task.Run(() =>
+                    {
+                        Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
+                        for (int i = 0; i < aStarRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(aStarRoute[i])); }
 
-                });
+                    });
+                }
                 /// <remarks>
                 /// INSPIRATION FOR AS TO WHY THE ABOVE IS EXECUTED ASYNCHRONOUSLY (using C# "Tasks").
                 /// 
@@ -299,7 +302,7 @@ namespace HammeredGame.Game.GameObjects
                 /// 1) the game is responsive(the hammer has started some path instantly)
                 /// 2) the full path is computed in the background, without altering the game experience.
                 /// </remarks>
-                
+
 
 
 
@@ -390,13 +393,12 @@ namespace HammeredGame.Game.GameObjects
 
             LinkedList<Vector3> path = new LinkedList<Vector3>();
 
-            path.AddLast(this.Position);
             for (int i = 0; i < Math.Ceiling(lineSegmentLength / this.grid.sideLength); i++)
             {
                 Vector3 samplePoint = this.Position + i * this.grid.sideLength * lineSegment;
                 // If there is at least one cell which is not available in the straight line,
                 // then inform that a more complex path planning method is required.
-                if (!this.grid.GetCellMark(samplePoint)) { break; }
+                if (!this.grid.GetCellMark(samplePoint)) { route = path.ToArray();  return false; }
                 path.AddLast(samplePoint);
             }
             //path.AddLast(this.player.Position);
