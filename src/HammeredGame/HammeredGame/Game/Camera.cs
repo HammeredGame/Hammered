@@ -48,6 +48,9 @@ namespace HammeredGame.Game
 
         public CameraMode Mode;
 
+        public event EventHandler OnRotateLeft;
+        public event EventHandler OnRotateRight;
+
         /// <summary>
         /// Initialize a new Camera object, placed at the predefined location 50,60,-50 and facing
         /// the direction of focusPoint, with the rotation determined by the upDirection.
@@ -143,34 +146,24 @@ namespace HammeredGame.Game
         /// TEMPORARY - needs to be modified Update the camera position and look-at Currently just
         /// switches between 4 predetermined positions given the corresponding keyboard input
         /// </summary>
-        public void UpdateCamera()
+        public void UpdateCamera(bool screenHasFocus)
         {
-            if (Mode == CameraMode.Follow)
+            if (Mode == CameraMode.Follow && screenHasFocus)
             {
                 // In the case of follow mode, we modify the 2D vector that is multiplied onto the
                 // base camera offset. This controls the 4 isometric directions that the camera can take.
-
-                #region TEMPORARY_CAMERA_CONTROLS
-
-                Input inp = services.GetService<Input>();
-                if (inp.ButtonPress(Buttons.DPadUp) || inp.KeyDown(Keys.D1))
+                if (UserAction.RotateCameraLeft.Pressed(services.GetService<Input>()))
                 {
-                    followDir2D = new Vector2(1, -1);
-                }
-                if (inp.ButtonPress(Buttons.DPadLeft) || inp.KeyDown(Keys.D2))
+                    // I found a pattern for the 2D camera directions  (1,1)(-1,1)(-1,-1)(1,-1)
+                    // where each successive one is flipping the previous one's elements and
+                    // switching the sign on the first element. So we use that!
+                    followDir2D = new Vector2(-followDir2D.Y, followDir2D.X);
+                    OnRotateLeft?.Invoke(this, null);
+                } else if (UserAction.RotateCameraRight.Pressed(services.GetService<Input>()))
                 {
-                    followDir2D = new Vector2(-1, -1);
+                    followDir2D = new Vector2(followDir2D.Y, -followDir2D.X);
+                    OnRotateRight?.Invoke(this, null);
                 }
-                if (inp.ButtonPress(Buttons.DPadDown) || inp.KeyDown(Keys.D3))
-                {
-                    followDir2D = new Vector2(-1, 1);
-                }
-                if (inp.ButtonPress(Buttons.DPadRight) || inp.KeyDown(Keys.D4))
-                {
-                    followDir2D = new Vector2(1, 1);
-                }
-
-                #endregion TEMPORARY_CAMERA_CONTROLS
 
                 // Calculate the base follow offset position (from the follow target) using the
                 // followAngle, between 0 (horizon) and 90 (top down)
@@ -182,35 +175,56 @@ namespace HammeredGame.Game
                 followOffset.Z *= followDir2D.Y;
 
                 Vector3 newPosition = followTarget.Position + Vector3.Normalize(followOffset) * FollowDistance;
+
+                ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
+
                 UpdatePositionTarget(newPosition, followTarget.Position);
             }
-            else
+            else if (Mode == CameraMode.FourPointStatic && screenHasFocus)
             {
                 // In static camera mode, we use the input to select the static camera.
 
-                #region TEMPORARY_CAMERA_CONTROLS
-
-                Input inp = services.GetService<Input>();
-                if (inp.ButtonPress(Buttons.DPadUp) || inp.KeyDown(Keys.D1))
+                if (UserAction.RotateCameraLeft.Pressed(services.GetService<Input>()))
                 {
-                    currentCameraPosIndex = 0;
+                    currentCameraPosIndex = (currentCameraPosIndex + 3) % 4;
+                    OnRotateLeft?.Invoke(this, null);
                 }
-                if (inp.ButtonPress(Buttons.DPadLeft) || inp.KeyDown(Keys.D2))
+                else if (UserAction.RotateCameraRight.Pressed(services.GetService<Input>()))
                 {
-                    currentCameraPosIndex = 1;
-                }
-                if (inp.ButtonPress(Buttons.DPadDown) || inp.KeyDown(Keys.D3))
-                {
-                    currentCameraPosIndex = 2;
-                }
-                if (inp.ButtonPress(Buttons.DPadRight) || inp.KeyDown(Keys.D4))
-                {
-                    currentCameraPosIndex = 3;
+                    currentCameraPosIndex = (currentCameraPosIndex + 1) % 4;
+                    OnRotateRight?.Invoke(this, null);
                 }
 
-                #endregion TEMPORARY_CAMERA_CONTROLS
+                ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
 
                 UpdatePositionTarget(StaticPositions[currentCameraPosIndex], Vector3.Zero);
+            } else {
+                // In paused mode, make the camera really up close. We use const values here and
+                // don't update the camera fields. This way we can reset to the previous values easily.
+                const float tempFollowDistance = 23f;
+                const float tempFollowAngle = 0.411f;
+                const float tempFieldOfView = 0.965f;
+
+                // Calculate the base follow offset position (from the follow target) using the
+                // followAngle, between 0 (horizon) and 90 (top down)
+                var sinCos = Math.SinCos(tempFollowAngle);
+                Vector3 followOffset = new Vector3((float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos), (float)sinCos.Sin, (float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos));
+
+                // Multiply by the diagonal direction
+                followOffset.X *= followDir2D.X;
+                followOffset.Z *= followDir2D.Y;
+
+                Vector3 newPosition = followTarget.Position + Vector3.Normalize(followOffset) * tempFollowDistance;
+
+                // Find which direction to offset the camera by so it fits in the right half of the
+                // paused screen
+                Vector3 unitScreenLeft = Vector3.Normalize(Vector3.Cross(followOffset, Vector3.UnitY));
+
+                // Tween the projection matrix
+                Matrix targetProjMatrix = Matrix.CreatePerspectiveFieldOfView(tempFieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
+                ProjMatrix = (targetProjMatrix - ProjMatrix) / 10f + ProjMatrix;
+
+                UpdatePositionTarget(newPosition, followTarget.Position + unitScreenLeft * 5);
             }
         }
 
@@ -221,7 +235,6 @@ namespace HammeredGame.Game
             ImGui.Text($"Camera Focus: {Target}");
 
             ImGui.DragFloat("Field of View (rad): ", ref FieldOfView, 0.01f, 0.01f, MathHelper.Pi - 0.01f);
-            ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
 
             bool isStatic = Mode == CameraMode.FourPointStatic;
             if (ImGui.Checkbox("Static Camera Mode", ref isStatic))

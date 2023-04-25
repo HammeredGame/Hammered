@@ -19,7 +19,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 {
     /// <summary>
     /// The <c>MoveBlock</c> class is a movable obstacle within the game world, contextually
-    /// reacting to the hammer and player interactions. Specifically, this can be used to 
+    /// reacting to the hammer and player interactions. Specifically, this can be used to
     /// represent any movable blocks/rocks in the world.
     /// <para />
     /// </summary>
@@ -72,7 +72,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
-            if (this.mbState == MBState.InWater) 
+            if (this.mbState == MBState.InWater)
             {
                 // If in water, do nothing with the block - the block is
                 // essentially submerged and cannot move anymore
@@ -151,7 +151,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             //if (this.mbState == MBState.Moving) this.Entity.LinearVelocity = initialMovementVelocity;
 
@@ -165,7 +165,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         }
 
         // This function sets the MoveBlock object to a moving state, with the provided velocity.
-        // The dynamic mass of the block is set to a small value, so as not to send 
+        // The dynamic mass of the block is set to a small value, so as not to send
         // the player flying on collision
         private void SetMoving(BEPUutilities.Vector3 velocity)
         {
@@ -180,7 +180,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         // On initialization, and on valid collisions with other objects,
         // the block needs to be set to a stationary state.
         // When stationary, the block's mass is set to a really high value,
-        // to not allow the player to manually move the block around 
+        // to not allow the player to manually move the block around
         // (i.e. the hammer must be used to move these blocks around)
         private void SetStationary()
         {

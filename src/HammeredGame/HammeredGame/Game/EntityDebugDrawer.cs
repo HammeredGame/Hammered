@@ -13,7 +13,7 @@ namespace HammeredGame.Game
     /// <summary>
     /// Component that draws a model following the position and orientation of a BEPUphysics entity.
     /// </summary>
-    public class EntityDebugDrawer : DrawableGameComponent
+    public class EntityDebugDrawer
     {
         /// <summary>
         /// Entity that this model follows.
@@ -34,8 +34,7 @@ namespace HammeredGame.Game
         /// <param name="model">Graphical representation to use for the entity.</param>
         /// <param name="transform">Base transformation to apply to the model before moving to the entity.</param>
         /// <param name="game">Game to which this component will belong.</param>
-        public EntityDebugDrawer(Entity entity, Model model, BEPUutilities.Matrix transform, Microsoft.Xna.Framework.Game game)
-            : base(game)
+        public EntityDebugDrawer(Entity entity, Model model, BEPUutilities.Matrix transform)
         {
             this.entity = entity;
             this.model = model;
@@ -92,7 +91,6 @@ namespace HammeredGame.Game
                 }
                 mesh.Draw();
             }
-            base.Draw(gameTime);
         }
     }
 }

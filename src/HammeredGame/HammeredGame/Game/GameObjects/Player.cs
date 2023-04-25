@@ -1,4 +1,5 @@
-﻿using BEPUphysics;
+﻿using Aether.Animation;
+using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using BEPUphysics.CollisionRuleManagement;
 using BEPUphysics.Entities;
@@ -10,6 +11,7 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableO
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -48,6 +50,7 @@ namespace HammeredGame.Game.GameObjects
 
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
+        private bool previously_moving = false;
 
         // Last known ground position, used to reset player's position
         // if the player comes into contact with a water object
@@ -58,6 +61,14 @@ namespace HammeredGame.Game.GameObjects
         public bool ReachedGoal = false;
 
         private Camera activeCamera;
+
+        private Animations animations;
+
+        private List<SoundEffect> player_sfx = new List<SoundEffect>();
+        private AudioListener listener;
+        private AudioEmitter emitter;
+
+        public event EventHandler OnHammerRetrieved;
 
         // Initialize player class
         public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
@@ -98,6 +109,14 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
                 this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
                 this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
+
+                animations = this.Model.GetAnimations();
+                var clip_idle = animations.Clips["Armature|idle-hammer"];
+                animations.SetClip(clip_idle);
+
+                player_sfx = Services.GetService<List<SoundEffect>>();
+                listener = Services.GetService<AudioListener>();
+                emitter = Services.GetService<AudioEmitter>();
             }
 
             // Initial position should be on/over ground
@@ -136,6 +155,20 @@ namespace HammeredGame.Game.GameObjects
                 if (Math.Abs(this.Entity.LinearVelocity.Y) < 2.5f)
                     this.lastGroundPosition = this.Position;
             }
+            else if (other.Tag is Hammer)
+            {
+                // If player character collides with hammer, set hammer to with character state
+                // This should only happen when hammer is called back
+                var hammer = other.Tag as Hammer;
+                if (hammer.IsEnroute())
+                {
+                    hammer.SetState(Hammer.HammerState.WithCharacter);
+                    OnHammerRetrieved?.Invoke(this, null);
+                    hammer.Entity.BecomeKinematic();
+                    hammer.Entity.LinearVelocity = BEPUutilities.Vector3.Zero;
+                    hammer.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoBroadPhase;
+                }
+            }
         }
 
         // Collision Handling Event for any initial collisions detected
@@ -157,6 +190,7 @@ namespace HammeredGame.Game.GameObjects
                     if (hammer.IsEnroute())
                     {
                         hammer.SetState(Hammer.HammerState.WithCharacter);
+                        OnHammerRetrieved?.Invoke(this, null);
                         otherEntityInformation.Entity.BecomeKinematic();
                         otherEntityInformation.Entity.LinearVelocity = BEPUutilities.Vector3.Zero;
                         otherEntityInformation.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoBroadPhase;
@@ -174,8 +208,25 @@ namespace HammeredGame.Game.GameObjects
             activeCamera = camera;
         }
 
+        private void ConfigureEffectMatrices(IEffectMatrices effect, Matrix world, Matrix view, Matrix projection)
+        {
+            effect.World = world;
+            effect.View = view;
+            effect.Projection = projection;
+        }
+
+        private void ConfigureEffectLighting(IEffectLights effect)
+        {
+            effect.EnableDefaultLighting();
+            effect.DirectionalLight0.Direction = Vector3.Backward;
+            effect.DirectionalLight0.Enabled = true;
+            effect.DirectionalLight1.Enabled = false;
+            effect.DirectionalLight2.Enabled = false;
+            effect.AmbientLightColor = Vector3.One;
+        }
+
         // Update (called every tick)
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             ///<value>
             /// The variable <c>moveDirty</c> indicates whether there has been any input from the player
@@ -189,31 +240,30 @@ namespace HammeredGame.Game.GameObjects
             // previous computations accumulating/carrying over)
             player_vel = Vector3.Zero;
 
-            Vector3 forwardDirection;
-            if (activeCamera != null) {
+            Vector3 forwardDirection = Vector3.Zero;
+            if (activeCamera != null && screenHasFocus) {
                 // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
                 // "forward" from the current camera perspective. Calculated by projecting the vector of
                 // the current camera position to the player position, onto the ground, and normalising it.
                 forwardDirection = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
-            } else
-            {
-                forwardDirection = Vector3.UnitX;
             }
 
             // Handling input from keyboard.
-            moveDirty = this.KeyboardInput(forwardDirection);
+            moveDirty = this.HandleInput(forwardDirection);
 
-            // Handling input from gamepad.
-            if (Services.GetService<Input>().GamePadState.IsConnected)
-            {
-                moveDirty = moveDirty || GamepadInput(forwardDirection);
-            }
+            // Animate player
 
             // If there was movement, normalize speed and edit rotation of character model
             // Also account for collisions
             if (moveDirty && this.Entity != null && player_vel != Vector3.Zero)
             {
                 BEPUutilities.Vector3 Pos = this.Entity.Position;
+
+                //FIX: sound effect itself is too grainy (composed of many smaller sounds), awful when layered
+                //SoundEffectInstance step = player_sfx[0].CreateInstance();
+                //step.IsLooped = true;
+                //step.Play();
+
 
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
                 // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
@@ -231,10 +281,25 @@ namespace HammeredGame.Game.GameObjects
                 /// <example>When walking up an inclined piece of land, the character might be facing upwards.</example>
                 ///</remark>
                 float angle = (float)Math.Atan2(player_vel.X, player_vel.Z);
-                this.Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle);
+                this.Entity.Orientation = BEPUutilities.Quaternion.Slerp(this.Entity.Orientation, BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle), 0.25f);
+
+                if(!previously_moving)
+                {
+                    // Start running animation when player starts moving
+                    var clip_run = animations.Clips["Armature|run-hammer"];
+                    animations.SetClip(clip_run);
+                    previously_moving = true;
+                }
             }
             else
             {
+                if(previously_moving)
+                {
+                    // Start idle animation when player stops moving
+                    var clip_idle = animations.Clips["Armature|idle-hammer"];
+                    animations.SetClip(clip_idle);
+                    previously_moving = false;
+                }
                 ///<remark>
                 /// Leaving the following code chunk on purpose to remind us of possible bugs.
                 /// It resulted in the character managing to move when the keys were released.
@@ -247,6 +312,8 @@ namespace HammeredGame.Game.GameObjects
 
                 //position += player_vel;
             }
+
+            animations.Update(gameTime.ElapsedGameTime * 2, true, Matrix.Identity);
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
 
@@ -300,51 +367,21 @@ namespace HammeredGame.Game.GameObjects
 
         }
 
-        private bool KeyboardInput(Vector3 forwardDirectionFromCamera)
-        {
-            // Adjust player velocity based on input
-            // Keyboard input (W - forward, S - back, A - left, D - right)
-
-            bool moveDirty = false;
-            Input input = Services.GetService<Input>();
-
-            if (input.KeyDown(Keys.W))
-            {
-                this.player_vel += forwardDirectionFromCamera;
-                moveDirty = true;
-            }
-            if (input.KeyDown(Keys.S))
-            {
-                this.player_vel += -forwardDirectionFromCamera;
-                moveDirty = true;
-            }
-            if (input.KeyDown(Keys.A))
-            {
-                this.player_vel += -Vector3.Cross(forwardDirectionFromCamera, Vector3.Up);
-                moveDirty = true;
-            }
-            if (input.KeyDown(Keys.D))
-            {
-                this.player_vel += Vector3.Cross(forwardDirectionFromCamera, Vector3.Up);
-                moveDirty = true;
-            }
-
-            return moveDirty;
-        }
-
-        private bool GamepadInput(Vector3 forwardDirectionFromCamera)
+        private bool HandleInput(Vector3 forwardDirectionFromCamera)
         {
             bool moveDirty = false;
             Input input = Services.GetService<Input>();
 
-            float MovePad_LeftRight = input.GamePadState.ThumbSticks.Left.X;
-            float MovePad_UpDown = input.GamePadState.ThumbSticks.Left.Y;
+            // Returns [-1, 1] on X and Y axis, continuous on controllers and discrete {-1, 0, 1} on keyboard.
+            Vector2 inputAmount = UserAction.Movement.GetValue(input);
+
+            float MovePad_LeftRight = inputAmount.X;
+            float MovePad_UpDown = inputAmount.Y;
             if (MovePad_UpDown < -Input.DEADZONE || MovePad_UpDown > Input.DEADZONE || MovePad_LeftRight < -Input.DEADZONE || MovePad_LeftRight > Input.DEADZONE)
             {
-                player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera) * baseControllerSpeed;
+                player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera);
                 moveDirty = true;
             }
-
             return moveDirty;
         }
 
@@ -354,6 +391,31 @@ namespace HammeredGame.Game.GameObjects
             ImGui.Separator();
             ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
+        }
+
+        public override void Draw(Matrix view, Matrix projection)
+        {
+            // Animate mesh
+            //Matrix[] transforms = new Matrix[this.Model.Bones.Count];
+            //this.Model.CopyAbsoluteBoneTransformsTo(transforms);
+
+            foreach (ModelMesh mesh in this.Model.Meshes)
+            {
+                foreach (var part in mesh.MeshParts)
+                {
+                    //BasicEffect)part.Effect).SpecularColor = Vector3.Zero;
+                    //((SkinnedEffect)part.Effect).SpecularColor = Vector3.Zero;
+                    //ConfigureEffectMatrices((IEffectMatrices)part.Effect, Matrix.Identity, view, projection);
+                    //ConfigureEffectLighting((IEffectLights)part.Effect);
+                    part.UpdateVertices(animations.AnimationTransforms); // animate vertices on CPU
+                    //((SkinnedEffect)part.Effect).SetBoneTransforms(animations.AnimationTransforms);// animate vertices on GPU
+                }
+            }
+
+            if (Visible)
+            {
+                DrawModel(Model, view, projection, Texture);
+            }
         }
     }
 }

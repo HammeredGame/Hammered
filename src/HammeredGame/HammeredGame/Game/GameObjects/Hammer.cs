@@ -12,6 +12,7 @@ using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using BEPUphysics.Entities;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using Microsoft.Xna.Framework.Audio;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -55,10 +56,22 @@ namespace HammeredGame.Game.GameObjects
 
         private Player player;
 
+        private List<SoundEffect> hammer_sfx = new List<SoundEffect>();
+        //how long till trigger next sound
+        //TimeSpan audioDelay = TimeSpan.Zero;
+
+        private AudioManager audioManager;
+
+        public event EventHandler OnSummon;
+        public event EventHandler OnCollision;
+        public event EventHandler OnDrop;
+
         public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
             : base(services, model, t, pos, rotation, scale, entity)
         {
             hammerState = HammerState.WithCharacter;
+            hammer_sfx = Services.GetService<List<SoundEffect>>();
+            audioManager = Services.GetService<AudioManager>();
 
             if (this.Entity != null)
             {
@@ -103,6 +116,8 @@ namespace HammeredGame.Game.GameObjects
             if (otherEntityInformation != null)
             {
                 if (other.Tag is Player) return;
+                OnCollision?.Invoke(this, null);
+
                 Input input = Services.GetService<Input>();
                 if (input.GamePadState.IsConnected)
                 {
@@ -120,7 +135,7 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Update function (called every tick)
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             OldPosition = this.Position;
 
@@ -132,7 +147,7 @@ namespace HammeredGame.Game.GameObjects
             }
 
             // Get the input via keyboard or gamepad
-            KeyboardInput(); GamePadInput();
+            HandleInput();
 
             // If hammer is called back (successfully), update its position
             // and handle interactions along the way - ending once the hammer is back with player
@@ -176,15 +191,16 @@ namespace HammeredGame.Game.GameObjects
                 //        }
                 //    }
                 //}
+
             }
         }
 
-        public void KeyboardInput()
+        public void HandleInput()
         {
             Input input = Services.GetService<Input>();
             // Keyboard input (E - drop hammer, Q - Call back hammer)
             // Hammer Drop Mechanic
-            if (hammerState == HammerState.WithCharacter && input.KeyDown(Keys.E))
+            if (hammerState == HammerState.WithCharacter && UserAction.DropHammer.Pressed(input))
             {
                 //hammerState = HammerState.Dropped;
                 DropHammer();
@@ -196,9 +212,10 @@ namespace HammeredGame.Game.GameObjects
             // And if the owner player is defined
             // And the hammer has a physics entity attached to it
             // Otherwise 'Q' does nothing
-            if (hammerState == HammerState.Dropped && player != null && Entity != null && input.KeyDown(Keys.Q))
+            else if (hammerState == HammerState.Dropped && player != null && Entity != null && UserAction.SummonHammer.Pressed(input))
             {
                 hammerState = HammerState.Enroute;
+                OnSummon?.Invoke(this, null);
 
                 // When hammer is enroute, the physics engine shouldn't solve for
                 // collision constraints with it --> rather we want to manually
@@ -208,36 +225,16 @@ namespace HammeredGame.Game.GameObjects
             }
         }
 
-        public void GamePadInput()
-        {
-            Input input = Services.GetService<Input>();
-            // GamePad Control (A - Hammer drop, B - Hammer call back)
-            // Same functionality as with above keyboard check
-            if (input.GamePadState.IsConnected)
-            {
-                if (hammerState == HammerState.WithCharacter && input.ButtonPress(Buttons.A))
-                {
-                    DropHammer();
-                    //hammerState = HammerState.Dropped;
-                    //this.ComputeBounds();
-                }
-                if (hammerState == HammerState.Dropped && player != null && Entity != null && input.ButtonPress(Buttons.B))
-                {
-                    hammerState = HammerState.Enroute;
-
-                    // When hammer is enroute, the physics engine shouldn't solve for
-                    // collision constraints with it --> rather we want to manually
-                    // handle collisions
-                    this.Entity.BecomeKinematic();
-                    this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
-                }
-            }
-        }
-
         public void DropHammer()
         {
             // Set hammer state to dropped
             hammerState = HammerState.Dropped;
+
+            hammer_sfx[1].Play();
+
+            //audioManager.Play3DSound("Audio/hammer_drop", false);
+
+            OnDrop?.Invoke(this, null);
 
             if (this.Entity != null)
             {
@@ -260,6 +257,12 @@ namespace HammeredGame.Game.GameObjects
 
         public bool IsEnroute()
         {
+            //sound effect instance to try and manipulate the pitch, but not working
+            if (hammerState == HammerState.Enroute)
+            {
+                SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
+                whoosh.Play();
+            }
             return hammerState == HammerState.Enroute;
         }
 

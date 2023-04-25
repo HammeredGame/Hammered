@@ -6,6 +6,7 @@ using BEPUphysics.Paths.PathFollowing;
 using BEPUphysics.PositionUpdating;
 ﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -56,11 +57,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private bool treeFallen = false;
         private bool playerOnTree;
 
+        private List<SoundEffect> tree_sfx; 
 
         public Tree(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             if (this.Entity != null)
             {
+
+                tree_sfx = Services.GetService<List<SoundEffect>>();
+                
                 if (this.Entity is not Box)
                 {
                     throw new Exception("Tree only supports Box due to how it falls over");
@@ -110,6 +115,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 fallDirection.Normalize();
                 this.Entity.Orientation = BEPUutilities.Quaternion.Identity * BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection), BEPUutilities.MathHelper.ToRadians(90));
                 SetTreeFallen(true);
+                tree_sfx[3].Play();
             }
 
             // If tree is fallen, player can walk on top of the tree

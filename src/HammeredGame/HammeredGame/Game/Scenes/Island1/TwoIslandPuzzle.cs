@@ -1,14 +1,16 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
+using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using HammeredGame.Game.Screens;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
     internal class TwoIslandPuzzle : Scene
     {
-        public TwoIslandPuzzle(GameServices services) : base(services)
+        public TwoIslandPuzzle(GameServices services, GameScreen screen) : base(services, screen)
         {
             CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle.xml");
             OnSceneStart();
@@ -26,6 +28,11 @@ namespace HammeredGame.Game.Scenes.Island1
             Get<PressurePlate>("pressureplate").SetTriggerObject(Get<Door>("door_pp"));
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
+
+            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            {
+                ParentGameScreen.InitializeLevel(typeof(LaserTutorial).FullName);
+            };
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
