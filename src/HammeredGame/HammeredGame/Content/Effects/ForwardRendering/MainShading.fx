@@ -246,6 +246,77 @@ struct PixelShaderOutput
     float4 Depth : COLOR1;
 };
 
+// Diffuse component calculation for pixel shader
+float PhongDiffuse(float3 normal, float3 toLight, float4 lightColor, float lightIntensity)
+{
+    float diffuseWeight = saturate(dot(normal, toLight));
+    return lightColor * lightIntensity * diffuseWeight * MaterialDiffuseColor;
+}
+
+// Specular component calculation for pixel shader using Blinn-Phong and
+// half-vectors.
+float BlinnPhongSpecular(float3 normal, float3 toLight, float4 lightColor, float lightIntensity, float4 pixelWorldPosition)
+{
+    float3 toCamera = normalize(CameraPosition - pixelWorldPosition).xyz;
+    float3 halfDir = normalize(toLight + toCamera);
+    float specularWeight = pow(max(dot(normal, halfDir), 0.0f), MaterialShininess);
+
+    return lightColor * lightIntensity * specularWeight * MaterialSpecularColor;
+}
+
+// Shadow attenuation component for pixel shader using percentage component
+// filtering (PCF) for slightly smoother shadows.
+float PCFShadow(float3 normal, float3 toLight, float4 pixelSunProjPosition, float3 lightDirection)
+{
+    // Find the weighted projection coordinates XY [-1, 1] to use as UV queries
+    // into the shadow map.
+    float2 sunProjCoords = pixelSunProjPosition.xy / pixelSunProjPosition.w;
+    // Shift the coordinates into [0,1] for UV
+    sunProjCoords = sunProjCoords * 0.5 + float2(0.5, 0.5);
+    // Invert the y coordinate since it if flipped between texture UV (top = 0)
+    // and projection coordinates (top = 1)
+    sunProjCoords.y = 1.0 - sunProjCoords.y;
+
+    // Find the depth in the sun's screen space for the current pixel. This will
+    // be compared against the depth in the shadow map. If the pixel is
+    // unobstructed, the value will be same (bar f.p. errors). If the pixel is
+    // obstructed, the current depth will be higher.
+    float sunCurrentDepth = pixelSunProjPosition.z / pixelSunProjPosition.w;
+
+    // There are many ways to account for the depth bias to tolerate. This is
+    // not the approach done by LearnOpenGL (which didn't lead to satisfactory
+    // results and wasn't customizable), but instead is the approach taken by
+    // kosmonautgames on MonoGame Forums:
+    // https://community.monogame.net/t/shadow-mapping-on-monogame/8212
+    float bias = clamp(0.001 * tan(acos(dot(normal, normalize(lightDirection)))), 0.0, ShadowMapDepthBias);
+
+    // We could just compare the tex2D(sunDepthSampler, sunProjCoords) and the
+    // current depth, but that would lead to harsh pixelated shadows. Instead,
+    // we sample from a 5x5 box around the pixel (a.k.a. PCF) in the depth map
+    // to get softened shadows.
+    float shadow = 0.0;
+    // To get the UV position of the surrounding light-projection pixel, we need
+    // to know how big [0,1] is mapping to in pixels, which is [0,2048]
+    float texelSize = 1.0 / 2048.0;
+    for (int x = -2; x <= 2; x++)
+    {
+        for (int y = -2; y <= 2; y++)
+        {
+            // Retrieve the depth from the light shadow map and use the red
+            // component, which stores the single floating point value.
+            float pcfDepth = tex2D(sunDepthSampler, sunProjCoords + float2(x, y) * texelSize).r;
+
+            // Add it to the shadow contribution as long as the depth of the
+            // current pixel (from the light) is further than the closest
+            // depth that the light found towards our direction.
+            shadow += (sunCurrentDepth - bias) > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    // Divide by box amount to make range [0,1]
+    shadow /= 25.0;
+    return shadow;
+}
+
 PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
 {
     PixelShaderOutput output;
@@ -273,76 +344,21 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
 		float3 toLight = normalize(DirectionalLightDirections[i]);
 
         // Diffuse component
-        float diffuseWeight = saturate(dot(normal, toLight));
-        float4 diffuse = DirectionalLightColors[i] * DirectionalLightIntensities[i] * diffuseWeight * MaterialDiffuseColor;
-        lightContribution += diffuse;
+        lightContribution += PhongDiffuse(normal, toLight, DirectionalLightColors[i], DirectionalLightIntensities[i]);
 
         // Add Specular component only if we have declared the material as such
         // because Shininess = 0 creates visual artifacts and isn't equivalent
         // to the material being 100% diffuse.
-        if (diffuseWeight > 0 && MaterialHasSpecular)
+        if (dot(normal, toLight) > 0 && MaterialHasSpecular)
         {
-            // Blinn-Phong using half vectors
-            float3 toCamera = normalize(CameraPosition - input.WorldSpacePosition).xyz;
-            float3 halfDir = normalize(toLight + toCamera);
-            float specularWeight = pow(max(dot(normal, halfDir), 0.0f), MaterialShininess);
-
-            float4 specular = DirectionalLightColors[i] * DirectionalLightIntensities[i] * specularWeight * MaterialSpecularColor;
-            lightContribution += specular;
+            lightContribution += BlinnPhongSpecular(normal, toLight, DirectionalLightColors[i], DirectionalLightIntensities[i], input.WorldSpacePosition);
         }
 
         // If this light is the sun, attenuate the light contribution by the
         // shadow component too.
         if (i == SunLightIndex)
         {
-            // Shadow Component with PCF (percentage component filtering)
-
-            // Find the weighted projection coordinates XY [-1, 1] to use as UV queries
-            // into the shadow map.
-            float2 sunProjCoords = input.SunSpacePosition.xy / input.SunSpacePosition.w;
-            // Shift the coordinates into [0,1] for UV
-            sunProjCoords = sunProjCoords * 0.5 + float2(0.5, 0.5);
-            // Invert the y coordinate since it if flipped between texture UV (top = 0)
-            // and projection coordinates (top = 1)
-            sunProjCoords.y = 1.0 - sunProjCoords.y;
-
-            // Find the depth in the sun's screen space for the current pixel. This will
-            // be compared against the depth in the shadow map. If the pixel is
-            // unobstructed, the value will be same (bar f.p. errors). If the pixel is
-            // obstructed, the current depth will be higher.
-            float sunCurrentDepth = input.SunSpacePosition.z / input.SunSpacePosition.w;
-
-            // There are many ways to account for the depth bias to tolerate. This is
-            // not the approach done by LearnOpenGL (which didn't lead to satisfactory
-            // results and wasn't customizable), but instead is the approach taken by
-            // kosmonautgames on MonoGame Forums:
-            // https://community.monogame.net/t/shadow-mapping-on-monogame/8212
-            float bias = clamp(0.001 * tan(acos(dot(normal, normalize(DirectionalLightDirections[1])))), 0.0, ShadowMapDepthBias);
-
-            // We could just compare the tex2D(sunDepthSampler, sunProjCoords) and the
-            // current depth, but that would lead to harsh pixelated shadows. Instead,
-            // we sample from a 5x5 box around the pixel (a.k.a. PCF) in the depth map
-            // to get softened shadows.
-            float shadow = 0.0;
-            // To get the UV position of the surrounding light-projection pixel, we need
-            // to know how big [0,1] is mapping to in pixels, which is [0,2048]
-            float texelSize = 1.0 / 2048.0;
-            for (int x = -2; x <= 2; x++)
-            {
-                for (int y = -2; y <= 2; y++)
-                {
-                    // Retrieve the depth from the light shadow map and use the red
-                    // component, which stores the single floating point value.
-                    float pcfDepth = tex2D(sunDepthSampler, sunProjCoords + float2(x, y) * texelSize).r;
-
-                    // Add it to the shadow contribution as long as the depth of the
-                    // current pixel (from the light) is further than the closest
-                    // depth that the light found towards our direction.
-                    shadow += (sunCurrentDepth - bias) > pcfDepth ? 1.0 : 0.0;
-                }
-            }
-            // Divide by box amount to make range [0,1]
-            shadow /= 25.0;
+            float shadow = PCFShadow(normal, toLight, input.SunSpacePosition, DirectionalLightDirections[i]);
 
             // Multiply the color so far (diffuse + specular) by (1 - shadow) so that
             // we retain more of the original color if there is less shadow.
