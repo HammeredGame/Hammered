@@ -171,14 +171,14 @@ float ShadowMapNormalOffset;
 float4x4 SunView;
 float4x4 SunProj;
 
-struct VertexShaderInput
+struct MainShadingVSInput
 {
     float4 Position : POSITION0;
     float4 Normal : NORMAL0;
     float2 TextureCoordinate : TEXCOORD0;
 };
 
-struct VertexShaderOutput
+struct MainShadingVSOutput
 {
     float4 Position : POSITION0;
     // We declare the following as TEXCOORD to get interpolation across pixels
@@ -189,9 +189,9 @@ struct VertexShaderOutput
     float4 SunSpacePosition : TEXCOORD4;
 };
 
-VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
+MainShadingVSOutput MainShadingVS(MainShadingVSInput input)
 {
-    VertexShaderOutput output;
+    MainShadingVSOutput output;
 
     // Transform vertex coordinates into screen-space
     float4 worldPosition = mul(input.Position, World);
@@ -317,7 +317,7 @@ float PCFShadow(float3 normal, float3 toLight, float4 pixelSunProjPosition, floa
     return shadow;
 }
 
-PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
+PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
 {
     PixelShaderOutput output;
 
@@ -392,7 +392,7 @@ technique MainShading
 {
     pass Pass1
     {
-        VertexShader = compile VS_SHADERMODEL VertexShaderFunction();
-        PixelShader = compile PS_SHADERMODEL PixelShaderFunction();
+        VertexShader = compile VS_SHADERMODEL MainShadingVS();
+        PixelShader = compile PS_SHADERMODEL MainShadingPS();
     }
 }
