@@ -15,6 +15,8 @@ namespace HammeredGame.Graphics
         private RenderTarget2D diffuseTarget;
         private RenderTarget2D depthTarget;
 
+        private RenderTarget2D lightDepthTarget;
+
         private RenderTarget2D finalTarget;
 
         private GraphicsDevice gpu;
@@ -33,6 +35,10 @@ namespace HammeredGame.Graphics
 
             diffuseTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
             depthTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Single, DepthFormat.Depth24);
+
+            // todo: the size of this target doesn't have to be equal to the back buffer size; experiment
+            // todo: find out why this works with halfvector4 but not Single despite storing only one fp number
+            lightDepthTarget = new RenderTarget2D(gpu, 2048, 2048, false, SurfaceFormat.HalfVector4, DepthFormat.Depth24);
 
             finalTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
         }
@@ -62,6 +68,19 @@ namespace HammeredGame.Graphics
                 return;
             }
 
+            // Perform a pass to generate depth values from the scene's sunlight
+            gpu.SetRenderTargets(lightDepthTarget);
+            gpu.Clear(Color.White);
+            Vector3 sunPos = Vector3.Zero;
+            Matrix sunView = Matrix.CreateLookAt(scene.Lights.Sun.Direction, Vector3.Zero, Vector3.Up);
+            Matrix sunProj = Matrix.CreateOrthographic(1000, 1000, -2000f, 2000f);
+            foreach (GameObject gameObject in scene.GameObjectsList)
+            {
+                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques[1];
+                gameObject.Draw(sunView, sunProj, sunPos, scene.Lights);
+                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques[0];
+            }
+
             // Perform a main forward render pass but also store depth information
             gpu.SetRenderTargets(diffuseTarget, depthTarget);
             Set3DStates();
@@ -69,6 +88,9 @@ namespace HammeredGame.Graphics
             // Render all the scene objects
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
+                gameObject.Effect.Parameters["SunDepthTexture"]?.SetValue(lightDepthTarget);
+                gameObject.Effect.Parameters["SunView"]?.SetValue(sunView);
+                gameObject.Effect.Parameters["SunProj"]?.SetValue(sunProj);
                 gameObject.Draw(scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
             }
         }
@@ -88,6 +110,7 @@ namespace HammeredGame.Graphics
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
             spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, 160, 90), Color.SkyBlue);
             spriteBatch.Draw(depthTarget, new Rectangle(160, 0, 160, 90), Color.SkyBlue);
+            spriteBatch.Draw(lightDepthTarget, new Rectangle(320, 0, 160, 90), Color.SkyBlue);
             spriteBatch.End();
         }
 
