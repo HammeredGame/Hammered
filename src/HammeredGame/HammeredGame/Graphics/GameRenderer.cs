@@ -24,6 +24,8 @@ namespace HammeredGame.Graphics
 
         private Effect tonemapEffect;
         private float exposure = 1.0f;
+        private float shadowMapDepthBias = 1.0f / 2048.0f * 2f;
+        private float shadowMapNormalOffset = 2f;
 
         private bool showDebugTargets;
 
@@ -91,6 +93,8 @@ namespace HammeredGame.Graphics
                 gameObject.Effect.Parameters["SunDepthTexture"]?.SetValue(lightDepthTarget);
                 gameObject.Effect.Parameters["SunView"]?.SetValue(sunView);
                 gameObject.Effect.Parameters["SunProj"]?.SetValue(sunProj);
+                gameObject.Effect.Parameters["ShadowMapDepthBias"]?.SetValue(shadowMapDepthBias);
+                gameObject.Effect.Parameters["ShadowMapNormalOffset"]?.SetValue(shadowMapNormalOffset);
                 gameObject.Draw(scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
             }
         }
@@ -108,9 +112,9 @@ namespace HammeredGame.Graphics
         private void DisplayIntermediateTargets()
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
-            spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, 160, 90), Color.SkyBlue);
-            spriteBatch.Draw(depthTarget, new Rectangle(160, 0, 160, 90), Color.SkyBlue);
-            spriteBatch.Draw(lightDepthTarget, new Rectangle(320, 0, 160, 90), Color.SkyBlue);
+            spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, 320, 180), Color.SkyBlue);
+            spriteBatch.Draw(depthTarget, new Rectangle(320, 0, 320, 180), Color.SkyBlue);
+            spriteBatch.Draw(lightDepthTarget, new Rectangle(640, 0, 180, 180), Color.SkyBlue);
             spriteBatch.End();
         }
 
@@ -134,6 +138,12 @@ namespace HammeredGame.Graphics
             ImGui.Text("Exposure:");
             ImGui.SameLine();
             ImGui.DragFloat("##exposure", ref exposure, 0.1f, 0f, 5f);
+            ImGui.Text("Shadow Map Depth Bias:");
+            ImGui.SameLine();
+            ImGui.DragFloat("##bias", ref shadowMapDepthBias, 0.001f, 0f, 1f);
+            ImGui.Text("Shadow Map Normal Offset:");
+            ImGui.SameLine();
+            ImGui.DragFloat("##offset", ref shadowMapNormalOffset, 0.1f, 0f, 10f);
         }
     }
 }
