@@ -73,9 +73,11 @@ namespace HammeredGame.Graphics
             // Perform a pass to generate depth values from the scene's sunlight
             gpu.SetRenderTargets(lightDepthTarget);
             gpu.Clear(Color.White);
-            Vector3 sunPos = Vector3.Zero;
-            Matrix sunView = Matrix.CreateLookAt(scene.Lights.Sun.Direction, Vector3.Zero, Vector3.Up);
-            Matrix sunProj = Matrix.CreateOrthographic(1000, 1000, -2000f, 2000f);
+            Set3DStates();
+
+            Vector3 sunPos = scene.Lights.Sun.Direction * 500f;
+            Matrix sunView = Matrix.CreateLookAt(sunPos, Vector3.Zero, Vector3.Up);
+            Matrix sunProj = Matrix.CreateOrthographic(1000, 1000, 0.01f, 2000f);
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
                 gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques[1];
