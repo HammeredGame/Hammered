@@ -337,7 +337,7 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
 
     // The specular and diffuse components are added for every directional light
 	float3 normal = normalize(input.Normal);
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < MAX_DIRECTIONAL_LIGHTS; i++)
 	{
         float4 lightContribution = float4(0, 0, 0, 0);
 
