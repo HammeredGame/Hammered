@@ -53,6 +53,8 @@ sampler2D sunDepthSampler = sampler_state
     AddressV = Clamp;
 };
 
+float ShadowMapDepthBias;
+float ShadowMapNormalOffset;
 float4x4 SunView;
 float4x4 SunProj;
 
@@ -100,7 +102,9 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     // and then in the pixel shader, we'll use the value of z / w as the pixel depth value.
     output.Depth.xy = output.Position.zw;
 
-    float4 sunViewPosition = mul(worldPosition, SunView);
+    float4 offsetPosition = worldPosition;
+    offsetPosition.xyz += ShadowMapNormalOffset * normal;
+    float4 sunViewPosition = mul(offsetPosition, SunView);
     output.SunSpacePosition = mul(sunViewPosition, SunProj);
     return output;
 }
@@ -167,7 +171,8 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
     sunProjCoords.y = 1.0 - sunProjCoords.y;
     // float sunClosestDepth = tex2D(sunDepthSampler, sunProjCoords).r;
     float sunCurrentDepth = input.SunSpacePosition.z / input.SunSpacePosition.w;
-    float bias = max(0.01 * (1.0 - dot(normal, normalize(DirectionalLightDirections[1]))), 0.001);
+    // float bias = max(0.01 * (1.0 - dot(normal, normalize(DirectionalLightDirections[1]))), 0.001);
+    float bias = clamp(0.001 * tan(acos(dot(normal, normalize(DirectionalLightDirections[1])))), 0.0, ShadowMapDepthBias);
     // float shadow = (sunCurrentDepth - bias) > sunClosestDepth ? 1.0 : 0.0;
     float shadow = 0.0;
     float texelSize = 1.0 / 2048.0;
