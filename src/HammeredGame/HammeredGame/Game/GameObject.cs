@@ -193,6 +193,7 @@ namespace HammeredGame.Game
                     part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());
                     part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
                     part.Effect.Parameters["DirectionalLightDirections"]?.SetValue(lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray());
+                    part.Effect.Parameters["SunLightIndex"]?.SetValue(lights.Directionals.Count);
 
                     part.Effect.Parameters["AmbientLightColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
                     part.Effect.Parameters["AmbientLightIntensity"]?.SetValue(lights.Ambient.Intensity);
