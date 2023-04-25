@@ -160,14 +160,26 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
         }
     }
 
-    // Find the distance to the sunlight
+    // Shadow Component
+
     float2 sunProjCoords = input.SunSpacePosition.xy / input.SunSpacePosition.w;
     sunProjCoords = sunProjCoords * 0.5 + float2(0.5, 0.5);
     sunProjCoords.y = 1.0 - sunProjCoords.y;
-    float sunClosestDepth = tex2D(sunDepthSampler, sunProjCoords).r;
+    // float sunClosestDepth = tex2D(sunDepthSampler, sunProjCoords).r;
     float sunCurrentDepth = input.SunSpacePosition.z / input.SunSpacePosition.w;
-    float bias = max(0.05 * (1.0 - dot(normal, normalize(DirectionalLightDirections[1]))), 0.005);
-    float shadow = (sunCurrentDepth - 0.001) > sunClosestDepth ? 1.0 : 0.0;
+    float bias = max(0.01 * (1.0 - dot(normal, normalize(DirectionalLightDirections[1]))), 0.001);
+    // float shadow = (sunCurrentDepth - bias) > sunClosestDepth ? 1.0 : 0.0;
+    float shadow = 0.0;
+    float texelSize = 1.0 / 2048.0;
+    for (int x = -2; x <= 2; x++)
+    {
+        for (int y = -2; y <= 2; y++)
+        {
+            float pcfDepth = tex2D(sunDepthSampler, sunProjCoords + float2(x, y) * texelSize).r;
+            shadow += (sunCurrentDepth - bias) > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 25.0;
 
     output.Color *= (1 - shadow);
 
