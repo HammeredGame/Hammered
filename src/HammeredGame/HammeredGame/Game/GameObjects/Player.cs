@@ -52,9 +52,18 @@ namespace HammeredGame.Game.GameObjects
         private Vector3 player_vel;
         private bool previously_moving = false;
 
+        public enum PlayerOnSurfaceState
+        {
+            OnGround,
+            OnTree,
+            OnRock
+        }
+
         // Last known ground position, used to reset player's position
         // if the player comes into contact with a water object
         private Vector3 lastGroundPosition;
+
+        public PlayerOnSurfaceState StandingOn { get; set; }
 
         // TEMPORARY (FOR TESTING)
         public bool OnTree = false;
@@ -121,6 +130,7 @@ namespace HammeredGame.Game.GameObjects
 
             // Initial position should be on/over ground
             this.lastGroundPosition = this.Position;
+            this.StandingOn = PlayerOnSurfaceState.OnGround;
         }
 
         private void Events_ContactCreated(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair, BEPUphysics.CollisionTests.ContactData contact)
@@ -131,6 +141,7 @@ namespace HammeredGame.Game.GameObjects
             if (other.Tag is Water)
             {
                 this.Position = this.lastGroundPosition;
+                this.StandingOn = PlayerOnSurfaceState.OnGround;
             }
         }
 
@@ -139,7 +150,10 @@ namespace HammeredGame.Game.GameObjects
             // Make some checks to identify if the last ground position should be updated
             if (other.Tag is Ground)
             {
-                if (this.OnTree) this.OnTree = false;
+                if (this.StandingOn != PlayerOnSurfaceState.OnGround)
+                {
+                    this.StandingOn = PlayerOnSurfaceState.OnGround;
+                }
 
                 // If the player is also touching water, then don't update ground position
                 foreach (var contactPair in sender.Pairs)

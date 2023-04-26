@@ -132,7 +132,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 //    minY = Math.Min(minY, pointOfContact.Y);
                 //}
 
-                if (!player.OnTree)
+                if (player.StandingOn != PlayerOnSurfaceState.OnTree)
                 {
                     float maxY = player.Entity.Position.Y;
                     foreach (var contact in pair.Contacts)
@@ -141,7 +141,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         maxY = Math.Max(maxY, pointOfContact.Y);
                     }
 
-                    player.OnTree = true;
+                    player.StandingOn = PlayerOnSurfaceState.OnTree;
                     player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).Width, player.Entity.Position.Z);
                 }
             }
