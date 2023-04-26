@@ -212,7 +212,7 @@ namespace HammeredGame.Game.Screens
         {
             base.Draw(gameTime);
 
-            gameRenderer.DrawScene(currentScene);
+            gameRenderer.DrawScene(gameTime, currentScene);
             gameRenderer.PostProcess();
             gameRenderer.CopyOutputTo(ScreenManager.MainRenderTarget);
         }
