@@ -165,7 +165,7 @@ namespace HammeredGame.Game
         /// <param name="cameraPosition"></param>
         /// <param name="tex"></param>
         /// <param name="lights"></param>
-        public void DrawModel(Model model, Matrix view, Matrix projection, Vector3 cameraPosition, Texture2D tex, SceneLightSetup lights)
+        public virtual void DrawModel(Model model, Matrix view, Matrix projection, Vector3 cameraPosition, Texture2D tex, SceneLightSetup lights)
         {
             Matrix world = GetWorldMatrix();
 
