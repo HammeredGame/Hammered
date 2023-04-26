@@ -48,10 +48,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     /// REMINDER (class tree): GameObject -> EnvironmentObject -> ObstacleObject -> UnbreakableObstacle
     ///                         -> ImmovableObstacle
     /// <para />
-    /// TODO: Currently, the laser is defined as a vertical cylinder. So, when scaling up and down to simulate
-    /// the blocking of the laser, the y-component of the scale is modified (see the overloaded Draw function).
-    /// According to how the final laser mesh is built, this would need to be appropriately modified.
-    /// <para />
     ///
     /// TODO: Currently, the code only handles the default state of the laser (full blocking). Additionally, it does
     /// not handle any rotating laser functionality.
