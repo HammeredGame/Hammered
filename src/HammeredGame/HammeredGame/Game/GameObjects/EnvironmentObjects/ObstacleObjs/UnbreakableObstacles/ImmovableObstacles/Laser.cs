@@ -71,7 +71,14 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         // Dynamic variables
         private LaserState laserState;
         private float laserScale;
-        private bool orientToCamera = false;
+        private bool orientToCamera = true;
+
+        private Texture2D laserMaskTexture;
+
+        // Laser configuration which hopefully won't need to change after release, but can be
+        // changed during debug through the UI to find better values
+        private float laserIntensity = 3f;
+        private Vector2 laserSpeed = new(-1f, 0f);
 
         public Laser(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -94,6 +101,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.laserDefaultLength = (this.Entity as Box).Length;
             this.laserDefaultScale = this.Scale;
             this.laserScale = this.Scale;
+
+            // We use a custom shader for the Laser which uses a 2D plane mesh and rolling textures
+            // and color intensities above 1 to simulate the laser.
+            this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/Laser");
+            this.laserMaskTexture = services.GetService<ContentManager>().Load<Texture2D>("LaserTexture");
         }
 
         private void Events_PairRemoved(EntityCollidable sender, BroadPhaseEntry other)
@@ -212,7 +224,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    // Load in the shader and set its parameters
+                    // We're using a Laser-specific shader here. Editing these parameters should go
+                    // side-in-side with the shader file, since they're very tightly coupled.
                     part.Effect = this.Effect;
 
                     part.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform * world);
@@ -241,9 +254,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
                     part.Effect.Parameters["MaterialHasSpecular"].SetValue(false);
 
-                    part.Effect.Parameters["LaserTexture"]?.SetValue(tex);
+                    part.Effect.Parameters["MaterialTexture"].SetValue(tex);
                     // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
-                    part.Effect.Parameters["PerformTextureGammaCorrection"]?.SetValue(true);
+                    part.Effect.Parameters["MaterialTextureGammaCorrection"].SetValue(true);
+
+                    part.Effect.Parameters["LaserTexture"]?.SetValue(laserMaskTexture);
+                    part.Effect.Parameters["LaserTextureGammaCorrection"]?.SetValue(false);
+
+                    part.Effect.Parameters["GameTimeSeconds"]?.SetValue((float)gameTime.TotalGameTime.TotalSeconds);
+                    part.Effect.Parameters["LaserIntensity"]?.SetValue(laserIntensity);
+                    part.Effect.Parameters["LaserSpeed"]?.SetValue(laserSpeed);
                 }
                 mesh.Draw();
             }
@@ -319,6 +339,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             ImGui.DragFloat("Laser Length", ref laserScale, 0.01f);
             ImGui.DragFloat("Laser Default Length", ref laserDefaultLength, 0.01f);
             ImGui.Checkbox("Toggle billboard effect", ref orientToCamera);
+            ImGui.DragFloat("Laser Intensity", ref laserIntensity, 0.1f, 0f);
+            System.Numerics.Vector2 copy = laserSpeed.ToNumerics();
+            ImGui.DragFloat2("Laser XY Speed", ref copy, 0.1f);
+            laserSpeed = copy;
         }
 
     }
