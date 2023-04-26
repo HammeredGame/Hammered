@@ -76,8 +76,9 @@ namespace HammeredGame.Graphics
         /// Draw a scene, with shadows and lighting. this.PostProcess() should be called after this
         /// is called, to copy the post-processed and tone-mapped images into the final render target.
         /// </summary>
+        /// <param name="gameTime"></param>
         /// <param name="scene"></param>
-        public void DrawScene(Scene scene)
+        public void DrawScene(GameTime gameTime, Scene scene)
         {
             if (scene == null)
             {
@@ -95,7 +96,7 @@ namespace HammeredGame.Graphics
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
                 gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques["RenderLightDepthMap"];
-                gameObject.Draw(sunView, sunProj, sunPos, scene.Lights);
+                gameObject.Draw(gameTime, sunView, sunProj, sunPos, scene.Lights);
                 gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques["MainShading"];
             }
 
@@ -112,7 +113,7 @@ namespace HammeredGame.Graphics
                 gameObject.Effect.Parameters["SunProj"]?.SetValue(sunProj);
                 gameObject.Effect.Parameters["ShadowMapDepthBias"]?.SetValue(shadowMapDepthBias);
                 gameObject.Effect.Parameters["ShadowMapNormalOffset"]?.SetValue(shadowMapNormalOffset);
-                gameObject.Draw(scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
+                gameObject.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
             }
         }
 

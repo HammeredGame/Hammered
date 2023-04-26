@@ -204,7 +204,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         /// <param name="cameraPosition"></param>
         /// <param name="tex"></param>
         /// <param name="lights"></param>
-        public override void DrawModel(Model model, Matrix view, Matrix projection, Vector3 cameraPosition, Texture2D tex, SceneLightSetup lights)
+        public override void DrawModel(GameTime gameTime, Model model, Matrix view, Matrix projection, Vector3 cameraPosition, Texture2D tex, SceneLightSetup lights)
         {
             // Pass the camera position to the world matrix so it calculates a billboard orientation
             Matrix world = GetWorldMatrix(cameraPosition);

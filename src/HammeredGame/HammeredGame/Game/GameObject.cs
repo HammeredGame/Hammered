@@ -148,24 +148,23 @@ namespace HammeredGame.Game
 
         public abstract void Update(GameTime gameTime, bool screenHasFocus);
 
-        // get position and rotation of the object - extract the scale, rotation, and translation matrices
-        // get world matrix and then call draw model to draw the mesh on screen
-        public virtual void Draw(Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
+        public virtual void Draw(GameTime gameTime, Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
         {
             if (Visible)
-                DrawModel(Model, view, projection, cameraPosition, Texture, lights);
+                DrawModel(gameTime, Model, view, projection, cameraPosition, Texture, lights);
         }
 
         /// <summary>
         /// Common method to draw 3D models
         /// </summary>
+        /// <param name="gameTime"></param>
         /// <param name="model"></param>
         /// <param name="view"></param>
         /// <param name="projection"></param>
         /// <param name="cameraPosition"></param>
         /// <param name="tex"></param>
         /// <param name="lights"></param>
-        public virtual void DrawModel(Model model, Matrix view, Matrix projection, Vector3 cameraPosition, Texture2D tex, SceneLightSetup lights)
+        public virtual void DrawModel(GameTime gameTime, Model model, Matrix view, Matrix projection, Vector3 cameraPosition, Texture2D tex, SceneLightSetup lights)
         {
             Matrix world = GetWorldMatrix();
 

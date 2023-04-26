@@ -393,7 +393,7 @@ namespace HammeredGame.Game.GameObjects
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
         }
 
-        public override void Draw(Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
         {
             // Animate mesh
             //Matrix[] transforms = new Matrix[this.Model.Bones.Count];
@@ -414,7 +414,7 @@ namespace HammeredGame.Game.GameObjects
 
             if (Visible)
             {
-                DrawModel(Model, view, projection, cameraPosition, Texture, lights);
+                DrawModel(gameTime, Model, view, projection, cameraPosition, Texture, lights);
             }
         }
     }
