@@ -222,6 +222,8 @@ namespace HammeredGame.Game.GameObjects
                 // handle collisions
                 this.Entity.BecomeKinematic();
                 this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+
+                this.player.SetHammerWait();
             }
         }
 

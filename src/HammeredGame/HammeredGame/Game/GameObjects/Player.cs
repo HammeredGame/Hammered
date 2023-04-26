@@ -51,6 +51,7 @@ namespace HammeredGame.Game.GameObjects
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
         private bool previously_moving = false;
+        private bool waitForHammer = false;
 
         public enum PlayerOnSurfaceState
         {
@@ -63,10 +64,10 @@ namespace HammeredGame.Game.GameObjects
         // if the player comes into contact with a water object
         private Vector3 lastGroundPosition;
 
+        // Variable to keep track of what surface the player is currently standing on
         public PlayerOnSurfaceState StandingOn { get; set; }
 
         // TEMPORARY (FOR TESTING)
-        public bool OnTree = false;
         public bool ReachedGoal = false;
 
         private Camera activeCamera;
@@ -131,6 +132,7 @@ namespace HammeredGame.Game.GameObjects
             // Initial position should be on/over ground
             this.lastGroundPosition = this.Position;
             this.StandingOn = PlayerOnSurfaceState.OnGround;
+            this.waitForHammer = false;
         }
 
         private void Events_ContactCreated(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair, BEPUphysics.CollisionTests.ContactData contact)
@@ -181,6 +183,8 @@ namespace HammeredGame.Game.GameObjects
                     hammer.Entity.BecomeKinematic();
                     hammer.Entity.LinearVelocity = BEPUutilities.Vector3.Zero;
                     hammer.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoBroadPhase;
+
+                    this.waitForHammer = false;
                 }
             }
         }
@@ -208,6 +212,8 @@ namespace HammeredGame.Game.GameObjects
                         otherEntityInformation.Entity.BecomeKinematic();
                         otherEntityInformation.Entity.LinearVelocity = BEPUutilities.Vector3.Zero;
                         otherEntityInformation.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoBroadPhase;
+
+                        this.waitForHammer = false;
                     }
                 }
             }
@@ -220,6 +226,17 @@ namespace HammeredGame.Game.GameObjects
         public void SetActiveCamera(Camera camera)
         {
             activeCamera = camera;
+        }
+
+        /// <summary>
+        /// Set the player to wait for hammer - which should only happen when the hammer
+        /// gets player input to be called back. While hammer is enroute, the player's 
+        /// waitForHammer bool is set to true, which results in the player not being able
+        /// to use keyboard/gamepad input to move until the hammer returns to the player.
+        /// </summary>
+        public void SetHammerWait()
+        {
+            this.waitForHammer = true;
         }
 
         private void ConfigureEffectMatrices(IEffectMatrices effect, Matrix world, Matrix view, Matrix projection)
@@ -267,9 +284,10 @@ namespace HammeredGame.Game.GameObjects
 
             // Animate player
 
-            // If there was movement, normalize speed and edit rotation of character model
+            // If there was movement and the player isn't waiting for hammer,
+            // normalize speed and edit rotation of character model
             // Also account for collisions
-            if (moveDirty && this.Entity != null && player_vel != Vector3.Zero)
+            if (moveDirty && this.Entity != null && player_vel != Vector3.Zero && !this.waitForHammer)
             {
                 BEPUutilities.Vector3 Pos = this.Entity.Position;
 
