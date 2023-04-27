@@ -78,7 +78,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         // Laser configuration which hopefully won't need to change after release, but can be
         // changed during debug through the UI to find better values
-        private float laserIntensity = 3f;
+        private float laserIntensity = 7f;
         private Vector2 laserSpeed = new(-1f, 0f);
 
         public Laser(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
@@ -254,7 +254,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     // component's weight.
                     part.Effect.Parameters["MaterialDiffuseColor"]?.SetValue(Color.White.ToVector4());
                     part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["MaterialHasSpecular"].SetValue(false);
+                    part.Effect.Parameters["MaterialHasSpecular"]?.SetValue(false);
 
                     part.Effect.Parameters["LaserMaterial"].SetValue(tex);
                     // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)

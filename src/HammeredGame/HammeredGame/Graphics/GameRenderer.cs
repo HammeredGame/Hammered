@@ -30,9 +30,13 @@ namespace HammeredGame.Graphics
 
         // The color correction post-processing effect and its parameters
         private readonly Effect colorCorrectionEffect;
+        private readonly RenderTarget2D postprocessTarget;
         private float exposure = 1.0f;
 
+        private BloomFilter _bloomFilter;
+
         private bool showDebugTargets;
+
 
         public GameRenderer(GraphicsDevice gpu, ContentManager content) {
             this.gpu = gpu;
@@ -52,7 +56,12 @@ namespace HammeredGame.Graphics
 
             // The target for the final tone-mapped and post-processed image. Format is Color, i.e.
             // 8 bit RGBA.
+            postprocessTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
             finalTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
+
+            _bloomFilter = new BloomFilter();
+            _bloomFilter.Load(gpu, content, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight);
+            _bloomFilter.BloomPreset = BloomFilter.BloomPresets.SuperWide;
         }
 
         /// <summary>
@@ -146,11 +155,21 @@ namespace HammeredGame.Graphics
         /// </summary>
         public void PostProcess()
         {
-            gpu.SetRenderTarget(finalTarget);
+            gpu.SetRenderTarget(postprocessTarget);
 
             colorCorrectionEffect.Parameters["Exposure"].SetValue(exposure);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, colorCorrectionEffect, null);
             spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
+            spriteBatch.End();
+
+            Texture2D bloom = _bloomFilter.Draw(postprocessTarget, gpu.PresentationParameters.BackBufferWidth / 2, gpu.PresentationParameters.BackBufferHeight / 2);
+
+            gpu.SetRenderTarget(finalTarget);
+            gpu.Clear(Color.Black);
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+            spriteBatch.Draw(postprocessTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
+            spriteBatch.Draw(bloom, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
             spriteBatch.End();
         }
 
@@ -163,6 +182,7 @@ namespace HammeredGame.Graphics
             spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, 320, 180), Color.SkyBlue);
             spriteBatch.Draw(depthTarget, new Rectangle(320, 0, 320, 180), Color.SkyBlue);
             spriteBatch.Draw(lightDepthTarget, new Rectangle(640, 0, 180, 180), Color.SkyBlue);
+            spriteBatch.Draw(postprocessTarget, new Rectangle(820, 0, 320, 180), Color.SkyBlue);
             spriteBatch.End();
         }
 
@@ -198,6 +218,39 @@ namespace HammeredGame.Graphics
             ImGui.Text("Shadow Map Normal Offset:");
             ImGui.SameLine();
             ImGui.DragFloat("##offset", ref shadowMapNormalOffset, 0.1f, 0f, 10f);
+            if (ImGui.BeginCombo("Bloom Preset", "Wide")) {
+                if (ImGui.Selectable("Wide"))
+                {
+                    _bloomFilter.BloomPreset = BloomFilter.BloomPresets.Wide;
+                } else if (ImGui.Selectable("SuperWide"))
+                {
+                    _bloomFilter.BloomPreset = BloomFilter.BloomPresets.SuperWide;
+
+                }
+                else if (ImGui.Selectable("Focussed"))
+                {
+                    _bloomFilter.BloomPreset = BloomFilter.BloomPresets.Focussed;
+
+                }
+                else if (ImGui.Selectable("Small"))
+                {
+                    _bloomFilter.BloomPreset = BloomFilter.BloomPresets.Small;
+
+                }
+                else if (ImGui.Selectable("Cheap"))
+                {
+                    _bloomFilter.BloomPreset = BloomFilter.BloomPresets.Cheap;
+
+                }
+
+                ImGui.EndCombo();
+            }
+            float length = _bloomFilter.BloomStreakLength;
+            ImGui.DragFloat("Bloom Filter Streak Length", ref length, 0.01f, 0f, 10f);
+            _bloomFilter.BloomStreakLength = length;
+            float threshold = _bloomFilter.BloomThreshold;
+            ImGui.DragFloat("Bloom Filter Threshold", ref threshold, 0.01f, 0f, 1f);
+            _bloomFilter.BloomThreshold = threshold;
         }
     }
 }

@@ -253,6 +253,12 @@
 /processorParam:TextureFormat=Compressed
 /build:diffuse_tree.fbx
 
+#begin Effects/BloomFilter/Bloom.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/BloomFilter/Bloom.fx
+
 #begin Effects/DeferredRendering/deferredlighting.fx
 /importer:EffectImporter
 /processor:EffectProcessor
