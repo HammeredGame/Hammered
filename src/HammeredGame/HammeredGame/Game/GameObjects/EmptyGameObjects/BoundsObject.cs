@@ -29,7 +29,7 @@ namespace HammeredGame.Game.GameObjects.EmptyGameObjects
             this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             // Do nothing (for now)
         }

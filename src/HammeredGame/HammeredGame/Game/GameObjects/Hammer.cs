@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using System;
@@ -13,6 +13,7 @@ using HammeredGame.Game.PathPlanning.Grid;
 using BEPUutilities;
 using Vector3 = Microsoft.Xna.Framework.Vector3; // How is it that this ambigouity results in an error after adding comments???
 using Quaternion = Microsoft.Xna.Framework.Quaternion; // How is it that this ambigouity results in an error after adding comments???
+using Microsoft.Xna.Framework.Audio;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -67,10 +68,22 @@ namespace HammeredGame.Game.GameObjects
         private readonly Queue<BEPUutilities.Vector3> route = new();
         private BEPUutilities.Vector3 nextRoutePosition;
 
+        private List<SoundEffect> hammer_sfx = new List<SoundEffect>();
+        //how long till trigger next sound
+        //TimeSpan audioDelay = TimeSpan.Zero;
+
+        private AudioManager audioManager;
+
+        public event EventHandler OnSummon;
+        public event EventHandler OnCollision;
+        public event EventHandler OnDrop;
+
         public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
             : base(services, model, t, pos, rotation, scale, entity)
         {
             hammerState = HammerState.WithCharacter;
+            hammer_sfx = Services.GetService<List<SoundEffect>>();
+            audioManager = Services.GetService<AudioManager>();
 
             if (this.Entity != null)
             {
@@ -127,6 +140,8 @@ namespace HammeredGame.Game.GameObjects
             if (otherEntityInformation != null)
             {
                 if (other.Tag is Player) return;
+                OnCollision?.Invoke(this, null);
+
                 Input input = Services.GetService<Input>();
                 if (input.GamePadState.IsConnected)
                 {
@@ -146,7 +161,7 @@ namespace HammeredGame.Game.GameObjects
         public void SetSceneUniformGrid(UniformGrid grid) { this.grid = grid; }
 
         // Update function (called every tick)
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             OldPosition = this.Position;
 
@@ -158,7 +173,7 @@ namespace HammeredGame.Game.GameObjects
             }
 
             // Get the input via keyboard or gamepad
-            KeyboardInput(); GamePadInput();
+            HandleInput();
 
             // If hammer is called back (successfully), update its position
             // and handle interactions along the way - ending once the hammer is back with player
@@ -215,15 +230,16 @@ namespace HammeredGame.Game.GameObjects
                 //        }
                 //    }
                 //}
+
             }
         }
 
-        public void KeyboardInput()
+        public void HandleInput()
         {
             Input input = Services.GetService<Input>();
             // Keyboard input (E - drop hammer, Q - Call back hammer)
             // Hammer Drop Mechanic
-            if (hammerState == HammerState.WithCharacter && input.KeyDown(Keys.E))
+            if (hammerState == HammerState.WithCharacter && UserAction.DropHammer.Pressed(input))
             {
                 //hammerState = HammerState.Dropped;
                 DropHammer();
@@ -235,78 +251,15 @@ namespace HammeredGame.Game.GameObjects
             // And if the owner player is defined
             // And the hammer has a physics entity attached to it
             // Otherwise 'Q' does nothing
-            if (hammerState == HammerState.Dropped && player != null && Entity != null && input.KeyDown(Keys.Q))
+            else if (hammerState == HammerState.Dropped && player != null && Entity != null && UserAction.SummonHammer.Pressed(input))
             {
                 hammerState = HammerState.Enroute;
+                OnSummon?.Invoke(this, null);
 
-
-
-
-                // Precautiously empty the previous route.
-                // It should be empty by the time it finishes its previous route, but just in case.
-                this.route.Clear();
-                
-                // First find the straight line path so as to get the hammer moving and, in the meantime, find best path with A*.
-
-                // Scenario 1: A straight line is achievable.
-                // "[In Euclidean space] The shortest distance between two points is a straight line"
-                // ~ Archimedes of Syracuse (Αρχιμήδης ο Συρακούσιος)
-                // Therefore, if the shortest path is unobstructed, there is no reason to follow a more complex path planning scheme.
-                Vector3[] straightLineRoute; bool straightPathAchievable = this.StraightLinePath(out straightLineRoute);
-                /// <remarks> According to a few benchmarks, this takes an insignificat amount of time (a couple dozen ms at most).
-                /// Good to have it.</remarks>
-
-                // Casting the trajectory into the appropriate (physics engine) type.
-                for (int i = 0; i < straightLineRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(straightLineRoute[i])); }
-                // Initialize the first position in 3D space to visit.
-                this.nextRoutePosition = this.route.Peek(); this.route.Dequeue();
-
-                // Scenario 2: A straight line is not achievable.
-                // A more complex path planning scheme must be used.
-                // Currently, "raw" A* has been implemented.
-                // Programming note: as of the time of writing (23/04/2023), everything inside the "Run" is thread-safe.
-                // As such, no errors should arise.
-                if (!straightPathAchievable)
-                {
-                    Task.Run(() =>
-                    {
-                        Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
-                        for (int i = 0; i < aStarRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(aStarRoute[i])); }
-
-                    });
-                }
-                /// <remarks>
-                /// INSPIRATION FOR AS TO WHY THE ABOVE IS EXECUTED ASYNCHRONOUSLY (using C# "Tasks").
-                /// 
-                /// Observation 1
-                /// =============
-                /// The call
-                /// <c>Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);</c>
-                /// is very expensive (takes a few seconds to execute).
-                /// This is true even in cases where A* algorithm completes almost instantly(e.g. 60ms or less).
-                /// This is because time (seconds)are required to iterate through the data.
-                /// 
-                /// Observation 2
-                /// =============
-                /// If an "if-else" structure is adopted i.e.
-                /// IF straightPathAchievable => FOLLOW STRAIGHT PATH
-                /// ELSE => EXECUTE A*
-                /// then instant response from the game is achieved.
-                /// 
-                /// Combining observrations 1 and 2
-                /// ===============================
-                /// The hammer may start travelling towards the straight line as much as it can.
-                /// WHILE it is travelling in a straight line,
-                /// the software should compute the non-linear continuation of the path by executing the A*algorithm.
-                /// In this case:
-                /// 1) the game is responsive(the hammer has started some path instantly)
-                /// 2) the full path is computed in the background, without altering the game experience.
-                /// </remarks>
-
-
-
-
-
+                // The hammer, when called back, will follow the shortest path from the point where it was dropped towards
+                // the point the player called it FROM (it does not follow the player).
+                ComputeShortestPath();
+               
                 // When hammer is enroute, the physics engine shouldn't solve for
                 // collision constraints with it --> rather we want to manually
                 // handle collisions
@@ -355,6 +308,12 @@ namespace HammeredGame.Game.GameObjects
             // Set hammer state to dropped
             hammerState = HammerState.Dropped;
 
+            hammer_sfx[1].Play();
+
+            //audioManager.Play3DSound("Audio/hammer_drop", false);
+
+            OnDrop?.Invoke(this, null);
+
             if (this.Entity != null)
             {
                 // Add a lot of mass to the hammer, so it becomes a dynamic entity
@@ -376,6 +335,12 @@ namespace HammeredGame.Game.GameObjects
 
         public bool IsEnroute()
         {
+            //sound effect instance to try and manipulate the pitch, but not working
+            if (hammerState == HammerState.Enroute)
+            {
+                SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
+                whoosh.Play();
+            }
             return hammerState == HammerState.Enroute;
         }
 
@@ -401,11 +366,77 @@ namespace HammeredGame.Game.GameObjects
                 if (!this.grid.GetCellMark(samplePoint)) { route = path.ToArray();  return false; }
                 path.AddLast(samplePoint);
             }
+            // Reaching this point in the code means that there is a straight path available from the hammer to the player.
+            // Therefore, as a last step, we add the transposition required to get from the sampled line to the actual position of the player.
             path.AddLast(this.player.Position);
 
             route = path.ToArray();
             return true;
 
+        }
+
+        private void ComputeShortestPath()
+        {
+            // Precautiously empty the previous route.
+            // It should be empty by the time it finishes its previous route, but just in case.
+            this.route.Clear();
+
+            // First find the straight line path so as to get the hammer moving and, in the meantime, find best path with A*.
+
+            // Scenario 1: A straight line is achievable.
+            // "[In Euclidean space] The shortest distance between two points is a straight line"
+            // ~ Archimedes of Syracuse (Αρχιμήδης ο Συρακούσιος)
+            // Therefore, if the shortest path is unobstructed, there is no reason to follow a more complex path planning scheme.
+            Vector3[] straightLineRoute; bool straightPathAchievable = this.StraightLinePath(out straightLineRoute);
+            /// <remarks> According to a few benchmarks, this takes an insignificat amount of time (a couple dozen ms at most).
+            /// Good to have it.</remarks>
+
+            // Casting the trajectory into the appropriate (physics engine) type.
+            for (int i = 0; i < straightLineRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(straightLineRoute[i])); }
+            // Initialize the first position in 3D space to visit.
+            this.nextRoutePosition = this.route.Peek(); this.route.Dequeue();
+
+            // Scenario 2: A straight line is not achievable.
+            // A more complex path planning scheme must be used.
+            // Currently, "raw" A* has been implemented.
+            // Programming note: as of the time of writing (23/04/2023), everything inside the "Run" is thread-safe.
+            // As such, no errors should arise.
+            if (!straightPathAchievable)
+            {
+                Task.Run(() =>
+                {
+                    Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
+                    for (int i = 0; i < aStarRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(aStarRoute[i])); }
+
+                });
+            }
+            /// <remarks>
+            /// INSPIRATION FOR AS TO WHY THE ABOVE IS EXECUTED ASYNCHRONOUSLY (using C# "Tasks").
+            /// 
+            /// Observation 1
+            /// =============
+            /// The call
+            /// <c>Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);</c>
+            /// is very expensive (takes a few seconds to execute).
+            /// This is true even in cases where A* algorithm completes almost instantly(e.g. 60ms or less).
+            /// This is because time (seconds)are required to iterate through the data.
+            /// 
+            /// Observation 2
+            /// =============
+            /// If an "if-else" structure is adopted i.e.
+            /// IF straightPathAchievable => FOLLOW STRAIGHT PATH
+            /// ELSE => EXECUTE A*
+            /// then instant response from the game is achieved.
+            /// 
+            /// Combining observrations 1 and 2
+            /// ===============================
+            /// The hammer may start travelling towards the straight line as much as it can.
+            /// WHILE it is travelling in a straight line,
+            /// the software should compute the non-linear continuation of the path by executing the A*algorithm.
+            /// In this case:
+            /// 1) the game is responsive(the hammer has started some path instantly)
+            /// 2) the full path is computed in the background, without altering the game experience.
+            /// </remarks>
         }
     }
 }

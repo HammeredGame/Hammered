@@ -13,7 +13,7 @@ namespace HammeredGame.Game
     /// <summary>
     /// Component that draws a model following the position and orientation of a BEPUphysics entity.
     /// </summary>
-    public class GridDebugDrawer : DrawableGameComponent
+    public class GridDebugDrawer
     {
         Model model;
         public Vector3 Position;
@@ -31,8 +31,7 @@ namespace HammeredGame.Game
         /// <param name="model">Graphical representation to use for the entity.</param>
         /// <param name="transform">Base transformation to apply to the model before moving to the entity.</param>
         /// <param name="game">Game to which this component will belong.</param>
-        public GridDebugDrawer(Model model, Vector3 pos, Matrix transform, Microsoft.Xna.Framework.Game game)
-            : base(game)
+        public GridDebugDrawer(Model model, Vector3 pos, Matrix transform)
         {
             this.model = model;
             this.Position = pos;
@@ -90,7 +89,6 @@ namespace HammeredGame.Game
                 }
                 mesh.Draw();
             }
-            base.Draw(gameTime);
         }
     }
 }

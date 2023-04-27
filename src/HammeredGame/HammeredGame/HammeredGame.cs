@@ -1,27 +1,19 @@
-﻿using BEPUphysics.Settings;
-using BEPUphysics;
 using HammeredGame.Core;
 using HammeredGame.Game;
-using HammeredGame.Game.GameObjects;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
-using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
-using BEPUphysics.Entities;
 using BEPUutilities.Threading;
 using System;
-using BEPUphysics.Entities.Prefabs;
 using Microsoft.Xna.Framework.Content;
-using BEPUphysics.BroadPhaseSystems.SortAndSweep;
+using Myra;
+using ImGuiNET;
 
 namespace HammeredGame
 {
-    public class HammeredGame : Microsoft.Xna.Framework.Game, IImGui
+    public class HammeredGame : Microsoft.Xna.Framework.Game
     {
         // DISPLAY VARIABLES
         public const int SCREENWIDTH = 1280;
@@ -46,14 +38,15 @@ namespace HammeredGame
 
         private Rectangle screenRect;
 
-        private SpriteFont tempFont;
-
         private readonly GameServices gameServices = new();
 
         private Scene currentScene;
 
         // Music variables
-        private Song bgMusic;
+        private List<SoundEffect> sfx = new List<SoundEffect>();
+        private AudioManager audioManager;
+
+        private ScreenManager manager;
 
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
@@ -62,8 +55,9 @@ namespace HammeredGame
         private bool drawBounds = false;
         private List<EntityDebugDrawer> debugEntities = new();
 
-        private bool drawGrid = false;
-        private List<GridDebugDrawer> debugGridCells = new();
+        // Uniform Grid debugging variables. They 
+        private readonly bool drawGrid = false;
+        private readonly List<GridDebugDrawer> debugGridCells = new();
 
         public HammeredGame()
         {
@@ -78,6 +72,8 @@ namespace HammeredGame
                 PreferredDepthStencilFormat = DepthFormat.None,
                 GraphicsProfile = GraphicsProfile.HiDef
             };
+
+            Window.Title = "HAMMERED";
             Window.IsBorderless = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -115,8 +111,10 @@ namespace HammeredGame
                 }
             }
 
-            // Set title for game window
-            Window.Title = "HAMMERED";
+            MyraEnvironment.Game = this;
+
+            //initialize audio manager
+            audioManager = new AudioManager(this);
 
             // Initialize ImGui's internal renderer and build its font atlas
             imGuiRenderer = new ImGuiRenderer(this);
@@ -125,11 +123,36 @@ namespace HammeredGame
             // Add useful game services that might want to be accessed globally
             gameServices.AddService<HammeredGame>(this);
             gameServices.AddService<GraphicsDevice>(gpu);
+            gameServices.AddService<SpriteBatch>(spriteBatch);
             gameServices.AddService<Input>(input);
             gameServices.AddService<ContentManager>(Content);
             gameServices.AddService<ScriptUtils>(new ScriptUtils());
+            gameServices.AddService<List<SoundEffect>>(sfx);
+            gameServices.AddService<AudioManager>(audioManager);
+
+            manager = new ScreenManager(gameServices, gpu, mainRenderTarget);
+            InitTitleScreen();
 
             base.Initialize();
+        }
+
+        /// <summary>
+        /// Function to add the title screen to the stack, setting handlers for Continue and Start New.
+        /// </summary>
+        public void InitTitleScreen()
+        {
+            manager.AddScreen(new Game.Screens.TitleScreen()
+            {
+                ContinueFunc = () =>
+                {
+                    // load scene name from file
+                    manager.AddScreen(new Game.Screens.GameScreen(typeof(Game.Scenes.Island1.TreeTutorial).FullName));
+                },
+                StartNewFunc = () =>
+                {
+                    manager.AddScreen(new Game.Screens.GameScreen(typeof(Game.Scenes.Island1.ShoreWakeup).FullName));
+                }
+            });
         }
 
         /// <summary>
@@ -138,26 +161,7 @@ namespace HammeredGame
         /// </summary>
         protected override void LoadContent()
         {
-            tempFont = Content.Load<SpriteFont>("temp_font");
-
-            InitializeLevel("HammeredGame.Game.Scenes.Island1.TreeTutorial");
-            SetupDebugGrid();
-
-            bgMusic = Content.Load<Song>("Audio/BGM_V1");
-
-            MediaPlayer.IsRepeating = true;
-            MediaPlayer.Play(bgMusic);
-        }
-
-        /// <summary>
-        /// Relatively expensive function! Loads the XML file from disk, parses it and instantiates
-        /// the level (including Camera and GameObjects like player, hammer, obstacles). Will reset
-        /// all visible UI as well and show only the UIs relevant to the new objects.
-        /// </summary>
-        /// <param name="levelToLoad"></param>
-        public void InitializeLevel(string levelToLoad)
-        {
-            currentScene = (Scene)Activator.CreateInstance(Type.GetType(levelToLoad), gameServices);
+            manager.LoadContent();
         }
 
         /// <summary>
@@ -169,52 +173,9 @@ namespace HammeredGame
         {
             gameServices.GetService<Input>().Update();
             gameServices.GetService<ScriptUtils>().Update(gameTime);
-
-            // Check for exit input
-            if (input.BACK_DOWN || input.KeyDown(Keys.Escape)) Exit();
-
-            if (input.ButtonPress(Buttons.Y) || input.KeyPress(Keys.R))
-            {
-                // Reload the current scene class
-                InitializeLevel(currentScene.GetType().FullName);
-            }
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            //    Exit();
-
-            // Update each game object
-            foreach (GameObject gameObject in currentScene.GameObjectsList)
-            {
-                gameObject.Update(gameTime);
-            }
-
-            // Update camera
-            currentScene.Camera.UpdateCamera();
-
-            //Steps the simulation forward one time step.
-            currentScene.Space.Update();
-
-            // Set up the list of debug entities for debugging visualization
-            SetupDebugBounds();
+            manager.Update(gameTime);
 
             base.Update(gameTime);
-        }
-
-        /// <summary>
-        /// Adapted from AlienScribble Make 3D Games with Monogame playlist: https://www.youtube.com/playlist?list=PLG6XrMFqMJUBOPVTJrGJnIDDHHF1HTETc
-        /// <para/>
-        /// To set state variables within graphics device back to default (in case they are changed
-        /// at any point) to ensure we are correctly drawing in 3D space
-        /// </summary>
-        private void Set3DStates()
-        {
-            gpu.BlendState = BlendState.AlphaBlend; // Potentially needs to be modified depending on our textures
-            gpu.DepthStencilState = DepthStencilState.Default; // Ensure we are using depth buffer (Z-buffer) for 3D
-            if (gpu.RasterizerState.CullMode == CullMode.None)
-            {
-                // Cull back facing polygons
-                RasterizerState rs = new RasterizerState { CullMode = CullMode.CullCounterClockwiseFace };
-                gpu.RasterizerState = rs;
-            }
         }
 
         /// <summary>
@@ -232,13 +193,9 @@ namespace HammeredGame
 
             // Clear the target
             gpu.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.AliceBlue, 1.0f, 0);
-            Set3DStates();
+            //Set3DStates();
 
-            // Render all the scene objects (given that they are not destroyed)
-            foreach (GameObject gameObject in currentScene.GameObjectsList)
-            {
-                gameObject.Draw(currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
-            }
+            manager.Draw(gameTime);
 
             if (drawBounds)
             {
@@ -278,8 +235,6 @@ namespace HammeredGame
             // Commit all the data to the back buffer
             spriteBatch.End();
 
-            base.Draw(gameTime);
-
 #if DEBUG
             // == Draw debug UI on top of all rendered base.
             // Code adapted from ImMonoGame example code.
@@ -300,52 +255,6 @@ namespace HammeredGame
             return currentScene;
         }
 
-        // Prepare the entities for debugging visualization
-        private void SetupDebugBounds()
-        {
-            debugEntities.Clear();
-            var CubeModel = Content.Load<Model>("cube");
-            //Go through the list of entities in the space and create a graphical representation for them.
-            foreach (Entity e in currentScene.Space.Entities)
-            {
-                Box box = e as Box;
-                if (box != null) //This won't create any graphics for an entity that isn't a box since the model being used is a box.
-                {
-                    BEPUutilities.Matrix scaling = BEPUutilities.Matrix.CreateScale(box.Width, box.Height, box.Length); //Since the cube model is 1x1x1, it needs to be scaled to match the size of each individual box.
-                    EntityDebugDrawer model = new EntityDebugDrawer(e, CubeModel, scaling, this);
-                    //Add the drawable game component for this entity to the game.
-                    debugEntities.Add(model);
-                }
-            }
-        }
-
-        // Prepare the grid cells for debugging visualization
-        private void SetupDebugGrid()
-        {
-            debugGridCells.Clear();
-            var CubeModel = Content.Load<Model>("cube");
-            //Go through the list of entities in the space and create a graphical representation for them.
-            float sideLength = this.currentScene.Grid.sideLength;
-            Matrix scaling = Matrix.CreateScale(sideLength);
-
-            int[] gridDimensions = this.currentScene.Grid.GetDimensions();
-            for (int i = 0; i < gridDimensions[0]; ++i)
-            {
-                for (int j = 0; j < gridDimensions[1]; ++j) 
-                {
-                    for (int k = 0; k < gridDimensions[2]; ++k)
-                    {
-                        if (this.currentScene.Grid.mask[i, j, k])
-                        {
-                            Vector3 gridcell = this.currentScene.Grid.grid[i, j, k] + new Vector3(sideLength / 2, sideLength / 2, sideLength / 2);
-                            GridDebugDrawer gdd = new GridDebugDrawer(CubeModel, gridcell, scaling, this);
-                            debugGridCells.Add(gdd);
-                        }
-                    }
-                }
-            }
-        }
-
         public void UI()
         {
             ImGui.SetNextWindowSize(new System.Numerics.Vector2(600, 500), ImGuiCond.FirstUseEver);
@@ -358,30 +267,7 @@ namespace HammeredGame
             }
             float fr = ImGui.GetIO().Framerate;
             ImGui.Text($"{1000.0f / fr:F2} ms/frame ({fr:F1} FPS)");
-
-            // Show a scene switcher dropdown, with the list of all scene class names in this assembly
-            ImGui.Text("Current Loaded Scene: ");
-            ImGui.SameLine();
-            if (ImGui.BeginCombo("##scene", currentScene.GetType().Name))
-            {
-                foreach (string fqn in Scene.GetAllSceneFQNs())
-                {
-                    if (ImGui.Selectable(fqn, fqn == currentScene.GetType().FullName))
-                    {
-                        InitializeLevel(fqn);
-                    }
-                }
-                ImGui.EndCombo();
-            }
-            ImGui.Text("Press R on keyboard or Y on controller to reload level");
-            ImGui.Separator();
-
-            ImGui.Checkbox("DrawBounds", ref drawBounds);
-            ImGui.Checkbox("Draw Grid", ref drawGrid);
-
-            // Show the scene's UI within the same window
-            currentScene.UI();
-            ImGui.End();
+            manager.UI();
         }
     }
 }

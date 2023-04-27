@@ -10,6 +10,15 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\lib\CustomAetherExtras\Animation.dll
+/reference:..\lib\CustomAetherExtras\AnimationImporters.dll
+/reference:..\lib\CustomAetherExtras\Atlas.dll
+/reference:..\lib\CustomAetherExtras\AtlasImporter.dll
+/reference:..\lib\CustomAetherExtras\DDSImporter.dll
+/reference:..\lib\CustomAetherExtras\Graphics.dll
+/reference:..\lib\CustomAetherExtras\GraphicsImporters.dll
+/reference:..\lib\CustomAetherExtras\RawModelProcessor.dll
+/reference:..\lib\CustomAetherExtras\SLMCImporter.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -18,6 +27,78 @@
 /processor:SongProcessor
 /processorParam:Quality=Best
 /build:Audio/BGM_V1.mp3
+
+#begin Audio/BGM_V2_4x.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/BGM_V2_4x.mp3
+
+#begin Audio/const_water.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/const_water.wav
+
+#begin Audio/ding.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/ding.wav
+
+#begin Audio/door_close.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/door_close.wav
+
+#begin Audio/door_open.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/door_open.wav
+
+#begin Audio/footstep1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/footstep1.wav
+
+#begin Audio/hammer_drop.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/hammer_drop.wav
+
+#begin Audio/lohi_whoosh.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/lohi_whoosh.wav
+
+#begin Audio/rock_water.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/rock_water.wav
+
+#begin Audio/single_step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/single_step.wav
+
+#begin Audio/step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/step.wav
+
+#begin Audio/tree_fall.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/tree_fall.wav
 
 #begin awesome_goal_texture.jpg
 /importer:TextureImporter
@@ -42,6 +123,9 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:awesome_key_texture.jpg
+
+#begin Barlow-Medium.ttf
+/copy:Barlow-Medium.ttf
 
 #begin character_3.fbx
 /importer:FbxImporter
@@ -118,6 +202,18 @@
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:character-merged.fbx
+
+#begin ControlPrompts/controls_atlas_keyboard.png
+/copy:ControlPrompts/controls_atlas_keyboard.png
+
+#begin ControlPrompts/controls_atlas_keyboard.xmat
+/copy:ControlPrompts/controls_atlas_keyboard.xmat
+
+#begin ControlPrompts/controls_atlas_xbox.png
+/copy:ControlPrompts/controls_atlas_xbox.png
+
+#begin ControlPrompts/controls_atlas_xbox.xmat
+/copy:ControlPrompts/controls_atlas_xbox.xmat
 
 #begin cube.fbx
 /importer:FbxImporter
@@ -245,37 +341,6 @@
 /processorParam:TextureFormat=Compressed
 /build:island.fbx
 
-#begin island1_treetutorial_albedo.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:island1_treetutorial_albedo.png
-
-#begin island1_treetutorial.fbx
-/importer:FbxImporter
-/processor:ModelProcessor
-/processorParam:ColorKeyColor=0,0,0,0
-/processorParam:ColorKeyEnabled=True
-/processorParam:DefaultEffect=BasicEffect
-/processorParam:GenerateMipmaps=True
-/processorParam:GenerateTangentFrames=False
-/processorParam:PremultiplyTextureAlpha=True
-/processorParam:PremultiplyVertexColors=True
-/processorParam:ResizeTexturesToPowerOfTwo=False
-/processorParam:RotationX=0
-/processorParam:RotationY=0
-/processorParam:RotationZ=0
-/processorParam:Scale=0.1
-/processorParam:SwapWindingOrder=False
-/processorParam:TextureFormat=Compressed
-/build:island1_treetutorial.fbx
-
 #begin level0.xml
 /copy:level0.xml
 
@@ -287,6 +352,30 @@
 
 #begin level3.xml
 /copy:level3.xml
+
+#begin player-animated-hammer.fbx
+/importer:FbxImporter
+/processor:CpuAnimatedModelProcessor
+/processorParam:VertexBufferType=DynamicWriteOnly
+/processorParam:IndexBufferType=Default
+/processorParam:MaxBones=72
+/processorParam:GenerateKeyframesFrequency=0
+/processorParam:FixRealBoneRoot=False
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=90
+/processorParam:RotationY=90
+/processorParam:RotationZ=90
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:player-animated-hammer.fbx
 
 #begin rock.fbx
 /importer:FbxImporter
@@ -307,8 +396,11 @@
 /processorParam:TextureFormat=Compressed
 /build:rock.fbx
 
-#begin SceneDescriptions/Island1/LaserRockTest.xml
-/copy:SceneDescriptions/Island1/LaserRockTest.xml
+#begin SceneDescriptions/Island1/ChallengePuzzle.xml
+/copy:SceneDescriptions/Island1/ChallengePuzzle.xml
+
+#begin SceneDescriptions/Island1/LaserTutorial.xml
+/copy:SceneDescriptions/Island1/LaserTutorial.xml
 
 #begin SceneDescriptions/Island1/ShoreWakeup.xml
 /copy:SceneDescriptions/Island1/ShoreWakeup.xml
@@ -316,39 +408,14 @@
 #begin SceneDescriptions/Island1/TreeTutorial.xml
 /copy:SceneDescriptions/Island1/TreeTutorial.xml
 
+#begin SceneDescriptions/Island1/TwoIslandPuzzle_old.xml
+/copy:SceneDescriptions/Island1/TwoIslandPuzzle_old.xml
+
 #begin SceneDescriptions/Island1/TwoIslandPuzzle.xml
 /copy:SceneDescriptions/Island1/TwoIslandPuzzle.xml
 
-#begin shore_texture.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:shore_texture.png
-
-#begin shore.fbx
-/importer:FbxImporter
-/processor:ModelProcessor
-/processorParam:ColorKeyColor=0,0,0,0
-/processorParam:ColorKeyEnabled=True
-/processorParam:DefaultEffect=BasicEffect
-/processorParam:GenerateMipmaps=True
-/processorParam:GenerateTangentFrames=False
-/processorParam:PremultiplyTextureAlpha=True
-/processorParam:PremultiplyVertexColors=True
-/processorParam:ResizeTexturesToPowerOfTwo=False
-/processorParam:RotationX=0
-/processorParam:RotationY=0
-/processorParam:RotationZ=0
-/processorParam:Scale=0.1
-/processorParam:SwapWindingOrder=False
-/processorParam:TextureFormat=NoChange
-/build:shore.fbx
+#begin Skranji-Regular.ttf
+/copy:Skranji-Regular.ttf
 
 #begin temp_floor_flat.fbx
 /importer:FbxImporter
@@ -653,6 +720,161 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Temp.png
+
+#begin terrain_challenge_albedo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:terrain_challenge_albedo.png
+
+#begin terrain_challenge.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=0.1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:terrain_challenge.fbx
+
+#begin terrain_laser_tutorial_albedo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:terrain_laser_tutorial_albedo.png
+
+#begin terrain_laser_tutorial.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=0.1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:terrain_laser_tutorial.fbx
+
+#begin terrain_shore_albedo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:terrain_shore_albedo.png
+
+#begin terrain_shore.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=0.1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:terrain_shore.fbx
+
+#begin terrain_tree_tutorial_albedo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:terrain_tree_tutorial_albedo.png
+
+#begin terrain_tree_tutorial.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=0.1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:terrain_tree_tutorial.fbx
+
+#begin terrain_two_island.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=0.1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:terrain_two_island.fbx
+
+#begin terrain_twoisland_albedo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:terrain_twoisland_albedo.png
 
 #begin test_door2.fbx
 /importer:FbxImporter
