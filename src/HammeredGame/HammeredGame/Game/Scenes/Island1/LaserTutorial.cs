@@ -11,9 +11,11 @@ namespace HammeredGame.Game.Scenes.Island1
     internal class LaserTutorial : Scene
     {
         public LaserTutorial(GameServices services, GameScreen screen) : base(services, screen)
+        { }
+        protected override void LoadContent()
         {
+            base.LoadContent();
             CreateFromXML($"Content/SceneDescriptions/Island1/LaserTutorial_voxel.xml");
-            OnSceneStart();
         }
 
         protected override void OnSceneStart()

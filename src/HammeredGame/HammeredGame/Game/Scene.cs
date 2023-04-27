@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game
 {
@@ -46,6 +47,10 @@ namespace HammeredGame.Game
         {
             get { return GameObjects.Values.ToList(); }
         }
+
+        public bool IsLoaded { get; protected set; } = false;
+
+        public bool SceneStarted { get; private set; } = false;
 
         /// <summary>
         /// Any debug objects shown as representations of bounding boxes. This list is updated in this.UpdateDebugObjects().
@@ -83,11 +88,26 @@ namespace HammeredGame.Game
         {
             this.Services = services;
             this.ParentGameScreen = screen;
+        }
+
+        public Task LoadContentAsync()
+        {
+            return Task.Run(() =>
+            {
+                LoadContent();
+                IsLoaded = true;
+            });
+        }
+
+        protected virtual void LoadContent()
+        {
             InitNewSpace();
         }
 
         /// <summary>
-        /// Script to run after loading the scene description. Should be called from the constructor.
+        /// Script to run after loading the scene description. Called during the first Update()
+        /// after the scene has fully finished loading. Any initialization before this should be
+        /// done in LoadContent().
         /// </summary>
         protected abstract void OnSceneStart();
 
@@ -193,6 +213,14 @@ namespace HammeredGame.Game
         /// </summary>
         public virtual void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
+            if (!IsLoaded) return;
+
+            if (!SceneStarted)
+            {
+                SceneStarted = true;
+                OnSceneStart();
+            }
+
             // Update each game object
             foreach (GameObject gameObject in this.GameObjectsList)
             {
