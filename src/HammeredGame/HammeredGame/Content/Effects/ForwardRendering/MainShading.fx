@@ -298,8 +298,10 @@ float PCFShadow(float3 normal, float3 toLight, float4 pixelSunProjPosition, floa
     // To get the UV position of the surrounding light-projection pixel, we need
     // to know how big [0,1] is mapping to in pixels, which is [0,2048]
     float texelSize = 1.0 / 2048.0;
+    [unroll]
     for (int x = -2; x <= 2; x++)
     {
+        [unroll]
         for (int y = -2; y <= 2; y++)
         {
             // Retrieve the depth from the light shadow map and use the red
