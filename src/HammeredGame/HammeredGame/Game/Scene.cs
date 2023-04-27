@@ -1,9 +1,10 @@
-﻿using BEPUphysics;
+using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Settings;
 using BEPUutilities.Threading;
 using HammeredGame.Core;
+using HammeredGame.Game.PathPlanning.Grid;
 using HammeredGame.Game.Screens;
 using ImGuiNET;
 using ImMonoGame.Thing;
@@ -29,6 +30,11 @@ namespace HammeredGame.Game
         /// The camera in the scene.
         /// </summary>
         public Camera Camera { get; private set; }
+
+        /// <summary>
+        /// The uniform grid of the scene.
+        /// </summary>
+        public UniformGrid Grid { get; private set; } 
 
         /// <summary>
         /// The objects loaded in the scene, keyed by unique identifier strings.
@@ -156,7 +162,7 @@ namespace HammeredGame.Game
         /// <param name="fileName"></param>
         public void CreateFromXML(string fileName)
         {
-            (Camera, GameObjects) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            (Camera, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
         }
 
         /// <summary>
@@ -173,6 +179,39 @@ namespace HammeredGame.Game
                 nameCandidate = prefix + i.ToString();
             }
             return nameCandidate;
+        }
+
+        public void UpdateSceneGrid(GameObject gameObject, bool availability)
+        {
+            if (gameObject.Entity != null)
+            {
+                // Perhaps too many unneeded computations (p2 and p3, p3x, p3y and p3z do not need to be used).
+                Box goBox = (gameObject.Entity as Box);
+                Vector3 p1 = new Vector3(goBox.Position.X - goBox.HalfWidth, goBox.Position.Y - goBox.HalfHeight, goBox.Position.Z - goBox.HalfLength);
+                Vector3 p2 = new Vector3(goBox.Position.X + goBox.HalfWidth, goBox.Position.Y + goBox.HalfHeight, goBox.Position.Z + goBox.HalfLength);
+
+                Vector3 p3 = p2 - p1;
+                Vector3 p3x = new Vector3(p3.X, 0, 0); p3x.Normalize();
+                Vector3 p3y = new Vector3(0, p3.Y, 0); p3y.Normalize();
+                Vector3 p3z = new Vector3(0, 0, p3.Z); p3z.Normalize();
+                float sideLength = this.Grid.sideLength;
+                // goBox.Width === p3.X, goBox.Height === p3.Y, goBox.Length === p3.Z 
+                for (int i = 0; i <  Math.Ceiling(goBox.Width / sideLength); ++i)
+                {
+                    for (int j = 0; j < Math.Ceiling(goBox.Height / sideLength); ++j)
+                    {
+                        for (int k = 0; k < Math.Ceiling(goBox.Length / sideLength); ++k)
+                        {
+
+                            Vector3 sampledPoint = Vector3.Transform((p1 + sideLength * (i * p3x + j * p3y + k * p3z)), MathConverter.Convert(goBox.OrientationMatrix));
+                            this.Grid.MarkCellAs(this.Grid.GetCellIndex(sampledPoint), availability);
+                        }
+
+                    }
+                }
+
+
+            }
         }
 
         // Store all the fully qualified names for available scene classes.
@@ -265,7 +304,7 @@ namespace HammeredGame.Game
             // Button to export to XML
             if (ImGui.Button("Export Scene"))
             {
-                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, GameObjects, Services);
+                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, GameObjects, Grid, Services);
             }
 
             // Show a dual pane layout, with the scene object list on the left and details on the

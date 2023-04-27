@@ -10,6 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
+using HammeredGame.Game.PathPlanning.Grid;
 
 namespace HammeredGame.Game
 {
@@ -24,17 +26,57 @@ namespace HammeredGame.Game
         /// <typeparam name="T">Supports bool, float, XNA.Vector3, and XNA.Quaternion</typeparam>
         /// <param name="text">String to parse</param>
         /// <returns>null if the parsing failed, otherwise contains the parsed object</returns>
+        /// 
+
+        /// <remarks>
+        /// Support "int" data type as well.
+        /// </remarks>
         internal static T Parse<T>(string text)
         {
-            string[] tokens;
+            /// <value>
+            /// The <code>string[] tokens</code> variable is used to split the singlue input string <code>text</code>
+            /// of the XML file into multiple values.
+            /// This is required in cases where classes are determined by more than one parameters.
+            /// 
+            /// <example>
+            /// Input: "position" == in XML == <position>X Y Z</position> 
+            /// 1) Split "X Y Z" into <code>float tokens[3] = {"X", "Y", "Z"} </code>
+            /// 2) Parse each element of "tokens" independently as scalars.
+            /// 3) Create the Vector3 object.
+            /// </example>
+            /// 
+            /// </value>
+            string[] tokens; // Is used to split the single input string in the XML file to multiple values.
+
+
+            /// <remarks>
+            /// The <code>typeof(T).Name</code> function follows the name of the value types of .NET
+            /// <see href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types"/>
+            /// 
+            /// For the built-in types being handled in the following switch case, read:
+            /// 
+            /// "bool" -> Boolean
+            /// <see href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/bool"/>
+            /// 
+            /// "int" -> Int32
+            /// <see href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types"/>
+            /// 
+            /// "float" -> Single
+            /// <see href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/floating-point-numeric-types"/>
+            /// 
+            /// </remarks>
             switch (typeof(T).Name)
             {
                 case "Boolean":
                     return (T)(object)bool.Parse(text);
 
+                case "Int32":
+                    return (T)(object)int.Parse(text);
+
+                /// <remarks> Reminder: "float" is an alias for <c>System.Single</c> of .NET </remarks>
                 case "Single":
-                    // Make sure to parse floats with a culture-agnostic way that treats dots as
-                    // decimal point
+                    // Make sure to parse floats with a culture-agnostic way that treats dots as decimal point.
+                    // This is to successfully load data to systems with different locale s, by bypassing them.
                     return (T)(object)float.Parse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture);
 
                 case "Vector3":
@@ -58,12 +100,19 @@ namespace HammeredGame.Game
         /// <returns>
         /// Empty string if the conversion failed, otherwise the string representation of the object
         /// </returns>
+        
+        /// <remaks>
+        /// Support "int" data type as well.
+        /// </remaks>
         internal static string Show<T>(T obj)
         {
             switch (typeof(T).Name)
             {
                 case "Boolean":
                     return obj.ToString();
+
+                case "Int32":
+                    return obj.ToString(); // Check if this is correct?
 
                 case "Single":
                     // Show floats up to 3 decimal points, using the dot as the decimal point
@@ -90,7 +139,13 @@ namespace HammeredGame.Game
         /// </summary>
         /// <param name="filePath">The file path to the XML file</param>
         /// <exception cref="Exception">Raised if the XML file could not be loaded</exception>
-        public static (Camera, Dictionary<string, GameObject>) ParseFromXML(string filePath, GameServices services)
+
+        /// <remarks>
+        ///  WARNING: A quick patch is implemented for parsing the grid of the scene, necessary for the path planning.
+        ///          There could be better ways to implement it better.
+        ///          Adding more and more explicit outputs in the definition of the function is not maintenance-friendly.
+        /// </remarks>
+        public static (Camera, Dictionary<string, GameObject>, UniformGrid grid) ParseFromXML(string filePath, GameServices services)
         {
             var loadedXML = File.ReadAllText(filePath, Encoding.UTF8);
             var xml = XDocument.Parse(loadedXML);
@@ -102,16 +157,39 @@ namespace HammeredGame.Game
             }
 
             Camera cam = GetCamera(xml, services);
+            UniformGrid grid = GetUniformGrid(xml, services);
+            /// <remarks>
+            /// 1)  It is IMPERATIVE that --with the current implementation-- the <c>UniformGrid</c> instance is added
+            ///     to the <c>services</c> BEFORE the game objects are instantiated!
+            ///     That is because the <c>Hammer</c> instance requires the <c>UniformGrid</c> service in its constructor,
+            ///     after which point the <c>Hammer</c> constructor removes it from the <c>services</c>, for information
+            ///     security (as much as possible, at least).
+            ///     <seealso cref="Game.GameObjects.Hammer.Hammer(GameServices, Model, Texture2D, Vector3, Quaternion, float, Entity)"/>
+            ///     IMPACT ASSESSMENT LEVEL: 1 (catastrophic)
+            ///     
+            /// 2) TODO:Adding the grid into the global variables container <c>services</c> is not intuitive.
+            ///         More importantly, however, many more classes than its destination: the (unique) <c>hammer</c>
+            ///         <see cref="GameObjects.Hammer"/> are being granted access to the <c>grid</c> instance.
+            ///         A sloppy solution to this is deleting it from the services after the constructor of <c>hammer</c>
+            ///         has been called, which is what has been currently implemented.
+            ///         Ideally, a more information-secure solution should be found (e.g. having <c>grid</c> be a parameter
+            ///         of (a) <c>Hammer</c> constructor.
+            /// </remarks>
+            services.AddService<UniformGrid>(grid);
+            /// <remarks>
+            /// After the execution of the following command, the UniformGrid service is removed.
+            /// <see cref="Game.GameObjects.Hammer.Hammer(GameServices, Model, Texture2D, Vector3, Quaternion, float, Entity)"/> 
+            /// </remarks>
             Dictionary<string, GameObject> objs = GetGameObjects(xml, services, cam);
 
-            return (cam, objs);
+            return (cam, objs, grid);
         }
 
         /// <summary>
         /// Find the single top-level camera tag and parse it, returning the instantiated Camera object.
         /// </summary>
-        /// <param name="gpu">The gpu parameter to pass to the Camera constructor</param>
-        /// <param name="input">The input parameter to pass to the Camera constructor</param>
+        /// <param name="gpu">The gpu parameter to pass to the Camera constructor</param> TODO: CHANGE PARAMETER EXPLANATION IN DOCUMENTATION! THIS IS DEPRECATED!
+        /// <param name="input">The input parameter to pass to the Camera constructor</param> TODO: CHANGE PARAMETER EXPLANATION IN DOCUMENTATION! THIS IS DEPRECATED!
         /// <returns>The instantiated Camera object</returns>
         private static Camera GetCamera(XDocument targetXML, GameServices services)
         {
@@ -150,6 +228,40 @@ namespace HammeredGame.Game
             return cameraInstance;
         }
 
+
+        /// <summary>
+        /// Identify the single top-level "uniform_grid" tag, parse it and return it as an instantiated <c>UniformGrid</c> object.
+        /// <see cref="UniformGrid"/>
+        /// </summary>
+        /// <param name="targetXML">The XML document from which the required data is extracted. <see cref="ParseFromXML(string, GameServices)"/></param>
+        /// <param name="services"><see cref="GameServices"/></param>
+
+        /// <remarks>
+        /// 1) The current implementation utilizes the constructor <see cref="UniformGrid.UniformGrid(Vector3, Vector3, float)"/>
+        /// 2) TODO: Make it possible to create an object using different constructors. Risk severity assessment: Level 4 (Negligible)
+        ///         This feature allows the user (XML writer) to be more versatile about how they go about writing the definition of
+        ///         the grid, taking advantage of the different constructors of the class <see cref="UniformGrid"/>.
+        /// </remarks>
+        private static UniformGrid GetUniformGrid(XDocument targetXML, GameServices services)
+        {
+            // It is expected that a scene consists of a single grid.
+            // However, taking precautions for incorrect user (XML writer) input, the unique top-level grid is extracted.
+            XElement uniformGridElement = targetXML.Root.Descendants("uniform_grid").Single(child => child.Parent == targetXML.Root);
+
+
+            // Parse
+            // i) the two (2) points, which define an orthogonal parallelepiped, and
+            // ii)  the side length, which defines the partitioning of the aforementioned parallelepiped
+            Vector3 bottomLeftClosePoint = Parse<Vector3>(uniformGridElement.Descendants("bottom_left_close").Single().Value); // i)
+            Vector3 topRightAwayPoint = Parse<Vector3>(uniformGridElement.Descendants("top_right_away").Single().Value); // i)
+            float sideLength = Parse<float>(uniformGridElement.Descendants("side_length").Single().Value); // ii)
+
+            // Instantiate the <c>UniformGrid</c> object.
+            UniformGrid output = new UniformGrid(bottomLeftClosePoint, topRightAwayPoint, sideLength);
+
+            return output;
+        }
+
         /// <summary>
         /// Find the top-level object tags and parse them as GameObjects. Some objects require
         /// access to Input or Camera, so this method should be called once you have parsed those.
@@ -157,9 +269,9 @@ namespace HammeredGame.Game
         /// identifiers are either taken from the XML if specified via the "id" attribute, or
         /// otherwise generated.
         /// </summary>
-        /// <param name="cm">ContentManager used for loading Models and Textures</param>
-        /// <param name="input">Input parameter to pass to the constructors if necessary</param>
-        /// <param name="cam">Camera parameter to pass to the constructors if necessary</param>
+        /// <param name="cm">ContentManager used for loading Models and Textures</param> // TODO: CHANGE DOCUMENTATION! THIS IS DEPRECATED (probably before <class>GameServices</class> was implemented)!
+        /// <param name="input">Input parameter to pass to the constructors if necessary</param> TODO: CHANGE DOCUMENTATION! THIS IS DEPRECATED!
+        /// <param name="cam">Camera parameter to pass to the constructors if necessary</param> TODO: UNUSED VARIABLE! Probably remnant of previous implementation.
         /// <returns>A dictionary of unique IDs and parsed GameObjects</returns>
         /// <exception cref="Exception">When some trouble arises trying to create the object</exception>
         private static Dictionary<string, GameObject> GetGameObjects(XDocument targetXML, GameServices services, Camera cam)
@@ -251,7 +363,7 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Generate a physics body Entity using the body tag specified in the XML. Supports box types.
+        /// Generate a physics body Entity using the body tag specified in the XML. Supports box and sphere types.
         /// </summary>
         /// <param name="modelPosition">The position of the model</param>
         /// <param name="bodyElement">The XML element for the body tag</param>
@@ -323,7 +435,13 @@ namespace HammeredGame.Game
         /// <param name="namedObjects">The game objects in the scene and their unique ids</param>
         /// <param name="services">Core game services. This method needs the Content Manager.</param>
         /// <returns>Whether the write was successful or not</returns>
-        public static bool WriteToXML(string filePath, Camera camera, Dictionary<string, GameObject> namedObjects, GameServices services)
+
+        /// <remarks>
+        ///  WARNING: A quick patch is implemented for parsing the grid of the scene, necessary for the path planning.
+        ///          There could be better ways to implement it better.
+        ///          Adding more and more explicit outputs in the definition of the function is not maintenance-friendly.
+        /// </remarks>
+        public static bool WriteToXML(string filePath, Camera camera, Dictionary<string, GameObject> namedObjects, UniformGrid grid, GameServices services)
         {
             // First create the global camera element
             XElement cameraElement = new XElement("camera");
@@ -358,9 +476,21 @@ namespace HammeredGame.Game
             }
             cameraElement.Add(new XElement("fov", Show<float>(camera.FieldOfView)));
 
+            // Create the scene (uniform) grid XML element.
+            XElement uniformGridElement = new XElement("uniform_grid",
+                                            new XElement("bottom_left_close",
+                                                Show<Vector3>(grid.originPoint)),
+                                            new XElement("top_right_away",
+                                                Show<Vector3>(grid.endPoint)),
+                                            new XElement("side_length",
+                                                Show<float>(grid.sideLength))
+                                            );
+                                          
             // Create the root <level> tag and add the camera
             XElement rootElement = new XElement("scene",
                 cameraElement);
+            // ...and the uniform grid of the scene
+            rootElement.Add(uniformGridElement);
 
             // Then add all the game objects, including player and hammer
             foreach ((string id, GameObject gameObject) in namedObjects)
