@@ -271,7 +271,7 @@ struct PixelShaderOutput
 };
 
 // Diffuse component calculation for pixel shader
-float PhongDiffuse(float3 normal, float3 toLight, float4 lightColor, float lightIntensity)
+float4 PhongDiffuse(float3 normal, float3 toLight, float4 lightColor, float lightIntensity)
 {
     float diffuseWeight = saturate(dot(normal, toLight));
     return lightColor * lightIntensity * diffuseWeight * MaterialDiffuseColor;
@@ -279,7 +279,7 @@ float PhongDiffuse(float3 normal, float3 toLight, float4 lightColor, float light
 
 // Specular component calculation for pixel shader using Blinn-Phong and
 // half-vectors.
-float BlinnPhongSpecular(float3 normal, float3 toLight, float4 lightColor, float lightIntensity, float4 pixelWorldPosition)
+float4 BlinnPhongSpecular(float3 normal, float3 toLight, float4 lightColor, float lightIntensity, float4 pixelWorldPosition)
 {
     float3 toCamera = normalize(CameraPosition - pixelWorldPosition).xyz;
     float3 halfDir = normalize(toLight + toCamera);
