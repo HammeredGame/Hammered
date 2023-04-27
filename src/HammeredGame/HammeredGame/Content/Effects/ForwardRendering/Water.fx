@@ -83,6 +83,8 @@ struct MainShadingVSInput
 {
     float4 Position : POSITION0;
     float4 Normal : NORMAL0;
+    float3 Binormal : BINORMAL0;
+    float3 Tangent : TANGENT0;
     float2 TextureCoordinate : TEXCOORD0;
 };
 
@@ -91,10 +93,12 @@ struct MainShadingVSOutput
     float4 Position : POSITION0;
     // We declare the following as TEXCOORD to get interpolation across pixels
     float3 Normal : TEXCOORD0;
-    float2 TextureCoordinate : TEXCOORD1;
-    float2 Depth : TEXCOORD2;
-    float4 WorldSpacePosition : TEXCOORD3;
-    float4 SunSpacePosition : TEXCOORD4;
+    float3 Tangent : TEXCOORD1;
+    float3 Binormal : TEXCOORD2;
+    float2 TextureCoordinate : TEXCOORD3;
+    float2 Depth : TEXCOORD4;
+    float4 WorldSpacePosition : TEXCOORD5;
+    float4 SunSpacePosition : TEXCOORD6;
 };
 
 MainShadingVSOutput MainShadingVS(MainShadingVSInput input)
@@ -118,10 +122,14 @@ MainShadingVSOutput MainShadingVS(MainShadingVSInput input)
     // transform accounts for non-uniform scaling that wouldn't be accounted
     // by a simple multiplication by the world matrix. As long as the scaling
     // is uniform, the operations are identical.
-    float3 normal = normalize(mul(input.Normal.xyz, WorldInverseTranspose));
+    output.Normal = normalize(mul(input.Normal.xyz, WorldInverseTranspose));
 
-    // Push normal and [0,1] UV texture coordinates to fragment shader
-    output.Normal = normal;
+    // Also do the same for the tangent and binormal, which we need for the
+    // bump map effect
+    output.Tangent = normalize(mul(input.Tangent, WorldInverseTranspose));
+    output.Binormal = normalize(mul(input.Binormal, WorldInverseTranspose));
+
+    // Push [0,1] UV texture coordinates to fragment shader
     output.TextureCoordinate = input.TextureCoordinate;
 
     // Write the z depth (world-space in relation to the camera) and the
@@ -139,7 +147,7 @@ MainShadingVSOutput MainShadingVS(MainShadingVSInput input)
     // light if the face was perpendicular to the light direction, fixing
     // shadow acne.
     float4 offsetPosition = worldPosition;
-    offsetPosition.xyz += ShadowMapNormalOffset * normal;
+    offsetPosition.xyz += ShadowMapNormalOffset * output.Normal;
 
     // Also push the sun screen-space position [-1, 1] so it gets interpolated
     // for the pixels and we can use it in the pixel shader to query the
@@ -166,16 +174,16 @@ float4 SampleWaterTexture(float2 uv)
     return SAMPLE_TEXTURE(textureSampler, uv, ModelTextureGammaCorrection);
 }
 
-float3 SampleWaterNormal(float3 normal, float2 uv)
+float3 SampleWaterNormal(float3 normal, float3 tangent, float3 binormal, float2 uv)
 {
-    uv *= 5.0f;
-    float4 normal0 = SAMPLE_TEXTURE(normalXSampler, uv + float2(0, (GameTimeSeconds + sin(GameTimeSeconds)) / 50.0), WaterNormal0GammaCorrection);
-    float4 normal1 = SAMPLE_TEXTURE(normalYSampler, uv + float2((GameTimeSeconds + sin(GameTimeSeconds)) / 50.0, 0), WaterNormal1GammaCorrection);
+    uv *= 3.0f;
+    float4 normal0 = SAMPLE_TEXTURE(normalXSampler, uv + float2(0, GameTimeSeconds / 50.0), WaterNormal0GammaCorrection);
+    float4 normal1 = SAMPLE_TEXTURE(normalYSampler, uv + float2(GameTimeSeconds / 50.0, 0), WaterNormal1GammaCorrection);
 
     normal0 = 2.0f * normal0 - 1.0f;
     normal1 = 2.0f * normal1 - 1.0f;
-    float3 finalNormal = normalize((normal0.xyz + normal1.xyz) * 0.5 + normal);
-    return finalNormal;
+    float3 bump = normal0 + normal1;
+    return normalize(normal + bump.x * tangent + bump.y * binormal);
 }
 
 PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
@@ -184,12 +192,14 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
 
     // Sample material texture based on vertex UV passed from the vertex shader
     float4 textureColor = SampleWaterTexture(input.TextureCoordinate);
-    // Initialize the default color that we'll add to
-    output.Color = float4(0, 0, 0, 0);
+
+    float3 normal = SampleWaterNormal(input.Normal, input.Tangent, input.Binormal, input.TextureCoordinate);
 
     // The specular and diffuse components are added for every directional light
-    float3 normal = SampleWaterNormal(input.Normal, input.TextureCoordinate);
-    output.Color = CalculateLightingContributions(normal, input.SunSpacePosition, input.WorldSpacePosition, CameraPosition);
+    // We multiply by two (arbitrary) to add a kind of shininess and transparency
+    // of water that can't just be expressed by the specular attribute (idk, it
+    // looked nice)
+    output.Color = 2 * CalculateLightingContributions(normal, input.SunSpacePosition, input.WorldSpacePosition, CameraPosition);
 
     // Multiply all the lighting so far by the texture color. If there is no
     // texture, this will result in a multiplication by zero, thus black.
