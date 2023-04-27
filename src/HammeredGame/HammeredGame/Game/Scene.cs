@@ -177,23 +177,28 @@ namespace HammeredGame.Game
             {
                 // Perhaps too many unneeded computations (p2 and p3, p3x, p3y and p3z do not need to be used).
                 Box goBox = (gameObject.Entity as Box);
-                Vector3 p1 = new Vector3(goBox.Position.X - goBox.HalfWidth, goBox.Position.Y - goBox.HalfHeight, goBox.Position.Z - goBox.HalfLength);
-                Vector3 p2 = new Vector3(goBox.Position.X + goBox.HalfWidth, goBox.Position.Y + goBox.HalfHeight, goBox.Position.Z + goBox.HalfLength);
+                /// <summary>
+                /// 1) SUPPOSE that the bounding box is initially axis aligned (i.e. it "spreads out" parallelly to the x-axis, y-axis and z-axis)
+                /// 2) Sample points using the "standard basis" --i.e. the basis of R^3: (1, 0, 0), (0, 1, 0), (0, 0, 1)-- to extract new points.
+                /// 3) Rotate the points extracted in STEP 2) to get the correct 3D position of the sampled point
+                ///     along the axes the bounding box "unfolds".
+                /// </summary>
 
-                Vector3 p3 = p2 - p1;
-                Vector3 p3x = new Vector3(p3.X, 0, 0); p3x.Normalize();
-                Vector3 p3y = new Vector3(0, p3.Y, 0); p3y.Normalize();
-                Vector3 p3z = new Vector3(0, 0, p3.Z); p3z.Normalize();
+                Vector3 e1 = new Vector3(1, 0, 0), e2 = new Vector3(0, 1, 0), e3 = new Vector3(0, 0, 1);
                 float sideLength = this.Grid.sideLength;
-                // goBox.Width === p3.X, goBox.Height === p3.Y, goBox.Length === p3.Z 
-                for (int i = 0; i <  Math.Ceiling(goBox.Width / sideLength); ++i)
+                // In case the developer wishes to create more "safety distance" between the hammer and the objects,
+                // just adjust the scalar multiplier 1 to something greater than 1.
+                int xRepetitions = (int) Math.Ceiling(goBox.HalfWidth / sideLength) * 1;
+                int yRepetitions = (int) Math.Ceiling(goBox.HalfHeight / sideLength) * 1;
+                int zRepetitions = (int)Math.Ceiling(goBox.HalfLength / sideLength) * 1;
+                for (int i = -xRepetitions; i <= xRepetitions; ++i)
                 {
-                    for (int j = 0; j < Math.Ceiling(goBox.Height / sideLength); ++j)
+                    for (int j = -yRepetitions; j <= yRepetitions; ++j)
                     {
-                        for (int k = 0; k < Math.Ceiling(goBox.Length / sideLength); ++k)
+                        for (int k = -zRepetitions; k <= zRepetitions; ++k)
                         {
-
-                            Vector3 sampledPoint = Vector3.Transform((p1 + sideLength * (i * p3x + j * p3y + k * p3z)), MathConverter.Convert(goBox.OrientationMatrix));
+                            Vector3 sampledPointInStandardBasis = MathConverter.Convert(goBox.Position) + sideLength * (i * e1 + j * e2 + k * e3);
+                            Vector3 sampledPoint = Vector3.Transform(sampledPointInStandardBasis, MathConverter.Convert(goBox.OrientationMatrix));
                             this.Grid.MarkCellAs(this.Grid.GetCellIndex(sampledPoint), availability);
                         }
 

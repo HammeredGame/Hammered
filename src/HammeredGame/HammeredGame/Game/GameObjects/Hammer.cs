@@ -401,7 +401,7 @@ namespace HammeredGame.Game.GameObjects
                 if (!this.grid.GetCellMark(samplePoint)) { route = path.ToArray();  return false; }
                 path.AddLast(samplePoint);
             }
-            //path.AddLast(this.player.Position);
+            path.AddLast(this.player.Position);
 
             route = path.ToArray();
             return true;
