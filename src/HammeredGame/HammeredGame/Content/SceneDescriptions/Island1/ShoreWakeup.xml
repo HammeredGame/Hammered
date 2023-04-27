@@ -2,7 +2,7 @@
   <camera mode="follow">
     <follow_distance>257.000</follow_distance>
     <follow_angle>0.341</follow_angle>
-    <target>128.526 11.501 24.425</target>
+    <target>140.407 9.039 25.121</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.455</fov>
   </camera>
@@ -11,12 +11,6 @@
 	<top_right_away>180.0 220.0 200.0</top_right_away>
 	<side_length>10.0</side_length>
   </uniform_grid>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water">
-    <model>temp_water_big</model>
-    <position>0.000 -6.000 0.000</position>
-    <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>80.000</scale>
-  </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground" id="ground">
     <model>terrain_shore</model>
     <texture type="texture2d">terrain_shore_albedo</texture>
@@ -26,7 +20,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>player-animated-hammer</model>
-    <position>140.407 9.040 25.121</position>
+    <position>140.407 9.039 25.121</position>
     <rotation>0.000 0.924 0.000 0.383</rotation>
     <scale>0.005</scale>
     <body type="box">
@@ -343,5 +337,12 @@
       <length>10.000</length>
       <shift_graphic>0.000 2.955 0.000</shift_graphic>
     </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water">
+    <model>unit_size_plane_y_up</model>
+    <texture type="texture2d">sea_texture</texture>
+    <position>0.000 -6.000 0.000</position>
+    <rotation>0.000 0.882 0.000 0.472</rotation>
+    <scale>80.000</scale>
   </object>
 </scene>

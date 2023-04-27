@@ -277,6 +277,12 @@
 /processorParam:DebugMode=Auto
 /build:Effects/ForwardRendering/MainShading.fx
 
+#begin Effects/ForwardRendering/Water.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/ForwardRendering/Water.fx
+
 #begin Effects/PostProcess/ColorCorrection.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -513,6 +519,18 @@
 
 #begin SceneDescriptions/Test/LaserTest.xml
 /copy:SceneDescriptions/Test/LaserTest.xml
+
+#begin sea_texture.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sea_texture.png
 
 #begin Skranji-Regular.ttf
 /copy:Skranji-Regular.ttf
@@ -1120,3 +1138,27 @@
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:unit_size_plane_y_up.fbx
+
+#begin WaterNormalMap0.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:WaterNormalMap0.jpg
+
+#begin WaterNormalMap1.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:WaterNormalMap1.jpg
