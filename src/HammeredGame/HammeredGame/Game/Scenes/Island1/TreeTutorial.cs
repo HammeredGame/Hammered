@@ -11,9 +11,11 @@ namespace HammeredGame.Game.Scenes.Island1
     internal class TreeTutorial : Scene
     {
         public TreeTutorial(GameServices services, GameScreen screen) : base(services, screen)
+        { }
+        protected override void LoadContent()
         {
+            base.LoadContent();
             CreateFromXML($"Content/SceneDescriptions/Island1/TreeTutorial_voxel.xml");
-            OnSceneStart();
         }
 
         protected override async void OnSceneStart()

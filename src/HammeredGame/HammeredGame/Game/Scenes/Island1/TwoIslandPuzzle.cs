@@ -16,9 +16,11 @@ namespace HammeredGame.Game.Scenes.Island1
         private bool withinDoorInteractTrigger = false;
 
         public TwoIslandPuzzle(GameServices services, GameScreen screen) : base(services, screen)
+        { }
+        protected override void LoadContent()
         {
+            base.LoadContent();
             CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml");
-            OnSceneStart();
         }
 
         protected override void OnSceneStart()

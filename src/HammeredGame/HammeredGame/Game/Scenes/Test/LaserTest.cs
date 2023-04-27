@@ -8,9 +8,11 @@ namespace HammeredGame.Game.Scenes.Test
     internal class LaserTest : Scene
     {
         public LaserTest(GameServices services, GameScreen screen) : base(services, screen)
-        {
+        { }
+
+        protected override void LoadContent() {
+            base.LoadContent();
             CreateFromXML($"Content/SceneDescriptions/Test/LaserTest.xml");
-            OnSceneStart();
         }
 
         protected override void OnSceneStart()

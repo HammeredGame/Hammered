@@ -33,6 +33,7 @@ namespace HammeredGame.Game.Screens
 
         private ControlPromptsScreen promptsScreen;
         private OnScreenDialogueScreen dialoguesScreen;
+        private LoadingScreen loadingScreen;
 
         // Music variables
         private Song bgMusic;
@@ -74,6 +75,9 @@ namespace HammeredGame.Game.Screens
             //sfx.Add(Content.Load<SoundEffect>("Audio/ding"));
             //sfx.Add(Content.Load<SoundEffect>("Audio/door_open"));
             //sfx.Add(Content.Load<SoundEffect>("Audio/door_close"));
+
+            loadingScreen = new LoadingScreen();
+            ScreenManager.PreloadScreen(loadingScreen);
 
             InitializeLevel(currentSceneName);
 
@@ -129,6 +133,7 @@ namespace HammeredGame.Game.Screens
             pauseScreen?.ExitScreen();
             promptsScreen?.ExitScreen();
             dialoguesScreen?.ExitScreen();
+            loadingScreen?.ExitScreen();
 
             MediaPlayer.Stop();
         }
@@ -146,12 +151,15 @@ namespace HammeredGame.Game.Screens
             dialoguesScreen?.ClearAllDialogues();
 
             currentSceneName = sceneToLoad;
-            currentScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
 
-            //// Set up the list of debug grid cells for debugging visualization
-            //// WARNING: Execute the following line of code if you wish to initialize the grid once.
-            //// Suggested for when AVAILABLE grid cells are shown in debug mode.
-            //SetupDebugGrid();
+            ScreenManager.AddScreen(loadingScreen);
+            Scene temporaryScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
+            temporaryScene.LoadContentAsync()
+                .ContinueWith(_ => GameServices.GetService<ScriptUtils>().WaitNextUpdate())
+                .ContinueWith(_ => {
+                    currentScene = temporaryScene;
+                    loadingScreen.ExitScreen(false);
+                });
         }
 
         /// <summary>
@@ -182,6 +190,8 @@ namespace HammeredGame.Game.Screens
         {
             base.Update(gameTime);
 
+            if (currentScene == null || !currentScene.IsLoaded) return;
+
             Input input = GameServices.GetService<Input>();
 
             if (HasFocus && UserAction.Pause.Pressed(input))
@@ -208,6 +218,8 @@ namespace HammeredGame.Game.Screens
         {
             base.Draw(gameTime);
 
+            if (currentScene == null) return;
+
             gameRenderer.DrawScene(gameTime, currentScene);
             gameRenderer.PostProcess();
             gameRenderer.CopyOutputTo(ScreenManager.MainRenderTarget);
@@ -218,6 +230,8 @@ namespace HammeredGame.Game.Screens
         /// </summary>
         public override void UI()
         {
+            if (currentScene == null) return;
+
             // Show a scene switcher dropdown, with the list of all scene class names in this assembly
             ImGui.Text("Current Loaded Scene: ");
             ImGui.SameLine();
@@ -227,7 +241,7 @@ namespace HammeredGame.Game.Screens
                 {
                     if (ImGui.Selectable(fqn, fqn == currentScene.GetType().FullName))
                     {
-                        InitializeLevel(fqn);
+                        GameServices.GetService<ScriptUtils>().WaitNextUpdate().ContinueWith(_ => InitializeLevel(fqn));
                     }
                 }
                 ImGui.EndCombo();
