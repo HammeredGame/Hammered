@@ -1133,7 +1133,7 @@
 /processorParam:ColorKeyEnabled=True
 /processorParam:DefaultEffect=BasicEffect
 /processorParam:GenerateMipmaps=True
-/processorParam:GenerateTangentFrames=False
+/processorParam:GenerateTangentFrames=True
 /processorParam:PremultiplyTextureAlpha=True
 /processorParam:PremultiplyVertexColors=True
 /processorParam:ResizeTexturesToPowerOfTwo=False
