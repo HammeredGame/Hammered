@@ -1,10 +1,11 @@
-﻿using BEPUphysics;
+using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Settings;
 using BEPUutilities.Threading;
 using HammeredGame.Core;
 using HammeredGame.Game.PathPlanning.Grid;
+using HammeredGame.Game.Screens;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -50,11 +51,20 @@ namespace HammeredGame.Game
         /// </summary>
         public Space Space;
 
+        /// <summary>
+        /// The game services that all objects in the scene and any scripts can access.
+        /// </summary>
         protected GameServices Services;
 
-        protected Scene(GameServices services)
+        /// <summary>
+        /// The game screen that this scene belongs to.
+        /// </summary>
+        protected GameScreen ParentGameScreen;
+
+        protected Scene(GameServices services, GameScreen screen)
         {
             this.Services = services;
+            this.ParentGameScreen = screen;
             InitNewSpace();
         }
 
@@ -417,6 +427,7 @@ namespace HammeredGame.Game
                 // A button to launch the popup for creating a new object
                 if (ImGui.Button("Create New Object", new System.Numerics.Vector2(sideBarWidth, 0f)))
                 {
+                    objectCreationEntity = null;
                     ImGui.OpenPopup("create_new_object");
                 }
 
