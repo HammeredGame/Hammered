@@ -13,8 +13,8 @@ namespace HammeredGame.Game.PathPlanning.Grid
 {
     public class UniformGrid
     {
-        public Vector3[,,] grid { get; private set; }
-        public bool[,,] mask { get; private set; }
+        public Vector3[,,] grid { get; private set; } // Temporary solution. In general, this is not good practice.
+        public bool[,,] mask { get; private set; } // Temporary solution. In general, this is not good practice.
 
         private BidirectionalDictionary<Vector3, Vertex> biMap  = new BidirectionalDictionary<Vector3, Vertex>();
         private Graph graph;
