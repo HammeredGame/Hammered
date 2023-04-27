@@ -73,6 +73,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private float laserScale;
         private bool orientToCamera = true;
 
+        private Texture2D laserTexture;
         private Texture2D laserMaskTexture;
 
         // Laser configuration which hopefully won't need to change after release, but can be
@@ -105,7 +106,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             // We use a custom shader for the Laser which uses a 2D plane mesh and rolling textures
             // and color intensities above 1 to simulate the laser.
             this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/Laser");
-            this.laserMaskTexture = services.GetService<ContentManager>().Load<Texture2D>("LaserTexture");
+            this.laserTexture = services.GetService<ContentManager>().Load<Texture2D>("LaserTexture");
+            this.laserMaskTexture = services.GetService<ContentManager>().Load<Texture2D>("LaserMask");
         }
 
         private void Events_PairRemoved(EntityCollidable sender, BroadPhaseEntry other)
@@ -254,12 +256,18 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
                     part.Effect.Parameters["MaterialHasSpecular"].SetValue(false);
 
-                    part.Effect.Parameters["MaterialTexture"].SetValue(tex);
+                    part.Effect.Parameters["LaserMaterial"].SetValue(tex);
                     // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
-                    part.Effect.Parameters["MaterialTextureGammaCorrection"].SetValue(true);
+                    part.Effect.Parameters["LaserMaterialGammaCorrection"].SetValue(true);
 
-                    part.Effect.Parameters["LaserTexture"]?.SetValue(laserMaskTexture);
-                    part.Effect.Parameters["LaserTextureGammaCorrection"]?.SetValue(false);
+                    // Use inverse-gamma-correction for the alpha masks too, since the fade to
+                    // transparency is done in sRGB, and if incorrectly treated as linear, the edges
+                    // will jump from fully transparent to immediately very visible.
+                    part.Effect.Parameters["LaserTexture"]?.SetValue(laserTexture);
+                    part.Effect.Parameters["LaserTextureGammaCorrection"]?.SetValue(true);
+
+                    part.Effect.Parameters["LaserMask"].SetValue(laserMaskTexture);
+                    part.Effect.Parameters["LaserMaskGammaCorrection"]?.SetValue(true);
 
                     part.Effect.Parameters["GameTimeSeconds"]?.SetValue((float)gameTime.TotalGameTime.TotalSeconds);
                     part.Effect.Parameters["LaserIntensity"]?.SetValue(laserIntensity);

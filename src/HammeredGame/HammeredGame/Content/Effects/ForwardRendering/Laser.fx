@@ -114,10 +114,10 @@ float MaterialShininess;
 float4 CameraPosition;
 
 // The color for the laser, which will be alpha-masked by the laser texture
-texture MaterialTexture;
+texture LaserMaterial;
 sampler2D materialTextureSampler = sampler_state
 {
-    Texture = (MaterialTexture);
+    Texture = (LaserMaterial);
     MinFilter = Linear;
     MagFilter = Linear;
     AddressU = Clamp;
@@ -125,7 +125,7 @@ sampler2D materialTextureSampler = sampler_state
 };
 
 // Whether to perform inverse-gamma correction on the texture
-bool MaterialTextureGammaCorrection;
+bool LaserMaterialGammaCorrection;
 
 // The texture for the laser (should have top and bottom fade to alpha, and the
 // otherwise white. Recommended size is 512px or less)
@@ -150,9 +150,23 @@ float LaserIntensity;
 // Amount of total elapsed game time in floating point seconds
 float GameTimeSeconds;
 
-// Speed in xy for the texture UV coordinates to change
+// Speed in XY for the texture UV coordinates to change
 float2 LaserSpeed;
 
+// The alpha mask for the laser, applied on the whole object. This is used to
+// make the hard edges at the start and end fade out.
+texture LaserMask;
+sampler2D laserMaskSampler = sampler_state
+{
+    Texture = (LaserMask);
+    MinFilter = Linear;
+    MagFilter = Linear;
+    AddressU = Clamp;
+    AddressV = Clamp;
+};
+
+// Whether to perform inverse-gamma correction on the texture
+bool LaserMaskGammaCorrection;
 
 // The sun's shadow map generated on the first technique
 texture SunDepthTexture;
@@ -333,12 +347,11 @@ float4 ScrollingLaserTexture(float2 uv)
     // Add an offset to the UV based on the amount of game time and speed
     float4 textureColor = tex2D(laserTextureSampler, uv + LaserSpeed * GameTimeSeconds);
 
-    // Account for gamma (transform from sRGB to linear, so that the HDR
-    // tonemapping will bring it back to sRGB). See the comment attached
-    // to the declaration of this boolean flag for more info.
+    // Account for gamma (transform from sRGB to linear) since alpha masks
+    // are created in sRGB and the nice gradient from invisible to visible
+    // will be non-linear unless it's corrected for here.
     if (LaserTextureGammaCorrection)
     {
-        // todo: check if this only needs to be applied to RGB and not A
         textureColor = pow(textureColor, 2.2);
     }
 
@@ -354,7 +367,7 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
     float4 laserTextureColor = ScrollingLaserTexture(input.TextureCoordinate);
     float4 materialColor = tex2D(materialTextureSampler, input.TextureCoordinate);
 
-    if (MaterialTextureGammaCorrection)
+    if (LaserMaterialGammaCorrection)
     {
         materialColor = pow(materialColor, 2.2);
     }
@@ -401,19 +414,29 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
     float4 ambient = MaterialAmbientColor * AmbientLightColor * AmbientLightIntensity;
     output.Color += ambient;
 
+
+    // Sample the mask for the laser to fade out the edges
+    float4 maskColor = tex2D(laserMaskSampler, input.TextureCoordinate);
+    // Make sure to use gamma correction for alpha too, since that is the important part
+    if (LaserMaskGammaCorrection)
+    {
+        maskColor = pow(maskColor, 2.2);
+    }
+
     // Multiply all the lighting so far by the texture color. If there is no
     // texture, this will result in a multiplication by zero, thus black.
     output.Color *= materialColor;
 
-    // Multiply the laser texture mask
-    output.Color *= laserTextureColor;
+    // Multiply the laser texture and its mask
+    output.Color *= laserTextureColor * maskColor;
 
     // Multiply by intensity for HDR, before applying alpha which shouldn't be
     // multiplied
     output.Color *= LaserIntensity;
 
-    // Use the product of the alpha for texture color and laser mask texture
-    output.Color.a = materialColor.a * laserTextureColor.a;
+    // Use the product of the alpha for texture color and laser texture, and
+    // the laser mask.
+    output.Color.a = materialColor.a * laserTextureColor.a * maskColor.r;
 
     // Write to a depth buffer too, for use in post-processing shaders
     output.Depth = input.Depth.x / input.Depth.y;
