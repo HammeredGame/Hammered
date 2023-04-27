@@ -15,14 +15,8 @@
 // Reference: https://learnopengl.com/Lighting/Basic-Lighting
 // Reference: https://learnopengl.com/Advanced-Lighting/Advanced-Lighting
 
-// These three variables are common between both the light shadow map generation
-// and the main shading pass, declare them up front. In the light shadow map
-// generation, the view and projection matrices will be those of the light; in
-// the main shading pass, they will be those of the camera. The world matrix is
-// the same across both and is set by the model.
-float4x4 World;
-float4x4 View;
-float4x4 Projection;
+#include "Common.fxh"
+#include "Macros.fxh"
 
 // ============================================================================
 //
@@ -44,13 +38,10 @@ struct DepthMapVSOutput
 
 DepthMapVSOutput DepthMapVS(DepthMapVSInput input)
 {
-
     DepthMapVSOutput output;
 
     // Transform vertex coordinates into light projection-space [-1, 1]
-    float4 worldPosition = mul(input.Position, World);
-    float4 viewPosition = mul(worldPosition, View);
-    output.Position = mul(viewPosition, Projection);
+    output.Position = ObjectToProjection(input.Position);
 
     // Store the depth (in projection space, so Z direction) and the homogenous
     // w component. In the end we want to store z/w in the buffer but doing it
@@ -125,35 +116,10 @@ float MaterialShininess;
 float4 CameraPosition;
 
 // The material texture
-texture ModelTexture;
-sampler2D textureSampler = sampler_state
-{
-    Texture = (ModelTexture);
-    MinFilter = Linear;
-    MagFilter = Linear;
-    AddressU = Clamp;
-    AddressV = Clamp;
-};
-
-// Whether to perform inverse-gamma correction on the texture. Usually this
-// should be true because albedo textures are created in sRGB which is
-// already gamma-corrected to be non-linear. We want to load linear textures
-// though (to use with HDR, or physically accurate calculations) so we need
-// to invert the correction.
-// Reference: https://gamedev.stackexchange.com/questions/74324/gamma-space-and-linear-space-with-shader
-// Reference: (Section on sRGB textures) https://learnopengl.com/Advanced-Lighting/Gamma-Correction
-bool PerformTextureGammaCorrection;
+DECLARE_TEXTURE(ModelTexture, textureSampler, Clamp, Clamp)
 
 // The sun's shadow map generated on the first technique
-texture SunDepthTexture;
-sampler2D sunDepthSampler = sampler_state
-{
-    Texture = (SunDepthTexture);
-    MinFilter = Linear;
-    MagFilter = Linear;
-    AddressU = Clamp;
-    AddressV = Clamp;
-};
+DECLARE_TEXTURE(SunDepthTexture, sunDepthSampler, Clamp, Clamp)
 
 // When naively done, depth value comparisons during the shading process will
 // encounter floating point inconsistencies. This leads to visual artifacts
@@ -306,7 +272,7 @@ float PCFShadow(float3 normal, float3 toLight, float4 pixelSunProjPosition, floa
         {
             // Retrieve the depth from the light shadow map and use the red
             // component, which stores the single floating point value.
-            float pcfDepth = tex2D(sunDepthSampler, sunProjCoords + float2(x, y) * texelSize).r;
+            float pcfDepth = SAMPLE_TEXTURE(sunDepthSampler, sunProjCoords + float2(x, y) * texelSize, false).r;
 
             // Add it to the shadow contribution as long as the depth of the
             // current pixel (from the light) is further than the closest
@@ -324,15 +290,7 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
     PixelShaderOutput output;
 
     // Sample material texture based on vertex UV passed from the vertex shader
-	float4 textureColor = tex2D(textureSampler, input.TextureCoordinate);
-
-    // Account for gamma (transform from sRGB to linear, so that the HDR
-    // tonemapping will bring it back to sRGB). See the comment attached
-    // to the declaration of this boolean flag for more info.
-    if (PerformTextureGammaCorrection)
-    {
-        textureColor = pow(textureColor, 2.2);
-    }
+    float4 textureColor = SAMPLE_TEXTURE(textureSampler, input.TextureCoordinate, ModelTextureGammaCorrection);
 
     // Initialize the default color that we'll add to
     output.Color = float4(0, 0, 0, 0);

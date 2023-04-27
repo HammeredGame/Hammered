@@ -209,7 +209,7 @@ namespace HammeredGame.Game
 
                     part.Effect.Parameters["ModelTexture"]?.SetValue(tex);
                     // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
-                    part.Effect.Parameters["PerformTextureGammaCorrection"]?.SetValue(true);
+                    part.Effect.Parameters["ModelTextureGammaCorrection"]?.SetValue(true);
                 }
                 mesh.Draw();
             }

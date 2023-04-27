@@ -12,14 +12,8 @@
 // based on the following Unity laser beam tutorial, translated manually to
 // MonoGame HLSL: https://www.youtube.com/watch?v=mGd3nYXj1Oc
 
-// These three variables are common between both the light shadow map generation
-// and the main shading pass, declare them up front. In the light shadow map
-// generation, the view and projection matrices will be those of the light; in
-// the main shading pass, they will be those of the camera. The world matrix is
-// the same across both and is set by the model.
-float4x4 World;
-float4x4 View;
-float4x4 Projection;
+#include "Common.fxh"
+#include "Macros.fxh"
 
 // ============================================================================
 //
@@ -44,9 +38,7 @@ DepthMapVSOutput DepthMapVS(DepthMapVSInput input)
     DepthMapVSOutput output;
 
     // Transform vertex coordinates into light projection-space [-1, 1]
-    float4 worldPosition = mul(input.Position, World);
-    float4 viewPosition = mul(worldPosition, View);
-    output.Position = mul(viewPosition, Projection);
+    output.Position = ObjectToProjection(input.Position);
 
     return output;
 }
@@ -114,34 +106,11 @@ float MaterialShininess;
 float4 CameraPosition;
 
 // The color for the laser, which will be alpha-masked by the laser texture
-texture LaserMaterial;
-sampler2D materialTextureSampler = sampler_state
-{
-    Texture = (LaserMaterial);
-    MinFilter = Linear;
-    MagFilter = Linear;
-    AddressU = Clamp;
-    AddressV = Clamp;
-};
-
-// Whether to perform inverse-gamma correction on the texture
-bool LaserMaterialGammaCorrection;
+DECLARE_TEXTURE(LaserMaterial, materialTextureSampler, Clamp, Clamp);
 
 // The texture for the laser (should have top and bottom fade to alpha, and the
 // otherwise white. Recommended size is 512px or less)
-texture LaserTexture;
-sampler2D laserTextureSampler = sampler_state
-{
-    Texture = (LaserTexture);
-    MinFilter = Linear;
-    MagFilter = Linear;
-    // Wrap coordinates since we'll keep adding gameTime * speed to UV coords
-    AddressU = Wrap;
-    AddressV = Wrap;
-};
-
-// Whether to perform inverse-gamma correction on the texture
-bool LaserTextureGammaCorrection;
+DECLARE_TEXTURE(LaserTexture, laserTextureSampler, Wrap, Wrap);
 
 // Amount to multiply the laser color by (since we're in HDR we can go above
 // 1 for RGB values to simulate bright objects)
@@ -155,29 +124,10 @@ float2 LaserSpeed;
 
 // The alpha mask for the laser, applied on the whole object. This is used to
 // make the hard edges at the start and end fade out.
-texture LaserMask;
-sampler2D laserMaskSampler = sampler_state
-{
-    Texture = (LaserMask);
-    MinFilter = Linear;
-    MagFilter = Linear;
-    AddressU = Clamp;
-    AddressV = Clamp;
-};
-
-// Whether to perform inverse-gamma correction on the texture
-bool LaserMaskGammaCorrection;
+DECLARE_TEXTURE(LaserMask, laserMaskSampler, Clamp, Clamp);
 
 // The sun's shadow map generated on the first technique
-texture SunDepthTexture;
-sampler2D sunDepthSampler = sampler_state
-{
-    Texture = (SunDepthTexture);
-    MinFilter = Linear;
-    MagFilter = Linear;
-    AddressU = Clamp;
-    AddressV = Clamp;
-};
+DECLARE_TEXTURE(SunDepthTexture, sunDepthSampler, Clamp, Clamp);
 
 // When naively done, depth value comparisons during the shading process will
 // encounter floating point inconsistencies. This leads to visual artifacts
@@ -330,7 +280,7 @@ float PCFShadow(float3 normal, float3 toLight, float4 pixelSunProjPosition, floa
         {
             // Retrieve the depth from the light shadow map and use the red
             // component, which stores the single floating point value.
-            float pcfDepth = tex2D(sunDepthSampler, sunProjCoords + float2(x, y) * texelSize).r;
+            float pcfDepth = SAMPLE_TEXTURE(sunDepthSampler, sunProjCoords + float2(x, y) * texelSize, false).r;
 
             // Add it to the shadow contribution as long as the depth of the
             // current pixel (from the light) is further than the closest
@@ -347,17 +297,7 @@ float PCFShadow(float3 normal, float3 toLight, float4 pixelSunProjPosition, floa
 float4 ScrollingLaserTexture(float2 uv)
 {
     // Add an offset to the UV based on the amount of game time and speed
-    float4 textureColor = tex2D(laserTextureSampler, uv + LaserSpeed * GameTimeSeconds);
-
-    // Account for gamma (transform from sRGB to linear) since alpha masks
-    // are created in sRGB and the nice gradient from invisible to visible
-    // will be non-linear unless it's corrected for here.
-    if (LaserTextureGammaCorrection)
-    {
-        textureColor = pow(textureColor, 2.2);
-    }
-
-    return textureColor;
+    return SAMPLE_TEXTURE(laserTextureSampler, uv + LaserSpeed * GameTimeSeconds, LaserTextureGammaCorrection);
 }
 
 PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
@@ -367,12 +307,7 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
     input.TextureCoordinate.xy = input.TextureCoordinate.yx;
 
     float4 laserTextureColor = ScrollingLaserTexture(input.TextureCoordinate);
-    float4 materialColor = tex2D(materialTextureSampler, input.TextureCoordinate);
-
-    if (LaserMaterialGammaCorrection)
-    {
-        materialColor = pow(materialColor, 2.2);
-    }
+    float4 materialColor = SAMPLE_TEXTURE(materialTextureSampler, input.TextureCoordinate, LaserMaterialGammaCorrection);
 
     // Initialize the default color that we'll add to
     output.Color = float4(0, 0, 0, 0);
@@ -418,12 +353,7 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
 
 
     // Sample the mask for the laser to fade out the edges
-    float4 maskColor = tex2D(laserMaskSampler, input.TextureCoordinate);
-    // Make sure to use gamma correction for alpha too, since that is the important part
-    if (LaserMaskGammaCorrection)
-    {
-        maskColor = pow(maskColor, 2.2);
-    }
+    float4 maskColor = SAMPLE_TEXTURE(laserMaskSampler, input.TextureCoordinate, LaserMaskGammaCorrection);
 
     // Multiply all the lighting so far by the texture color. If there is no
     // texture, this will result in a multiplication by zero, thus black.
