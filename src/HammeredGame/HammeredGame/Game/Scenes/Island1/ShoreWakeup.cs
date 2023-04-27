@@ -40,6 +40,10 @@ namespace HammeredGame.Game.Scenes.Island1
             // set hammer owner so we can now summon it
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
 
+            // Allow <c>Hammer</c> instance to have access to the grid of the scene for the path planning.
+            // THIS IS REQUIRED FOR ALL SCENES!
+            Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
+
             // hide movement controls
             movementPromptTokenSource.Cancel();
 

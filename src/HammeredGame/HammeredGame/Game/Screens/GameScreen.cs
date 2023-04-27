@@ -36,8 +36,11 @@ namespace HammeredGame.Game.Screens
 
         // Bounding Volume debugging variables
         private bool drawBounds = false;
-
         private List<EntityDebugDrawer> debugEntities = new();
+
+        // Uniform Grid debugging variables
+        private bool drawGrid = false;
+        private List<GridDebugDrawer> debugGridCells = new();
 
         private string currentSceneName;
 
@@ -124,6 +127,9 @@ namespace HammeredGame.Game.Screens
 
             currentSceneName = sceneToLoad;
             currentScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
+
+            // Set up the list of debug grid cells for debugging visualization
+            SetupDebugGrid();
         }
 
         /// <summary>
@@ -168,6 +174,8 @@ namespace HammeredGame.Game.Screens
 
             // Set up the list of debug entities for debugging visualization
             SetupDebugBounds();
+            // Set up the list of debug grid cells for debugging visualization
+            //SetupDebugGrid();
         }
 
         /// <summary>
@@ -217,6 +225,17 @@ namespace HammeredGame.Game.Screens
                 }
                 gpu.RasterizerState = currentRS;
             }
+
+            if (drawGrid)
+            {
+                RasterizerState currentRS = gpu.RasterizerState;
+                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
+                foreach (GridDebugDrawer gdd in debugGridCells)
+                {
+                    gdd.Draw(gameTime, currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
+                }
+                gpu.RasterizerState = currentRS;
+            }
         }
 
         // Prepare the entities for debugging visualization
@@ -234,6 +253,33 @@ namespace HammeredGame.Game.Screens
                     EntityDebugDrawer model = new EntityDebugDrawer(e, CubeModel, scaling);
                     //Add the drawable game component for this entity to the game.
                     debugEntities.Add(model);
+                }
+            }
+        }
+
+        // Prepare the grid cells for debugging visualization
+        private void SetupDebugGrid()
+        {
+            debugGridCells.Clear();
+            var CubeModel = GameServices.GetService<ContentManager>().Load<Model>("cube");
+            //Go through the list of entities in the space and create a graphical representation for them.
+            float sideLength = this.currentScene.Grid.sideLength;
+            Matrix scaling = Matrix.CreateScale(sideLength);
+
+            int[] gridDimensions = this.currentScene.Grid.GetDimensions();
+            for (int i = 0; i < gridDimensions[0]; ++i)
+            {
+                for (int j = 0; j < gridDimensions[1]; ++j)
+                {
+                    for (int k = 0; k < gridDimensions[2]; ++k)
+                    {
+                        if (this.currentScene.Grid.mask[i, j, k])
+                        {
+                            Vector3 gridcell = this.currentScene.Grid.grid[i, j, k] + new Vector3(sideLength / 2, sideLength / 2, sideLength / 2);
+                            GridDebugDrawer gdd = new GridDebugDrawer(CubeModel, gridcell, scaling);
+                            debugGridCells.Add(gdd);
+                        }
+                    }
                 }
             }
         }
@@ -260,6 +306,7 @@ namespace HammeredGame.Game.Screens
             ImGui.Separator();
 
             ImGui.Checkbox("DrawBounds", ref drawBounds);
+            ImGui.Checkbox("DrawGrid", ref drawGrid);
 
             // Show the scene's UI within the same window
             currentScene.UI();
