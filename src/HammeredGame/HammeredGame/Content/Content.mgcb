@@ -402,7 +402,7 @@
 /processorParam:TextureFormat=Compressed
 /build:island.fbx
 
-#begin LaserMaterialTexture.png
+#begin LaserMask.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -412,7 +412,19 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:LaserMaterialTexture.png
+/build:LaserMask.png
+
+#begin LaserMaterial.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:LaserMaterial.png
 
 #begin LaserTexture.png
 /importer:TextureImporter
