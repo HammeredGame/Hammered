@@ -115,6 +115,29 @@ namespace HammeredGame.Graphics
                 gameObject.Effect.Parameters["ShadowMapNormalOffset"]?.SetValue(shadowMapNormalOffset);
                 gameObject.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
             }
+
+            if (scene.DrawDebugObjects)
+            {
+                // Temporarily render in WireFrame fill mode to visualise debug entities
+                RasterizerState currentState = gpu.RasterizerState;
+                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
+                foreach (EntityDebugDrawer item in scene.DebugObjects) {
+                    item.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix);
+                }
+                gpu.RasterizerState = currentState;
+            }
+
+            if (scene.DrawDebugGrid)
+            {
+                // Temporarily render in WireFrame fill mode to visualise debug entities
+                RasterizerState currentRS = gpu.RasterizerState;
+                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
+                foreach (GridDebugDrawer gdd in scene.DebugGridCells)
+                {
+                    gdd.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix);
+                }
+                gpu.RasterizerState = currentRS;
+            }
         }
 
         /// <summary>

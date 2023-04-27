@@ -18,13 +18,13 @@ namespace HammeredGame.Game
         /// <summary>
         /// Entity that this model follows.
         /// </summary>
-        public Entity entity;
-        Model model;
+        readonly Entity entity;
+        readonly Model model;
         /// <summary>
         /// Base transformation to apply to the model.
         /// </summary>
-        public BEPUutilities.Matrix Transform;
-        Matrix[] boneTransforms;
+        readonly BEPUutilities.Matrix transform;
+        readonly Matrix[] boneTransforms;
 
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace HammeredGame.Game
         {
             this.entity = entity;
             this.model = model;
-            this.Transform = transform;
+            this.transform = transform;
 
             //Collect any bone transformations in the model itself.
             //The default cube model doesn't have any, but this allows the EntityModel to work with more complicated shapes.
@@ -59,7 +59,7 @@ namespace HammeredGame.Game
             //and translation of the entity combined.
             //There are a variety of properties available in the entity, try looking around
             //in the list to familiarize yourself with it.
-            Matrix worldMatrix = MathConverter.Convert(Transform * entity.CollisionInformation.WorldTransform.Matrix);
+            Matrix worldMatrix = MathConverter.Convert(transform * entity.CollisionInformation.WorldTransform.Matrix);
 
 
             model.CopyAbsoluteBoneTransformsTo(boneTransforms);
