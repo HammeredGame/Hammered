@@ -29,10 +29,10 @@ namespace HammeredGame.Game.PathPlanning.Grid
         private HashSet<Vertex> verticesOfGraph = new HashSet<Vertex>(); 
 
         /// <remarks>
-        /// The current implementations of the constructors suggest that the point characterizing a cell is its "bottom-left" one,
-        /// instead of the usual convention, where the point characterizing the cell is that at the (cubic) cell's center.
+        /// The current implementations of the constructors suggest that the point characterizing a cell is located at its center.
+        /// Feel free to change it "corner-coordinated" system by changing the call "GetCellIndex".
         /// 
-        /// WARNING: There is a possibility that this convention might cause some visual anomalies in coarse grids.
+        /// WARNING: There is a possibility that the "corner-coordinated" convention might cause some visual anomalies in coarse grids.
         /// </remarks>
 
         /// <summary>
@@ -142,9 +142,16 @@ namespace HammeredGame.Game.PathPlanning.Grid
                 throw new ArgumentException(String.Format("The provided position's Z coordinate is outside the grid." +
                     "grid max Z = {0}. {1} was provided instead.", originPoint.Z + grid.GetLength(2) * sideLength, position.Z));
 
-            uint xIndex = (uint)Math.Floor((position.X - originPoint.X) / sideLength);
-            uint yIndex = (uint)Math.Floor((position.Y - originPoint.Y) / sideLength);
-            uint zIndex = (uint)Math.Floor((position.Z - originPoint.Z) / sideLength);
+            //// Corner-coordinated grid cells
+            //uint xIndex = (uint)Math.Floor((position.X - originPoint.X) / sideLength);
+            //uint yIndex = (uint)Math.Floor((position.Y - originPoint.Y) / sideLength);
+            //uint zIndex = (uint)Math.Floor((position.Z - originPoint.Z) / sideLength);
+            // Center-coordinated grid cells
+            uint xIndex = (uint)Math.Floor((position.X - originPoint.X + sideLength / 2) / sideLength);
+            uint yIndex = (uint)Math.Floor((position.Y - originPoint.Y + sideLength / 2) / sideLength);
+            uint zIndex = (uint)Math.Floor((position.Z - originPoint.Z + sideLength / 2) / sideLength);
+
+
 
             uint[] index = new uint[3] { xIndex, yIndex, zIndex };
 
