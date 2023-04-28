@@ -119,6 +119,7 @@ namespace HammeredGame.Game.GameObjects
                 //emitter = Services.GetService<AudioEmitter>();
 
                 Services.GetService<AudioManager>().listener.Position = this.Position;
+                
             }
 
             // Initial position should be on/over ground
@@ -314,6 +315,7 @@ namespace HammeredGame.Game.GameObjects
             animations.Update(gameTime.ElapsedGameTime * 2, true, Matrix.Identity);
 
             Services.GetService<AudioManager>().listener.Position = this.Position;
+            Services.GetService<AudioManager>().listener.Forward = forwardDirection; 
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
 

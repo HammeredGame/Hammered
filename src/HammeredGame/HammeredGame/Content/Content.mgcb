@@ -70,6 +70,12 @@
 /processorParam:Quality=Best
 /build:Audio/hammer_drop.wav
 
+#begin Audio/laser.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/laser.wav
+
 #begin Audio/lohi_whoosh.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
