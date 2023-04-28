@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static HammeredGame.Game.GameObjects.Player;
 using BEPUphysics.Entities;
+using Microsoft.Xna.Framework.Content;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles
 {
@@ -57,7 +58,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private bool treeFallen = false;
         private bool playerOnTree;
 
-        private List<SoundEffect> tree_sfx; 
+        private List<SoundEffect> tree_sfx;
+
+        private Model fallenLog;
+        private bool isFalling = false;
+        private BEPUutilities.Vector3 fallDirection;
+        private int fallingAngle = 0;
 
         public Tree(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -65,7 +71,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
 
                 tree_sfx = Services.GetService<List<SoundEffect>>();
-                
+
+                fallenLog = services.GetService<ContentManager>().Load<Model>("trunk");
+
                 if (this.Entity is not Box)
                 {
                     throw new Exception("Tree only supports Box due to how it falls over");
@@ -105,16 +113,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         //    }
         //}
 
-        private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender,
+            BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
-            // Make the tree fall (currently falls 90 degrees in the direction of hammer movement
+            // Start tree fall (currently falls 90 degrees in the direction of hammer movement)
             if (other.Tag is Hammer && !treeFallen)
             {
                 var hammer = other.Tag as Hammer;
-                BEPUutilities.Vector3 fallDirection = hammer.Entity.LinearVelocity;
+                fallDirection = hammer.Entity.LinearVelocity;
                 fallDirection.Normalize();
-                this.Entity.Orientation = BEPUutilities.Quaternion.Identity * BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection), BEPUutilities.MathHelper.ToRadians(90));
-                SetTreeFallen(true);
+                isFalling = true;
                 tree_sfx[3].Play();
             }
 
@@ -156,11 +164,32 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 (this.Entity as Box).Length *= 1.2f;
                 //this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
             }
+
+            // Swap models
+            this.Model = fallenLog;
+            //(fallenLog, this.Model) = (this.Model, fallenLog);
         }
 
         public bool IsTreeFallen()
         {
             return this.treeFallen;
+        }
+
+        public override void Update(GameTime gameTime, bool screenHasFocus)
+        {
+            if(isFalling && fallingAngle < 90)
+            {
+                // Update falling position until complete 90 degrees rotation
+                fallingAngle += (int)(0.3 * gameTime.ElapsedGameTime.Milliseconds);
+                this.Entity.Orientation = BEPUutilities.Quaternion.Identity *
+                    BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection),
+                    BEPUutilities.MathHelper.ToRadians(fallingAngle));
+                if(fallingAngle >= 90)
+                {
+                    SetTreeFallen(true);
+                    isFalling = false;
+                }
+            }
         }
 
         //public override void TouchingHammer(Hammer hammer)
