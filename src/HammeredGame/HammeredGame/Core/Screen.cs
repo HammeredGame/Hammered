@@ -67,7 +67,9 @@ namespace HammeredGame.Core
         /// <summary>
         /// Unload any content specific to this screen.
         /// </summary>
-        public virtual void UnloadContent() { }
+        public virtual void UnloadContent() {
+            IsLoaded = false;
+        }
 
         /// <summary>
         /// Called on every game update as long as the screen is in the stack. This function is not
