@@ -80,6 +80,9 @@ namespace HammeredGame.Game.Screens
             // call LoadContent every time (which lags because it has to loads fonts and create the
             // UI layout)
             pauseScreen = new PauseScreen() {
+                // Specify the callback function when Quit To Title is called. We also need to
+                // specify the Restart Level callback, but this is done just before each time the
+                // screen is added to the manager, since we need the name of the currently active level.
                 QuitToTitleFunc = () => {
                     ExitScreen(true);
                     // Ask the main game class to recreate the title screen, since it needs to
@@ -160,6 +163,7 @@ namespace HammeredGame.Game.Screens
             currentScene.Camera.UpdateCamera(HasFocus);
 
             //Steps the simulation forward one time step.
+            // TODO: perhaps this shouldn't update if it's paused (i.e. check for HasFocus)?
             currentScene.Space.Update();
 
             // Set up the list of debug entities for debugging visualization
@@ -187,7 +191,7 @@ namespace HammeredGame.Game.Screens
 
         /// <summary>
         /// Called on each game loop after Update(). Should not contain expensive computation but
-        /// rather just rendering and drawing to the GPU.
+        /// rather just rendering and drawing to the GPU. Shader effects are done here.
         /// </summary>
         /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
@@ -234,6 +238,9 @@ namespace HammeredGame.Game.Screens
             }
         }
 
+        /// <summary>
+        /// Debug UI for the game screen.
+        /// </summary>
         public override void UI()
         {
             // Show a scene switcher dropdown, with the list of all scene class names in this assembly
@@ -250,7 +257,6 @@ namespace HammeredGame.Game.Screens
                 }
                 ImGui.EndCombo();
             }
-            ImGui.Text("Press R on keyboard or Y on controller to reload level");
             ImGui.Separator();
 
             ImGui.Checkbox("DrawBounds", ref drawBounds);
