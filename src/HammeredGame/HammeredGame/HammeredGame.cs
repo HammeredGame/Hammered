@@ -40,8 +40,6 @@ namespace HammeredGame
 
         private readonly GameServices gameServices = new();
 
-        private Scene currentScene;
-
         // Music variables
         private List<SoundEffect> sfx = new List<SoundEffect>();
         private AudioManager audioManager;
@@ -50,6 +48,7 @@ namespace HammeredGame
 
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
+
 
         public HammeredGame()
         {

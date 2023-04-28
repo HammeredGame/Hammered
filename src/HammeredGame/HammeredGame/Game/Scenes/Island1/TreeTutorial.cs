@@ -24,6 +24,7 @@ namespace HammeredGame.Game.Scenes.Island1
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
+            Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
 
             // Show a hint for camera controls upon entering its trigger area, but set up the event
             // handler without blocking further script execution. This is so that the end trigger

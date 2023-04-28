@@ -1,9 +1,10 @@
-Ôªøusing BEPUphysics;
+using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Settings;
 using BEPUutilities.Threading;
 using HammeredGame.Core;
+using HammeredGame.Game.PathPlanning.Grid;
 using HammeredGame.Game.Screens;
 using ImGuiNET;
 using ImMonoGame.Thing;
@@ -29,6 +30,11 @@ namespace HammeredGame.Game
         /// The camera in the scene.
         /// </summary>
         public Camera Camera { get; private set; }
+
+        /// <summary>
+        /// The uniform grid of the scene.
+        /// </summary>
+        public UniformGrid Grid { get; private set; } 
 
         /// <summary>
         /// The objects loaded in the scene, keyed by unique identifier strings.
@@ -156,7 +162,8 @@ namespace HammeredGame.Game
         /// <param name="fileName"></param>
         public void CreateFromXML(string fileName)
         {
-            (Camera, GameObjects) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            (Camera, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            foreach (GameObject obj in GameObjects.Values) { obj.SetCurrentScene(this); }
         }
 
         /// <summary>
@@ -173,6 +180,50 @@ namespace HammeredGame.Game
                 nameCandidate = prefix + i.ToString();
             }
             return nameCandidate;
+        }
+
+        public void UpdateSceneGrid(GameObject gameObject, bool availability)
+        {
+            if (gameObject.Entity != null)
+            {
+                // Perhaps too many unneeded computations (p2 and p3, p3x, p3y and p3z do not need to be used).
+                Box goBox = (gameObject.Entity as Box);
+                /// <summary>
+                /// 1) SUPPOSE that the bounding box is initially axis aligned (i.e. it "spreads out" parallelly to the x-axis, y-axis and z-axis)
+                /// 2) Sample points using the "standard basis" --i.e. the basis of R^3: (1, 0, 0), (0, 1, 0), (0, 0, 1)-- to extract new points.
+                /// 3) Rotate the points extracted in STEP 2) to get the correct 3D position of the sampled point
+                ///     along the axes the bounding box "unfolds".
+                /// </summary>
+
+                Vector3 e1 = new Vector3(1, 0, 0), e2 = new Vector3(0, 1, 0), e3 = new Vector3(0, 0, 1);
+                float sideLength = this.Grid.sideLength;
+                // In case the developer wishes to create more "safety distance" between the hammer and the objects,
+                // just adjust the scalar multiplier 1 to something greater than 1.
+                // This could prove useful, because the size of the hammer is not currently taken into account.
+                // Ideally, the "·Repetitions" variables would also be parameterized w.r.t the dimensions of the hammer.
+                int xRepetitions = (int) (Math.Ceiling(goBox.HalfWidth / sideLength) * 1.0); //xRepetitions = 0;
+                int yRepetitions = (int)(Math.Ceiling(goBox.HalfHeight / sideLength) * 1.0);
+                int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * 1.0); //zRepetitions = 0;
+                for (int i = -xRepetitions; i <= xRepetitions; ++i)
+                {
+                    for (int j = -yRepetitions; j <= yRepetitions; ++j)
+                    {
+                        for (int k = -zRepetitions; k <= zRepetitions; ++k)
+                        {
+                            Vector3 localOrigin = MathConverter.Convert(goBox.Position);
+                            Vector3 sampledPoint = localOrigin + sideLength * (i * e1 + j * e2 + k * e3);
+                            //sampledPoint = Vector3.Transform(sampledPointInStandardBasis, MathConverter.Convert(goBox.OrientationMatrix)); // Bug! Ask Sid!
+                            sampledPoint = Vector3.Transform(sampledPoint, Matrix.CreateTranslation(-localOrigin)); // Translate to origin.
+                            sampledPoint = Vector3.Transform(sampledPoint, MathConverter.Convert(goBox.OrientationMatrix)); // Apply rotation
+                            sampledPoint = Vector3.Transform(sampledPoint, Matrix.CreateTranslation(localOrigin)); // Return to global coordinates
+                            this.Grid.MarkCellAs(sampledPoint, availability);
+                        }
+
+                    }
+                }
+
+
+            }
         }
 
         // Store all the fully qualified names for available scene classes.
@@ -265,7 +316,7 @@ namespace HammeredGame.Game
             // Button to export to XML
             if (ImGui.Button("Export Scene"))
             {
-                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, GameObjects, Services);
+                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, GameObjects, Grid, Services);
             }
 
             // Show a dual pane layout, with the scene object list on the left and details on the
