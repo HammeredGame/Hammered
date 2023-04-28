@@ -8,6 +8,7 @@ using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Audio;
 
 namespace HammeredGame.Game
 {
@@ -40,6 +41,8 @@ namespace HammeredGame.Game
 
         public Texture2D Texture;
         private Vector3 position;
+        
+        public AudioEmitter AudioEmitter; 
 
         // Use the private position vector only if we don't have a physics entity attached.
         // Otherwise, we delegate the position property entirely to the physics body position and
