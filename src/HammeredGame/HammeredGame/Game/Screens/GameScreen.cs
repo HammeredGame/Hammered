@@ -128,8 +128,10 @@ namespace HammeredGame.Game.Screens
             currentSceneName = sceneToLoad;
             currentScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
 
-            // Set up the list of debug grid cells for debugging visualization
-            SetupDebugGrid();
+            //// Set up the list of debug grid cells for debugging visualization
+            //// WARNING: Execute the following line of code if you wish to initialize the grid once.
+            //// Suggested for when AVAILABLE grid cells are shown in debug mode.
+            //SetupDebugGrid();
         }
 
         /// <summary>
@@ -175,7 +177,9 @@ namespace HammeredGame.Game.Screens
             // Set up the list of debug entities for debugging visualization
             SetupDebugBounds();
             // Set up the list of debug grid cells for debugging visualization
-            //SetupDebugGrid();
+            // WARNING: Execute the following line of code if you wish to update the grid at each frame.
+            // Suggested for when NON available grid cells are shown.
+            SetupDebugGrid();
         }
 
         /// <summary>
@@ -273,9 +277,9 @@ namespace HammeredGame.Game.Screens
                 {
                     for (int k = 0; k < gridDimensions[2]; ++k)
                     {
-                        if (this.currentScene.Grid.mask[i, j, k])
+                        if (!this.currentScene.Grid.mask[i, j, k])
                         {
-                            Vector3 gridcell = this.currentScene.Grid.grid[i, j, k] + new Vector3(sideLength / 2, sideLength / 2, sideLength / 2);
+                            Vector3 gridcell = this.currentScene.Grid.grid[i, j, k];
                             GridDebugDrawer gdd = new GridDebugDrawer(CubeModel, gridcell, scaling);
                             debugGridCells.Add(gdd);
                         }

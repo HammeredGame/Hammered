@@ -163,6 +163,7 @@ namespace HammeredGame.Game
         public void CreateFromXML(string fileName)
         {
             (Camera, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            foreach (GameObject obj in GameObjects.Values) { obj.SetCurrentScene(this); }
         }
 
         /// <summary>
@@ -198,18 +199,24 @@ namespace HammeredGame.Game
                 float sideLength = this.Grid.sideLength;
                 // In case the developer wishes to create more "safety distance" between the hammer and the objects,
                 // just adjust the scalar multiplier 1 to something greater than 1.
-                int xRepetitions = (int) Math.Ceiling(goBox.HalfWidth / sideLength) * 1;
-                int yRepetitions = (int) Math.Ceiling(goBox.HalfHeight / sideLength) * 1;
-                int zRepetitions = (int)Math.Ceiling(goBox.HalfLength / sideLength) * 1;
+                // This could prove useful, because the size of the hammer is not currently taken into account.
+                // Ideally, the "·Repetitions" variables would also be parameterized w.r.t the dimensions of the hammer.
+                int xRepetitions = (int) (Math.Ceiling(goBox.HalfWidth / sideLength) * 1.0); //xRepetitions = 0;
+                int yRepetitions = (int)(Math.Ceiling(goBox.HalfHeight / sideLength) * 1.0);
+                int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * 1.0); //zRepetitions = 0;
                 for (int i = -xRepetitions; i <= xRepetitions; ++i)
                 {
                     for (int j = -yRepetitions; j <= yRepetitions; ++j)
                     {
                         for (int k = -zRepetitions; k <= zRepetitions; ++k)
                         {
-                            Vector3 sampledPointInStandardBasis = MathConverter.Convert(goBox.Position) + sideLength * (i * e1 + j * e2 + k * e3);
-                            Vector3 sampledPoint = Vector3.Transform(sampledPointInStandardBasis, MathConverter.Convert(goBox.OrientationMatrix));
-                            this.Grid.MarkCellAs(this.Grid.GetCellIndex(sampledPoint), availability);
+                            Vector3 localOrigin = MathConverter.Convert(goBox.Position);
+                            Vector3 sampledPoint = localOrigin + sideLength * (i * e1 + j * e2 + k * e3);
+                            //sampledPoint = Vector3.Transform(sampledPointInStandardBasis, MathConverter.Convert(goBox.OrientationMatrix)); // Bug! Ask Sid!
+                            sampledPoint = Vector3.Transform(sampledPoint, Matrix.CreateTranslation(-localOrigin)); // Translate to origin.
+                            sampledPoint = Vector3.Transform(sampledPoint, MathConverter.Convert(goBox.OrientationMatrix)); // Apply rotation
+                            sampledPoint = Vector3.Transform(sampledPoint, Matrix.CreateTranslation(localOrigin)); // Return to global coordinates
+                            this.Grid.MarkCellAs(sampledPoint, availability);
                         }
 
                     }

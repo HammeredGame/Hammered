@@ -41,6 +41,8 @@ namespace HammeredGame.Game
         public Texture2D Texture;
         private Vector3 position;
 
+        protected Scene CurrentScene { get; private set; }
+
         // Use the private position vector only if we don't have a physics entity attached.
         // Otherwise, we delegate the position property entirely to the physics body position and
         // never use our own private value.
@@ -121,6 +123,11 @@ namespace HammeredGame.Game
                     }
                 }
             }
+        }
+
+        public void SetCurrentScene(Scene currentScene)
+        {
+            this.CurrentScene = currentScene;
         }
 
         public abstract void Update(GameTime gameTime, bool screenHasFocus);
