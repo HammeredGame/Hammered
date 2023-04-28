@@ -68,7 +68,7 @@ namespace HammeredGame.Game.GameObjects
             : base(services, model, t, pos, rotation, scale, entity)
         {
             hammerState = HammerState.WithCharacter;
-            hammer_sfx = Services.GetService<List<SoundEffect>>();
+            //hammer_sfx = Services.GetService<List<SoundEffect>>();
 
             if (this.Entity != null)
             {

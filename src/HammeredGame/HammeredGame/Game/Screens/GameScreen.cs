@@ -31,8 +31,8 @@ namespace HammeredGame.Game.Screens
 
         // Music variables
         private Song bgMusic;
-        private AudioListener listener = new AudioListener();
-        private AudioEmitter emitter = new AudioEmitter();
+        //private AudioListener listener = new AudioListener();
+        //private AudioEmitter emitter = new AudioEmitter();
 
         // Bounding Volume debugging variables
         private bool drawBounds = false;
@@ -72,7 +72,7 @@ namespace HammeredGame.Game.Screens
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 0.1f;
-            MediaPlayer.Play(bgMusic);
+            //MediaPlayer.Play(bgMusic);
 
             SoundEffect.MasterVolume = 0.2f;
 
