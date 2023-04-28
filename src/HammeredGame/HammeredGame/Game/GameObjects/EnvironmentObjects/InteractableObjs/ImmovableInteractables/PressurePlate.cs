@@ -48,6 +48,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                 //this.entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollision;
                 this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
                 this.Entity.CollisionInformation.Events.CollisionEnded += this.Events_CollisionEnded;
+                //this.AudioEmitter = new AudioEmitter();
 
                 pressSfx = Services.GetService<List<SoundEffect>>();
             }
@@ -115,17 +116,25 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //}
             if (this.pressureActivated && triggerObject != null)
             {
-                // pressSfx[5].Play();
+                
                 triggerObject.Visible = false;
                 if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                {
                     this.ActiveSpace.Remove(triggerObject.Entity);
+                    pressSfx[5].Play();
+                }
+
             }
             else if (triggerObject != null)
             {
-                // pressSfx[6].Play();
+                
                 triggerObject.Visible = true;
                 if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
+                {
                     this.ActiveSpace.Add(triggerObject.Entity);
+                    pressSfx[6].Play();
+                }
+                    
             }
         }
 
