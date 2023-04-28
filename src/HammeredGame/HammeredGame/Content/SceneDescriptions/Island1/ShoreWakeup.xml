@@ -6,6 +6,11 @@
     <up>0.000 1.000 0.000</up>
     <fov>0.455</fov>
   </camera>
+  <uniform_grid>
+	<bottom_left_close>-360.0 -50.0 -300.0</bottom_left_close>
+	<top_right_away>180.0 220.0 200.0</top_right_away>
+	<side_length>10.0</side_length>
+  </uniform_grid>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water">
     <model>temp_water_big</model>
     <position>0.000 -6.000 0.000</position>

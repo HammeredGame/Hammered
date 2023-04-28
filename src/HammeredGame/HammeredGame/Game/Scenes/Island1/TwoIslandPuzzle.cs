@@ -1,4 +1,4 @@
-﻿using HammeredGame.Core;
+using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
@@ -22,12 +22,18 @@ namespace HammeredGame.Game.Scenes.Island1
             Get<Player>("player1").SetActiveCamera(Camera);
 
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
+            Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
 
             Get<Door>("door_goal").SetIsGoal(true);
+            this.UpdateSceneGrid(Get<Door>("door_pp"), false);
 
             Get<PressurePlate>("pressureplate").SetTriggerObject(Get<Door>("door_pp"));
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
+
+
+
+            // No further initialization required for the <c>UniformGrid</c> instance.
 
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
