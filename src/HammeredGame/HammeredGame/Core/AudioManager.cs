@@ -20,10 +20,11 @@ namespace HammeredGame.Core
             "Audio/door_open",
         };
 
-        public AudioListener Listener
-        {
-            get { return Listener; }
-        }
+        //public AudioListener Listener
+        //{
+        //    get { return Listener; }
+        //    set { Listener = value; }
+        //}
 
         //Listener and Emitter for 3D positioning 
         public AudioListener listener = new AudioListener();
@@ -39,7 +40,12 @@ namespace HammeredGame.Core
 
         public AudioManager(Microsoft.Xna.Framework.Game game)
             : base(game)
-        { }
+        {
+            foreach (string soundName in soundNames)
+            {
+                sfx.Add(soundName, Game.Content.Load<SoundEffect>(soundName));
+            }
+        }
 
         //load all of the sound effects 
         public override void Initialize()
@@ -47,10 +53,7 @@ namespace HammeredGame.Core
             //SoundEffect.DistanceScale = 2000;
             //SoundEffect.DopplerScale = 0.1f;
             
-            foreach (string soundName in soundNames)
-            {
-                sfx.Add(soundName, Game.Content.Load<SoundEffect>(soundName));
-            }
+            
 
             base.Initialize();
         }
@@ -122,7 +125,7 @@ namespace HammeredGame.Core
             emitter.Up = activeSound.Emitter.Up;
             //emitter.Velocity = activeSound.Emitter.Velocity; 
 
-            activeSound.Instance.Apply3D(Listener, emitter);
+            activeSound.Instance.Apply3D(listener, emitter);
         }
 
         public class ActiveSound
