@@ -40,8 +40,6 @@ namespace HammeredGame
 
         private readonly GameServices gameServices = new();
 
-        private Scene currentScene;
-
         // Music variables
         private List<SoundEffect> sfx = new List<SoundEffect>();
         private AudioManager audioManager;
@@ -51,13 +49,6 @@ namespace HammeredGame
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
 
-        // Bounding Volume debugging variables
-        private bool drawBounds = false;
-        private List<EntityDebugDrawer> debugEntities = new();
-
-        // Uniform Grid debugging variables. They 
-        private readonly bool drawGrid = false;
-        private readonly List<GridDebugDrawer> debugGridCells = new();
 
         public HammeredGame()
         {
@@ -197,28 +188,6 @@ namespace HammeredGame
 
             manager.Draw(gameTime);
 
-            if (drawBounds)
-            {
-                RasterizerState currentRS = gpu.RasterizerState;
-                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
-                foreach (EntityDebugDrawer entity in debugEntities)
-                {
-                    entity.Draw(gameTime, currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
-                }
-                gpu.RasterizerState = currentRS;
-            }
-
-            if (drawGrid)
-            {
-                RasterizerState currentRS = gpu.RasterizerState;
-                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
-                foreach (GridDebugDrawer gdd in debugGridCells)
-                {
-                    gdd.Draw(gameTime, currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
-                }
-                gpu.RasterizerState = currentRS;
-            }
-
             // Change the GPU target to null, which means all further draw calls will now write to
             // the back buffer. We need to copy over what we have in the temporary render target.
             gpu.SetRenderTarget(null);
@@ -248,11 +217,8 @@ namespace HammeredGame
             // Call AfterLayout to finish.
             imGuiRenderer.AfterLayout();
 #endif
-        }
 
-        public Scene GetCurrentScene()
-        {
-            return currentScene;
+            base.Draw(gameTime);
         }
 
         public void UI()

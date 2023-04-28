@@ -191,9 +191,18 @@ namespace HammeredGame.Game.GameObjects
                     float distanceBetweenCurrentAndNext = currentToNextPosition.Length();
                     currentToNextPosition.Normalize();
                     // If the two points are too far apart
-                    if (distanceBetweenCurrentAndNext > 0.5)
+                    if (distanceBetweenCurrentAndNext > 1)
                     {
-                        this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
+                        // Follow the path in line segments.
+                        //this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
+
+                        // VERY unstable natural curves!
+                        // The problem is that if the player does not stand still to catch the hammer,
+                        // it will take a significant amount of time to converge towards the final point!!!
+                        var temp = this.Entity.LinearVelocity;
+                        temp.Normalize();  temp += 0.2f * currentToNextPosition; temp.Normalize();
+                        temp *= hammerSpeed;
+                        this.Entity.LinearVelocity = temp;
                     }
                     // If the hammer hasn't reached its destination, travel towards the next position of the route.
                     else if (route.Count() > 0)
@@ -268,41 +277,6 @@ namespace HammeredGame.Game.GameObjects
             }
         }
 
-        public void GamePadInput()
-        {
-            Input input = Services.GetService<Input>();
-            // GamePad Control (A - Hammer drop, B - Hammer call back)
-            // Same functionality as with above keyboard check
-            if (input.GamePadState.IsConnected)
-            {
-                if (hammerState == HammerState.WithCharacter && input.ButtonPress(Buttons.A))
-                {
-                    DropHammer();
-                    //hammerState = HammerState.Dropped;
-                    //this.ComputeBounds();
-                }
-                if (hammerState == HammerState.Dropped && player != null && Entity != null && input.ButtonPress(Buttons.B))
-                {
-                    hammerState = HammerState.Enroute;
-
-                    // Precautiously empty the previous route.
-                    // It should be empty by the time it finishes its previous route, but just in case.
-                    this.route.Clear();
-                    // Compute the shortest path using the A* algorithm and taking into account obstacles.
-                    Vector3[] routeArray = this.grid.FindShortestPathAStar(this.Position, player.Position);
-                    for (int i = 0; i < routeArray.Length; i++) { this.route.Enqueue(MathConverter.Convert(routeArray[i])); }
-                    // Initialize the next position in 3D space to visit.
-                    this.nextRoutePosition = this.route.Peek(); this.route.Dequeue();
-
-                    // When hammer is enroute, the physics engine shouldn't solve for
-                    // collision constraints with it --> rather we want to manually
-                    // handle collisions
-                    this.Entity.BecomeKinematic();
-                    this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
-                }
-            }
-        }
-
         public void DropHammer()
         {
             // Set hammer state to dropped
@@ -352,13 +326,18 @@ namespace HammeredGame.Game.GameObjects
 
         private bool StraightLinePath(out Vector3[] route)
         {
+
+            // Note: The straight line path planning does not include any smoothing submethods.
+            // The only thing that might affect the behaviour of the hammer and make it seems unnatural is the
+            // distance threshold for moving towards the next entry of the queue of positions (look "Update").
             Vector3 lineSegment = this.player.Position - this.Position;
             double lineSegmentLength = lineSegment.Length();
             lineSegment.Normalize(); // Make the vector denote a direction.
 
             LinkedList<Vector3> path = new LinkedList<Vector3>();
 
-            for (int i = 0; i < Math.Ceiling(lineSegmentLength / this.grid.sideLength); i++)
+            path.AddLast(this.Position); // So that the path always includes at least one vertex.
+            for (int i = 1; i <= Math.Ceiling(lineSegmentLength / this.grid.sideLength); i++)
             {
                 Vector3 samplePoint = this.Position + i * this.grid.sideLength * lineSegment;
                 // If there is at least one cell which is not available in the straight line,
@@ -438,5 +417,30 @@ namespace HammeredGame.Game.GameObjects
             /// 2) the full path is computed in the background, without altering the game experience.
             /// </remarks>
         }
+
+        //private void smoothTurn(Vector3 start, Vector3 destination)
+        //{
+        //    /*
+        //     * STEP 1) Move the two points such that their median are the origin of the frame.
+        //     * STEP 2) Rotate the two points around the axis perpendicular to the one the two create when connected
+        //     * STEP 3) Do the computations
+        //     * STEP 4) Reverse steps 1 & 2
+        //     * 
+        //     * A good approach should create a frame dependent on the two points (which define a single vector)
+        //     * and the orientation of the hammer (whose different with its projection on the vector of the two points
+        //     * will construct the second vector required to form a plane).
+        //    */
+
+        //    Vector3 newFrameOrigin = (start + destination) / 2;
+        //    start -= newFrameOrigin; destination -= newFrameOrigin;
+        //    Vector3 connectingVector = destination - start, rotationAxis = Vector3.Cross(start, destination);
+        //    // θ = arccos(a.b / ||a|| ||b||)
+        //    double rotationAngleTheta = Math.Acos(Vector3.Dot(connectingVector, rotationAxis) / (connectingVector.Length() * rotationAxis.Length()));
+        //    Matrix rotationMatrix = Matrix.CreateFromAxisAngle(rotationAxis, rotationAngleTheta),
+        //            inverseRotation = Matrix.CreateFromAxisAngle(rotationAxis, -rotationAngleTheta);
+
+            
+
+        //}
     }
 }

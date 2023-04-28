@@ -194,6 +194,8 @@ namespace HammeredGame.Game.PathPlanning.Grid
             }
         }
 
+        public void MarkCellAs(Vector3 position, bool value) { MarkCellAs(GetCellIndex(position), value); }
+
         /// <summary>
         /// Finds the shortest available path from first input position to the second input by travelling only between a set of provided points.
         /// </summary>
@@ -240,16 +242,63 @@ namespace HammeredGame.Game.PathPlanning.Grid
             /// Update: by adding the private variable "verticesOfGraph", this got reduced to 1.9 seconds. Still too slow...
             /// </remarks>
 
+            // Better have the following as a "while" loop (search for the next available grid until none are possible.)
+            Stack<Vertex> aResultVertex = new();
+            Vector3[] shortestPath;
+            int pathLength;
+            try
+            {
+                aResultVertex = AStarAlgorithm.GetMinimumPath(biMap.Forward[startCell], biMap.Forward[finishCell], new Graph(verticesOfGraph));
+                pathLength = aResultVertex.Count();
+            }
+            catch (System.ArgumentNullException e) // There is no path from the current grid cell towards the destination
+            {
+                int step = 1;
+                PriorityQueue<uint[], double> availablePositions = new PriorityQueue<uint[], double>();
+                // Search the nearest neighbours in the x-z plane.
+                for (int width = -1 * step; width <= 1 * step; width ++)
+                {
+                    for (int depth = -1 * step; depth <= 1 * step; depth++)
+                    {
+                        if (Math.Abs(width) == step || Math.Abs(depth) == step) // Care only for the layer that is currently explored.
+                        {
+                            uint[] neighbourCellIndex = {
+                                Convert.ToUInt32(startCellIndex[0] + width),
+                                startCellIndex[1],
+                                Convert.ToUInt32(startCellIndex[2] + depth)
+                            };
+                            // WARNING: This will produce errors in cases where there are obstruced obstacles at the boundary
+                            // of the grid (out of bounds error).
+                            if (this.GetCellMark(neighbourCellIndex))
+                                // Priority is done according to Manhattan distance
+                                availablePositions.Enqueue(
+                                    neighbourCellIndex,
+                                    Math.Abs(startCellIndex[0] - neighbourCellIndex[0])
+                                    + Math.Abs(startCellIndex[1] - neighbourCellIndex[1])
+                                    + Math.Abs(startCellIndex[2] - neighbourCellIndex[2])
+                                    );
+                        }
+                    }
+                }
+                
+                // Find closest available point
+                if (availablePositions.Count > 0)
+                {
+                    startCellIndex = availablePositions.Dequeue();
+                    startCell = this.grid[startCellIndex[0], startCellIndex[1], startCellIndex[2]];
+                    aResultVertex = AStarAlgorithm.GetMinimumPath(biMap.Forward[startCell], biMap.Forward[finishCell], new Graph(verticesOfGraph));
 
-            Stack<Vertex> aResultVertex = AStarAlgorithm.GetMinimumPath(biMap.Forward[startCell], biMap.Forward[finishCell], new Graph(verticesOfGraph));
-            /// <remarks> For zero (0) distance --which is the case when a straight path is available-- this took 15ms to run...</remarks>
-            // Transform the vertex result (which is independent from any geographical meaning) to a 3D point result.
-            int pathLength = aResultVertex.Count();
-            Vector3[] shortestPath = new Vector3[1 + pathLength + 1];
+                }
+            }
+            finally
+            {
+                pathLength = aResultVertex.Count();
+                shortestPath = new Vector3[1 + pathLength + 1];
 
-            shortestPath[0] = start;
-            for (int i = 0; i < pathLength; ++i) { shortestPath[1 + i] = biMap.Reverse[aResultVertex.Pop()]; }
-            shortestPath[1 + pathLength] = finish;
+                shortestPath[0] = start;
+                for (int i = 0; i < pathLength; ++i) { shortestPath[1 + i] = biMap.Reverse[aResultVertex.Pop()]; }
+                shortestPath[1 + pathLength] = finish;
+            }
 
             return smoothPath ? this.RoughShortestPathSmoothing(shortestPath) : shortestPath;
 
@@ -392,8 +441,16 @@ namespace HammeredGame.Game.PathPlanning.Grid
                                         deepClose >= 0 && deepClose < grid.GetLength(2) &&
                                         (horizontal != 0 || vertical != 0 || depth != 0))
                                         if (mask[leftRight, upDown, deepClose])
-                                            vReference.AddEdge(biMap.Forward[grid[leftRight, upDown, deepClose]],
-                                                                (grid[i, j, k] - grid[leftRight, upDown, deepClose]).Length());
+                                            if (vertical != 1)
+                                                vReference.AddEdge(biMap.Forward[grid[leftRight, upDown, deepClose]],
+                                                                    (grid[i, j, k] - grid[leftRight, upDown, deepClose]).Length());
+                                            else
+                                                vReference.AddEdge(biMap.Forward[grid[leftRight, upDown, deepClose]],
+                                                                    (grid[i, j, k] - grid[leftRight, upDown, deepClose]).Length() * 1000);
+                                                // Game convention: avoiding obstacles by going upwards should be avoided.
+                                                // In order to fulfill this going up is heavily punished.
+                                                // WARNING: this is supposed to be a temporary solution;
+                                                //          the final software should disallow avoiding vertically entirely.
                                 }
                             }
                         }

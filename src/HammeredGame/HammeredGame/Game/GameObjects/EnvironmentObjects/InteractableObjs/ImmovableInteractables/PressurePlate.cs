@@ -9,6 +9,7 @@ using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
 {
@@ -116,16 +117,26 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             if (this.pressureActivated && triggerObject != null)
             {
                 // pressSfx[5].Play();
-                triggerObject.Visible = false;
-                if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
-                    this.ActiveSpace.Remove(triggerObject.Entity);
+                if (triggerObject is Door)
+                {
+                    var door = triggerObject as Door;
+                    door.RemoveFromSpace();
+                }
+                //triggerObject.Visible = false;
+                //if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                //    this.ActiveSpace.Remove(triggerObject.Entity);
             }
             else if (triggerObject != null)
             {
                 // pressSfx[6].Play();
-                triggerObject.Visible = true;
-                if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
-                    this.ActiveSpace.Add(triggerObject.Entity);
+                if (triggerObject is Door)
+                {
+                    var door = triggerObject as Door;
+                    door.AddToSpace();
+                }
+                //triggerObject.Visible = true;
+                //if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
+                //    this.ActiveSpace.Add(triggerObject.Entity);
             }
         }
 
