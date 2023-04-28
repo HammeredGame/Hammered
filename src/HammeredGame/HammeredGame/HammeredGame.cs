@@ -43,7 +43,7 @@ namespace HammeredGame
         private Scene currentScene;
 
         // Music variables
-        private List<SoundEffect> sfx = new List<SoundEffect>();
+        //private List<SoundEffect> sfx = new List<SoundEffect>();
         private AudioManager audioManager;
 
         private ScreenManager manager;
@@ -119,7 +119,7 @@ namespace HammeredGame
             gameServices.AddService<Input>(input);
             gameServices.AddService<ContentManager>(Content);
             gameServices.AddService<ScriptUtils>(new ScriptUtils());
-            gameServices.AddService<List<SoundEffect>>(sfx);
+            //gameServices.AddService<List<SoundEffect>>(sfx);
             gameServices.AddService<AudioManager>(audioManager);
 
             manager = new ScreenManager(gameServices, gpu, mainRenderTarget);

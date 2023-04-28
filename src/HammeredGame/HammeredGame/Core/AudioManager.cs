@@ -46,6 +46,7 @@ namespace HammeredGame.Core
             {
                 sfx.Add(soundName, Game.Content.Load<SoundEffect>(soundName));
             }
+            SoundEffect.DistanceScale = 2000;
         }
 
         //load all of the sound effects 
@@ -102,7 +103,7 @@ namespace HammeredGame.Core
             base.Update(gameTime);
         }
         //should have an IAudioEmitter in params, need to assign Hammer to emitting instance 
-        public SoundEffectInstance Play3DSound(string soundName, bool isLooped, AudioEmitter obj_emitter)
+        public SoundEffectInstance Play3DSound(string soundName, bool isLooped, AudioEmitter obj_emitter, float volume)
         {
             ActiveSound active = new ActiveSound();
 
@@ -112,7 +113,8 @@ namespace HammeredGame.Core
             active.Emitter = obj_emitter;
 
             Apply3D(active);
-            
+
+            active.Instance.Volume = volume; 
             active.Instance.Play();
 
             ActiveSounds.Add(active);

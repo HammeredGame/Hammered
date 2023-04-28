@@ -56,7 +56,7 @@ namespace HammeredGame.Game.GameObjects
 
         private Player player;
 
-        private List<SoundEffect> hammer_sfx = new List<SoundEffect>();
+        //private List<SoundEffect> hammer_sfx = new List<SoundEffect>();
         //how long till trigger next sound
         //TimeSpan audioDelay = TimeSpan.Zero;
 
@@ -234,7 +234,7 @@ namespace HammeredGame.Game.GameObjects
             hammerState = HammerState.Dropped;
 
             //hammer_sfx[1].Play();
-            Services.GetService<AudioManager>().Play3DSound("Audio/hammer_drop", false, this.AudioEmitter);
+            Services.GetService<AudioManager>().Play3DSound("Audio/hammer_drop", false, this.AudioEmitter, 1);
 
             //audioManager.Play3DSound("Audio/hammer_drop", false);
 
@@ -267,7 +267,7 @@ namespace HammeredGame.Game.GameObjects
                 //SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
                 //whoosh.Play();
 
-                Services.GetService<AudioManager>().Play3DSound("Audio/lohi_whoosh", false, this.AudioEmitter);
+                Services.GetService<AudioManager>().Play3DSound("Audio/lohi_whoosh", false, this.AudioEmitter, 1);
 
             }
             return hammerState == HammerState.Enroute;

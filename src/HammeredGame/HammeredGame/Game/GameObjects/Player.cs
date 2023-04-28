@@ -64,9 +64,9 @@ namespace HammeredGame.Game.GameObjects
 
         private Animations animations;
 
-        private List<SoundEffect> player_sfx = new List<SoundEffect>();
-        private AudioListener listener;
-        private AudioEmitter emitter;
+        //private List<SoundEffect> player_sfx = new List<SoundEffect>();
+        //private AudioListener listener;
+        //private AudioEmitter emitter;
 
         public event EventHandler OnHammerRetrieved;
 
@@ -114,11 +114,17 @@ namespace HammeredGame.Game.GameObjects
                 var clip_idle = animations.Clips["Armature|idle-hammer"];
                 animations.SetClip(clip_idle);
 
-                player_sfx = Services.GetService<List<SoundEffect>>();
+                //player_sfx = Services.GetService<List<SoundEffect>>();
                 //listener = Services.GetService<AudioListener>();
                 //emitter = Services.GetService<AudioEmitter>();
-
+                
+                //set player as the listener for all sfx
                 Services.GetService<AudioManager>().listener.Position = this.Position;
+                
+                //emit footsteps 
+                this.AudioEmitter = new AudioEmitter();
+                this.AudioEmitter.Position = this.Position; 
+                
                 
             }
 
@@ -236,7 +242,8 @@ namespace HammeredGame.Game.GameObjects
             /// <remarks> Generally, "dirty flags" are used to indicate that some data has changed </remarks>
             ///</value>
             bool moveDirty = false;
-
+            
+            
             // Zero out the player velocity vector (to remove the possibility of
             // previous computations accumulating/carrying over)
             player_vel = Vector3.Zero;
@@ -253,6 +260,7 @@ namespace HammeredGame.Game.GameObjects
             moveDirty = this.HandleInput(forwardDirection);
 
             // Animate player
+            
 
             // If there was movement, normalize speed and edit rotation of character model
             // Also account for collisions
@@ -285,10 +293,12 @@ namespace HammeredGame.Game.GameObjects
                     var clip_run = animations.Clips["Armature|run-hammer"];
                     animations.SetClip(clip_run);
                     previously_moving = true;
-                    SoundEffectInstance step = player_sfx[0].CreateInstance();
+                    //SoundEffectInstance step = player_sfx[0].CreateInstance();
                     //step.IsLooped = true;
-                    step.Play();
+                    //step.Play();
+
                 }
+
             }
             else
             {
@@ -311,11 +321,14 @@ namespace HammeredGame.Game.GameObjects
 
                 //position += player_vel;
             }
+            
 
             animations.Update(gameTime.ElapsedGameTime * 2, true, Matrix.Identity);
 
             Services.GetService<AudioManager>().listener.Position = this.Position;
-            //Services.GetService<AudioManager>().listener.Forward = forwardDirection; 
+            Services.GetService<AudioManager>().listener.Forward = forwardDirection; 
+            
+            
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
 
@@ -384,6 +397,7 @@ namespace HammeredGame.Game.GameObjects
                 player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera);
                 moveDirty = true;
             }
+            
             return moveDirty;
         }
 
