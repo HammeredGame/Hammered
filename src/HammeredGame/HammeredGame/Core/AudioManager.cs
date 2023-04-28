@@ -111,6 +111,8 @@ namespace HammeredGame.Core
             active.Emitter = obj_emitter;
 
             Apply3D(active);
+            
+            active.Instance.Play();
 
             ActiveSounds.Add(active);
 
