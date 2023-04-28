@@ -257,11 +257,6 @@ namespace HammeredGame.Game.GameObjects
             {
                 BEPUutilities.Vector3 Pos = this.Entity.Position;
 
-                //FIX: sound effect itself is too grainy (composed of many smaller sounds), awful when layered
-                //SoundEffectInstance step = player_sfx[0].CreateInstance();
-                //step.IsLooped = true;
-                //step.Play();
-
 
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
                 // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
@@ -287,6 +282,9 @@ namespace HammeredGame.Game.GameObjects
                     var clip_run = animations.Clips["Armature|run-hammer"];
                     animations.SetClip(clip_run);
                     previously_moving = true;
+                    SoundEffectInstance step = player_sfx[0].CreateInstance();
+                    //step.IsLooped = true;
+                    step.Play();
                 }
             }
             else
