@@ -7,6 +7,7 @@ using BEPUphysics.PositionUpdating;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using BEPUphysics.Entities;
+using HammeredGame.Game.GameObjects.EmptyGameObjects;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles
 {
@@ -104,6 +105,26 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         public void SetKeyFound(bool keyFound)
         {
             this.keyFound = keyFound;
+        }
+
+        public void RemoveFromSpace()
+        {
+            this.Visible = false;
+            if (this.ActiveSpace.Entities.Contains(this.Entity))
+            {
+                this.ActiveSpace.Remove(this.Entity);
+                //pressSfx[5].Play();
+            }
+        }
+
+        public void AddToSpace()
+        {
+            this.Visible = true;
+            if (!this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
+            {
+                this.ActiveSpace.Add(this.Entity);
+                //pressSfx[6].Play();
+            }
         }
 
         //public override void TouchingPlayer(Player player)

@@ -9,6 +9,7 @@ using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
 {
@@ -116,25 +117,33 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //}
             if (this.pressureActivated && triggerObject != null)
             {
-                
-                triggerObject.Visible = false;
-                if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                if (triggerObject is Door)
                 {
-                    this.ActiveSpace.Remove(triggerObject.Entity);
-                    pressSfx[5].Play();
+                    var door = triggerObject as Door;
+                    door.RemoveFromSpace();
                 }
+                //triggerObject.Visible = false;
+                //if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+                //{
+                //    this.ActiveSpace.Remove(triggerObject.Entity);
+                //    pressSfx[5].Play();
+                //}
 
             }
             else if (triggerObject != null)
             {
-                
-                triggerObject.Visible = true;
-                if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
+                if (triggerObject is Door)
                 {
-                    this.ActiveSpace.Add(triggerObject.Entity);
-                    pressSfx[6].Play();
+                    var door = triggerObject as Door;
+                    door.AddToSpace();
                 }
-                    
+                //triggerObject.Visible = true;
+                //if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
+                //{
+                //    this.ActiveSpace.Add(triggerObject.Entity);
+                //    pressSfx[6].Play();
+                //}
+
             }
         }
 
