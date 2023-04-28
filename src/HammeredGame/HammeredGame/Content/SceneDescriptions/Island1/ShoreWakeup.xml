@@ -33,7 +33,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
-    <model>temp_hammer2</model>
+    <model>hammer</model>
+    <texture type="texture2d">hammer_Texture</texture>
     <position>80.928 3.395 -70.491</position>
     <rotation>0.737 0.000 0.000 0.675</rotation>
     <scale>1.000</scale>
