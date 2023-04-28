@@ -166,6 +166,7 @@ namespace HammeredGame
             gameServices.GetService<Input>().Update();
             gameServices.GetService<ScriptUtils>().Update(gameTime);
             manager.Update(gameTime);
+            audioManager.Update(gameTime);
 
             base.Update(gameTime);
         }

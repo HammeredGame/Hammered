@@ -124,8 +124,8 @@ namespace HammeredGame.Core
         private void Apply3D(ActiveSound activeSound)
         {
             emitter.Position = activeSound.Emitter.Position;
-            emitter.Forward = activeSound.Emitter.Forward;
-            emitter.Up = activeSound.Emitter.Up;
+            //emitter.Forward = activeSound.Emitter.Forward;
+            //emitter.Up = activeSound.Emitter.Up;
             //emitter.Velocity = activeSound.Emitter.Velocity; 
 
             activeSound.Instance.Apply3D(listener, emitter);
