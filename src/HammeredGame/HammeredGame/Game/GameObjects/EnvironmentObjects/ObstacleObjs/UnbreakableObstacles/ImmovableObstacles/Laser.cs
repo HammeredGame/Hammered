@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using BEPUphysics.CollisionTests;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles
@@ -93,6 +94,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.laserDefaultLength = (this.Entity as Box).Height;
             this.laserDefaultScale = this.Scale;
             this.laserScale = this.Scale;
+            
+            this.AudioEmitter = new AudioEmitter();
+            this.AudioEmitter.Position = this.Position;
+            
+            
+            //Services.GetService<AudioManager>().Play3DSound("Audio/laser", true, this.AudioEmitter, laserScale/10);
+            
         }
 
         private void Events_PairRemoved(EntityCollidable sender, BroadPhaseEntry other)

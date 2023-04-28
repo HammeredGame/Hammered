@@ -117,7 +117,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             if (this.ActiveSpace.Entities.Contains(this.Entity))
             {
                 this.ActiveSpace.Remove(this.Entity);
-                Services.GetService<AudioManager>().Play3DSound("Audio/door_open", false, this.AudioEmitter);
+                Services.GetService<AudioManager>().Play3DSound("Audio/door_open", false, this.AudioEmitter, 1);
                 //pressSfx[5].Play();
                 
             }
@@ -129,7 +129,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             if (!this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
             {
                 this.ActiveSpace.Add(this.Entity);
-                Services.GetService<AudioManager>().Play3DSound("Audio/door_close", false, this.AudioEmitter);
+                Services.GetService<AudioManager>().Play3DSound("Audio/door_close", false, this.AudioEmitter,1);
                 //pressSfx[6].Play();
             }
         }

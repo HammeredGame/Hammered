@@ -126,7 +126,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 fallDirection.Normalize();
                 isFalling = true;
                 //tree_sfx[3].Play();
-                Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter);
+                Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
                 
             }
 

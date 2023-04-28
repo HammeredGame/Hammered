@@ -58,15 +58,16 @@ namespace HammeredGame.Game.Screens
             // Load sound effects before initialising the first scene, since the scene setup
             // script might already use some of the sound effects.
             ContentManager Content = GameServices.GetService<ContentManager>();
-            List<SoundEffect> sfx = GameServices.GetService<List<SoundEffect>>();
             bgMusic = Content.Load<Song>("Audio/BGM_V2_4x");
-            sfx.Add(Content.Load<SoundEffect>("Audio/step"));
-            sfx.Add(Content.Load<SoundEffect>("Audio/hammer_drop"));
-            sfx.Add(Content.Load<SoundEffect>("Audio/lohi_whoosh"));
-            sfx.Add(Content.Load<SoundEffect>("Audio/tree_fall"));
-            sfx.Add(Content.Load<SoundEffect>("Audio/ding"));
-            sfx.Add(Content.Load<SoundEffect>("Audio/door_open"));
-            sfx.Add(Content.Load<SoundEffect>("Audio/door_close"));
+            
+            //List<SoundEffect> sfx = GameServices.GetService<List<SoundEffect>>();
+            //sfx.Add(Content.Load<SoundEffect>("Audio/step"));
+            //sfx.Add(Content.Load<SoundEffect>("Audio/hammer_drop"));
+            //sfx.Add(Content.Load<SoundEffect>("Audio/lohi_whoosh"));
+            //sfx.Add(Content.Load<SoundEffect>("Audio/tree_fall"));
+            //sfx.Add(Content.Load<SoundEffect>("Audio/ding"));
+            //sfx.Add(Content.Load<SoundEffect>("Audio/door_open"));
+            //sfx.Add(Content.Load<SoundEffect>("Audio/door_close"));
 
             InitializeLevel(currentSceneName);
 
