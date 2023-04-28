@@ -143,7 +143,7 @@
     <scale>3.000</scale>
     <body type="box">
       <width>15.500</width>
-      <height>60.000</height>
+      <height>100.000</height>
       <length>15.500</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
@@ -173,7 +173,7 @@
     <scale>3.000</scale>
     <body type="box">
       <width>15.500</width>
-      <height>60.000</height>
+      <height>100.000</height>
       <length>15.500</length>
       <shift_graphic>1.000 0.000 0.000</shift_graphic>
     </body>
