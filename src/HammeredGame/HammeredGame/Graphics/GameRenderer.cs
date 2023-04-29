@@ -60,7 +60,7 @@ namespace HammeredGame.Graphics
 
             bloomFilter = new BloomFilter();
             bloomFilter.Load(gpu, content, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, SurfaceFormat.HdrBlendable);
-            bloomFilter.BloomPreset = BloomFilter.BloomPresets.SuperWide;
+            bloomFilter.BloomPreset = BloomFilter.BloomPresets.Small;
             bloomFilter.BloomThreshold = 1.01f; // arbitrary, but above 1 so plain white isn't bloomed
 
             // The target for the final tone-mapped and post-processed image. Format is Color, i.e.
