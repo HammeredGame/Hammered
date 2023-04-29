@@ -43,19 +43,9 @@ namespace HammeredGame.Game
             //Collect any bone transformations in the model itself.
             //The default cube model doesn't have any, but this allows the EntityModel to work with more complicated shapes.
             boneTransforms = new Matrix[model.Bones.Count];
-            foreach (ModelMesh mesh in model.Meshes)
-            {
-                foreach (Effect effect in mesh.Effects)
-                {
-                    if (effect is BasicEffect basic)
-                    {
-                        basic.EnableDefaultLighting();
-                    }
-                }
-            }
         }
 
-        public void Draw(GameTime gameTime, Matrix view, Matrix proj)
+        public void Draw(GameTime gameTime, GraphicsDevice gpu, Matrix view, Matrix proj)
         {
             //Notice that the entity's worldTransform property is being accessed here.
             //This property is returns a rigid transformation representing the orientation
@@ -68,8 +58,11 @@ namespace HammeredGame.Game
             model.CopyAbsoluteBoneTransformsTo(boneTransforms);
             foreach (ModelMesh mesh in model.Meshes)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (ModelMeshPart part in mesh.MeshParts)
                 {
+                    BasicEffect effect = new BasicEffect(gpu);
+                    effect.EnableDefaultLighting();
+
                     effect.World = boneTransforms[mesh.ParentBone.Index] * worldMatrix;
                     //effect.View = MathConverter.Convert((Game as Hammered_Physics).Camera.ViewMatrix);
                     //effect.Projection = MathConverter.Convert((Game as Hammered_Physics).Camera.ProjectionMatrix);
@@ -91,6 +84,7 @@ namespace HammeredGame.Game
                     effect.DirectionalLight2.DiffuseColor = Vector3.One * 0.15f;
                     effect.DirectionalLight2.Direction = Vector3.Normalize(new Vector3(-1, -1, -1));
                     effect.DirectionalLight2.SpecularColor = Vector3.One * 0.1f;
+                    part.Effect = effect;
                 }
                 mesh.Draw();
             }
