@@ -13,7 +13,5 @@ namespace HammeredGame.Graphics
     /// <param name="Sun"></param>
     /// <param name="Directionals"></param>
     /// <param name="Ambient"></param>
-    /// <param name="Points"></param>
-    /// <param name="Spots"></param>
-    public record SceneLightSetup(SunLight Sun, List<InfiniteDirectionalLight> Directionals, AmbientLight Ambient, List<PointLight> Points, List<SpotLight> Spots);
+    public record SceneLightSetup(SunLight Sun, List<InfiniteDirectionalLight> Directionals, AmbientLight Ambient);
 }

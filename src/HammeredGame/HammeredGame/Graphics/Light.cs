@@ -7,12 +7,10 @@ namespace HammeredGame.Graphics
     // both the diffuse and specular colours are the same) and have an intensity.
     public abstract class Light
     {
-        public bool Enabled = false;
         public Color LightColor = Color.White;
         public float Intensity = 1f;
-        protected Light(bool enabled, Color lightColor, float intensity)
+        protected Light(Color lightColor, float intensity)
         {
-            Enabled = enabled;
             LightColor = lightColor;
             Intensity = intensity;
         }
@@ -23,7 +21,7 @@ namespace HammeredGame.Graphics
     public class SunLight : Light
     {
         public Vector3 Direction;
-        public SunLight(bool enabled, Color lightColor, float intensity, Vector3 direction) : base(enabled, lightColor, intensity)
+        public SunLight(Color lightColor, float intensity, Vector3 direction) : base(lightColor, intensity)
         {
             Direction = direction;
         }
@@ -34,7 +32,7 @@ namespace HammeredGame.Graphics
     public class InfiniteDirectionalLight : Light
     {
         public Vector3 Direction;
-        public InfiniteDirectionalLight(bool enabled, Color lightColor, float intensity, Vector3 direction) : base(enabled, lightColor, intensity)
+        public InfiniteDirectionalLight(Color lightColor, float intensity, Vector3 direction) : base(lightColor, intensity)
         {
             Direction = direction;
         }
@@ -45,7 +43,7 @@ namespace HammeredGame.Graphics
     // care since it reduces contrast of the final image.
     public class AmbientLight : Light
     {
-        public AmbientLight(bool enabled, Color lightColor, float intensity) : base(enabled, lightColor, intensity) { }
+        public AmbientLight(Color lightColor, float intensity) : base(lightColor, intensity) { }
     }
 
     // Point lights are not implemented yet.
@@ -53,7 +51,7 @@ namespace HammeredGame.Graphics
     {
         public Vector3 Position;
         public float Radius;
-        public PointLight(bool enabled, Color lightColor, float intensity, Vector3 position, float radius) : base(enabled, lightColor, intensity)
+        public PointLight(Color lightColor, float intensity, Vector3 position, float radius) : base(lightColor, intensity)
         {
             Position = position;
             Radius = radius;
@@ -67,7 +65,7 @@ namespace HammeredGame.Graphics
         public Vector3 Direction;
         public float Angle;
         public float FallOff;
-        public SpotLight(bool enabled, Color lightColor, float intensity, Vector3 position, Vector3 direction, float angle, float fallOff) : base(enabled, lightColor, intensity)
+        public SpotLight(Color lightColor, float intensity, Vector3 position, Vector3 direction, float angle, float fallOff) : base(lightColor, intensity)
         {
             Position = position;
             Direction = direction;
