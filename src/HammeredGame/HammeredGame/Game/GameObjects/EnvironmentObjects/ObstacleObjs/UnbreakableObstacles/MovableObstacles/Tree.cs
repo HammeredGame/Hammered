@@ -133,14 +133,18 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             if (other.Tag is Player && treeFallen)
             {
                 var player = other.Tag as Player;
-                float minY = player.Entity.Position.Y;
-                foreach (var contact in pair.Contacts)
+                if (player.StandingOn != PlayerOnSurfaceState.OnTree)
                 {
-                    BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
-                    minY = Math.Min(minY, pointOfContact.Y);
-                }
+                    float maxY = player.Entity.Position.Y;
+                    foreach (var contact in pair.Contacts)
+                    {
+                        BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
+                        maxY = Math.Max(maxY, pointOfContact.Y);
+                    }
 
-                player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, minY + (this.Entity as Box).Width + 1.0f, player.Entity.Position.Z);
+                    player.StandingOn = PlayerOnSurfaceState.OnTree;
+                    player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).HalfWidth, player.Entity.Position.Z);
+                }
             }
         }
 
