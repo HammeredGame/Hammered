@@ -80,7 +80,7 @@ float4 ExtractPS(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0) : SV_TAR
 
     if (avg > Threshold)
     {
-        return color * (avg - Threshold) / (1 - Threshold); // * (avg - Threshold);
+        return color; // * (avg - Threshold) / (1 - Threshold); // * (avg - Threshold);
     }
 
     return float4(0, 0, 0, 0);
@@ -95,7 +95,7 @@ float4 ExtractLuminancePS(float4 pos : SV_POSITION, float2 texCoord : TEXCOORD0)
 
     if (luminance > Threshold)
     {
-        return color * (luminance - Threshold) / (1 - Threshold); // *(luminance - Threshold);
+        return color; //* (luminance - Threshold) / (1 - Threshold); // *(luminance - Threshold);
         //return saturate((color - Threshold) / (1 - Threshold));
     }
 
