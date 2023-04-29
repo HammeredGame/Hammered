@@ -76,7 +76,7 @@ namespace HammeredGame.Graphics
         {
             gpu.BlendState = BlendState.AlphaBlend;
             gpu.DepthStencilState = DepthStencilState.Default; // Ensure we are using depth buffer (Z-buffer) for 3D
-            if (gpu.RasterizerState.CullMode == CullMode.None)
+            if (gpu.RasterizerState.CullMode != CullMode.CullCounterClockwiseFace)
             {
                 // Cull back facing polygons
                 gpu.RasterizerState = new RasterizerState { CullMode = CullMode.CullCounterClockwiseFace };

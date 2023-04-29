@@ -14,3 +14,8 @@ float4 ObjectToProjection(float4 position)
     float4 viewPosition = mul(worldPosition, View);
     return mul(viewPosition, Projection);
 }
+
+float4 AddFog(float4 originalColor, float fogStart, float fogEnd, float distance)
+{
+    return lerp(originalColor, float4(1, 1, 1, 0), saturate((distance - fogStart) / (fogEnd - fogStart)));
+}

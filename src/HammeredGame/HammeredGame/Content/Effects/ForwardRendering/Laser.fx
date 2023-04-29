@@ -201,6 +201,9 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
     // the laser mask.
     output.Color.a = materialColor.a * laserTextureColor.a * maskColor.r;
 
+    // Interpolate to white near the end of the camera far plane (assumed to be 1000)
+    output.Color = AddFog(output.Color, 800.0, 1000.0, length(input.WorldSpacePosition - CameraPosition));
+
     // Write to a depth buffer too, for use in post-processing shaders
     output.Depth = input.Depth.x / input.Depth.y;
 

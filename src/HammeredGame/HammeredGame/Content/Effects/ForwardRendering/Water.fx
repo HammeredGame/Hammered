@@ -209,6 +209,9 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
     // the various lighting components that didn't care about alpha.
     output.Color.a = WaterOpacity;
 
+    // Interpolate to white near the end of the camera far plane (assumed to be 1000)
+    output.Color = AddFog(output.Color, 800.0, 1000.0, length(input.WorldSpacePosition - CameraPosition));
+
     // Write to a depth buffer too, for use in post-processing shaders
     output.Depth = input.Depth.x / input.Depth.y;
 
