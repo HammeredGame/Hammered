@@ -153,6 +153,10 @@ namespace HammeredGame
         /// </summary>
         protected override void LoadContent()
         {
+            // Load assets related to input prompts
+            input.Prompts.LoadContent();
+
+            // Load assets related to shown screens
             manager.LoadContent();
         }
 
