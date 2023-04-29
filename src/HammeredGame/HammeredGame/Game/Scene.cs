@@ -185,16 +185,21 @@ namespace HammeredGame.Game
         /// <summary>
         /// Update the scene at every tick
         /// </summary>
-        public virtual void Update(GameTime gameTime, bool isPaused)
+        public virtual void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             // Update each game object
             foreach (GameObject gameObject in this.GameObjectsList)
             {
-                gameObject.Update(gameTime, !isPaused);
+                // Game objects updating should depend on whether the screen has input focus, like
+                // for player movement. When a dialogue is shown and screen loses focus, all
+                // interactions with objects should be paused.
+                gameObject.Update(gameTime, screenHasFocus);
             }
 
-            // Update camera
-            this.Camera.UpdateCamera(!isPaused);
+            // For the camera, we use the paused flag instead of whether the screen has focus, since
+            // the camera only has a different behaviour when the game is paused. If there is
+            // dialogue for example, the camera will be the same as regular gameplay.
+            this.Camera.UpdateCamera(isPaused);
 
             //Steps the simulation forward one time step.
             // TODO: perhaps this shouldn't update if it's paused (i.e. check for HasFocus)?

@@ -146,9 +146,9 @@ namespace HammeredGame.Game
         /// TEMPORARY - needs to be modified Update the camera position and look-at Currently just
         /// switches between 4 predetermined positions given the corresponding keyboard input
         /// </summary>
-        public void UpdateCamera(bool screenHasFocus)
+        public void UpdateCamera(bool isPaused)
         {
-            if (Mode == CameraMode.Follow && followTarget != null && screenHasFocus)
+            if (Mode == CameraMode.Follow && followTarget != null && !isPaused)
             {
                 // In the case of follow mode, we modify the 2D vector that is multiplied onto the
                 // base camera offset. This controls the 4 isometric directions that the camera can take.
@@ -180,7 +180,7 @@ namespace HammeredGame.Game
 
                 UpdatePositionTarget(newPosition, followTarget.Position);
             }
-            else if (Mode == CameraMode.FourPointStatic && screenHasFocus)
+            else if (Mode == CameraMode.FourPointStatic && !isPaused)
             {
                 // In static camera mode, we use the input to select the static camera.
 

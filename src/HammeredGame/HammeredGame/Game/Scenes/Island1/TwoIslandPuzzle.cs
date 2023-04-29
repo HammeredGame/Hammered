@@ -51,9 +51,9 @@ namespace HammeredGame.Game.Scenes.Island1
             //Create<Hammer>("hammer", services, content.Load<Model>("temp_hammer2"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
         }
 
-        public override void Update(GameTime gameTime, bool screenHasFocus)
+        public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
-            base.Update(gameTime, screenHasFocus);
+            base.Update(gameTime, screenHasFocus, isPaused);
 
             // Handle Pressure Plate logic
             var pressureplate_1 = Get<PressurePlate>("pressureplate");
