@@ -283,6 +283,12 @@
 /processorParam:DebugMode=Auto
 /build:Effects/ForwardRendering/MainShading.fx
 
+#begin Effects/ForwardRendering/Skybox.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/ForwardRendering/Skybox.fx
+
 #begin Effects/ForwardRendering/Water.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -540,6 +546,30 @@
 
 #begin Skranji-Regular.ttf
 /copy:Skranji-Regular.ttf
+
+#begin Skybox/industrial_sunset_puresky_1k.dds
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Skybox/industrial_sunset_puresky_1k.dds
+
+#begin Skybox/kloofendal_48d_partly_cloudy_puresky_4k.dds
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Skybox/kloofendal_48d_partly_cloudy_puresky_4k.dds
 
 #begin temp_floor_flat.fbx
 /importer:FbxImporter
