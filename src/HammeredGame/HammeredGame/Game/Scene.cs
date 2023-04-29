@@ -58,17 +58,9 @@ namespace HammeredGame.Game
         public bool DrawDebugGrid = false;
 
         /// <summary>
-        /// TODO: move this into XML
+        /// The lighting for the scene. This will be loaded from the XML.
         /// </summary>
-        public SceneLightSetup Lights = new(
-            new SunLight(true, Color.LightYellow, 1f, new Vector3(0, 0.97f, 0.20f)),
-            new List<InfiniteDirectionalLight> {
-                new InfiniteDirectionalLight(true, Color.White, 0.05f, new Vector3(0.2f, 0.97f, 0f))
-            },
-            new AmbientLight(true, Color.White, 0.01f),
-            new List<PointLight>(),
-            new List<SpotLight>()
-        );
+        public SceneLightSetup Lights;
 
         /// <summary>
         /// The physics space for the scene.
@@ -186,7 +178,7 @@ namespace HammeredGame.Game
         /// <param name="fileName"></param>
         public void CreateFromXML(string fileName)
         {
-            (Camera, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            (Camera, Lights, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
             foreach (GameObject obj in GameObjects.Values) { obj.SetCurrentScene(this); }
         }
 
@@ -393,7 +385,7 @@ namespace HammeredGame.Game
             // Button to export to XML
             if (ImGui.Button("Export Scene"))
             {
-                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, GameObjects, Grid, Services);
+                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, Lights, GameObjects, Grid, Services);
             }
 
             ImGui.Checkbox("Draw Bounding Boxes", ref DrawDebugObjects);
