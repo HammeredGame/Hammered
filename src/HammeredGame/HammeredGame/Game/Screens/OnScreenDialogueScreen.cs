@@ -91,19 +91,24 @@ namespace HammeredGame.Game.Screens
                 HorizontalAlignment = HorizontalAlignment.Center
             };
 
-            // todo: use the same central source for atlas/input type detection as control prompts
-            // -> move it into Input or UserAction?
-            TextureRegionAtlas atlas = MyraEnvironment.DefaultAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/controls_atlas_xbox.xmat");
-            TextureRegion interactButton = atlas["XboxSeriesX_" + UserAction.Interact.GamepadButton.ToString()];
+            // Show a small image with the Interact button in the corner, so players know what to
+            // press to move forward
+            List<TextureRegion> interactButton = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Interact);
             var imageElement = new Image
             {
-                // Choose the image suited for the current input type
-                Renderable = interactButton,
+                // Since the interact action is discrete, there is only one possible button for it:
+                // we show the 0th index
+                Renderable = interactButton[0],
                 Opacity = 0.5f,
                 HorizontalAlignment = HorizontalAlignment.Right,
+                // Make sure to set both width and height to prevent any weird stretching issues
                 Width = (int)MathHelper.Max(tenthPercentageHeight * 0.3f, 16f),
                 Height = (int)MathHelper.Max(tenthPercentageHeight * 0.3f, 16f),
+                // Adding some padding on the right and bottom somehow causes the image to become
+                // smaller to a nice size (?)
                 Padding = new Thickness(0, 0, 10, 10),
+                // But we want it a little bit bigger without affecting the rest of the UI, so use a
+                // Scale transform
                 Scale = new Vector2(2, 2)
             };
 

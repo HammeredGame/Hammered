@@ -72,11 +72,15 @@ namespace HammeredGame.Core
         private readonly float screenScaleY;
         public InputType CurrentlyActiveInput { get; private set; }
 
+        public PromptsAssetManager Prompts { get; private set; }
+
         public Input(PresentationParameters pp, RenderTarget2D target)
         {
             // Set screen space variables according to the presentation parameters and render target
             screenScaleX = 1.0f / (pp.BackBufferWidth / (float)target.Width);
             screenScaleY = 1.0f / (pp.BackBufferHeight / (float)target.Height);
+
+            Prompts = new PromptsAssetManager(this);
         }
 
         // <----- Quick Input functions for convenience ---->
@@ -197,6 +201,9 @@ namespace HammeredGame.Core
             {
                 CurrentlyActiveInput = InputType.KeyboardMouse;
             }
+
+            // Update input prompts and make it load any new atlases if required
+            Prompts.Update();
         }
     }
 }
