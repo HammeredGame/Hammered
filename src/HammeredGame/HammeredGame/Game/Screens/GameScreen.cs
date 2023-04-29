@@ -16,20 +16,6 @@ using ImMonoGame.Thing;
 
 namespace HammeredGame.Game.Screens
 {
-    public struct Light
-    {
-        public Vector3 Position;
-        public Vector3 Direction;
-        public Vector3 Normal;
-
-        public Light(Vector3 lp, Vector3 ld, Vector3 up) : this()
-        {
-            this.Position = lp;
-            this.Direction = ld;
-            this.Normal = up;
-        }
-    }
-
     /// <summary>
     /// The game screen shows the main gameplay. It has one active scene at a time, and may add a
     /// PauseScreen to the screen stack upon pausing.
