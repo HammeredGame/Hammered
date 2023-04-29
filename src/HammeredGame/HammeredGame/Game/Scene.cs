@@ -2,7 +2,6 @@ using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Settings;
-using BEPUutilities.Threading;
 using HammeredGame.Core;
 using HammeredGame.Game.PathPlanning.Grid;
 using HammeredGame.Game.Screens;
@@ -51,10 +50,12 @@ namespace HammeredGame.Game
         /// Any debug objects shown as representations of bounding boxes. This list is updated in this.UpdateDebugObjects().
         /// </summary>
         public List<EntityDebugDrawer> DebugObjects = new();
+
         public bool DrawDebugObjects = false;
 
         // Uniform Grid debugging variables
         public List<GridDebugDrawer> DebugGridCells = new();
+
         public bool DrawDebugGrid = false;
 
         /// <summary>
@@ -301,7 +302,7 @@ namespace HammeredGame.Game
                 // just adjust the scalar multiplier 1 to something greater than 1.
                 // This could prove useful, because the size of the hammer is not currently taken into account.
                 // Ideally, the "·Repetitions" variables would also be parameterized w.r.t the dimensions of the hammer.
-                int xRepetitions = (int) (Math.Ceiling(goBox.HalfWidth / sideLength) * 1.0); //xRepetitions = 0;
+                int xRepetitions = (int)(Math.Ceiling(goBox.HalfWidth / sideLength) * 1.0); //xRepetitions = 0;
                 int yRepetitions = (int)(Math.Ceiling(goBox.HalfHeight / sideLength) * 1.0);
                 int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * 1.0); //zRepetitions = 0;
                 for (int i = -xRepetitions; i <= xRepetitions; ++i)
@@ -318,11 +319,8 @@ namespace HammeredGame.Game
                             sampledPoint = Vector3.Transform(sampledPoint, Matrix.CreateTranslation(localOrigin)); // Return to global coordinates
                             this.Grid.MarkCellAs(sampledPoint, availability);
                         }
-
                     }
                 }
-
-
             }
         }
 
@@ -473,9 +471,11 @@ namespace HammeredGame.Game
 
                                 // Copy the entity
                                 Entity entity = null;
-                                if (gameObject.Entity is Box box) {
+                                if (gameObject.Entity is Box box)
+                                {
                                     entity = new Box(box.Position, box.Width, box.Height, box.Length, box.Mass);
-                                } else if (gameObject.Entity is Sphere sph)
+                                }
+                                else if (gameObject.Entity is Sphere sph)
                                 {
                                     entity = new Sphere(sph.Position, sph.Radius, sph.Mass);
                                 }

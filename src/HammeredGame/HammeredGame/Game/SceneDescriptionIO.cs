@@ -1,6 +1,7 @@
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using HammeredGame.Core;
+using HammeredGame.Game.PathPlanning.Grid;
 using HammeredGame.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -11,8 +12,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
-using HammeredGame.Game.PathPlanning.Grid;
 
 namespace HammeredGame.Game
 {
@@ -194,6 +193,7 @@ namespace HammeredGame.Game
                     cameraInstance.FollowDistance = Parse<float>(cameraElement.Descendants("follow_distance").Single().Value);
                     cameraInstance.FollowAngle = Parse<float>(cameraElement.Descendants("follow_angle").Single().Value);
                     break;
+
                 case "static":
                 default:
                     // Set the four static positions.
@@ -281,13 +281,13 @@ namespace HammeredGame.Game
             catch (Exception)
             {
                 // Return a default light setup
-                 return new (
-                    new SunLight(Color.LightYellow, 1f, new Vector3(0, 0.97f, 0.20f)),
-                    new List<InfiniteDirectionalLight> {
+                return new(
+                   new SunLight(Color.LightYellow, 1f, new Vector3(0, 0.97f, 0.20f)),
+                   new List<InfiniteDirectionalLight> {
                         new InfiniteDirectionalLight(Color.White, 0.05f, new Vector3(0.2f, 0.97f, 0f))
-                    },
-                    new AmbientLight(Color.White, 0.01f)
-                );
+                   },
+                   new AmbientLight(Color.White, 0.01f)
+               );
             }
         }
 
@@ -490,7 +490,8 @@ namespace HammeredGame.Game
                         Show<Vector3>(camera.Target)),
                     new XElement("up",
                         Show<Vector3>(camera.Up)));
-            } else
+            }
+            else
             {
                 cameraElement.Add(
                     new XAttribute("mode", "follow"),
@@ -621,7 +622,7 @@ namespace HammeredGame.Game
                 }
                 return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

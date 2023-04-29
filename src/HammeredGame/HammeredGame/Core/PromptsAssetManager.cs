@@ -1,11 +1,10 @@
-﻿using Myra.Graphics2D.TextureAtlases;
+﻿using HammeredGame.Game;
 using Myra;
+using Myra.Graphics2D.TextureAtlases;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HammeredGame.Game;
 using static HammeredGame.Game.UserAction;
-using Microsoft.Xna.Framework;
 
 namespace HammeredGame.Core
 {
@@ -96,10 +95,13 @@ namespace HammeredGame.Core
                     case InputType.Xbox:
                         // for controller, show either XboxSeriesX_Left_Stick or XboxSeriesX_Right_Stick
                         return new List<TextureRegion>() { controlsAtlas[InputType.Xbox][side] };
+
                     case InputType.PlayStation:
                         return new();
+
                     case InputType.Switch:
                         return new();
+
                     case InputType.KeyboardMouse:
                         // todo: for keyboard, create an image with all four keys somehow
                         return new List<TextureRegion>() {
@@ -108,6 +110,7 @@ namespace HammeredGame.Core
                                     controlsAtlas[InputType.KeyboardMouse][down.ToString()],
                                     controlsAtlas[InputType.KeyboardMouse][right.ToString()]
                                 };
+
                     default:
                         throw new NotSupportedException();
                 }
@@ -129,12 +132,16 @@ namespace HammeredGame.Core
                 {
                     case InputType.Xbox:
                         return new List<TextureRegion>() { controlsAtlas[InputType.Xbox][button.ToString()] };
+
                     case InputType.PlayStation:
                         return new();
+
                     case InputType.Switch:
                         return new();
+
                     case InputType.KeyboardMouse:
                         return new List<TextureRegion>() { controlsAtlas[InputType.KeyboardMouse][key.ToString()] };
+
                     default:
                         throw new NotSupportedException();
                 }
