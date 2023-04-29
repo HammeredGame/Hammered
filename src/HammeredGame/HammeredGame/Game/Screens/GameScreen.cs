@@ -159,26 +159,7 @@ namespace HammeredGame.Game.Screens
                 ScreenManager.AddScreen(pauseScreen);
             }
 
-            // Update each game object
-            foreach (GameObject gameObject in currentScene.GameObjectsList)
-            {
-                gameObject.Update(gameTime, HasFocus);
-            }
-
-            // Update camera
-            currentScene.Camera.UpdateCamera(HasFocus);
-
-            //Steps the simulation forward one time step.
-            // TODO: perhaps this shouldn't update if it's paused (i.e. check for HasFocus)?
-            currentScene.Space.Update();
-
-            // Set up the list of debug entities for debugging visualization
-            currentScene.UpdateDebugObjects();
-
-            // Set up the list of debug grid cells for debugging visualization
-            // WARNING: Execute the following line of code if you wish to update the grid at each frame.
-            // Suggested for when NON available grid cells are shown.
-            currentScene.UpdateDebugGrid();
+            currentScene.Update(gameTime, HasFocus);
         }
 
         /// <summary>

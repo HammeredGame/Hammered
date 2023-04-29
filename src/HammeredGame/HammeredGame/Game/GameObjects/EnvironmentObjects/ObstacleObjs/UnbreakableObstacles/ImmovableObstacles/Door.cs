@@ -97,7 +97,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     player.ReachedGoal = isGoal; // TEMPORARY
                     //this.Visible = false;
                     //this.ActiveSpace.Remove(sender.Entity);
-                    this.RemoveFromSpace();
+                    this.OpenDoor();
                 }
 
             }
@@ -108,7 +108,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.keyFound = keyFound;
         }
 
-        public void RemoveFromSpace()
+        public void OpenDoor()
         {
             if (this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
             {
@@ -119,7 +119,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
         }
 
-        public void AddToSpace()
+        public void CloseDoor()
         {
             if (!this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
             {
