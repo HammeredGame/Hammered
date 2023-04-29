@@ -35,7 +35,7 @@ namespace HammeredGame.Graphics
         private readonly RenderTarget2D postprocessTarget;
         private float exposure = 1.0f;
 
-        private BloomFilter _bloomFilter;
+        private BloomFilter bloomFilter;
 
         private bool showDebugTargets;
 
@@ -58,10 +58,10 @@ namespace HammeredGame.Graphics
 
             postprocessTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
 
-            _bloomFilter = new BloomFilter();
-            _bloomFilter.Load(gpu, content, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, SurfaceFormat.HdrBlendable);
-            _bloomFilter.BloomPreset = BloomFilter.BloomPresets.SuperWide;
-            _bloomFilter.BloomThreshold = 1.01f; // arbitrary, but above 1 so plain white isn't bloomed
+            bloomFilter = new BloomFilter();
+            bloomFilter.Load(gpu, content, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, SurfaceFormat.HdrBlendable);
+            bloomFilter.BloomPreset = BloomFilter.BloomPresets.SuperWide;
+            bloomFilter.BloomThreshold = 1.01f; // arbitrary, but above 1 so plain white isn't bloomed
 
             // The target for the final tone-mapped and post-processed image. Format is Color, i.e.
             // 8 bit RGBA.
@@ -173,7 +173,7 @@ namespace HammeredGame.Graphics
         public void PostProcess()
         {
             // Perform HDR Bloom. SurfaceFormat change: HdrBlendable -> HdrBlendable
-            Texture2D bloom = _bloomFilter.Draw(diffuseTarget, gpu.PresentationParameters.BackBufferWidth / 2, gpu.PresentationParameters.BackBufferHeight / 2);
+            Texture2D bloom = bloomFilter.Draw(diffuseTarget, gpu.PresentationParameters.BackBufferWidth / 2, gpu.PresentationParameters.BackBufferHeight / 2);
 
             gpu.SetRenderTarget(postprocessTarget);
             gpu.Clear(Color.Black);
@@ -240,36 +240,36 @@ namespace HammeredGame.Graphics
             if (ImGui.BeginCombo("Bloom Preset", "Wide")) {
                 if (ImGui.Selectable("Wide"))
                 {
-                    _bloomFilter.BloomPreset = BloomFilter.BloomPresets.Wide;
+                    bloomFilter.BloomPreset = BloomFilter.BloomPresets.Wide;
                 } else if (ImGui.Selectable("SuperWide"))
                 {
-                    _bloomFilter.BloomPreset = BloomFilter.BloomPresets.SuperWide;
+                    bloomFilter.BloomPreset = BloomFilter.BloomPresets.SuperWide;
 
                 }
                 else if (ImGui.Selectable("Focussed"))
                 {
-                    _bloomFilter.BloomPreset = BloomFilter.BloomPresets.Focussed;
+                    bloomFilter.BloomPreset = BloomFilter.BloomPresets.Focussed;
 
                 }
                 else if (ImGui.Selectable("Small"))
                 {
-                    _bloomFilter.BloomPreset = BloomFilter.BloomPresets.Small;
+                    bloomFilter.BloomPreset = BloomFilter.BloomPresets.Small;
 
                 }
                 else if (ImGui.Selectable("Cheap"))
                 {
-                    _bloomFilter.BloomPreset = BloomFilter.BloomPresets.Cheap;
+                    bloomFilter.BloomPreset = BloomFilter.BloomPresets.Cheap;
 
                 }
 
                 ImGui.EndCombo();
             }
-            float length = _bloomFilter.BloomStreakLength;
+            float length = bloomFilter.BloomStreakLength;
             ImGui.DragFloat("Bloom Filter Streak Length", ref length, 0.01f, 0f, 10f);
-            _bloomFilter.BloomStreakLength = length;
-            float threshold = _bloomFilter.BloomThreshold;
+            bloomFilter.BloomStreakLength = length;
+            float threshold = bloomFilter.BloomThreshold;
             ImGui.DragFloat("Bloom Filter Threshold", ref threshold, 0.01f, 0f, 20f);
-            _bloomFilter.BloomThreshold = threshold;
+            bloomFilter.BloomThreshold = threshold;
         }
     }
 }
