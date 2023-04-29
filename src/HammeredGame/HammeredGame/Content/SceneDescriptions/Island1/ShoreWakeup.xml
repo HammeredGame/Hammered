@@ -11,6 +11,12 @@
 	<top_right_away>180.0 220.0 200.0</top_right_away>
 	<side_length>10.0</side_length>
   </uniform_grid>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
+    <model>cube</model>
+    <position>0 0 0</position>
+    <rotation>0 0 0 1</rotation>
+    <scale>1.0</scale>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground" id="ground">
     <model>terrain_shore</model>
     <texture type="texture2d">terrain_shore_albedo</texture>
@@ -344,11 +350,5 @@
     <position>0.000 -6.000 0.000</position>
     <rotation>0.000 0.882 0.000 0.472</rotation>
     <scale>200.000</scale>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
-    <model>cube</model>
-    <position>0 0 0</position>
-    <rotation>0 0 0 1</rotation>
-    <scale>1.0</scale>
   </object>
 </scene>
