@@ -283,7 +283,7 @@ namespace HammeredGame.Game
                     ImGui.DragFloat3("Box W,H,L", ref whl, 0.1f, 0.1f, float.MaxValue);
                     box.Width = whl.X;
                     box.Height = whl.Y;
-                    box.Length = whl.Z;
+                    box.Length =  whl.Z;
                 }
                 else if (Entity is Sphere sph)
                 {
