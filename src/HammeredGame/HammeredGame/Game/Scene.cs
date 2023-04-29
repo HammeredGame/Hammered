@@ -183,6 +183,33 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
+        /// Update the scene at every tick
+        /// </summary>
+        public virtual void Update(GameTime gameTime, bool screenHasFocus) 
+        {
+            // Update each game object
+            foreach (GameObject gameObject in this.GameObjectsList)
+            {
+                gameObject.Update(gameTime, screenHasFocus);
+            }
+
+            // Update camera
+            this.Camera.UpdateCamera(screenHasFocus);
+
+            //Steps the simulation forward one time step.
+            // TODO: perhaps this shouldn't update if it's paused (i.e. check for HasFocus)?
+            this.Space.Update();
+
+            // Set up the list of debug entities for debugging visualization
+            if (DrawDebugObjects) this.UpdateDebugObjects();
+
+            // Set up the list of debug grid cells for debugging visualization
+            // WARNING: Execute the following line of code if you wish to update the grid at each frame.
+            // Suggested for when NON available grid cells are shown.
+            if (DrawDebugGrid) this.UpdateDebugGrid();
+        }
+
+        /// <summary>
         /// Recreate the list of debug objects in this scene, representing bounding boxes. This
         /// should be called on every game loop Update().
         /// </summary>
