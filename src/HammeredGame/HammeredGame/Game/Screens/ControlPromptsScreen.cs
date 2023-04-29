@@ -21,10 +21,9 @@ namespace HammeredGame.Game.Screens
     {
         private Desktop desktop;
 
-        private Dictionary<CancellationToken, HashSet<UserAction>> shownControls = new();
+        private readonly Dictionary<CancellationToken, HashSet<UserAction>> shownControls = new();
         private HorizontalStackPanel controlsPanel;
-        private string inputType; // todo: use enum
-        private Dictionary<string, TextureRegionAtlas> controlsAtlas = new();
+        private readonly Dictionary<InputType, TextureRegionAtlas> controlsAtlas = new();
         private FontSystem barlowFontSystem;
 
         /// <summary>
@@ -38,36 +37,69 @@ namespace HammeredGame.Game.Screens
         /// <exception cref="NotSupportedException"></exception>
         public List<TextureRegion> GetImagesForAction(UserAction action)
         {
-            switch (action)
+            if (action is ContinuousUserAction continuousAction)
             {
-                case ContinuousUserAction { GamepadContinuousStickSide: var side, KeyboardContinuousKeys: var keys }:
-                    if (inputType == "keyboard")
-                    {
+                var side = continuousAction.GamepadContinuousStickSide;
+                var (up, left, down, right) = continuousAction.KeyboardContinuousKeys;
+
+                // Fall back to keyboard and mouse (which we are guaranteed to have loaded in
+                // LoadContent()) if the active input atlas hasn't been loaded yet
+                InputType inputType = GameServices.GetService<Input>().CurrentlyActiveInput;
+                if (!controlsAtlas.ContainsKey(inputType))
+                {
+                    inputType = InputType.KeyboardMouse;
+                }
+
+                switch (inputType)
+                {
+                    case InputType.Xbox:
+                        // for controller, show either XboxSeriesX_Left_Stick or XboxSeriesX_Right_Stick
+                        return new List<TextureRegion>() { controlsAtlas[InputType.Xbox][side] };
+                    case InputType.PlayStation:
+                        return new();
+                    case InputType.Switch:
+                        return new();
+                    case InputType.KeyboardMouse:
                         // todo: for keyboard, create an image with all four keys somehow
                         return new List<TextureRegion>() {
-                            controlsAtlas[inputType][keys.Item1.ToString() + "_Key_Dark"],
-                            controlsAtlas[inputType][keys.Item2.ToString() + "_Key_Dark"],
-                            controlsAtlas[inputType][keys.Item3.ToString() + "_Key_Dark"],
-                            controlsAtlas[inputType][keys.Item4.ToString() + "_Key_Dark"]
-                        };
-                    }
-                    // for controller, show either XboxSeriesX_Left_Stick or XboxSeriesX_Right_Stick
-                    return new List<TextureRegion>() { controlsAtlas[inputType]["XboxSeriesX_" + side + "_Stick"] };
-
-                case DiscreteUserAction { GamepadButton: var button, KeyboardKey: var key }:
-                    // For discrete actions, the key or button enum name is enough
-                    if (inputType == "keyboard")
-                    {
-                        return new List<TextureRegion>() { controlsAtlas["keyboard"][key.ToString() + "_Key_Dark"] };
-                    }
-                    return new List<TextureRegion>() { controlsAtlas[inputType]["XboxSeriesX_" + button.ToString()] };
-
-                case null:
-                    throw new ArgumentNullException();
-
-                default:
-                    throw new NotSupportedException();
+                                    controlsAtlas[InputType.KeyboardMouse][up.ToString()],
+                                    controlsAtlas[InputType.KeyboardMouse][left.ToString()],
+                                    controlsAtlas[InputType.KeyboardMouse][down.ToString()],
+                                    controlsAtlas[InputType.KeyboardMouse][right.ToString()]
+                                };
+                    default:
+                        throw new NotSupportedException();
+                }
             }
+            else if (action is DiscreteUserAction discreteAction)
+            {
+                var button = discreteAction.GamepadButton;
+                var key = discreteAction.KeyboardKey;
+
+                // Fall back to keyboard and mouse (which we are guaranteed to have loaded in
+                // LoadContent()) if the active input atlas hasn't been loaded yet
+                InputType inputType = GameServices.GetService<Input>().CurrentlyActiveInput;
+                if (!controlsAtlas.ContainsKey(inputType))
+                {
+                    inputType = InputType.KeyboardMouse;
+                }
+
+                switch (inputType)
+                {
+                    case InputType.Xbox:
+                        return new List<TextureRegion>() { controlsAtlas[InputType.Xbox][button.ToString()] };
+                    case InputType.PlayStation:
+                        return new();
+                    case InputType.Switch:
+                        return new();
+                    case InputType.KeyboardMouse:
+                        return new List<TextureRegion>() { controlsAtlas[InputType.KeyboardMouse][key.ToString()] };
+                    default:
+                        throw new NotSupportedException();
+                }
+            }
+
+            return new();
         }
 
         public ControlPromptsScreen()
@@ -107,19 +139,12 @@ namespace HammeredGame.Game.Screens
 
             int tenthPercentageHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
 
-            // Detect upon first launch which type of input method is used if possible
-            if (GameServices.GetService<Input>().GamePadState.IsConnected)
-            {
-                inputType = "xbox";
-            }
-            else
-            {
-                inputType = "keyboard";
-            }
+            // Load the keyboard atlas by default
+            const InputType defaultAtlasType = InputType.KeyboardMouse;
 
             // Myra uses its own asset manager. The default one uses a File stream based
             // implementation that reads from the directory of the currently executing assembly.
-            controlsAtlas[inputType] = MyraEnvironment.DefaultAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/controls_atlas_" + inputType + ".xmat");
+            controlsAtlas[defaultAtlasType] = MyraEnvironment.DefaultAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/" + defaultAtlasType.ToString() + ".xmat");
 
             // Load font
             byte[] barlowTtfData = System.IO.File.ReadAllBytes("Content/Barlow-Medium.ttf");
@@ -137,6 +162,12 @@ namespace HammeredGame.Game.Screens
             // Add it to the desktop
             desktop = new();
             desktop.Root = controlsPanel;
+        }
+
+        public override void UnloadContent()
+        {
+            base.UnloadContent();
+            barlowFontSystem.Dispose();
         }
 
         public override void Update(GameTime gameTime)
@@ -158,72 +189,62 @@ namespace HammeredGame.Game.Screens
                 if (token.IsCancellationRequested)
                 {
                     shownControls.Remove(token);
+                    continue;
                 }
-                else
+
+
+                // Loop over each action to be shown with this cancellation token, and add it to
+                // the horizontal UI
+                foreach (UserAction action in shownControls[token])
                 {
-                    // Loop over each action to be shown with this cancellation token, and add it to
-                    // the horizontal UI
-                    foreach (UserAction action in shownControls[token])
+                    // Show all the images (1 or 4 of them) in a horizontal layout
+                    var singleControlMultipleImagesLayout = new HorizontalStackPanel
                     {
-                        // Show all the images (1 or 4 of them) in a horizontal layout
-                        var singleControlMultipleImagesLayout = new HorizontalStackPanel
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    };
+                    foreach (TextureRegion image in GetImagesForAction(action))
+                    {
+                        var imageElement = new Image
                         {
-                            HorizontalAlignment = HorizontalAlignment.Center
-                        };
-                        foreach (TextureRegion image in GetImagesForAction(action))
-                        {
-                            var imageElement = new Image
-                            {
-                                // Choose the image suited for the current input type
-                                Renderable = image,
-                                Opacity = 0.5f,
-                                HorizontalAlignment = HorizontalAlignment.Center,
-                                Height = tenthPercentageHeight
-                            };
-                            singleControlMultipleImagesLayout.AddChild(imageElement);
-                        }
-                        // We also want to show a label for the action name
-                        var label = new Label
-                        {
-                            // Dark purple
-                            TextColor = new(75, 43, 58),
-                            Text = action.Name,
-                            Font = barlowFontSystem.GetFont(tenthPercentageHeight * 0.3f),
-                            HorizontalAlignment = HorizontalAlignment.Center
-                        };
-
-                        // Layout is such that the horizontal image list is above the label
-                        var singleControlLayout = new VerticalStackPanel()
-                        {
+                            // Choose the image suited for the current input type
+                            Renderable = image,
+                            Opacity = 0.5f,
                             HorizontalAlignment = HorizontalAlignment.Center,
-                            Margin = new Thickness(100, 0)
+                            Height = tenthPercentageHeight,
+                            Width = tenthPercentageHeight
                         };
-                        singleControlLayout.AddChild(singleControlMultipleImagesLayout);
-                        singleControlLayout.AddChild(label);
-
-                        controlsPanel.AddChild(singleControlLayout);
+                        singleControlMultipleImagesLayout.AddChild(imageElement);
                     }
+                    // We also want to show a label for the action name
+                    var label = new Label
+                    {
+                        // Dark purple
+                        TextColor = new(75, 43, 58),
+                        Text = action.Name,
+                        Font = barlowFontSystem.GetFont(tenthPercentageHeight * 0.3f),
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    };
+
+                    // Layout is such that the horizontal image list is above the label
+                    var singleControlLayout = new VerticalStackPanel()
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Margin = new Thickness(100, 0)
+                    };
+                    singleControlLayout.AddChild(singleControlMultipleImagesLayout);
+                    singleControlLayout.AddChild(label);
+
+                    controlsPanel.AddChild(singleControlLayout);
                 }
             }
 
             // Load texture atlas when input type changed. This is IO heavy so do it asynchronously,
-            // and only once for any input type. TODO: abstract away the constant strings somehow.
-            if (GameServices.GetService<Input>().GamePadState.IsConnected && !controlsAtlas.ContainsKey("xbox"))
-            {
+            // and only once for any input type.
+            if (!controlsAtlas.ContainsKey(GameServices.GetService<Input>().CurrentlyActiveInput)) {
                 new Task(() =>
                 {
-                    // Don't set inputType until assets are loaded, since an Update() might use it before
-                    controlsAtlas["xbox"] = MyraEnvironment.DefaultAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/controls_atlas_xbox.xmat");
-                    inputType = "xbox";
-                }).Start();
-            }
-            else if (!GameServices.GetService<Input>().GamePadState.IsConnected && !controlsAtlas.ContainsKey("keyboard"))
-            {
-                new Task(() =>
-                {
-                    // Don't set inputType until assets are loaded, since an Update() might use it before
-                    controlsAtlas["keyboard"] = MyraEnvironment.DefaultAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/controls_atlas_keyboard.xmat");
-                    inputType = "keyboard";
+                    InputType activeType = GameServices.GetService<Input>().CurrentlyActiveInput;
+                    controlsAtlas[activeType] = MyraEnvironment.DefaultAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/" + activeType + ".xmat");
                 }).Start();
             }
 

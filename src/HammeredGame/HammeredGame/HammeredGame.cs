@@ -10,6 +10,7 @@ using System;
 using Microsoft.Xna.Framework.Content;
 using Myra;
 using ImGuiNET;
+using Microsoft.Xna.Framework.Input;
 
 namespace HammeredGame
 {
@@ -229,7 +230,7 @@ namespace HammeredGame
             // Show whether the gamepad is detected
             if (input.GamePadState.IsConnected)
             {
-                ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.0f, 1.0f, 1.0f), "Gamepad Connected");
+                ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.0f, 1.0f, 1.0f), "Gamepad Connected - " + GamePad.GetCapabilities(0).DisplayName);
             }
             float fr = ImGui.GetIO().Framerate;
             ImGui.Text($"{1000.0f / fr:F2} ms/frame ({fr:F1} FPS)");

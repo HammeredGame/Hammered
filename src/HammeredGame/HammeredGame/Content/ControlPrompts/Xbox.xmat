@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas Image="Xbox.png">
+  <TextureRegion Id="A" Left="0" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="B" Left="100" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="Dpad" Left="200" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadDown" Left="300" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadLeft" Left="400" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadRight" Left="500" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadUp" Left="600" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="Left" Left="700" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="LeftShoulder" Left="800" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="LeftStick" Left="900" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="LeftTrigger" Left="1000" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="Right" Left="1100" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="RightShoulder" Left="1200" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="RightStick" Left="1300" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="RightTrigger" Left="1400" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="Start" Left="1500" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="X" Left="1600" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_Diagram" Left="0" Top="100" Width="1452" Height="940" />
+  <TextureRegion Id="XboxSeriesX_Diagram_Simple" Left="0" Top="1040" Width="1452" Height="940" />
+  <TextureRegion Id="XboxSeriesX_Share" Left="1700" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="XboxSeriesX_View" Left="1800" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="Y" Left="1900" Top="0" Width="100" Height="100" />
+</TextureAtlas>
