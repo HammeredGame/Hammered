@@ -56,14 +56,16 @@ namespace HammeredGame.Graphics
             diffuseTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
             depthTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Single, DepthFormat.Depth24);
 
-            // The target for the final tone-mapped and post-processed image. Format is Color, i.e.
-            // 8 bit RGBA.
-            postprocessTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
-            finalTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
+            postprocessTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
 
             _bloomFilter = new BloomFilter();
-            _bloomFilter.Load(gpu, content, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight);
+            _bloomFilter.Load(gpu, content, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, SurfaceFormat.HdrBlendable);
             _bloomFilter.BloomPreset = BloomFilter.BloomPresets.SuperWide;
+            _bloomFilter.BloomThreshold = 1.01f; // arbitrary, but above 1 so plain white isn't bloomed
+
+            // The target for the final tone-mapped and post-processed image. Format is Color, i.e.
+            // 8 bit RGBA.
+            finalTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
         }
 
         /// <summary>
@@ -115,19 +117,20 @@ namespace HammeredGame.Graphics
             gpu.SetRenderTargets(diffuseTarget, depthTarget);
             Set3DStates();
 
-            // Render all the scene objects except for Skybox, which is to be rendered last with a
-            // different cull mode
-            SkyboxObject deferredSkybox = null;
+            // Render all the scene objects
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
-                // The skybox needs to be rendered last (otherwise it'll draw so many useless pixels
-                // across the screen, that would be overwritten by other closer objects). It also
-                // needs a specific cull-mode since we will be rendering the back face and not the
-                // front face, so we'll defer it to later.
+                // Ideally, the skybox needs to be rendered last (otherwise it'll draw so many
+                // useless pixels across the screen, that would be overwritten by other closer
+                // objects). But in practice, we need it rendered ASAP because the world fog is
+                // implemented as just reducing object alphas, which means the sky has to be already
+                // rendered at that point to show through.
                 if (gameObject is SkyboxObject sky)
                 {
-                    deferredSkybox = sky;
-                    continue;
+                    // We need to cull the front faces and not the back faces, since the sky box is inside-out
+                    gpu.RasterizerState = new RasterizerState { CullMode = CullMode.CullClockwiseFace };
+                    gameObject.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
+                    gpu.RasterizerState = new RasterizerState { CullMode = CullMode.CullCounterClockwiseFace };
                 }
 
                 // TODO: move these parameter-setting into GameObject's Draw() so everything is in one place
@@ -137,16 +140,6 @@ namespace HammeredGame.Graphics
                 gameObject.Effect.Parameters["ShadowMapDepthBias"]?.SetValue(shadowMapDepthBias);
                 gameObject.Effect.Parameters["ShadowMapNormalOffset"]?.SetValue(shadowMapNormalOffset);
                 gameObject.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
-            }
-
-            // Render the deferred skybox if there is one
-            if (deferredSkybox != null)
-            {
-                // The skybox is essentially a gigantic box that we're viewing from inside. Because
-                // of this, we need to make sure that we're culling not the back faces, but the
-                // front faces.
-                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.CullClockwiseFace };
-                deferredSkybox.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
             }
 
             if (scene.DrawDebugObjects)
@@ -179,21 +172,23 @@ namespace HammeredGame.Graphics
         /// </summary>
         public void PostProcess()
         {
+            // Perform HDR Bloom. SurfaceFormat change: HdrBlendable -> HdrBlendable
+            Texture2D bloom = _bloomFilter.Draw(diffuseTarget, gpu.PresentationParameters.BackBufferWidth / 2, gpu.PresentationParameters.BackBufferHeight / 2);
+
             gpu.SetRenderTarget(postprocessTarget);
-
-            colorCorrectionEffect.Parameters["Exposure"].SetValue(exposure);
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, colorCorrectionEffect, null);
-            spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
-            spriteBatch.End();
-
-            Texture2D bloom = _bloomFilter.Draw(postprocessTarget, gpu.PresentationParameters.BackBufferWidth / 2, gpu.PresentationParameters.BackBufferHeight / 2);
-
-            gpu.SetRenderTarget(finalTarget);
             gpu.Clear(Color.Black);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-            spriteBatch.Draw(postprocessTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
+            spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
             spriteBatch.Draw(bloom, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
+            spriteBatch.End();
+
+            // Perform tonemap and color correction. SurfaceFormat change: HdrBlendable -> Color
+            gpu.SetRenderTarget(finalTarget);
+
+            colorCorrectionEffect.Parameters["Exposure"].SetValue(exposure);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, colorCorrectionEffect, null);
+            spriteBatch.Draw(postprocessTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
             spriteBatch.End();
         }
 
@@ -273,7 +268,7 @@ namespace HammeredGame.Graphics
             ImGui.DragFloat("Bloom Filter Streak Length", ref length, 0.01f, 0f, 10f);
             _bloomFilter.BloomStreakLength = length;
             float threshold = _bloomFilter.BloomThreshold;
-            ImGui.DragFloat("Bloom Filter Threshold", ref threshold, 0.01f, 0f, 1f);
+            ImGui.DragFloat("Bloom Filter Threshold", ref threshold, 0.01f, 0f, 20f);
             _bloomFilter.BloomThreshold = threshold;
         }
     }
