@@ -185,16 +185,16 @@ namespace HammeredGame.Game
         /// <summary>
         /// Update the scene at every tick
         /// </summary>
-        public virtual void Update(GameTime gameTime, bool screenHasFocus) 
+        public virtual void Update(GameTime gameTime, bool isPaused)
         {
             // Update each game object
             foreach (GameObject gameObject in this.GameObjectsList)
             {
-                gameObject.Update(gameTime, screenHasFocus);
+                gameObject.Update(gameTime, !isPaused);
             }
 
             // Update camera
-            this.Camera.UpdateCamera(screenHasFocus);
+            this.Camera.UpdateCamera(!isPaused);
 
             //Steps the simulation forward one time step.
             // TODO: perhaps this shouldn't update if it's paused (i.e. check for HasFocus)?

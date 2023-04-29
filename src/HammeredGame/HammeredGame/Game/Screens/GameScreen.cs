@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Threading;
 using HammeredGame.Graphics;
 using ImMonoGame.Thing;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Screens
 {
@@ -27,8 +28,10 @@ namespace HammeredGame.Game.Screens
 
         // Pause screen is always loaded, see LoadContent().
         private PauseScreen pauseScreen;
+        private bool isPaused;
 
         private ControlPromptsScreen promptsScreen;
+        private OnScreenDialogueScreen dialoguesScreen;
 
         // Music variables
         private Song bgMusic;
@@ -80,11 +83,13 @@ namespace HammeredGame.Game.Screens
             // Preload the pause screen, so that adding the pause screen to the screen stack doesn't
             // call LoadContent every time (which lags because it has to loads fonts and create the
             // UI layout)
-            pauseScreen = new PauseScreen() {
-                // Specify the callback function when Quit To Title is called. We also need to
-                // specify the Restart Level callback, but this is done just before each time the
-                // screen is added to the manager, since we need the name of the currently active level.
-                QuitToTitleFunc = () => {
+            pauseScreen = new PauseScreen
+            {
+                QuitMethod = () =>
+                {
+                    // Specify the callback function when Quit To Title is called. We also need to
+                    // specify the Restart Level callback, but this is done just before each time the
+                    // screen is added to the manager, since we need the name of the currently active level.
                     ExitScreen(true);
                     // Ask the main game class to recreate the title screen, since it needs to
                     // assign handlers that we don't have access to
@@ -95,6 +100,9 @@ namespace HammeredGame.Game.Screens
 
             promptsScreen = new ControlPromptsScreen();
             ScreenManager.AddScreen(promptsScreen);
+
+            dialoguesScreen = new OnScreenDialogueScreen();
+            ScreenManager.AddScreen(dialoguesScreen);
         }
 
         /// <summary>
@@ -108,6 +116,7 @@ namespace HammeredGame.Game.Screens
             // Make sure we have exited screens that we created.
             pauseScreen?.ExitScreen();
             promptsScreen?.ExitScreen();
+            dialoguesScreen?.ExitScreen();
 
             MediaPlayer.Stop();
         }
@@ -143,6 +152,15 @@ namespace HammeredGame.Game.Screens
         }
 
         /// <summary>
+        /// Show a dialogue, see OnScreenDialogueScreen.ShowDialogue() for more info.
+        /// </summary>
+        /// <param name="dialogue"></param>
+        public Task ShowDialogueAndWait(string dialogue)
+        {
+            return dialoguesScreen.ShowDialogueAndWait(dialogue);
+        }
+
+        /// <summary>
         /// Called on every game update loop. The interval at this function is called is not
         /// constant, so use the gameTime argument to make sure speeds appear natural.
         /// </summary>
@@ -155,11 +173,17 @@ namespace HammeredGame.Game.Screens
 
             if (HasFocus && UserAction.Pause.Pressed(input))
             {
-                pauseScreen.RestartLevelFunc = () => InitializeLevel(currentSceneName);
+                isPaused = true;
+                pauseScreen.RestartMethod = () =>
+                {
+                    isPaused = false;
+                    InitializeLevel(currentSceneName);
+                };
+                pauseScreen.ContinueMethod = () => isPaused = false;
                 ScreenManager.AddScreen(pauseScreen);
             }
 
-            currentScene.Update(gameTime, HasFocus);
+            currentScene.Update(gameTime, isPaused);
         }
 
         /// <summary>

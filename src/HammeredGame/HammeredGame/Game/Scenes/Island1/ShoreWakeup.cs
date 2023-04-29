@@ -18,6 +18,8 @@ namespace HammeredGame.Game.Scenes.Island1
 
         protected override async void OnSceneStart()
         {
+            await Services.GetService<ScriptUtils>().WaitNextUpdate();
+
             Camera.SetFollowTarget(Get<Player>("player1"));
 
             // set active camera to determine which way is forward
@@ -26,6 +28,10 @@ namespace HammeredGame.Game.Scenes.Island1
             // drop hammer here to set state as Dropped, so when we set the owner player later it
             // won't fly back
             Get<Hammer>("hammer").DropHammer();
+
+            // Show a small dialogue
+            await Services.GetService<ScriptUtils>().WaitSeconds(1);
+            await ParentGameScreen.ShowDialogueAndWait("...Where am I?");
 
             // Show movement prompt 1 second after launch
             await Services.GetService<ScriptUtils>().WaitSeconds(1);

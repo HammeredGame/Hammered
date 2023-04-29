@@ -131,7 +131,7 @@ namespace HammeredGame.Game.Screens
             {
                 VerticalAlignment = VerticalAlignment.Bottom,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 0, 0, tenthPercentageHeight)
+                Margin = new Thickness(0, 0, 0, (int)(tenthPercentageHeight * 1.5f))
             };
 
             // Add it to the desktop
@@ -178,7 +178,7 @@ namespace HammeredGame.Game.Screens
                                 Renderable = image,
                                 Opacity = 0.5f,
                                 HorizontalAlignment = HorizontalAlignment.Center,
-                                MaxHeight = tenthPercentageHeight
+                                Height = tenthPercentageHeight
                             };
                             singleControlMultipleImagesLayout.AddChild(imageElement);
                         }
@@ -188,7 +188,7 @@ namespace HammeredGame.Game.Screens
                             // Dark purple
                             TextColor = new(75, 43, 58),
                             Text = action.Name,
-                            Font = barlowFontSystem.GetFont(tenthPercentageHeight * 0.5f),
+                            Font = barlowFontSystem.GetFont(tenthPercentageHeight * 0.3f),
                             HorizontalAlignment = HorizontalAlignment.Center
                         };
 
