@@ -15,6 +15,10 @@ namespace HammeredGame.Game.Scenes.Test
 
         protected override void OnSceneStart()
         {
+            // Allow <c>Hammer</c> instance to have access to the grid of the scene for the path planning.
+            // THIS IS REQUIRED FOR ALL SCENES!
+            Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
+
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
