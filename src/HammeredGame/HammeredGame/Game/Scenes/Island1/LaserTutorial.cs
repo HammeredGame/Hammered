@@ -32,9 +32,9 @@ namespace HammeredGame.Game.Scenes.Island1
 
             // Set laser to desired length within level
             Laser laser1 = Get<Laser>("laser1");
-            laser1.SetLaserDefaultScale(5.0f);
+            laser1.SetLaserDefaultScale(15.0f);
             Laser laser2 = Get<Laser>("laser2");
-            laser2.SetLaserDefaultScale(5.0f);
+            laser2.SetLaserDefaultScale(15.0f);
 
             MoveBlock rock1 = Get<MoveBlock>("rock1");
             //MoveBlock rock2 = Get<MoveBlock>("rock2");

@@ -9,10 +9,11 @@
   <uniform_grid>
 	<bottom_left_close>-80.0 -60.0 -300.0</bottom_left_close>
 	<top_right_away>600.0 200.0 300.0</top_right_away>
-	<side_length>2.0</side_length>
+	<side_length>10.0</side_length>
   </uniform_grid>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water">
     <model>temp_water_big</model>
+    <texture type="texture2d">sea_texture</texture>
     <position>80.000 -29.000 0.000</position>
     <rotation>-0.040 0.000 0.000 0.999</rotation>
     <scale>7.500</scale>
@@ -167,12 +168,14 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water1">
     <model>temp_water_big</model>
+    <texture type="texture2d">sea_texture</texture>
     <position>-80.000 -25.000 50.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>14.220</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water2">
     <model>temp_water_big</model>
+    <texture type="texture2d">sea_texture</texture>
     <position>60.000 -25.250 -150.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>7.500</scale>
@@ -629,6 +632,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water5">
     <model>temp_water_big</model>
+    <texture type="texture2d">sea_texture</texture>
     <position>90.000 -25.000 150.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>5.000</scale>
