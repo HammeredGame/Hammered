@@ -1,15 +1,11 @@
 ﻿using FontStashSharp;
 using HammeredGame.Core;
 using Microsoft.Xna.Framework;
-using Myra;
 using Myra.Graphics2D;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
-using static HammeredGame.Game.UserAction;
 
 namespace HammeredGame.Game.Screens
 {

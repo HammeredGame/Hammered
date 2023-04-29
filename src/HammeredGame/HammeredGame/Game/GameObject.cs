@@ -3,19 +3,14 @@ using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using HammeredGame.Core;
+using HammeredGame.Graphics;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System.Net.Mime;
-using System;
-using System.IO;
-using Microsoft.Xna.Framework.Content;
-using HammeredGame.Game.Screens;
 using System.Linq;
-using HammeredGame.Graphics;
 
 namespace HammeredGame.Game
 {
@@ -48,6 +43,7 @@ namespace HammeredGame.Game
 
         // Load in shader
         public Effect Effect;
+
         protected GraphicsDevice GPU;
 
         public Texture2D Texture;
@@ -283,7 +279,7 @@ namespace HammeredGame.Game
                     ImGui.DragFloat3("Box W,H,L", ref whl, 0.1f, 0.1f, float.MaxValue);
                     box.Width = whl.X;
                     box.Height = whl.Y;
-                    box.Length =  whl.Z;
+                    box.Length = whl.Z;
                 }
                 else if (Entity is Sphere sph)
                 {

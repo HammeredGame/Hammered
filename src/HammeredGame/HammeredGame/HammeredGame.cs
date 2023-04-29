@@ -1,16 +1,15 @@
+using BEPUutilities.Threading;
 using HammeredGame.Core;
-using HammeredGame.Game;
+using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using BEPUutilities.Threading;
-using System;
 using Microsoft.Xna.Framework.Content;
-using Myra;
-using ImGuiNET;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Myra;
+using System;
+using System.Collections.Generic;
 
 namespace HammeredGame
 {
@@ -43,6 +42,7 @@ namespace HammeredGame
 
         // Music variables
         private List<SoundEffect> sfx = new List<SoundEffect>();
+
         private AudioManager audioManager;
 
         private ScreenManager manager;

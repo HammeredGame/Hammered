@@ -1,5 +1,4 @@
-﻿using FontStashSharp;
-using HammeredGame.Core;
+﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Myra.Graphics2D.UI;
 using System;
@@ -87,6 +86,5 @@ namespace HammeredGame.Game.Screens
                 ExitScreen(alsoUnloadContent: false);
             }
         }
-
     }
 }
