@@ -160,7 +160,7 @@ namespace HammeredGame.Graphics
                 gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
                 foreach (GridDebugDrawer gdd in scene.DebugGridCells)
                 {
-                    gdd.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix);
+                    gdd.Draw(gameTime, gpu, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix);
                 }
                 gpu.RasterizerState = currentRS;
             }
