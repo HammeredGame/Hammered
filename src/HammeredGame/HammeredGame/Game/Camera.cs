@@ -11,7 +11,7 @@ namespace HammeredGame.Game
 {
     public class Camera : IImGui
     {
-        public const float FAR_PLANE = 500;
+        public const float FAR_PLANE = 1000;
         public Vector3 Position, Target;                 // Camera position and target
         public Matrix ViewMatrix, ProjMatrix, ViewProjMatrix;        // View Matrix, Projection Matrix
         public Vector3 Up;                          // Vector that points up
