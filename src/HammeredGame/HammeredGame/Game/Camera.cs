@@ -136,7 +136,7 @@ namespace HammeredGame.Game
         /// <param name="newTarget"></param>
         public void UpdatePositionTarget(Vector3 newPosition, Vector3 newTarget)
         {
-            Position = (newPosition - this.Position) / 10.0f + this.Position;
+            Position = Vector3.Lerp(this.Position, newPosition, 0.1f);
             Target = (newTarget - this.Target) / 10.0f + this.Target;
             ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
@@ -148,7 +148,7 @@ namespace HammeredGame.Game
         /// </summary>
         public void UpdateCamera(bool screenHasFocus)
         {
-            if (Mode == CameraMode.Follow && screenHasFocus)
+            if (Mode == CameraMode.Follow && followTarget != null && screenHasFocus)
             {
                 // In the case of follow mode, we modify the 2D vector that is multiplied onto the
                 // base camera offset. This controls the 4 isometric directions that the camera can take.
@@ -198,7 +198,7 @@ namespace HammeredGame.Game
                 ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
 
                 UpdatePositionTarget(StaticPositions[currentCameraPosIndex], Vector3.Zero);
-            } else {
+            } else if (followTarget != null) {
                 // In paused mode, make the camera really up close. We use const values here and
                 // don't update the camera fields. This way we can reset to the previous values easily.
                 const float tempFollowDistance = 23f;
