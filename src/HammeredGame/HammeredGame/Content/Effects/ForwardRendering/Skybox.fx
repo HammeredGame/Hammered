@@ -125,7 +125,7 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
 
     // Add sunlight if the angle is near the sunlight angle
     float angleToSun = acos(dot(normalize(input.TextureCoordinate), normalize(SunLightDirection)));
-    output.Color += SunLightColor * SunLightIntensity * (0.02 / angleToSun);
+    output.Color += SunLightColor * clamp(SunLightIntensity * (0.02 / angleToSun), 0.0, 20.0);
 
     // Depth is just really far away (max value)
     output.Depth = float4(1.0, 1.0, 1.0, 1.0);
