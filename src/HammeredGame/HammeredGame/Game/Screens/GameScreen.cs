@@ -183,7 +183,7 @@ namespace HammeredGame.Game.Screens
                 ScreenManager.AddScreen(pauseScreen);
             }
 
-            currentScene.Update(gameTime, isPaused);
+            currentScene.Update(gameTime, HasFocus, isPaused);
         }
 
         /// <summary>
