@@ -1,4 +1,6 @@
-﻿using HammeredGame.Game;
+﻿using BEPUphysics.OtherSpaceStages;
+using HammeredGame.Game;
+using HammeredGame.Game.GameObjects.EnvironmentObjects;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -113,9 +115,21 @@ namespace HammeredGame.Graphics
             gpu.SetRenderTargets(diffuseTarget, depthTarget);
             Set3DStates();
 
-            // Render all the scene objects
+            // Render all the scene objects except for Skybox, which is to be rendered last with a
+            // different cull mode
+            SkyboxObject deferredSkybox = null;
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
+                // The skybox needs to be rendered last (otherwise it'll draw so many useless pixels
+                // across the screen, that would be overwritten by other closer objects). It also
+                // needs a specific cull-mode since we will be rendering the back face and not the
+                // front face, so we'll defer it to later.
+                if (gameObject is SkyboxObject sky)
+                {
+                    deferredSkybox = sky;
+                    continue;
+                }
+
                 // TODO: move these parameter-setting into GameObject's Draw() so everything is in one place
                 gameObject.Effect.Parameters["SunDepthTexture"]?.SetValue(lightDepthTarget);
                 gameObject.Effect.Parameters["SunView"]?.SetValue(sunView);
@@ -123,6 +137,16 @@ namespace HammeredGame.Graphics
                 gameObject.Effect.Parameters["ShadowMapDepthBias"]?.SetValue(shadowMapDepthBias);
                 gameObject.Effect.Parameters["ShadowMapNormalOffset"]?.SetValue(shadowMapNormalOffset);
                 gameObject.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
+            }
+
+            // Render the deferred skybox if there is one
+            if (deferredSkybox != null)
+            {
+                // The skybox is essentially a gigantic box that we're viewing from inside. Because
+                // of this, we need to make sure that we're culling not the back faces, but the
+                // front faces.
+                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.CullClockwiseFace };
+                deferredSkybox.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
             }
 
             if (scene.DrawDebugObjects)

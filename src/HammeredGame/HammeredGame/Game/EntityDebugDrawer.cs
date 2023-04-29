@@ -45,9 +45,12 @@ namespace HammeredGame.Game
             boneTransforms = new Matrix[model.Bones.Count];
             foreach (ModelMesh mesh in model.Meshes)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (Effect effect in mesh.Effects)
                 {
-                    effect.EnableDefaultLighting();
+                    if (effect is BasicEffect basic)
+                    {
+                        basic.EnableDefaultLighting();
+                    }
                 }
             }
         }

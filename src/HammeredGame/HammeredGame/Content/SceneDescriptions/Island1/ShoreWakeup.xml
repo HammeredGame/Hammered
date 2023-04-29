@@ -343,6 +343,12 @@
     <texture type="texture2d">sea_texture</texture>
     <position>0.000 -6.000 0.000</position>
     <rotation>0.000 0.882 0.000 0.472</rotation>
-    <scale>80.000</scale>
+    <scale>200.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
+    <model>cube</model>
+    <position>0 0 0</position>
+    <rotation>0 0 0 1</rotation>
+    <scale>1.0</scale>
   </object>
 </scene>
