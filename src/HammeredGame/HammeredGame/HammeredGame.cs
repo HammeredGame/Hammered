@@ -167,8 +167,11 @@ namespace HammeredGame
         /// <param name="gameTime"></param>
         protected override void Update(GameTime gameTime)
         {
+            // Update global things
             gameServices.GetService<Input>().Update();
             gameServices.GetService<ScriptUtils>().Update(gameTime);
+
+            // Call update on the various active screens to do their thing
             manager.Update(gameTime);
 
             base.Update(gameTime);
@@ -211,10 +214,8 @@ namespace HammeredGame
 
 #if DEBUG
             // == Draw debug UI on top of all rendered base.
-            // Code adapted from ImMonoGame example code.
-            // Begin by calling BeforeLayout
-
-            imGuiRenderer.BeforeLayout(gameTime);
+            // Begin by calling BeforeLayout, which handles input
+            imGuiRenderer.BeforeLayout(gameTime, this.IsActive);
 
             // Draw the main developer UI
             UI();
