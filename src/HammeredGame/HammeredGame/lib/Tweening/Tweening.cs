@@ -197,8 +197,8 @@ namespace Pleasing
 
         public TweenableProperty<T> AddProperty<T>(object target, string propertyName, LerpFunction<T> lerpFunction)
         {
-            var properties = target.GetType().GetProperties();
-            var fields = target.GetType().GetFields();
+            var properties = target.GetType().GetProperties(BindingFlags.NonPublic | BindingFlags.Instance);
+            var fields = target.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
 
             var property = properties.FirstOrDefault(x => x.Name == propertyName);
             if (property != null)
