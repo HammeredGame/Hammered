@@ -23,6 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
+// Define MONOGAME because this library needs it for it to believe we are using MonoGame
+#if !MONOGAME
+    #define MONOGAME
+#endif
+
 #if MONOGAME
 using Microsoft.Xna.Framework;
 #endif
@@ -339,7 +345,7 @@ namespace Pleasing
                 }
             }
         }
-#else
+#endif
         public void Update(float deltaTime)
         {
             if (AdaptiveDuration)
@@ -391,7 +397,6 @@ namespace Pleasing
                 }
             }
         }
-#endif
     }
 
     public interface ITweenableProperty
