@@ -82,6 +82,18 @@
 /processorParam:Quality=Best
 /build:Audio/lohi_whoosh.wav
 
+#begin Audio/new_laser.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/new_laser.wav
+
+#begin Audio/new_step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/new_step.wav
+
 #begin Audio/rock_water.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -99,6 +111,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/step.wav
+
+#begin Audio/stereo_step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/stereo_step.wav
 
 #begin Audio/tree_fall.wav
 /importer:WavImporter
