@@ -188,7 +188,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         {
             this.SetLaserDynamicScale(scale);
             //(this.Entity as Box).Length *= this.laserScale / this.laserDefaultScale;
-            this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, (this.Entity as Box).HalfLength, 0);
+            this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, 0, (this.Entity as Box).HalfLength);
             this.laserDefaultScale = scale;
             this.laserDefaultLength = (this.Entity as Box).Length;
         }
