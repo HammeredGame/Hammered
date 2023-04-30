@@ -120,8 +120,6 @@ namespace HammeredGame.Game.Screens
             };
             var controlPrompts = new HorizontalStackPanel
             {
-                // Place prompts at the bottom of the containing Panel (which is the whole screen)
-                VerticalAlignment = VerticalAlignment.Bottom,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 // Align the left edge with the same padding as menu above, and have a medium
                 // padding on the bottom side
@@ -147,7 +145,8 @@ namespace HammeredGame.Game.Screens
                 }
             };
 
-            // This is the main item stack for the menu, containing the heading and the menu itself
+            // This is the main item stack for the menu, containing the heading, the item list, and
+            // some other things at the bottom.
             menuContainer = new VerticalStackPanel
             {
                 // It'll span the whole height
@@ -158,20 +157,18 @@ namespace HammeredGame.Game.Screens
                 // clip and don't show them outside bounds
                 ClipToBounds = true
             };
+            // Set up proportions so that the second item (the menu item list) will stretch and fill
+            // available space, while others will use the least amount of space it can.
+            menuContainer.Proportions.Add(new Proportion());
+            menuContainer.Proportions.Add(new Proportion { Type = ProportionType.Fill });
             menuContainer.Widgets.Add(label1);
             menuContainer.Widgets.Add(mainMenu);
+            menuContainer.Widgets.Add(controlPrompts);
 
-            // This is the root node itself, spanning the whole screen (by default), which will
-            // contain the menu item stack as well as other arbitrarily positioned things. The
-            // behaviour of Panel is a bit of a mystery, but I think it adds widgets from the top
-            // left corner as long as it doesn't have an explicit Vertical/HorizontalAlignment, or a
-            // Top/Left positioning.
-            var MenuPanel = new Panel();
-            MenuPanel.Widgets.Add(menuContainer);
-            MenuPanel.Widgets.Add(controlPrompts);
-
-            Desktop = new();
-            Desktop.Root = MenuPanel;
+            Desktop = new()
+            {
+                Root = menuContainer
+            };
 
             // Make main menu permanently hold keyboard focus as long as it's the active screen, by
             // canceling the lose-keyboard-focus event when necessary. This doesn't seem to be
