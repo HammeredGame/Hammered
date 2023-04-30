@@ -10,8 +10,7 @@ using BEPUphysics.PositionUpdating;
 using BEPUphysics.Entities;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using HammeredGame.Game.PathPlanning.Grid;
-//using HammeredGame.Game.PathPlanning.TurnSmoothing;
-using BEPUutilities;
+using HammeredGame.Game.PathPlanning.TurnSmoothing;
 using Vector3 = Microsoft.Xna.Framework.Vector3; // How is it that this ambigouity results in an error after adding comments???
 using Quaternion = Microsoft.Xna.Framework.Quaternion; // How is it that this ambigouity results in an error after adding comments???
 using Microsoft.Xna.Framework.Audio;
@@ -186,13 +185,18 @@ namespace HammeredGame.Game.GameObjects
                         //// Follow the path in line segments. Stable, but no curvature.
                         //this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
 
-                        // VERY unstable natural curves!
-                        // The problem is that if the player does not stand still to catch the hammer,
-                        // it will take a significant amount of time to converge towards the final point!!!
-                        var temp = this.Entity.LinearVelocity;
-                        temp.Normalize(); temp += 0.2f * currentToNextPosition; temp.Normalize();
-                        temp *= hammerSpeed;
-                        this.Entity.LinearVelocity = temp;
+                        //// VERY unstable natural curves!
+                        //// The problem is that if the player does not stand still to catch the hammer,
+                        //// it will take a significant amount of time to converge towards the final point!!!
+                        //var temp = this.Entity.LinearVelocity;
+                        //temp.Normalize(); temp += 0.2f * currentToNextPosition; temp.Normalize();
+                        //temp *= hammerSpeed;
+                        //this.Entity.LinearVelocity = temp;
+                        if (route.Count() > 0)
+                            this.UpdateQuadraticBezierPosition();
+                            //this.UpdateQuadraticBezierVelocity();
+                        else
+                            this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
 
 
                     }
@@ -200,6 +204,8 @@ namespace HammeredGame.Game.GameObjects
                     else if (route.Count() > 0)
                     {
                         this.nextRoutePosition = route.Peek(); route.Dequeue();
+                        if (route.Count() > 1)
+                            this.UpdateQuadraticBezierCurve();
                     }
 
                     //// Update position
@@ -420,7 +426,57 @@ namespace HammeredGame.Game.GameObjects
             /// 2) the full path is computed in the background, without altering the game experience.
             /// </remarks>
 
+            await aStarPathComputationTask;
+            // QUADRATIC BEZIER
+            UpdateQuadraticBezierCurve();
+
         }
 
+        // QUADRATIC BEZIER CURVE SECTION for turn smoothing!
+
+        // Variables of the "Hammer" required exclusively for the Hermite spline turn smoothing section.
+        float t = 0;
+        private BEPUutilities.Vector3 p0, p1, p2, pc;
+        private double CurveLength; // The Bezier curve length is approximated as the sum of the two linear segments it is comprised of.
+
+        private void UpdateQuadraticBezierCurve()
+        {
+            t = 0.0f;
+            p0 = this.Entity.Position;
+            pc = this.nextRoutePosition;
+            p2 = this.route.Peek();
+            p1 = BezierQuadraticSpline.MiddleControlPointComputation(p0, pc, p2);
+            CurveLength = (pc - p0).Length() + (p2 - pc).Length();
+        }
+
+        private void UpdateQuadraticBezierPosition()
+        {
+            t += 0.015f;
+            var previousPosition = this.Entity.Position;
+            this.Entity.Position = BezierQuadraticSpline.QuadraticBezierPosition(p0, p1, p2, t);
+            var temp = this.Entity.Position - previousPosition; temp.Normalize(); temp *= hammerSpeed;
+            this.Entity.LinearVelocity = this.Entity.Position - previousPosition; // Approximating velocity with (forward) discrete differences.
+        }
+
+        private void UpdateQuadraticBezierVelocity()
+        {
+            // The following scheme is WRONG.
+            // Two more thought came to mind:
+            // 1) Try to use inner product sign. Isn't generally applicable...
+            // Something along the lines of: Δx = v * Δtime <=> t * Curve length = v * Δtime <=> t = (v * Δtime) / curve length
+            // I couldn't make it work.
+            var distanceOfCurrentFromEnd = (p2 - this.Entity.Position).Length();
+            var distanceOfCenterFromEnd = (p2 - pc).Length();
+            if (distanceOfCurrentFromEnd > distanceOfCenterFromEnd) // The point has not reached the center point (t=0.5) yet.
+            {
+                t = (float)((1 - (pc - this.Entity.Position).Length() + distanceOfCenterFromEnd) / CurveLength);
+            }
+            else
+            {
+                t = (float)(0.5 + distanceOfCurrentFromEnd / CurveLength);
+            }
+
+            this.Entity.LinearVelocity = BezierQuadraticSpline.QuadraticBezierVelocity(p0, p1, p2, t);
+        }
     }
 }
