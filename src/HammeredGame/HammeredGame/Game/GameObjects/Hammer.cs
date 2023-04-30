@@ -198,16 +198,21 @@ namespace HammeredGame.Game.GameObjects
                         //// Follow the path in line segments. Stable, but no curvature.
                         //this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
 
-                        // VERY unstable natural curves!
-                        // The problem is that if the player does not stand still to catch the hammer,
-                        // it will take a significant amount of time to converge towards the final point!!!
-                        var temp = this.Entity.LinearVelocity;
-                        temp.Normalize(); temp += 0.2f * currentToNextPosition; temp.Normalize();
-                        temp *= hammerSpeed;
-                        this.Entity.LinearVelocity = temp;
+                        //// VERY unstable natural curves!
+                        //// The problem is that if the player does not stand still to catch the hammer,
+                        //// it will take a significant amount of time to converge towards the final point!!!
+                        //var temp = this.Entity.LinearVelocity;
+                        //temp.Normalize(); temp += 0.2f * currentToNextPosition; temp.Normalize();
+                        //temp *= hammerSpeed;
+                        //this.Entity.LinearVelocity = temp;
+                        if (route.Count() > 0)
+                            this.UpdateQuadraticBezierPosition();
+                            //this.UpdateQuadraticBezierVelocity();
+                        else
+                            this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
 
                         //// Hermite curves smoothing. Currently not working!
-                        //this.UpdateHammerPositionHermite();
+                        //this.UpdateHammerPositionHermite(gameTime);
                         //this.UpdateHammerVelocityHermite(gameTime);
 
 
@@ -216,8 +221,9 @@ namespace HammeredGame.Game.GameObjects
                     else if (route.Count() > 0)
                     {
                         this.nextRoutePosition = route.Peek(); route.Dequeue();
-                        //if (route.Count() > 1)
-                        //    this.UpdateHermiteCoefficients();
+                        if (route.Count() > 1)
+                            //this.UpdateHermiteCoefficients();
+                            this.UpdateQuadraticBezierCurve();
                     }
 
                     //// Update position
@@ -433,6 +439,12 @@ namespace HammeredGame.Game.GameObjects
             /// </remarks>
 
 
+            // QUADRATIC BEZIER
+            await aStarPathComputationTask;
+            UpdateQuadraticBezierCurve();
+
+
+
             // HERMITEAN VELOCITY...INCOMPLETE!
             //// Initialize velocity of the hammer (required for Hermitean Velocity)
             //var temp = this.nextRoutePosition - this.Entity.Position;
@@ -450,10 +462,63 @@ namespace HammeredGame.Game.GameObjects
         }
 
 
+        // QUADRATIC BEZIER CURVE SECTION for turn smoothing!
+
+        // Variables of the "Hammer" required exclusively for the Hermite spline turn smoothing section.
+        private BEPUutilities.Vector3 p0, p1, p2, pc;
+        float t = 0;
+        private double CurveLength; // The Bezier curve length is approximated as the sum of the two linear segments it is comprised of.
+
+        private void UpdateQuadraticBezierCurve()
+        {
+            t = 0.0f;
+            p0 = this.Entity.Position;
+            pc = this.nextRoutePosition;
+            p2 = this.route.Peek();
+            p1 = BezierQuadraticSpline.MiddleControlPointComputation(p0, pc, p2);
+            CurveLength = (pc - p0).Length() + (p2 - pc).Length();
+        }
+
+        private void UpdateQuadraticBezierPosition()
+        {
+            t += 0.015f;
+            var previousPosition = this.Entity.Position;
+            this.Entity.Position = BezierQuadraticSpline.QuadraticBezierPosition(p0, p1, p2, t);
+            var temp = this.Entity.Position - previousPosition; temp.Normalize(); temp *= hammerSpeed;
+            this.Entity.LinearVelocity = this.Entity.Position - previousPosition; // Approximating velocity with (forward) discrete differences.
+        }
+
+        private void UpdateQuadraticBezierVelocity()
+        {
+            // The following scheme is WRONG.
+            // Two more thought came to mind:
+            // 1) Try to use inner product sign. Isn't generally applicable...
+            // Something along the lines of: Δx = v * Δtime <=> t * Curve length = v * Δtime <=> t = (v * Δtime) / curve length
+            // I couldn't make it work.
+            var distanceOfCurrentFromEnd = (p2 - this.Entity.Position).Length();
+            var distanceOfCenterFromEnd = (p2 - pc).Length();
+            if (distanceOfCurrentFromEnd > distanceOfCenterFromEnd) // The point has not reached the center point (t=0.5) yet.
+            {
+                t = (float) (( 1 - (pc - this.Entity.Position).Length() + distanceOfCenterFromEnd ) / CurveLength);
+            }
+            else
+            {
+                t = (float)(0.5 + distanceOfCurrentFromEnd / CurveLength);
+            }
+
+            this.Entity.LinearVelocity = BezierQuadraticSpline.QuadraticBezierVelocity(p0, p1, p2, t);
+
+        }
+
+
+
+
+
 
 
         // HERMITE CUBIC SPLINE SECTION
         // STATUS: NOT WORKING...
+        // STATUS: QUADRATIC BEZIER CURVES ARE USED INSTEAD (see above code section)!!!
         // The reason for (attempting to) incorporate Hermitean splines is for smoothing any turns in the path.
 
         /* Hermite Cubic Spline := (2(p0 - p1) + p0'+ p1')t^3 + (- 3(p0 - p1) - 2p0' - p1')t^2 + p0't + p0
@@ -477,12 +542,12 @@ namespace HammeredGame.Game.GameObjects
          * What is difficult to update in MonoGame is the "t" variable, which parameterizes the curve.
         */
 
-        // Variables of the "Hammer" required exclusively for the turn smoothing section.
+        // Variables of the "Hammer" required exclusively for the Hermite spline turn smoothing section.
         private BEPUutilities.Vector3[] HermitePositionCoefficients = new BEPUutilities.Vector3[4];
         private BEPUutilities.Vector3[] HermiteVelocityCoefficients = new BEPUutilities.Vector3[3];
-        private float t = 0;
+        //private float t = 0;
         //private BEPUutilities.Vector3 CurveStart;
-        private double CurveLength; // The hermitean curve length is approximated as the linear segment connecting the two points.
+        // double CurveLength; // The hermitean curve length is approximated as the linear segment connecting the two points.
 
 
         private void UpdateHermiteCoefficients()
@@ -500,7 +565,7 @@ namespace HammeredGame.Game.GameObjects
             this.HermitePositionCoefficients = HermiteCubicSpline.HermiteCubicSplinePositionCoefficients(p0, p1, m0, m1);
             this.HermiteVelocityCoefficients = HermiteCubicSpline.HermiteCubicSplineVelocityCoefficients(p0, p1, m0, m1);
             t = 0.0f; // Reset t = 0 so as to consider the current position be the start of the new Hermitean spline.
-            CurveLength = (this.nextRoutePosition - this.Entity.Position).Length() ;
+            CurveLength = (this.nextRoutePosition - this.Entity.Position).Length();
         }
 
         private void UpdateHammerPositionHermite(GameTime gameTime)
@@ -522,7 +587,7 @@ namespace HammeredGame.Game.GameObjects
         {
             // THIS COMPUTATION IS PROBLEMATIC!
             // There may be multiple points on the Hermite curve having the same distance from the endpoint!
-            t = (float) (1 - (this.nextRoutePosition - this.Entity.Position).Length() / CurveLength);
+            t = (float)(1 - (this.nextRoutePosition - this.Entity.Position).Length() / CurveLength);
             // t += (float)gameTime.ElapsedGameTime.TotalSeconds;
             var ComputedHermiteVelocity = HermiteCubicSpline.HermiteCubicSplineVelocity(
                 this.HermiteVelocityCoefficients[0], this.HermiteVelocityCoefficients[1],
