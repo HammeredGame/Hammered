@@ -10,10 +10,12 @@ using BEPUphysics.PositionUpdating;
 using BEPUphysics.Entities;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using HammeredGame.Game.PathPlanning.Grid;
+using HammeredGame.Game.PathPlanning.TurnSmoothing;
 using BEPUutilities;
 using Vector3 = Microsoft.Xna.Framework.Vector3; // How is it that this ambigouity results in an error after adding comments???
 using Quaternion = Microsoft.Xna.Framework.Quaternion; // How is it that this ambigouity results in an error after adding comments???
 using Microsoft.Xna.Framework.Audio;
+
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -116,18 +118,6 @@ namespace HammeredGame.Game.GameObjects
                 // Initialize the collision handlers based on the associated collision events
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
             }
-
-            //// Adding the grid reference to the hammer.
-            ///// <remarks>
-            ///// TODO:   Storing the grid into the <c>services</c> object is NOT an information-secure solution!
-            /////         Find a better way to insert a parameter which will be used to instantiate <c>grid</c>.
-            /////         <seealso cref="SceneDescriptionIO.ParseFromXML(string, GameServices)"/>
-            /////         IMPACT ASSESSMENT LEVEL: 2 (critical)
-            ///// </remarks>
-            //this.grid = services.GetService<UniformGrid>();
-            //services.RemoveService<UniformGrid>(); // Removing the "UniformGrid" service so that as little as classes possible can access it.
-            /// Update: The grid reference is passed to the hammer via the <see cref="Scene.OnSceneStart"/> ("protected" function)
-            /// <seealso cref="Hammer.SetSceneUniformGrid(UniformGrid)"/>
         }
 
         // Collision Handling Event for any initial collisions detected
@@ -191,18 +181,20 @@ namespace HammeredGame.Game.GameObjects
                     float distanceBetweenCurrentAndNext = currentToNextPosition.Length();
                     currentToNextPosition.Normalize();
                     // If the two points are too far apart
-                    if (distanceBetweenCurrentAndNext > 1)
+                    if (distanceBetweenCurrentAndNext > 1.5) // Hard to find the "magic value" to achieve both natural turn smoothing and stability...
                     {
-                        // Follow the path in line segments.
+                        //// Follow the path in line segments. Stable, but no curvature.
                         //this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
 
                         // VERY unstable natural curves!
                         // The problem is that if the player does not stand still to catch the hammer,
                         // it will take a significant amount of time to converge towards the final point!!!
                         var temp = this.Entity.LinearVelocity;
-                        temp.Normalize();  temp += 0.2f * currentToNextPosition; temp.Normalize();
+                        temp.Normalize(); temp += 0.2f * currentToNextPosition; temp.Normalize();
                         temp *= hammerSpeed;
                         this.Entity.LinearVelocity = temp;
+
+
                     }
                     // If the hammer hasn't reached its destination, travel towards the next position of the route.
                     else if (route.Count() > 0)
@@ -354,7 +346,7 @@ namespace HammeredGame.Game.GameObjects
 
         }
 
-        private void ComputeShortestPath()
+        private async void ComputeShortestPath()
         {
             // Precautiously empty the previous route.
             // It should be empty by the time it finishes its previous route, but just in case.
@@ -369,7 +361,10 @@ namespace HammeredGame.Game.GameObjects
             Vector3[] straightLineRoute; bool straightPathAchievable = this.StraightLinePath(out straightLineRoute);
             /// <remarks> According to a few benchmarks, this takes an insignificat amount of time (a couple dozen ms at most).
             /// Good to have it.</remarks>
-
+            // Smoothen the path.
+            // For a linear path, this is equivalent to reducing the number of positions tracked.
+            // As an additional benefit, this greatly reduces the "wiggly" motion of the hammer in the naive turn smoothing.
+            straightLineRoute = this.grid.RoughShortestPathSmoothing(straightLineRoute);
             // Casting the trajectory into the appropriate (physics engine) type.
             for (int i = 0; i < straightLineRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(straightLineRoute[i])); }
             // Initialize the first position in 3D space to visit.
@@ -380,9 +375,10 @@ namespace HammeredGame.Game.GameObjects
             // Currently, "raw" A* has been implemented.
             // Programming note: as of the time of writing (23/04/2023), everything inside the "Run" is thread-safe.
             // As such, no errors should arise.
+            Task aStarPathComputationTask = Task.CompletedTask;
             if (!straightPathAchievable)
             {
-                Task.Run(() =>
+                aStarPathComputationTask = Task.Run(() =>
                 {
                     Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
                     for (int i = 0; i < aStarRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(aStarRoute[i])); }
@@ -416,31 +412,8 @@ namespace HammeredGame.Game.GameObjects
             /// 1) the game is responsive(the hammer has started some path instantly)
             /// 2) the full path is computed in the background, without altering the game experience.
             /// </remarks>
+
         }
 
-        //private void smoothTurn(Vector3 start, Vector3 destination)
-        //{
-        //    /*
-        //     * STEP 1) Move the two points such that their median are the origin of the frame.
-        //     * STEP 2) Rotate the two points around the axis perpendicular to the one the two create when connected
-        //     * STEP 3) Do the computations
-        //     * STEP 4) Reverse steps 1 & 2
-        //     * 
-        //     * A good approach should create a frame dependent on the two points (which define a single vector)
-        //     * and the orientation of the hammer (whose different with its projection on the vector of the two points
-        //     * will construct the second vector required to form a plane).
-        //    */
-
-        //    Vector3 newFrameOrigin = (start + destination) / 2;
-        //    start -= newFrameOrigin; destination -= newFrameOrigin;
-        //    Vector3 connectingVector = destination - start, rotationAxis = Vector3.Cross(start, destination);
-        //    // θ = arccos(a.b / ||a|| ||b||)
-        //    double rotationAngleTheta = Math.Acos(Vector3.Dot(connectingVector, rotationAxis) / (connectingVector.Length() * rotationAxis.Length()));
-        //    Matrix rotationMatrix = Matrix.CreateFromAxisAngle(rotationAxis, rotationAngleTheta),
-        //            inverseRotation = Matrix.CreateFromAxisAngle(rotationAxis, -rotationAngleTheta);
-
-            
-
-        //}
     }
 }
