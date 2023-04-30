@@ -168,7 +168,18 @@ namespace HammeredGame
         protected override void Update(GameTime gameTime)
         {
             // Update global things
-            gameServices.GetService<Input>().Update();
+
+            // Input should only be updated if the window is focused. Keyboard events are usually
+            // blocked by the OS and don't fall through from other windows, but click events do.
+            // Without this check, clicking on another window on top of the game can register clicks
+            // in the game, which is annoying.
+            //
+            // TODO: should this be done for the other Update() things too?
+            if (this.IsActive)
+            {
+                gameServices.GetService<Input>().Update();
+            }
+
             gameServices.GetService<ScriptUtils>().Update(gameTime);
 
             // Call update on the various active screens to do their thing
