@@ -72,7 +72,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 tree_sfx = Services.GetService<List<SoundEffect>>();
 
-                fallenLog = services.GetService<ContentManager>().Load<Model>("trunk");
+                fallenLog = services.GetService<ContentManager>().Load<Model>("Meshes/Trees/trunk");
 
                 if (this.Entity is not Box)
                 {
