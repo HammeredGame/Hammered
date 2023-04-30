@@ -5,6 +5,14 @@ using System.Runtime.CompilerServices;
 
 namespace HammeredGame.Core
 {
+    public enum InputType
+    {
+        KeyboardMouse,
+        Xbox,
+        PlayStation,
+        Switch
+    }
+
     /// <summary>
     /// Adapted from AlienScribble Making 3D Games with MonoGame playlist:
     /// https://www.youtube.com/playlist?list=PLG6XrMFqMJUBOPVTJrGJnIDDHHF1HTETc
@@ -62,12 +70,17 @@ namespace HammeredGame.Core
         private readonly float screenScaleX;
 
         private readonly float screenScaleY;
+        public InputType CurrentlyActiveInput { get; private set; }
+
+        public PromptsAssetManager Prompts { get; private set; }
 
         public Input(PresentationParameters pp, RenderTarget2D target)
         {
             // Set screen space variables according to the presentation parameters and render target
             screenScaleX = 1.0f / (pp.BackBufferWidth / (float)target.Width);
             screenScaleY = 1.0f / (pp.BackBufferHeight / (float)target.Height);
+
+            Prompts = new PromptsAssetManager(this);
         }
 
         // <----- Quick Input functions for convenience ---->
@@ -171,6 +184,26 @@ namespace HammeredGame.Core
             if (GamePadState.Buttons.Start == ButtonState.Pressed) { START_DOWN = true; if (GamePadState.Buttons.Start == ButtonState.Released) START_PRESS = true; }
             if (GamePadState.Buttons.LeftStick == ButtonState.Pressed) { LEFTSTICK_DOWN = true; if (GamePadState.Buttons.LeftStick == ButtonState.Released) LEFTSTICK_PRESS = true; }
             if (GamePadState.Buttons.RightStick == ButtonState.Pressed) { RIGHTSTICK_DOWN = true; if (GamePadState.Buttons.RightStick == ButtonState.Released) RIGHSTICK_PRESS = true; }
+
+            // Update the currently active input type
+            if (GamePadState.IsConnected && GamePad.GetCapabilities(0).DisplayName.Contains("Xbox")) {
+                CurrentlyActiveInput = InputType.Xbox;
+            }
+            //else if (GamePadState.IsConnected && GamePad.GetCapabilities(0).DisplayName.Contains("Nintendo"))
+            //{
+            //    CurrentlyActiveInput = InputType.Switch;
+            //}
+            //else if (GamePadState.IsConnected && GamePad.GetCapabilities(0).DisplayName.Contains("PlayStation"))
+            //{
+            //    CurrentlyActiveInput = InputType.PlayStation;
+            //}
+            else
+            {
+                CurrentlyActiveInput = InputType.KeyboardMouse;
+            }
+
+            // Update input prompts and make it load any new atlases if required
+            Prompts.Update();
         }
     }
 }

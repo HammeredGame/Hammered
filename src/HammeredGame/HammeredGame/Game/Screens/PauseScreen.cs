@@ -1,5 +1,4 @@
-﻿using FontStashSharp;
-using HammeredGame.Core;
+﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Myra.Graphics2D.UI;
 using System;
@@ -15,9 +14,9 @@ namespace HammeredGame.Game.Screens
     /// </summary>
     internal class PauseScreen : AbstractMenuScreen
     {
-
-        public Action RestartLevelFunc;
-        public Action QuitToTitleFunc;
+        public Action ContinueMethod;
+        public Action RestartMethod;
+        public Action QuitMethod;
 
         public override void LoadContent()
         {
@@ -31,7 +30,11 @@ namespace HammeredGame.Game.Screens
                 Id = "menuItemContinue",
             };
             // Keep screen contents loaded since the Pause Screen will be re-added again
-            menuItemContinue.Selected += (s, a) => ExitScreen(alsoUnloadContent: false);
+            menuItemContinue.Selected += (s, a) =>
+            {
+                ContinueMethod?.Invoke();
+                ExitScreen(alsoUnloadContent: false);
+            };
 
             MenuItem menuItemRestartLevel = new()
             {
@@ -40,7 +43,7 @@ namespace HammeredGame.Game.Screens
             };
             menuItemRestartLevel.Selected += (s, a) =>
             {
-                RestartLevelFunc?.Invoke();
+                RestartMethod?.Invoke();
                 // Keep screen contents loaded since the Pause Screen will be re-added again
                 ExitScreen(alsoUnloadContent: false);
             };
@@ -58,7 +61,7 @@ namespace HammeredGame.Game.Screens
             };
             menuItemQuitToTitle.Selected += (s, a) =>
             {
-                QuitToTitleFunc?.Invoke();
+                QuitMethod?.Invoke();
                 ExitScreen(alsoUnloadContent: true);
             };
 
@@ -79,9 +82,9 @@ namespace HammeredGame.Game.Screens
             // Back out of pause menu without unloading content
             if (UserAction.Pause.Pressed(input) || UserAction.Back.Pressed(input))
             {
+                ContinueMethod?.Invoke();
                 ExitScreen(alsoUnloadContent: false);
             }
         }
-
     }
 }

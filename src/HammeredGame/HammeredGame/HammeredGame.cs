@@ -1,15 +1,16 @@
+using BEPUutilities.Threading;
 using HammeredGame.Core;
-using HammeredGame.Game;
+using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using BEPUutilities.Threading;
-using System;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Myra;
-using ImGuiNET;
+using System;
+using System.Collections.Generic;
+using Pleasing;
 
 namespace HammeredGame
 {
@@ -40,8 +41,6 @@ namespace HammeredGame
 
         private readonly GameServices gameServices = new();
 
-        private Scene currentScene;
-
         // Music variables
         //private List<SoundEffect> sfx = new List<SoundEffect>();
         private AudioManager audioManager;
@@ -50,6 +49,7 @@ namespace HammeredGame
 
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
+
 
         public HammeredGame()
         {
@@ -153,6 +153,10 @@ namespace HammeredGame
         /// </summary>
         protected override void LoadContent()
         {
+            // Load assets related to input prompts
+            input.Prompts.LoadContent();
+
+            // Load assets related to shown screens
             manager.LoadContent();
         }
 
@@ -163,8 +167,24 @@ namespace HammeredGame
         /// <param name="gameTime"></param>
         protected override void Update(GameTime gameTime)
         {
-            gameServices.GetService<Input>().Update();
+            // Update global things
+
+            // Input should only be updated if the window is focused. Keyboard events are usually
+            // blocked by the OS and don't fall through from other windows, but click events do.
+            // Without this check, clicking on another window on top of the game can register clicks
+            // in the game, which is annoying.
+            if (this.IsActive)
+            {
+                gameServices.GetService<Input>().Update();
+            }
+
             gameServices.GetService<ScriptUtils>().Update(gameTime);
+
+            // Update any animations that are active (doing this before the ScreenManager update so
+            // that new values are used for it)
+            Tweening.Update(gameTime);
+
+            // Call update on the various active screens to do their thing
             manager.Update(gameTime);
             audioManager.Update(gameTime);
 
@@ -208,10 +228,8 @@ namespace HammeredGame
 
 #if DEBUG
             // == Draw debug UI on top of all rendered base.
-            // Code adapted from ImMonoGame example code.
-            // Begin by calling BeforeLayout
-
-            imGuiRenderer.BeforeLayout(gameTime);
+            // Begin by calling BeforeLayout, which handles input
+            imGuiRenderer.BeforeLayout(gameTime, this.IsActive);
 
             // Draw the main developer UI
             UI();
@@ -231,7 +249,7 @@ namespace HammeredGame
             // Show whether the gamepad is detected
             if (input.GamePadState.IsConnected)
             {
-                ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.0f, 1.0f, 1.0f), "Gamepad Connected");
+                ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.0f, 1.0f, 1.0f), "Gamepad Connected - " + GamePad.GetCapabilities(0).DisplayName);
             }
             float fr = ImGui.GetIO().Framerate;
             ImGui.Text($"{1000.0f / fr:F2} ms/frame ({fr:F1} FPS)");

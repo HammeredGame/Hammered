@@ -8,6 +8,8 @@ using BEPUphysics.PositionUpdating;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
+using HammeredGame.Game.Screens;
+using HammeredGame.Graphics;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -52,12 +54,22 @@ namespace HammeredGame.Game.GameObjects
         private Vector3 player_vel;
         private bool previously_moving = false;
 
+        public enum PlayerOnSurfaceState
+        {
+            OnGround,
+            OnTree,
+            OnRock
+        }
+
         // Last known ground position, used to reset player's position
         // if the player comes into contact with a water object
         private Vector3 lastGroundPosition;
 
+        // Variable to keep track of what surface the player is currently standing on
+        public PlayerOnSurfaceState StandingOn { get; set; }
+
+
         // TEMPORARY (FOR TESTING)
-        public bool OnTree = false;
         public bool ReachedGoal = false;
 
         private Camera activeCamera;
@@ -128,6 +140,7 @@ namespace HammeredGame.Game.GameObjects
 
             // Initial position should be on/over ground
             this.lastGroundPosition = this.Position;
+            this.StandingOn = PlayerOnSurfaceState.OnGround;
         }
 
         private void Events_ContactCreated(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair, BEPUphysics.CollisionTests.ContactData contact)
@@ -138,6 +151,7 @@ namespace HammeredGame.Game.GameObjects
             if (other.Tag is Water)
             {
                 this.Position = this.lastGroundPosition;
+                this.StandingOn = PlayerOnSurfaceState.OnGround;
             }
         }
 
@@ -146,6 +160,11 @@ namespace HammeredGame.Game.GameObjects
             // Make some checks to identify if the last ground position should be updated
             if (other.Tag is Ground)
             {
+                if (this.StandingOn != PlayerOnSurfaceState.OnGround)
+                {
+                    this.StandingOn = PlayerOnSurfaceState.OnGround;
+                }
+
                 // If the player is also touching water, then don't update ground position
                 foreach (var contactPair in sender.Pairs)
                 {
@@ -416,7 +435,7 @@ namespace HammeredGame.Game.GameObjects
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
         }
 
-        public override void Draw(Matrix view, Matrix projection)
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
         {
             // Animate mesh
             //Matrix[] transforms = new Matrix[this.Model.Bones.Count];
@@ -437,7 +456,7 @@ namespace HammeredGame.Game.GameObjects
 
             if (Visible)
             {
-                DrawModel(Model, view, projection, Texture);
+                DrawModel(gameTime, Model, view, projection, cameraPosition, Texture, lights);
             }
         }
     }

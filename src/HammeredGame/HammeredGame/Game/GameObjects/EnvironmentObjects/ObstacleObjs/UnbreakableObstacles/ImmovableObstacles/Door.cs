@@ -99,8 +99,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 {
                     var player = other.Tag as Player;
                     player.ReachedGoal = isGoal; // TEMPORARY
-                    this.Visible = false;
-                    this.ActiveSpace.Remove(sender.Entity);
+                    //this.Visible = false;
+                    //this.ActiveSpace.Remove(sender.Entity);
+                    this.OpenDoor();
                 }
 
             }
@@ -111,26 +112,25 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.keyFound = keyFound;
         }
 
-        public void RemoveFromSpace()
+        public void OpenDoor()
         {
-            this.Visible = false;
-            if (this.ActiveSpace.Entities.Contains(this.Entity))
+            if (this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
             {
+                this.Visible = false;
                 this.ActiveSpace.Remove(this.Entity);
-                Services.GetService<AudioManager>().Play3DSound("Audio/door_open", false, this.AudioEmitter, 1);
-                //pressSfx[5].Play();
-                
+                // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
+                //this.CurrentScene.UpdateSceneGrid(this, true);
             }
         }
 
-        public void AddToSpace()
+        public void CloseDoor()
         {
-            this.Visible = true;
             if (!this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
             {
+                this.Visible = true;
                 this.ActiveSpace.Add(this.Entity);
-                Services.GetService<AudioManager>().Play3DSound("Audio/door_close", false, this.AudioEmitter,1);
-                //pressSfx[6].Play();
+                // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
+                //this.CurrentScene.UpdateSceneGrid(this, false);
             }
         }
 
