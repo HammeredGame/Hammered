@@ -10,7 +10,7 @@ using BEPUphysics.PositionUpdating;
 using BEPUphysics.Entities;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using HammeredGame.Game.PathPlanning.Grid;
-using HammeredGame.Game.PathPlanning.TurnSmoothing;
+//using HammeredGame.Game.PathPlanning.TurnSmoothing;
 using BEPUutilities;
 using Vector3 = Microsoft.Xna.Framework.Vector3; // How is it that this ambigouity results in an error after adding comments???
 using Quaternion = Microsoft.Xna.Framework.Quaternion; // How is it that this ambigouity results in an error after adding comments???
