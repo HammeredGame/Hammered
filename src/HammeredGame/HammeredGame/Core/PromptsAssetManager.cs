@@ -70,6 +70,10 @@ namespace HammeredGame.Core
         /// Create an image (that you can set in any Myra UI's Image.Renderable property) for the
         /// controls associated with the specified UserAction, accounting for the currently active
         /// input type.
+        /// <para/>
+        /// This method only performs a lookup into the internal atlas store, and does not cause an
+        /// expensive IO load if the atlas is not found for the active input type. Instead, it will
+        /// fall back to returning the keyboard &amp; mouse version.
         /// </summary>
         /// <param name="action">The action to return the image for</param>
         /// <returns></returns>
