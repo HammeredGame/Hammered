@@ -111,18 +111,26 @@ namespace HammeredGame.Game.Screens
             float okPromptHeight = oneLineHeight * 0.4f;
             okPromptImage = new Image
             {
+                // Default with an image here, but it will be updated on every frame to account for
+                // the currently active input type
                 Renderable = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Confirm)[0],
+                // Make sure both Height and Width are set to avoid weird stretching
                 Height = (int)okPromptHeight,
                 Width = (int)okPromptHeight
             };
             var controlPrompts = new HorizontalStackPanel
             {
+                // Place prompts at the bottom of the containing Panel (which is the whole screen)
                 VerticalAlignment = VerticalAlignment.Bottom,
                 HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = new Thickness(100, (int)okPromptHeight * 2),
+                // Align the left edge with the same padding as menu above, and have a medium
+                // padding on the bottom side
+                Margin = new Thickness(100, 0, 0, (int)okPromptHeight * 2),
+                // Any higher than 0.4 feels like it steals too much attention from the menu
                 Opacity = 0.4f,
                 Widgets =
                 {
+                    // The labels use the same font size as the image so that it looks inline
                     new Label
                     {
                         Text = "Press",
@@ -139,7 +147,7 @@ namespace HammeredGame.Game.Screens
                 }
             };
 
-            // This is the main item stack for the menu
+            // This is the main item stack for the menu, containing the heading and the menu itself
             menuContainer = new VerticalStackPanel
             {
                 // It'll span the whole height
@@ -153,13 +161,15 @@ namespace HammeredGame.Game.Screens
             menuContainer.Widgets.Add(label1);
             menuContainer.Widgets.Add(mainMenu);
 
-            // This is the root node itself, which will contain the menu item stack as well as other
-            // arbitrarily positioned things
+            // This is the root node itself, spanning the whole screen (by default), which will
+            // contain the menu item stack as well as other arbitrarily positioned things. The
+            // behaviour of Panel is a bit of a mystery, but I think it adds widgets from the top
+            // left corner as long as it doesn't have an explicit Vertical/HorizontalAlignment, or a
+            // Top/Left positioning.
             var MenuPanel = new Panel();
             MenuPanel.Widgets.Add(menuContainer);
             MenuPanel.Widgets.Add(controlPrompts);
 
-            // Add it to the desktop
             Desktop = new();
             Desktop.Root = MenuPanel;
 
