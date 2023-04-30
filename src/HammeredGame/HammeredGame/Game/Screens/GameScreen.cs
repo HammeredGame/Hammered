@@ -129,8 +129,9 @@ namespace HammeredGame.Game.Screens
         /// <param name="sceneToLoad"></param>
         public void InitializeLevel(string sceneToLoad)
         {
-            // Clear all prompts shown on screen
+            // Clear all prompts and dialogues shown on screen and remaining in queue
             promptsScreen?.ClearAllPrompts();
+            dialoguesScreen?.ClearAllDialogues();
 
             currentSceneName = sceneToLoad;
             currentScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
