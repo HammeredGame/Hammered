@@ -11,14 +11,14 @@ namespace HammeredGame.Core
 
         readonly string[] soundNames =
         {
-            "Audio/single_step",
+            "Audio/stereo_step",
             "Audio/hammer_drop",
             "Audio/lohi_whoosh",
             "Audio/tree_fall",
             "Audio/ding",
             "Audio/door_close",
             "Audio/door_open",
-            "Audio/laser",
+            "Audio/new_laser",
         };
 
         //public AudioListener Listener

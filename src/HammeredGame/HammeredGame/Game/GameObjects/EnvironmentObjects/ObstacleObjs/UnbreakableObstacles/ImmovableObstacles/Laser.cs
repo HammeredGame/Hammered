@@ -72,6 +72,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         // Dynamic variables
         private LaserState laserState;
         private float laserScale;
+        
+        //timedelay for laser looping
+        TimeSpan timeDelay = TimeSpan.Zero;
 
         public Laser(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -99,7 +102,20 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.AudioEmitter.Position = this.Position;
             
             
-            //Services.GetService<AudioManager>().Play3DSound("Audio/laser", true, this.AudioEmitter, laserScale/10);
+            //Services.GetService<AudioManager>().Play3DSound("Audio/new_laser", true, this.AudioEmitter, laserScale/10);
+            
+        }
+        
+        public override void Update(GameTime gameTime, bool screenHasFocus)
+        {
+            double time = gameTime.TotalGameTime.TotalSeconds;
+            timeDelay -= gameTime.ElapsedGameTime;
+            if (timeDelay < TimeSpan.Zero)
+            {
+                Services.GetService<AudioManager>().Play3DSound("Audio/new_laser", false, this.AudioEmitter, laserScale/12);
+                timeDelay += TimeSpan.FromSeconds(2f);
+            }
+            
             
         }
 

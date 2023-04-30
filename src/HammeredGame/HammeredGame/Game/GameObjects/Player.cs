@@ -64,9 +64,7 @@ namespace HammeredGame.Game.GameObjects
 
         private Animations animations;
 
-        //private List<SoundEffect> player_sfx = new List<SoundEffect>();
-        //private AudioListener listener;
-        //private AudioEmitter emitter;
+        TimeSpan timeDelay = TimeSpan.Zero;
 
         public event EventHandler OnHammerRetrieved;
 
@@ -287,6 +285,14 @@ namespace HammeredGame.Game.GameObjects
                 float angle = (float)Math.Atan2(player_vel.X, player_vel.Z);
                 this.Entity.Orientation = BEPUutilities.Quaternion.Slerp(this.Entity.Orientation, BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle), 0.25f);
 
+                double time = gameTime.TotalGameTime.TotalSeconds;
+                timeDelay -= gameTime.ElapsedGameTime;
+                if (timeDelay < TimeSpan.Zero)
+                {
+                    Services.GetService<AudioManager>().Play3DSound("Audio/stereo_step", false, this.AudioEmitter, 1);
+                    timeDelay += TimeSpan.FromSeconds(0.2f);
+                }
+                
                 if(!previously_moving)
                 {
                     // Start running animation when player starts moving
@@ -296,6 +302,7 @@ namespace HammeredGame.Game.GameObjects
                     //SoundEffectInstance step = player_sfx[0].CreateInstance();
                     //step.IsLooped = true;
                     //step.Play();
+                    
 
                 }
 
