@@ -212,8 +212,15 @@ namespace HammeredGame.Game.Screens
 
             Input input = GameServices.GetService<Input>();
 
-            // Update the UI based on input, handling any handlers
-            Desktop.UpdateInput();
+            // Register Myra inputs only if the main game is active. Ideally we'd do this
+            // conditional in HammeredGame's Update method (where we do the same for the game
+            // Input), but since it has to be done for each UI Desktop, we do it here and use the
+            // GameServices container to grab the main game instance.
+            if (GameServices.GetService<HammeredGame>().IsActive)
+            {
+                // Update the UI based on input, handling any handlers
+                Desktop.UpdateInput();
+            }
 
             VerticalStackPanel panel = Desktop.Root as VerticalStackPanel;
             VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
