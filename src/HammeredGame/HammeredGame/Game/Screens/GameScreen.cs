@@ -73,7 +73,7 @@ namespace HammeredGame.Game.Screens
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 0.1f;
-            //MediaPlayer.Play(bgMusic);
+            MediaPlayer.Play(bgMusic);
 
             SoundEffect.MasterVolume = 0.2f;
 

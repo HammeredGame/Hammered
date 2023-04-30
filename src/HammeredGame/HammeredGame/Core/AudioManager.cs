@@ -19,6 +19,8 @@ namespace HammeredGame.Core
             "Audio/door_close",
             "Audio/door_open",
             "Audio/new_laser",
+            "Audio/rock_water",
+            "Audio/short_roll",
         };
 
         //public AudioListener Listener
