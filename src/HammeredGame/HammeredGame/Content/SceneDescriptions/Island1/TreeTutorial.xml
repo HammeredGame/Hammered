@@ -7,8 +7,8 @@
     <fov>0.425</fov>
   </camera>
   <uniform_grid>
-	<bottom_left_close>-300.0 -30.0 -300.0</bottom_left_close>
-	<top_right_away>400.0 60.0 250.0</top_right_away>
+	<bottom_left_close>-300.0 -80.0 -300.0</bottom_left_close>
+	<top_right_away>400.0 160.0 250.0</top_right_away>
 	<side_length>10.0</side_length>
   </uniform_grid>
   <lights>
