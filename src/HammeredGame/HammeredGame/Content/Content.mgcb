@@ -40,6 +40,12 @@
 /processorParam:Quality=Best
 /build:Audio/const_water.wav
 
+#begin Audio/deep_roll.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/deep_roll.wav
+
 #begin Audio/ding.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -70,17 +76,47 @@
 /processorParam:Quality=Best
 /build:Audio/hammer_drop.wav
 
+#begin Audio/laser.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/laser.wav
+
 #begin Audio/lohi_whoosh.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/lohi_whoosh.wav
 
+#begin Audio/mb_roll.3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/mb_roll.3.wav
+
+#begin Audio/new_laser.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/new_laser.wav
+
+#begin Audio/new_step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/new_step.wav
+
 #begin Audio/rock_water.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/rock_water.wav
+
+#begin Audio/short_roll.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/short_roll.wav
 
 #begin Audio/single_step.wav
 /importer:WavImporter
@@ -93,6 +129,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/step.wav
+
+#begin Audio/stereo_step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/stereo_step.wav
 
 #begin Audio/tree_fall.wav
 /importer:WavImporter

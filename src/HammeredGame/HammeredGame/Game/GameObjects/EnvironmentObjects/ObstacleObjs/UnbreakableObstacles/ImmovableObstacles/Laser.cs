@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using BEPUphysics.CollisionTests;
 using HammeredGame.Graphics;
 using Microsoft.Xna.Framework.Content;
@@ -71,6 +72,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         // Dynamic variables
         private LaserState laserState;
         private float laserScale;
+
+        //timedelay for laser looping
+        TimeSpan timeDelay = TimeSpan.Zero;
         private bool orientToCamera = true;
 
         private Texture2D laserTexture;
@@ -108,6 +112,26 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/Laser");
             this.laserTexture = services.GetService<ContentManager>().Load<Texture2D>("LaserTexture");
             this.laserMaskTexture = services.GetService<ContentManager>().Load<Texture2D>("LaserMask");
+
+            this.AudioEmitter = new AudioEmitter();
+            this.AudioEmitter.Position = this.Position;
+            
+            
+            //Services.GetService<AudioManager>().Play3DSound("Audio/new_laser", true, this.AudioEmitter, laserScale/10);
+            
+        }
+        
+        public override void Update(GameTime gameTime, bool screenHasFocus)
+        {
+            double time = gameTime.TotalGameTime.TotalSeconds;
+            timeDelay -= gameTime.ElapsedGameTime;
+            if (timeDelay < TimeSpan.Zero)
+            {
+                Services.GetService<AudioManager>().Play3DSound("Audio/new_laser", false, this.AudioEmitter, laserScale / laserDefaultScale);
+                timeDelay += TimeSpan.FromSeconds(2f);
+            }
+            
+            
         }
 
         private void Events_PairRemoved(EntityCollidable sender, BroadPhaseEntry other)

@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Audio;
 
 namespace HammeredGame.Game
 {
@@ -50,6 +51,9 @@ namespace HammeredGame.Game
         private Vector3 position;
 
         protected Scene CurrentScene { get; private set; }
+
+        
+        public AudioEmitter AudioEmitter; 
 
         // Use the private position vector only if we don't have a physics entity attached.
         // Otherwise, we delegate the position property entirely to the physics body position and
