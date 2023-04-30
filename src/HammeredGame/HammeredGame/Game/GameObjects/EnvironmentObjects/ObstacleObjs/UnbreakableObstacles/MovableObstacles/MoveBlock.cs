@@ -14,6 +14,7 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
 using BEPUphysics.CollisionRuleManagement;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using BEPUutilities;
+using static HammeredGame.Game.GameObjects.Player;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles
 {
@@ -65,9 +66,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
                 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollisionDetected;
+                //this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
             }
 
             mbState = MBState.Stationary;
+        }
+
+        private void Events_PairTouching(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            
         }
 
         private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
@@ -83,13 +90,18 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 if (other.Tag is Player)
                 {
                     var player = other.Tag as Player;
-                    float maxY = player.Entity.Position.Y;
-                    foreach (var contact in pair.Contacts)
+                    if (player.StandingOn != PlayerOnSurfaceState.OnRock)
                     {
-                        BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
-                        maxY = Math.Max(maxY, pointOfContact.Y);
+                        float maxY = player.Entity.Position.Y;
+                        foreach (var contact in pair.Contacts)
+                        {
+                            BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
+                            maxY = Math.Max(maxY, pointOfContact.Y);
+                        }
+
+                        player.StandingOn = PlayerOnSurfaceState.OnRock;
+                        player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).HalfHeight, player.Entity.Position.Z);
                     }
-                    player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).Width, player.Entity.Position.Z);
                 }
 
                 return;
@@ -105,7 +117,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     var hammer = other.Tag as Hammer;
                     if (hammer.IsEnroute())
                     {
-                        this.SetMoving(hammer.Entity.LinearVelocity * 0.5f);
+                        this.SetMoving(hammer.Entity.LinearVelocity);
                     }
                 }
                 else if (this.mbState == MBState.Moving)
@@ -159,6 +171,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 var speed = this.Entity.LinearVelocity.Length();
                 if (speed <= 0.01f) this.SetStationary();
+                else this.SetMoving(initialMovementVelocity);
             }
 
             //base.Update(gameTime);

@@ -194,15 +194,15 @@ namespace HammeredGame.Game.GameObjects
                     if (distanceBetweenCurrentAndNext > 1)
                     {
                         // Follow the path in line segments.
-                        //this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
+                        this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
 
                         // VERY unstable natural curves!
                         // The problem is that if the player does not stand still to catch the hammer,
                         // it will take a significant amount of time to converge towards the final point!!!
-                        var temp = this.Entity.LinearVelocity;
-                        temp.Normalize();  temp += 0.2f * currentToNextPosition; temp.Normalize();
-                        temp *= hammerSpeed;
-                        this.Entity.LinearVelocity = temp;
+                        //var temp = this.Entity.LinearVelocity;
+                        //temp.Normalize(); temp += 0.2f * currentToNextPosition; temp.Normalize();
+                        //temp *= hammerSpeed;
+                        //this.Entity.LinearVelocity = temp;
                     }
                     // If the hammer hasn't reached its destination, travel towards the next position of the route.
                     else if (route.Count() > 0)

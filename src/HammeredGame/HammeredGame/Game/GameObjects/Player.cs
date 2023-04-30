@@ -111,7 +111,7 @@ namespace HammeredGame.Game.GameObjects
                 // TODO: May want the flat ground meshes be as even and flat as possible
                 // (except ramps/stairs/ladders to reach higher elevations --> these can maybe be
                 // handled separately within collision handling <-- more testing needed for these settings)
-                this.Entity.Material.KineticFriction = 1.0f;
+                this.Entity.Material.KineticFriction = 2.0f;
 
                 // Add the entity to the level's physics space - this ensures that this game object
                 // will be considered for collision constraint solving (handled by the physics engine)
