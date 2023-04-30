@@ -97,54 +97,49 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //System.Diagnostics.Debug.WriteLine(this.entity.CollisionInformation.Pairs.Count);
             if (otherEntityInformation != null)
             {
-                if (sender.Pairs.Count <= 1)
-                {
-                    this.SetActivated(false);
-                }
+                this.SetActivated(false);
+                //if (sender.Pairs.Count <= 1)
+                //{
+                //    this.SetActivated(false);
+                //}
             }
         }
 
         public override void Update(GameTime gameTime, bool screenHasFocus)
         {
-            //triggerObject.setVisible(true);
-            //if (playerOn || hammerOn)
+            ////triggerObject.setVisible(true);
+            ////if (playerOn || hammerOn)
+            ////{
+            ////    triggerObject.SetVisible(false);
+            ////}
+            ////else
+            ////{
+            ////    triggerObject.SetVisible(true);
+            ////}
+            //if (this.pressureActivated && triggerObject != null)
             //{
-            //    triggerObject.SetVisible(false);
+            //    // pressSfx[5].Play();
+            //    if (triggerObject is Door)
+            //    {
+            //        var door = triggerObject as Door;
+            //        door.OpenDoor();
+            //    }
+            //    //triggerObject.Visible = false;
+            //    //if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+            //    //    this.ActiveSpace.Remove(triggerObject.Entity);
             //}
-            //else
+            //else if (triggerObject != null)
             //{
-            //    triggerObject.SetVisible(true);
+            //    // pressSfx[6].Play();
+            //    if (triggerObject is Door)
+            //    {
+            //        var door = triggerObject as Door;
+            //        door.CloseDoor();
+            //    }
+            //    //triggerObject.Visible = true;
+            //    //if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
+            //    //    this.ActiveSpace.Add(triggerObject.Entity);
             //}
-            if (this.pressureActivated && triggerObject != null)
-            {
-                if (triggerObject is Door)
-                {
-                    var door = triggerObject as Door;
-                    door.RemoveFromSpace();
-                }
-                //triggerObject.Visible = false;
-                //if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
-                //{
-                //    this.ActiveSpace.Remove(triggerObject.Entity);
-                //    pressSfx[5].Play();
-                //}
-
-            }
-            else if (triggerObject != null)
-            {
-                if (triggerObject is Door)
-                {
-                    var door = triggerObject as Door;
-                    door.AddToSpace();
-                }
-                //triggerObject.Visible = true;
-                //if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
-                //{
-                //    this.ActiveSpace.Add(triggerObject.Entity);
-                //    pressSfx[6].Play();
-                //}
-
-            }
         }
 
         public bool IsActivated()
@@ -156,32 +151,5 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         {
             this.pressureActivated = activate;
         }
-
-        //private void ActivateTrigger()
-        //{
-        //    triggerObject.SetVisible(false);
-        //}
-
-        //public override void TouchingPlayer(Player player)
-        //{
-        //    //this.activateTrigger();
-        //    playerOn = true;
-        //}
-
-        //public override void NotTouchingPlayer(Player player)
-        //{
-        //    playerOn = false;
-        //}
-
-        //public override void TouchingHammer(Hammer hammer)
-        //{
-        //    //this.activateTrigger();
-        //    hammerOn = true;
-        //}
-
-        //public override void NotTouchingHammer(Hammer hammer)
-        //{
-        //    hammerOn = false;
-        //}
     }
 }

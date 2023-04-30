@@ -11,10 +11,12 @@ using System;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using System.Threading;
+using HammeredGame.Graphics;
+using ImMonoGame.Thing;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Screens
 {
-
     /// <summary>
     /// The game screen shows the main gameplay. It has one active scene at a time, and may add a
     /// PauseScreen to the screen stack upon pausing.
@@ -26,20 +28,19 @@ namespace HammeredGame.Game.Screens
 
         // Pause screen is always loaded, see LoadContent().
         private PauseScreen pauseScreen;
+        private bool isPaused;
 
         private ControlPromptsScreen promptsScreen;
+        private OnScreenDialogueScreen dialoguesScreen;
 
         // Music variables
         private Song bgMusic;
         //private AudioListener listener = new AudioListener();
         //private AudioEmitter emitter = new AudioEmitter();
 
-        // Bounding Volume debugging variables
-        private bool drawBounds = false;
-
-        private List<EntityDebugDrawer> debugEntities = new();
-
         private string currentSceneName;
+
+        private GameRenderer gameRenderer;
 
         public GameScreen(string startScene)
         {
@@ -55,9 +56,13 @@ namespace HammeredGame.Game.Screens
         {
             base.LoadContent();
 
+            ContentManager Content = GameServices.GetService<ContentManager>();
+
+            gameRenderer = new GameRenderer(GameServices.GetService<GraphicsDevice>(), Content);
+
             // Load sound effects before initialising the first scene, since the scene setup
             // script might already use some of the sound effects.
-            ContentManager Content = GameServices.GetService<ContentManager>();
+            //List<SoundEffect> sfx = GameServices.GetService<List<SoundEffect>>();
             bgMusic = Content.Load<Song>("Audio/BGM_V2_4x");
             
             //List<SoundEffect> sfx = GameServices.GetService<List<SoundEffect>>();
@@ -80,11 +85,13 @@ namespace HammeredGame.Game.Screens
             // Preload the pause screen, so that adding the pause screen to the screen stack doesn't
             // call LoadContent every time (which lags because it has to loads fonts and create the
             // UI layout)
-            pauseScreen = new PauseScreen() {
-                // Specify the callback function when Quit To Title is called. We also need to
-                // specify the Restart Level callback, but this is done just before each time the
-                // screen is added to the manager, since we need the name of the currently active level.
-                QuitToTitleFunc = () => {
+            pauseScreen = new PauseScreen
+            {
+                QuitMethod = () =>
+                {
+                    // Specify the callback function when Quit To Title is called. We also need to
+                    // specify the Restart Level callback, but this is done just before each time the
+                    // screen is added to the manager, since we need the name of the currently active level.
                     ExitScreen(true);
                     // Ask the main game class to recreate the title screen, since it needs to
                     // assign handlers that we don't have access to
@@ -95,6 +102,9 @@ namespace HammeredGame.Game.Screens
 
             promptsScreen = new ControlPromptsScreen();
             ScreenManager.AddScreen(promptsScreen);
+
+            dialoguesScreen = new OnScreenDialogueScreen();
+            ScreenManager.AddScreen(dialoguesScreen);
         }
 
         /// <summary>
@@ -108,6 +118,7 @@ namespace HammeredGame.Game.Screens
             // Make sure we have exited screens that we created.
             pauseScreen?.ExitScreen();
             promptsScreen?.ExitScreen();
+            dialoguesScreen?.ExitScreen();
 
             MediaPlayer.Stop();
         }
@@ -125,6 +136,11 @@ namespace HammeredGame.Game.Screens
 
             currentSceneName = sceneToLoad;
             currentScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
+
+            //// Set up the list of debug grid cells for debugging visualization
+            //// WARNING: Execute the following line of code if you wish to initialize the grid once.
+            //// Suggested for when AVAILABLE grid cells are shown in debug mode.
+            //SetupDebugGrid();
         }
 
         /// <summary>
@@ -135,6 +151,15 @@ namespace HammeredGame.Game.Screens
         public void ShowPromptsFor(List<UserAction> controls, CancellationToken stopToken)
         {
             promptsScreen.ShowPromptsFor(controls, stopToken);
+        }
+
+        /// <summary>
+        /// Show a dialogue, see OnScreenDialogueScreen.ShowDialogue() for more info.
+        /// </summary>
+        /// <param name="dialogue"></param>
+        public Task ShowDialogueAndWait(string dialogue)
+        {
+            return dialoguesScreen.ShowDialogueAndWait(dialogue);
         }
 
         /// <summary>
@@ -150,44 +175,17 @@ namespace HammeredGame.Game.Screens
 
             if (HasFocus && UserAction.Pause.Pressed(input))
             {
-                pauseScreen.RestartLevelFunc = () => InitializeLevel(currentSceneName);
+                isPaused = true;
+                pauseScreen.RestartMethod = () =>
+                {
+                    isPaused = false;
+                    InitializeLevel(currentSceneName);
+                };
+                pauseScreen.ContinueMethod = () => isPaused = false;
                 ScreenManager.AddScreen(pauseScreen);
             }
 
-            // Update each game object
-            foreach (GameObject gameObject in currentScene.GameObjectsList)
-            {
-                gameObject.Update(gameTime, HasFocus);
-            }
-
-            // Update camera
-            currentScene.Camera.UpdateCamera(HasFocus);
-
-            //Steps the simulation forward one time step.
-            // TODO: perhaps this shouldn't update if it's paused (i.e. check for HasFocus)?
-            currentScene.Space.Update();
-
-            // Set up the list of debug entities for debugging visualization
-            SetupDebugBounds();
-        }
-
-        /// <summary>
-        /// Adapted from AlienScribble Make 3D Games with Monogame playlist: https://www.youtube.com/playlist?list=PLG6XrMFqMJUBOPVTJrGJnIDDHHF1HTETc
-        /// <para/>
-        /// To set state variables within graphics device back to default (in case they are changed
-        /// at any point) to ensure we are correctly drawing in 3D space
-        /// </summary>
-        private void Set3DStates()
-        {
-            GraphicsDevice gpu = ScreenManager.GraphicsDevice;
-            gpu.BlendState = BlendState.AlphaBlend; // Potentially needs to be modified depending on our textures
-            gpu.DepthStencilState = DepthStencilState.Default; // Ensure we are using depth buffer (Z-buffer) for 3D
-            if (gpu.RasterizerState.CullMode == CullMode.None)
-            {
-                // Cull back facing polygons
-                RasterizerState rs = new RasterizerState { CullMode = CullMode.CullCounterClockwiseFace };
-                gpu.RasterizerState = rs;
-            }
+            currentScene.Update(gameTime, HasFocus, isPaused);
         }
 
         /// <summary>
@@ -199,44 +197,9 @@ namespace HammeredGame.Game.Screens
         {
             base.Draw(gameTime);
 
-            Set3DStates();
-
-            GraphicsDevice gpu = GameServices.GetService<GraphicsDevice>();
-            // Render all the scene objects (given that they are not destroyed)
-            foreach (GameObject gameObject in currentScene.GameObjectsList)
-            {
-                gameObject.Draw(currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
-            }
-
-            if (drawBounds)
-            {
-                RasterizerState currentRS = gpu.RasterizerState;
-                gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
-                foreach (EntityDebugDrawer entity in debugEntities)
-                {
-                    entity.Draw(gameTime, currentScene.Camera.ViewMatrix, currentScene.Camera.ProjMatrix);
-                }
-                gpu.RasterizerState = currentRS;
-            }
-        }
-
-        // Prepare the entities for debugging visualization
-        private void SetupDebugBounds()
-        {
-            debugEntities.Clear();
-            var CubeModel = GameServices.GetService<ContentManager>().Load<Model>("cube");
-            //Go through the list of entities in the space and create a graphical representation for them.
-            foreach (Entity e in currentScene.Space.Entities)
-            {
-                Box box = e as Box;
-                if (box != null) //This won't create any graphics for an entity that isn't a box since the model being used is a box.
-                {
-                    BEPUutilities.Matrix scaling = BEPUutilities.Matrix.CreateScale(box.Width, box.Height, box.Length); //Since the cube model is 1x1x1, it needs to be scaled to match the size of each individual box.
-                    EntityDebugDrawer model = new EntityDebugDrawer(e, CubeModel, scaling);
-                    //Add the drawable game component for this entity to the game.
-                    debugEntities.Add(model);
-                }
-            }
+            gameRenderer.DrawScene(gameTime, currentScene);
+            gameRenderer.PostProcess();
+            gameRenderer.CopyOutputTo(ScreenManager.MainRenderTarget);
         }
 
         /// <summary>
@@ -260,10 +223,12 @@ namespace HammeredGame.Game.Screens
             }
             ImGui.Separator();
 
-            ImGui.Checkbox("DrawBounds", ref drawBounds);
-
             // Show the scene's UI within the same window
             currentScene.UI();
+
+            ImGui.Begin("Graphics");
+            gameRenderer.UI();
+            ImGui.End();
         }
     }
 }
