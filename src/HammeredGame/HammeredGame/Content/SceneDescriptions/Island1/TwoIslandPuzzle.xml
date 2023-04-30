@@ -638,6 +638,20 @@
     <scale>5.000</scale>
   </object>
 
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall_1">
+    <model>stone_wall</model>
+    <texture type="texture2d">stone</texture>
+    <position>138.900 -3.000 -27.500</position>
+    <rotation>0.000 0.000 0.000 0.999</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -13.500 14.200</shift_graphic>
+    </body>
+  </object>
+
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="end_trigger">
     <model />
     <position>220.000 24.000 -150.000</position>
