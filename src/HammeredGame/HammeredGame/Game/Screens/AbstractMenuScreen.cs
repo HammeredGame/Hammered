@@ -63,6 +63,15 @@ namespace HammeredGame.Game.Screens
                 SelectionHoverBackground = new SolidBrush("#00000000"),
                 SelectionBackground = new SolidBrush("#00000000"),
                 LabelHorizontalAlignment = HorizontalAlignment.Left,
+                // We mark it so that the HoverIndex (the selection) will never be null, i.e. there
+                // is always going to be a selection even from the get-go. Unfortunately, this flag
+                // is not implemented correctly in Myra and HoverIndex will become null when we
+                // click on a menu item, regardless of the value here. This means that when you
+                // click on a menu item and the menu hides, and you show the menu again, there is
+                // nothing hovered. That's a problem, but fortunately it's not a big one because if
+                // we use Menu.MoveHover() when we need to move indices (instead of manually
+                // changing Menu.HoverIndex), Myra will properly re-hover items even if there was
+                // nothing hovered.
                 HoverIndexCanBeNull = false,
                 Background = new SolidBrush("#00000000"),
                 Border = new SolidBrush("#00000000"),
@@ -74,9 +83,11 @@ namespace HammeredGame.Game.Screens
             {
                 mainMenu.Items.Add(menuItem);
             }
-            // Select first non-disabled menu item (TODO: this may return MenuItems.Count if all
-            // items are disabled, which would be index out of bounds)
-            mainMenu.HoverIndex = MenuItems.TakeWhile(i => !i.Enabled).Count();
+
+            // Select first non-disabled menu item. In the case where everything is disabled and the
+            // first expression returns MenuItems.Count, we want to avoid an index-out-of-bounds, so
+            // take the minimum with the largest allowed index
+            mainMenu.HoverIndex = Math.Min(MenuItems.TakeWhile(i => !i.Enabled).Count(), MenuItems.Count - 1);
 
             var panel = new VerticalStackPanel();
             panel.Widgets.Add(label1);
@@ -124,7 +135,7 @@ namespace HammeredGame.Game.Screens
             VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
 
             // Allow selection with keyboard or controller instead of just mouse
-            if (UserAction.Confirm.Pressed(input))
+            if (UserAction.Confirm.Pressed(input) || UserAction.Interact.Pressed(input))
             {
                 ((Desktop.Root as VerticalStackPanel)?.Widgets[1] as VerticalMenu)?.OnKeyDown(Keys.Enter);
             }
@@ -135,22 +146,25 @@ namespace HammeredGame.Game.Screens
             TimeSpan scrollCooldown = TimeSpan.FromMilliseconds(500);
             if (UserAction.MenuItemUp.Pressed(input))
             {
-                mainMenu.HoverIndex = (mainMenu.HoverIndex + mainMenu.Items.Count - 1) % mainMenu.Items.Count;
+                // Make sure we use MoveHover and not manually add or remove one from
+                // Menu.HoverIndex, because the latter will not work if HoverIndex is null (which
+                // can happen after an item is clicked). MoveHover() accounts for this case automatically.
+                mainMenu.MoveHover(-1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
             else if (UserAction.MenuItemUp.Held(input) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
             {
-                mainMenu.HoverIndex = (mainMenu.HoverIndex + mainMenu.Items.Count - 1) % mainMenu.Items.Count;
+                mainMenu.MoveHover(-1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
             else if (UserAction.MenuItemDown.Pressed(input))
             {
-                mainMenu.HoverIndex = (mainMenu.HoverIndex + 1) % mainMenu.Items.Count;
+                mainMenu.MoveHover(1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
             else if (UserAction.MenuItemDown.Held(input) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
             {
-                mainMenu.HoverIndex = (mainMenu.HoverIndex + 1) % mainMenu.Items.Count;
+                mainMenu.MoveHover(1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
 
