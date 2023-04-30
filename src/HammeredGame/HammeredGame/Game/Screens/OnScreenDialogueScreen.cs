@@ -22,6 +22,7 @@ namespace HammeredGame.Game.Screens
         private Queue<(string, TaskCompletionSource)> dialogueQueue = new();
         private VerticalStackPanel dialoguesPanel;
         private Label dialogueLabel;
+        private Image dialoguePromptImage;
 
         private FontSystem barlowFontSystem;
 
@@ -92,9 +93,10 @@ namespace HammeredGame.Game.Screens
             };
 
             // Show a small image with the Interact button in the corner, so players know what to
-            // press to move forward
+            // press to move forward. This image can be overriden in Update() based on the currently
+            // active input type too.
             List<TextureRegion> interactButton = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Interact);
-            var imageElement = new Image
+            dialoguePromptImage = new Image
             {
                 // Since the interact action is discrete, there is only one possible button for it:
                 // we show the 0th index
@@ -113,7 +115,7 @@ namespace HammeredGame.Game.Screens
             };
 
             dialoguesPanel.AddChild(dialogueLabel);
-            dialoguesPanel.AddChild(imageElement);
+            dialoguesPanel.AddChild(dialoguePromptImage);
 
             // Add it to the desktop
             desktop = new()
@@ -157,6 +159,14 @@ namespace HammeredGame.Game.Screens
                     dialoguesPanel.Opacity = 1f;
                     // Otherwise show the top dialogue in the queue without dequeuing it
                     dialogueLabel.Text = dialogueQueue.Peek().Item1;
+
+                    // And update the prompt image just in case the input type changed
+                    // Input.Prompts.GetImagesForAction() performs a lookup into its internal asset
+                    // store, but will never cause an expensive IO operation (it will default to
+                    // keyboard if atlas not found) so we're fine to perform this in Update().
+                    // Updating the Myra UI is probably the more expensive bottleneck if at all.
+                    List<TextureRegion> interactButton = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Interact);
+                    dialoguePromptImage.Renderable = interactButton[0];
                 }
 
                 desktop.UpdateLayout();
