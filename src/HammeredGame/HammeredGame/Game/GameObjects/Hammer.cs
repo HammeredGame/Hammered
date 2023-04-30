@@ -70,11 +70,9 @@ namespace HammeredGame.Game.GameObjects
         private readonly Queue<BEPUutilities.Vector3> route = new();
         private BEPUutilities.Vector3 nextRoutePosition;
 
-        private List<SoundEffect> hammer_sfx = new List<SoundEffect>();
+        //private List<SoundEffect> hammer_sfx = new List<SoundEffect>();
         //how long till trigger next sound
         //TimeSpan audioDelay = TimeSpan.Zero;
-
-        private AudioManager audioManager;
 
         public event EventHandler OnSummon;
         public event EventHandler OnCollision;
@@ -84,8 +82,7 @@ namespace HammeredGame.Game.GameObjects
             : base(services, model, t, pos, rotation, scale, entity)
         {
             hammerState = HammerState.WithCharacter;
-            hammer_sfx = Services.GetService<List<SoundEffect>>();
-            audioManager = Services.GetService<AudioManager>();
+            //hammer_sfx = Services.GetService<List<SoundEffect>>();
 
             if (this.Entity != null)
             {
@@ -117,6 +114,9 @@ namespace HammeredGame.Game.GameObjects
 
                 // Initialize the collision handlers based on the associated collision events
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+                
+                this.AudioEmitter = new AudioEmitter();
+                this.AudioEmitter.Position = this.Position; 
             }
         }
 
@@ -233,6 +233,9 @@ namespace HammeredGame.Game.GameObjects
                 //}
 
             }
+
+            this.AudioEmitter.Position = Position;
+
         }
 
         public void HandleInput()
@@ -274,7 +277,8 @@ namespace HammeredGame.Game.GameObjects
             // Set hammer state to dropped
             hammerState = HammerState.Dropped;
 
-            hammer_sfx[1].Play();
+            //hammer_sfx[1].Play();
+            Services.GetService<AudioManager>().Play3DSound("Audio/hammer_drop", false, this.AudioEmitter, 1);
 
             //audioManager.Play3DSound("Audio/hammer_drop", false);
 
@@ -304,8 +308,11 @@ namespace HammeredGame.Game.GameObjects
             //sound effect instance to try and manipulate the pitch, but not working
             if (hammerState == HammerState.Enroute)
             {
-                SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
-                whoosh.Play();
+                //SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
+                //whoosh.Play();
+
+                Services.GetService<AudioManager>().Play3DSound("Audio/lohi_whoosh", false, this.AudioEmitter, 1);
+
             }
             return hammerState == HammerState.Enroute;
         }

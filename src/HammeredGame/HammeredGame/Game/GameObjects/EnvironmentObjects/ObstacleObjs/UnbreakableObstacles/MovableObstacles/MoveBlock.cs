@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
 using BEPUphysics.CollisionRuleManagement;
@@ -65,6 +66,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
                 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollisionDetected;
+                
+                this.AudioEmitter = new AudioEmitter();
+                this.AudioEmitter.Position = this.Position; 
             }
 
             mbState = MBState.Stationary;
@@ -102,6 +106,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 // If colliding with a moving hammer, set the move block to move in the same direction
                 if (other.Tag is Hammer && this.mbState != MBState.Moving)
                 {
+                    Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
                     var hammer = other.Tag as Hammer;
                     if (hammer.IsEnroute())
                     {
@@ -110,6 +115,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 }
                 else if (this.mbState == MBState.Moving)
                 {
+
                     // Otherwise, the only collisions we care about is if the block is already moving
                     // If so, and the colliding object is the player or another obstacle,
                     // then handle these cases appropriately (if needed, otherwise default behavior
@@ -128,6 +134,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                             {
                                 otherMoveBlock.SetMoving(initialMovementVelocity);
                             }
+                            
                         }
                         else if (other.Tag is Laser)
                         {
@@ -139,6 +146,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         this.SetStationary();
                     }
                 }
+                
             }
             else
             {
@@ -147,6 +155,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 {
                     this.SetStationary();
                     mbState = MBState.InWater;
+                    Services.GetService<AudioManager>().Play3DSound("Audio/rock_water", false, this.AudioEmitter, 1);
                 }
             }
         }

@@ -42,8 +42,7 @@ namespace HammeredGame
         private readonly GameServices gameServices = new();
 
         // Music variables
-        private List<SoundEffect> sfx = new List<SoundEffect>();
-
+        //private List<SoundEffect> sfx = new List<SoundEffect>();
         private AudioManager audioManager;
 
         private ScreenManager manager;
@@ -120,7 +119,7 @@ namespace HammeredGame
             gameServices.AddService<Input>(input);
             gameServices.AddService<ContentManager>(Content);
             gameServices.AddService<ScriptUtils>(new ScriptUtils());
-            gameServices.AddService<List<SoundEffect>>(sfx);
+            //gameServices.AddService<List<SoundEffect>>(sfx);
             gameServices.AddService<AudioManager>(audioManager);
 
             manager = new ScreenManager(gameServices, gpu, mainRenderTarget);
@@ -187,6 +186,7 @@ namespace HammeredGame
 
             // Call update on the various active screens to do their thing
             manager.Update(gameTime);
+            audioManager.Update(gameTime);
 
             base.Update(gameTime);
         }

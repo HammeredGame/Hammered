@@ -33,7 +33,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         private bool playerOn = false, hammerOn = false;
         private bool pressureActivated = false;
 
-        private List<SoundEffect> pressSfx = new List<SoundEffect>();
+        //private List<SoundEffect> pressSfx = new List<SoundEffect>();
 
         public PressurePlate(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -49,8 +49,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                 //this.entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollision;
                 this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
                 this.Entity.CollisionInformation.Events.CollisionEnded += this.Events_CollisionEnded;
+                //this.AudioEmitter = new AudioEmitter();
 
-                pressSfx = Services.GetService<List<SoundEffect>>();
+                //pressSfx = Services.GetService<List<SoundEffect>>();
             }
         }
 
