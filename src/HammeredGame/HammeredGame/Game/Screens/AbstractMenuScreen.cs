@@ -27,6 +27,7 @@ namespace HammeredGame.Game.Screens
         // accessible from the target class (which in our case are the inherited menu classes),
         // which means these have to be marked no less accessible than protected.
         protected float MenuWidthCurrent;
+
         protected float MenuTriangleWidth;
 
         // Store the time since the last input for moving up or down in the menu
@@ -41,8 +42,11 @@ namespace HammeredGame.Game.Screens
 
         protected string MenuHeaderText = "";
 
-        protected VerticalStackPanel MainBounds;
         protected List<MenuItem> MenuItems;
+        private VerticalMenu mainMenu;
+        private VerticalStackPanel menuContainer;
+
+        private Image okPromptImage;
 
         public override void LoadContent()
         {
@@ -70,7 +74,7 @@ namespace HammeredGame.Game.Screens
                 Margin = new Thickness(100, oneLineHeight, 0, 0),
             };
 
-            VerticalMenu mainMenu = new()
+            mainMenu = new VerticalMenu()
             {
                 LabelColor = new Color(255, 255, 255, 198),
                 SelectionHoverBackground = new SolidBrush("#00000000"),
@@ -102,8 +106,41 @@ namespace HammeredGame.Game.Screens
             // take the minimum with the largest allowed index
             mainMenu.HoverIndex = Math.Min(MenuItems.TakeWhile(i => !i.Enabled).Count(), MenuItems.Count - 1);
 
-            // This is the main "bounding box" for the menu
-            MainBounds = new VerticalStackPanel
+            // Create a horizontal panel that's displayed at the very bottom of the screen for an
+            // input prompt saying "Press this for OK"
+            float okPromptHeight = oneLineHeight * 0.4f;
+            okPromptImage = new Image
+            {
+                Renderable = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Confirm)[0],
+                Height = (int)okPromptHeight,
+                Width = (int)okPromptHeight
+            };
+            var controlPrompts = new HorizontalStackPanel
+            {
+                VerticalAlignment = VerticalAlignment.Bottom,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(100, (int)okPromptHeight * 2),
+                Opacity = 0.4f,
+                Widgets =
+                {
+                    new Label
+                    {
+                        Text = "Press",
+                        TextColor = Color.White,
+                        Font = skranjiFontSystem.GetFont(okPromptHeight),
+                    },
+                    okPromptImage,
+                    new Label
+                    {
+                        Text = "to confirm",
+                        TextColor = Color.White,
+                        Font = skranjiFontSystem.GetFont(okPromptHeight),
+                    }
+                }
+            };
+
+            // This is the main item stack for the menu
+            menuContainer = new VerticalStackPanel
             {
                 // It'll span the whole height
                 Height = ScreenManager.GraphicsDevice.PresentationParameters.BackBufferHeight,
@@ -113,12 +150,18 @@ namespace HammeredGame.Game.Screens
                 // clip and don't show them outside bounds
                 ClipToBounds = true
             };
-            MainBounds.Widgets.Add(label1);
-            MainBounds.Widgets.Add(mainMenu);
+            menuContainer.Widgets.Add(label1);
+            menuContainer.Widgets.Add(mainMenu);
+
+            // This is the root node itself, which will contain the menu item stack as well as other
+            // arbitrarily positioned things
+            var MenuPanel = new Panel();
+            MenuPanel.Widgets.Add(menuContainer);
+            MenuPanel.Widgets.Add(controlPrompts);
 
             // Add it to the desktop
             Desktop = new();
-            Desktop.Root = MainBounds;
+            Desktop.Root = MenuPanel;
 
             // Make main menu permanently hold keyboard focus as long as it's the active screen, by
             // canceling the lose-keyboard-focus event when necessary. This doesn't seem to be
@@ -132,8 +175,8 @@ namespace HammeredGame.Game.Screens
             Desktop.UpdateLayout();
 
             // Store the max width of the menu (that the transition process will tween to)
-            menuWidthMax = MainBounds.Widgets[1].Bounds.Width;
-            MainBounds.Width = 0;
+            menuWidthMax = menuContainer.Widgets[1].Bounds.Width;
+            menuContainer.Width = 0;
             MenuWidthCurrent = 0f;
         }
 
@@ -168,7 +211,7 @@ namespace HammeredGame.Game.Screens
                 return false;
             }
             // Set the width on the Myra menu UI.
-            MainBounds.Width = (int) MenuWidthCurrent;
+            menuContainer.Width = (int)MenuWidthCurrent;
 
             // Return true and indicate the transition is finished only after animation is done
             return TransitionAnimationTimeline.State == TweenState.Stopped;
@@ -196,7 +239,7 @@ namespace HammeredGame.Game.Screens
                 return false;
             }
             // Set the width on the Myra menu UI.
-            MainBounds.Width = (int) MenuWidthCurrent;
+            menuContainer.Width = (int)MenuWidthCurrent;
 
             // Return true and indicate the transition is finished only after animation is done
             return TransitionAnimationTimeline.State == TweenState.Stopped;
@@ -222,13 +265,10 @@ namespace HammeredGame.Game.Screens
                 Desktop.UpdateInput();
             }
 
-            VerticalStackPanel panel = Desktop.Root as VerticalStackPanel;
-            VerticalMenu mainMenu = panel.Widgets[1] as VerticalMenu;
-
             // Allow selection with keyboard or controller instead of just mouse
             if (UserAction.Confirm.Pressed(input) || UserAction.Interact.Pressed(input))
             {
-                ((Desktop.Root as VerticalStackPanel)?.Widgets[1] as VerticalMenu)?.OnKeyDown(Keys.Enter);
+                mainMenu.OnKeyDown(Keys.Enter);
             }
 
             // If the keybind for menu-item-up/down is pressed once, shift the index. If it is held,
@@ -273,6 +313,10 @@ namespace HammeredGame.Game.Screens
                     menuItem.Color = new Color(255, 255, 255, 198);
                 }
             }
+
+            // Update the OK input prompt based on the currently active input type - this is safe to
+            // perform synchronously since it will only query loaded images and will not cause file IO.
+            okPromptImage.Renderable = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Interact)[0];
 
             // Update the UI layout based on any changes to it above
             Desktop.UpdateLayout();
