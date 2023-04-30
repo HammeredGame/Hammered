@@ -509,7 +509,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
         /// i.e. 0-th position is the first position visited, then the agent visits the 1st position, then the 2nd
         /// and so on and so forth.</returns>
         /// </summary>
-        private Vector3[] RoughShortestPathSmoothing(Vector3[] ShortestPathResult)
+        public Vector3[] RoughShortestPathSmoothing(Vector3[] ShortestPathResult)
         {
             /* Algorithm outline
              * -----------------

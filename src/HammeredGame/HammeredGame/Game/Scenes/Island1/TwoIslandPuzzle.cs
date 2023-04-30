@@ -32,6 +32,8 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
 
+            this.UpdateSceneGrid(Get<Wall>("wall_1"), false);
+
             // No further initialization required for the <c>UniformGrid</c> instance.
 
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>

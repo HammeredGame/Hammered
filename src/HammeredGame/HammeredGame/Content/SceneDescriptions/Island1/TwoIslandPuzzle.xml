@@ -7,8 +7,8 @@
     <fov>0.495</fov>
   </camera>
   <uniform_grid>
-	<bottom_left_close>-80.0 -60.0 -300.0</bottom_left_close>
-	<top_right_away>600.0 200.0 300.0</top_right_away>
+	<bottom_left_close>-400.0 -60 -300.0</bottom_left_close>
+	<top_right_away>600.0 200 300.0</top_right_away>
 	<side_length>10.0</side_length>
   </uniform_grid>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water">
@@ -636,6 +636,20 @@
     <position>90.000 -25.000 150.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>5.000</scale>
+  </object>
+
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall_1">
+    <model>stone_wall</model>
+    <texture type="texture2d">stone</texture>
+    <position>138.900 -3.000 -27.500</position>
+    <rotation>0.000 0.000 0.000 0.999</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -13.500 14.200</shift_graphic>
+    </body>
   </object>
 
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="end_trigger">
