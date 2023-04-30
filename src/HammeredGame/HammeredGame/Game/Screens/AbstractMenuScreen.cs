@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
+using Pleasing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,20 @@ namespace HammeredGame.Game.Screens
 
         private Texture2D whiteRectangle;
 
-        private int maxWidthMenuUI;
+        // The maximum (default) width of the menu to animate to. This is the minimum width that
+        // safely encompasses all the inner menu text.
+        private int menuWidthMax;
 
+        // These values are going to be animated. The tween library requires the properties to be
+        // accessible from the target class (which in our case are the inherited menu classes),
+        // which means these have to be marked no less accessible than protected.
+        protected float MenuWidthCurrent;
+        protected float MenuTriangleWidth;
+
+        // Store the time since the last input for moving up or down in the menu
         private TimeSpan lastContinuousInput = TimeSpan.Zero;
+
+        protected TweenTimeline TransitionAnimationTimeline;
 
         public AbstractMenuScreen()
         {
@@ -29,13 +41,14 @@ namespace HammeredGame.Game.Screens
 
         protected string MenuHeaderText = "";
 
+        protected VerticalStackPanel MainBounds;
         protected List<MenuItem> MenuItems;
 
         public override void LoadContent()
         {
             base.LoadContent();
 
-            // todo handle viewport resize by checking if .Height changed in Update()
+            // todo: handle viewport resize by checking if .Height changed in Update()
             int oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
 
             whiteRectangle = new Texture2D(ScreenManager.GraphicsDevice, 1, 1);
@@ -89,25 +102,39 @@ namespace HammeredGame.Game.Screens
             // take the minimum with the largest allowed index
             mainMenu.HoverIndex = Math.Min(MenuItems.TakeWhile(i => !i.Enabled).Count(), MenuItems.Count - 1);
 
-            var panel = new VerticalStackPanel();
-            panel.Widgets.Add(label1);
-            panel.Widgets.Add(mainMenu);
+            // This is the main "bounding box" for the menu
+            MainBounds = new VerticalStackPanel
+            {
+                // It'll span the whole height
+                Height = ScreenManager.GraphicsDevice.PresentationParameters.BackBufferHeight,
+                // Background being purple
+                Background = new SolidBrush(new Color(75, 43, 58)),
+                // If anything inside is larger than the bounds (like text while transitioning),
+                // clip and don't show them outside bounds
+                ClipToBounds = true
+            };
+            MainBounds.Widgets.Add(label1);
+            MainBounds.Widgets.Add(mainMenu);
 
             // Add it to the desktop
             Desktop = new();
-            Desktop.Root = panel;
+            Desktop.Root = MainBounds;
 
-            // Make main menu permanently hold keyboard focus as long as it's the active screen
-            // todo: i don't think this works
+            // Make main menu permanently hold keyboard focus as long as it's the active screen, by
+            // canceling the lose-keyboard-focus event when necessary. This doesn't seem to be
+            // implemented in Myra (c.f. HoverIndexCanBeNull above), but it's safer than nothing.
             Desktop.WidgetLosingKeyboardFocus += (s, a) =>
             {
                 a.Cancel = HasFocus;
             };
 
-            // Precalculate layout once so we know the width of the text to draw the background for
+            // Pre-calculate layout once, so we know the width of the text to draw the background for
             Desktop.UpdateLayout();
 
-            maxWidthMenuUI = panel.Widgets[1].Bounds.Width;
+            // Store the max width of the menu (that the transition process will tween to)
+            menuWidthMax = MainBounds.Widgets[1].Bounds.Width;
+            MainBounds.Width = 0;
+            MenuWidthCurrent = 0f;
         }
 
         public override void UnloadContent()
@@ -116,6 +143,63 @@ namespace HammeredGame.Game.Screens
 
             // Any assets created or loaded without the content manager should be disposed of.
             whiteRectangle.Dispose();
+        }
+
+        /// <summary>
+        /// The incoming transition for menus is just to slide in from the side.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="firstFrame"></param>
+        /// <returns></returns>
+        public override bool UpdateTransitionIn(GameTime gameTime, bool firstFrame)
+        {
+            if (firstFrame)
+            {
+                // First frame of enter transition: we'll reset the menu and triangle widths down to
+                // zero, and set up an animation timeline to tween them up to the pre-calculated
+                // menu width.
+                MenuTriangleWidth = 0f;
+                MenuWidthCurrent = 0f;
+                TransitionAnimationTimeline = Tweening.NewTimeline();
+                TransitionAnimationTimeline.AddFloat(this, nameof(MenuWidthCurrent))
+                    .AddFrame(200, menuWidthMax, Easing.Exponential.Out);
+                TransitionAnimationTimeline.AddFloat(this, nameof(MenuTriangleWidth))
+                    .AddFrame(200, 300f, Easing.Exponential.Out);
+                return false;
+            }
+            // Set the width on the Myra menu UI.
+            MainBounds.Width = (int) MenuWidthCurrent;
+
+            // Return true and indicate the transition is finished only after animation is done
+            return TransitionAnimationTimeline.State == TweenState.Stopped;
+        }
+
+        /// <summary>
+        /// The outgoing transition for menus is just to slide out to the side.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="firstFrame"></param>
+        /// <returns></returns>
+        public override bool UpdateTransitionOut(GameTime gameTime, bool firstFrame)
+        {
+            if (firstFrame)
+            {
+                // First frame of exit transition: we'll set up an animation timeline for tweening
+                // the triangle width and the menu width down to zero. We need to tween the triangle
+                // width too, because otherwise the transition will end with a triangle visible next
+                // to the zero-width menu, and it's very abrupt to just disappear.
+                TransitionAnimationTimeline = Tweening.NewTimeline();
+                TransitionAnimationTimeline.AddFloat(this, nameof(MenuWidthCurrent))
+                    .AddFrame(200, 0, Easing.Exponential.Out);
+                TransitionAnimationTimeline.AddFloat(this, nameof(MenuTriangleWidth))
+                    .AddFrame(200, 0f, Easing.Exponential.Out);
+                return false;
+            }
+            // Set the width on the Myra menu UI.
+            MainBounds.Width = (int) MenuWidthCurrent;
+
+            // Return true and indicate the transition is finished only after animation is done
+            return TransitionAnimationTimeline.State == TweenState.Stopped;
         }
 
         public override void Update(GameTime gameTime)
@@ -197,14 +281,13 @@ namespace HammeredGame.Game.Screens
             // Draw everything in a batch for speed
             GameServices.GetService<SpriteBatch>().Begin();
 
-            // Draw a rectangle at least the width of the menu and its padding
-            GameServices.GetService<SpriteBatch>().Draw(whiteRectangle, Vector2.Zero, null, bgColor, 0f, Vector2.Zero, new Vector2(maxWidthMenuUI, ScreenManager.GraphicsDevice.Viewport.Height), SpriteEffects.None, 0f);
-
-            // Draw a triangle next to the previous rectangle, spanning 300 on the top (TODO; change?)
+            // Draw a triangle beside where the menu would be drawn. Since Myra uses integer units,
+            // we need to round down the menu width before using it to draw the triangle --
+            // otherwise there'll be a noticeable gap in between.
             VertexPositionColor[] vertices = new VertexPositionColor[6];
-            vertices[0] = new VertexPositionColor(new Vector3(maxWidthMenuUI, ScreenManager.GraphicsDevice.Viewport.Height, 0), bgColor);
-            vertices[1] = new VertexPositionColor(new Vector3(maxWidthMenuUI, 0, 0), bgColor);
-            vertices[2] = new VertexPositionColor(new Vector3(maxWidthMenuUI + 300, 0, 0), bgColor);
+            vertices[0] = new VertexPositionColor(new Vector3((int)MenuWidthCurrent, ScreenManager.GraphicsDevice.Viewport.Height, 0), bgColor);
+            vertices[1] = new VertexPositionColor(new Vector3((int)MenuWidthCurrent, 0, 0), bgColor);
+            vertices[2] = new VertexPositionColor(new Vector3((int)MenuWidthCurrent + MenuTriangleWidth, 0, 0), bgColor);
 
             // Set up a basic effect and an orthographic projection to draw the previous triangle
             // vertices onto the screen
