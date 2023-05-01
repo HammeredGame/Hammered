@@ -1,8 +1,8 @@
 <scene>
   <camera mode="follow">
-    <follow_distance>600.000</follow_distance>
+    <follow_distance>275.000</follow_distance>
     <follow_angle>0.730</follow_angle>
-    <target>77.038 -12.853 -324.450</target>
+    <target>78.663 -12.855 -315.611</target>
     <up>0.000 1.000 0.000</up>
     <dir_index>2</dir_index>
     <fov>0.425</fov>
@@ -65,8 +65,8 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture type="texture2d">Meshes/Character/character_diffuse</texture>
-    <position>77.038 -12.853 -324.450</position>
-    <rotation>0.000 -0.626 0.000 -0.780</rotation>
+    <position>78.663 -12.855 -315.611</position>
+    <rotation>0.000 0.578 0.000 0.816</rotation>
     <scale>0.005</scale>
     <body type="box">
       <width>5.000</width>
@@ -79,7 +79,7 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture type="texture2d">Meshes/Hammer/hammer_Texture</texture>
-    <position>77.038 -12.853 -324.450</position>
+    <position>78.663 -12.855 -315.611</position>
     <rotation>0.737 0.000 0.000 0.675</rotation>
     <scale>1.000</scale>
     <body type="box">
