@@ -127,17 +127,17 @@ namespace HammeredGame.Game.PathPlanning.Grid
         /// </remarks>
         public uint[] GetCellIndex(Vector3 position)
         {
-            if (position.X < originPoint.X || position.X > originPoint.X + grid.GetLength(0) * sideLength)
+            if (position.X < originPoint.X || position.X > endPoint.X)
                 throw new ArgumentException(String.Format("The provided position's X coordinate is outside the grid." +
-                    "grid max X = {0}. {1} was provided instead.", originPoint.X + grid.GetLength(0) * sideLength, position.X));
+                    "grid max X = {0}. {1} was provided instead.", endPoint.X, position.X));
 
-            if (position.Y < originPoint.Y || position.Y > originPoint.Y + grid.GetLength(1) * sideLength)
+            if (position.Y < originPoint.Y || position.Y > endPoint.Y)
                 throw new ArgumentException(String.Format("The provided position's Y coordinate is outside the grid." +
-                    "grid max Y = {0}. {1} was provided instead.", originPoint.Y + grid.GetLength(1) * sideLength, position.Y));
+                    "grid max Y = {0}. {1} was provided instead.", endPoint.Y, position.Y));
 
-            if (position.Z < originPoint.Z || position.Z > originPoint.Z + grid.GetLength(2) * sideLength)
+            if (position.Z < originPoint.Z || position.Z > endPoint.Z)
                 throw new ArgumentException(String.Format("The provided position's Z coordinate is outside the grid." +
-                    "grid max Z = {0}. {1} was provided instead.", originPoint.Z + grid.GetLength(2) * sideLength, position.Z));
+                    "grid max Z = {0}. {1} was provided instead.", endPoint.Z, position.Z));
 
             //// Corner-coordinated grid cells
             //uint xIndex = (uint)Math.Floor((position.X - originPoint.X) / sideLength);
@@ -524,6 +524,9 @@ namespace HammeredGame.Game.PathPlanning.Grid
              *  4b. advance E2.
              * 5. Repeat steps until the destination of E2 is equal to the destination of the path.
             */
+			
+			// Note:
+			// The fact that this still remains a shortest path is guaranteed by the triangle inequality.
 
             // Edge case.
             if (ShortestPathResult.Length <= 2) { return ShortestPathResult.ToArray(); }
