@@ -17,7 +17,7 @@ namespace HammeredGame.Game.Scenes.Island1
     {
         public LaserTutorial(GameServices services, GameScreen screen) : base(services, screen)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/LaserTutorial.xml");
+            CreateFromXML($"Content/SceneDescriptions/Island1/LaserTutorial_voxel.xml");
             OnSceneStart();
         }
 
