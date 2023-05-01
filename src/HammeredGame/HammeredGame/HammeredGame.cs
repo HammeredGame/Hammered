@@ -54,19 +54,19 @@ namespace HammeredGame
         public HammeredGame()
         {
             // Get width and height of desktop and set the graphics device settings
-            int desktop_width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            int desktop_height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            int desktop_width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 10;
+            int desktop_height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 10;
             graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferWidth = desktop_width,
                 PreferredBackBufferHeight = desktop_height,
-                IsFullScreen = true,
+                IsFullScreen = false,
                 PreferredDepthStencilFormat = DepthFormat.None,
                 GraphicsProfile = GraphicsProfile.HiDef
             };
 
             Window.Title = "HAMMERED";
-            Window.IsBorderless = false;
+            Window.IsBorderless = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
