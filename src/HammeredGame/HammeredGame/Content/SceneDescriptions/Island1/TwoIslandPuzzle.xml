@@ -584,7 +584,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate" id="pressureplate">
-    <model>temp_pressureplate2</model>
+    <model>Meshes/Pressure_plate/pressure_plate</model>
+    <texture type="texture2d">Meshes/Pressure_plate/pressure_plate</texture>
     <position>147.000 -21.000 15.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>2.500</scale>
