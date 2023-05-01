@@ -29,6 +29,9 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<Tree>("tree").SetTreeFallen(true);
 
+            await ParentGameScreen.ShowDialogueAndWait("Woah! Magical teleportation!?");
+            await ParentGameScreen.ShowDialogueAndWait("This hammer must be mythical or something...!");
+
             // Show a hint for camera controls upon entering its trigger area, but set up the event
             // handler without blocking further script execution. This is so that the end trigger
             // can be activated without doing the camera actions.
