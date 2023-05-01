@@ -601,6 +601,25 @@
 /processorParam:TextureFormat=Color
 /build:Meshes/IslandMeshes/grassuv.png
 
+#begin Meshes/IslandMeshes/island_prototype_puzzle.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:Meshes/IslandMeshes/island_prototype_puzzle.fbx
+
 #begin Meshes/IslandMeshes/sand.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -612,6 +631,25 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Meshes/IslandMeshes/sand.jpg
+
+#begin Meshes/IslandMeshes/two_island_puzzle.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:Meshes/IslandMeshes/two_island_puzzle.fbx
 
 #begin Meshes/IslandMeshes/voxel_beach.fbx
 /importer:FbxImporter
@@ -627,29 +665,10 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.1
+/processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/voxel_beach.fbx
-
-#begin Meshes/IslandMeshes/voxel_island_better.fbx
-/importer:FbxImporter
-/processor:ModelProcessor
-/processorParam:ColorKeyColor=0,0,0,0
-/processorParam:ColorKeyEnabled=True
-/processorParam:DefaultEffect=BasicEffect
-/processorParam:GenerateMipmaps=True
-/processorParam:GenerateTangentFrames=False
-/processorParam:PremultiplyTextureAlpha=True
-/processorParam:PremultiplyVertexColors=True
-/processorParam:ResizeTexturesToPowerOfTwo=False
-/processorParam:RotationX=0
-/processorParam:RotationY=0
-/processorParam:RotationZ=0
-/processorParam:Scale=0.1
-/processorParam:SwapWindingOrder=False
-/processorParam:TextureFormat=Compressed
-/build:Meshes/IslandMeshes/voxel_island_better.fbx
 
 #begin Meshes/IslandMeshes/voxel_laser_tutorial.fbx
 /importer:FbxImporter
@@ -665,7 +684,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.1
+/processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/voxel_laser_tutorial.fbx
@@ -684,7 +703,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.1
+/processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/voxel_tree_tutorial.fbx
