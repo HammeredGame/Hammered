@@ -34,12 +34,12 @@ namespace HammeredGame.Game.Screens
             //    ExitScreen(alsoUnloadContent: true);
             //};
 
-            MenuItem menuItemRestartLevel = new()
+            MenuItem menuItemStartGame = new()
             {
                 Text = "Start New",
                 Id = "_menuItemStartNew"
             };
-            menuItemRestartLevel.Selected += (s, a) =>
+            menuItemStartGame.Selected += (s, a) =>
             {
                 StartNewFunc?.Invoke();
                 ExitScreen(alsoUnloadContent: true);
@@ -64,7 +64,7 @@ namespace HammeredGame.Game.Screens
             };
             menuItemQuitToDesktop.Selected += (_, _) => Environment.Exit(0);
 
-            MenuItems = new List<MenuItem>() { menuItemContinue, menuItemRestartLevel, menuItemOptions, menuItemCredits, menuItemQuitToDesktop };
+            MenuItems = new List<MenuItem>() { menuItemContinue, menuItemStartGame, menuItemOptions, menuItemCredits, menuItemQuitToDesktop };
             base.LoadContent();
         }
 
