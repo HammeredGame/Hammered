@@ -127,9 +127,6 @@ namespace HammeredGame.Game.PathPlanning.Grid
         /// </remarks>
         public uint[] GetCellIndex(Vector3 position)
         {
-            if (position.X < originPoint.X || position.Y < originPoint.Y || position.Z < originPoint.Z)
-                throw new ArgumentException("The provided position is outside the grid.");
-
             if (position.X < originPoint.X || position.X > originPoint.X + grid.GetLength(0) * sideLength)
                 throw new ArgumentException(String.Format("The provided position's X coordinate is outside the grid." +
                     "grid max X = {0}. {1} was provided instead.", originPoint.X + grid.GetLength(0) * sideLength, position.X));
@@ -138,7 +135,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
                 throw new ArgumentException(String.Format("The provided position's Y coordinate is outside the grid." +
                     "grid max Y = {0}. {1} was provided instead.", originPoint.Y + grid.GetLength(1) * sideLength, position.Y));
 
-            if (position.X < originPoint.Z || position.Z > originPoint.Z + grid.GetLength(2) * sideLength)
+            if (position.Z < originPoint.Z || position.Z > originPoint.Z + grid.GetLength(2) * sideLength)
                 throw new ArgumentException(String.Format("The provided position's Z coordinate is outside the grid." +
                     "grid max Z = {0}. {1} was provided instead.", originPoint.Z + grid.GetLength(2) * sideLength, position.Z));
 
