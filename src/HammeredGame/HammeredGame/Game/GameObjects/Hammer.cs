@@ -14,7 +14,7 @@ using HammeredGame.Game.PathPlanning.TurnSmoothing;
 using Vector3 = Microsoft.Xna.Framework.Vector3; // How is it that this ambigouity results in an error after adding comments???
 using Quaternion = Microsoft.Xna.Framework.Quaternion; // How is it that this ambigouity results in an error after adding comments???
 using Microsoft.Xna.Framework.Audio;
-
+using Aether.Animation;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -51,7 +51,7 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Hammer specific variables
-        private float hammerSpeed = 40f;
+        private float hammerSpeed = 50f;
         private HammerState hammerState;
 
         public Vector3 OldPosition { get; private set; }
@@ -113,9 +113,9 @@ namespace HammeredGame.Game.GameObjects
 
                 // Initialize the collision handlers based on the associated collision events
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
-                
+
                 this.AudioEmitter = new AudioEmitter();
-                this.AudioEmitter.Position = this.Position; 
+                this.AudioEmitter.Position = this.Position;
             }
         }
 
@@ -158,7 +158,16 @@ namespace HammeredGame.Game.GameObjects
             // if hammer has not yet been dropped / if hammer is not being called back
             if (hammerState == HammerState.WithCharacter && player != null)
             {
-                Position = player.Position;
+                // player.Model.Bones[2].ModelTransform *
+                //var transform = player.GetWorldMatrix();
+                //Position = player.Model.Bones[2].ModelTransform.Translation + transform.Translation;
+                //Rotation = player.Rotation;
+
+                // temporary solution to attach hammer to back of player while we can't figure out
+                // how to get the position of the right hand bone in world space
+                // todo: remove all Rotation-changing code and replace it
+                Position = player.Position + (player.GetWorldMatrix().Backward * 0.8f);
+                Rotation = player.Rotation;
             }
 
             // Get the input via keyboard or gamepad
@@ -269,7 +278,7 @@ namespace HammeredGame.Game.GameObjects
                 // The hammer, when called back, will follow the shortest path from the point where it was dropped towards
                 // the point the player called it FROM (it does not follow the player).
                 ComputeShortestPath();
-               
+
                 // When hammer is enroute, the physics engine shouldn't solve for
                 // collision constraints with it --> rather we want to manually
                 // handle collisions
@@ -282,6 +291,11 @@ namespace HammeredGame.Game.GameObjects
         {
             // Set hammer state to dropped
             hammerState = HammerState.Dropped;
+
+            // temporarily assume that a hammer with a character is upright, and rotate it so it
+            // becomes flat.
+            // todo: remove this
+            Rotation *= Quaternion.CreateFromYawPitchRoll(0, -MathHelper.PiOver2, 0);
 
             //hammer_sfx[1].Play();
             Services.GetService<AudioManager>().Play3DSound("Audio/hammer_drop", false, this.AudioEmitter, 1);
@@ -400,7 +414,7 @@ namespace HammeredGame.Game.GameObjects
             }
             /// <remarks>
             /// INSPIRATION FOR AS TO WHY THE ABOVE IS EXECUTED ASYNCHRONOUSLY (using C# "Tasks").
-            /// 
+            ///
             /// Observation 1
             /// =============
             /// The call
@@ -408,14 +422,14 @@ namespace HammeredGame.Game.GameObjects
             /// is very expensive (takes a few seconds to execute).
             /// This is true even in cases where A* algorithm completes almost instantly(e.g. 60ms or less).
             /// This is because time (seconds)are required to iterate through the data.
-            /// 
+            ///
             /// Observation 2
             /// =============
             /// If an "if-else" structure is adopted i.e.
             /// IF straightPathAchievable => FOLLOW STRAIGHT PATH
             /// ELSE => EXECUTE A*
             /// then instant response from the game is achieved.
-            /// 
+            ///
             /// Combining observrations 1 and 2
             /// ===============================
             /// The hammer may start travelling towards the straight line as much as it can.

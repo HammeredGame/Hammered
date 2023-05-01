@@ -150,7 +150,6 @@ namespace HammeredGame.Game.Screens
                 // callbacks it had
                 if (UserAction.Interact.Pressed(GameServices.GetService<Input>()))
                 {
-                    dialoguesPanel.Opacity = 0f;
                     (_, TaskCompletionSource taskCompletionSource) = dialogueQueue.Dequeue();
                     taskCompletionSource.SetResult();
                 }
@@ -173,6 +172,8 @@ namespace HammeredGame.Game.Screens
             }
             else
             {
+                dialoguesPanel.Opacity = 0f;
+                dialogueLabel.Text = "";
                 PassesFocusThrough = true;
             }
         }
