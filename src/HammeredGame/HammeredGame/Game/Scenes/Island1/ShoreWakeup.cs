@@ -12,7 +12,7 @@ namespace HammeredGame.Game.Scenes.Island1
     {
         public ShoreWakeup(GameServices services, GameScreen screen) : base(services, screen)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/ShoreWakeup.xml");
+            CreateFromXML($"Content/SceneDescriptions/Island1/ShoreWakeup_voxel.xml");
             OnSceneStart();
         }
 
