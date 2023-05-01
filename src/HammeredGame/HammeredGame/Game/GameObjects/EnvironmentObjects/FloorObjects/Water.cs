@@ -108,8 +108,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
                     part.Effect.Parameters["ModelTextureGammaCorrection"]?.SetValue(true);
 
                     part.Effect.Parameters["GameTimeSeconds"].SetValue((float)gameTime.TotalGameTime.TotalSeconds);
-                    part.Effect.Parameters["WaterNormal0"].SetValue(useBumpMaps ? normalMap0 : null);
-                    part.Effect.Parameters["WaterNormal1"].SetValue(useBumpMaps ? normalMap1 : null);
+                    part.Effect.Parameters["WaterNormal0"].SetValue(normalMap0);
+                    part.Effect.Parameters["WaterNormal1"].SetValue(normalMap1);
+                    part.Effect.Parameters["UseBumpMap"].SetValue(useBumpMaps);
                     part.Effect.Parameters["WaterOpacity"].SetValue(opacity);
                 }
                 mesh.Draw();
