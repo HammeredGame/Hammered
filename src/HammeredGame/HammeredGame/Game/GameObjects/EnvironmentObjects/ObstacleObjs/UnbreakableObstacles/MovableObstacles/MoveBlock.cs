@@ -16,6 +16,7 @@ using BEPUphysics.CollisionRuleManagement;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using BEPUutilities;
 using static HammeredGame.Game.GameObjects.Player;
+using System.Numerics;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles
 {
@@ -42,7 +43,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             Moving,
             InWater
         }
-        private MBState mbState;
+        public MBState MblockState { get; private set; }
         private BEPUutilities.Vector3 initialMovementVelocity = BEPUutilities.Vector3.Zero;
 
         public MoveBlock(GameServices services, Model model, Texture2D t, Microsoft.Xna.Framework.Vector3 pos, Microsoft.Xna.Framework.Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
@@ -72,12 +73,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.AudioEmitter.Position = this.Position; 
             }
 
-            mbState = MBState.Stationary;
+            MblockState = MBState.Stationary;
         }
 
         private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
-            if (this.mbState == MBState.InWater)
+            if (this.MblockState == MBState.InWater)
             {
                 // If in water, do nothing with the block - the block is
                 // essentially submerged and cannot move anymore
@@ -103,6 +104,21 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     }
                 }
 
+                if (other.Tag is MoveBlock)
+                {
+                    var otherBlock = other.Tag as MoveBlock;
+
+                    float maxY = otherBlock.Entity.Position.Y;
+                    foreach (var contact in pair.Contacts)
+                    {
+                        BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
+                        maxY = Math.Max(maxY, pointOfContact.Y);
+                    }
+
+                    otherBlock.Entity.Position = new BEPUutilities.Vector3(otherBlock.Entity.Position.X, maxY + (this.Entity as Box).Height, otherBlock.Entity.Position.Z);
+                    otherBlock.SetMoving(otherBlock.initialMovementVelocity);
+                }
+
                 return;
             }
 
@@ -111,7 +127,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             if (otherEntityInformation != null)
             {
                 // If colliding with a moving hammer, set the move block to move in the same direction
-                if (other.Tag is Hammer && this.mbState != MBState.Moving)
+                if (other.Tag is Hammer && this.MblockState != MBState.Moving)
                 {
                     Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
                     var hammer = other.Tag as Hammer;
@@ -120,7 +136,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         this.SetMoving(hammer.Entity.LinearVelocity);
                     }
                 }
-                else if (this.mbState == MBState.Moving)
+                else if (this.MblockState == MBState.Moving)
                 {
 
                     // Otherwise, the only collisions we care about is if the block is already moving
@@ -137,7 +153,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         if (other.Tag is MoveBlock)
                         {
                             var otherMoveBlock = other.Tag as MoveBlock;
-                            if (otherMoveBlock != null && otherMoveBlock.mbState == MBState.Stationary)
+                            if (otherMoveBlock != null && otherMoveBlock.MblockState == MBState.Stationary)
                             {
                                 otherMoveBlock.SetMoving(initialMovementVelocity);
                             }
@@ -161,7 +177,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 if (other.Tag is Water)
                 {
                     this.SetStationary();
-                    mbState = MBState.InWater;
+                    MblockState = MBState.InWater;
                     Services.GetService<AudioManager>().Play3DSound("Audio/rock_water", false, this.AudioEmitter, 1);
                 }
             }
@@ -171,7 +187,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         {
             //if (this.mbState == MBState.Moving) this.Entity.LinearVelocity = initialMovementVelocity;
 
-            if (this.mbState == MBState.Moving)
+            if (this.MblockState == MBState.Moving)
             {
                 var speed = this.Entity.LinearVelocity.Length();
                 if (speed <= 0.01f) this.SetStationary();
@@ -191,7 +207,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.Entity.LinearVelocity = move_vel;
             initialMovementVelocity = move_vel;
             this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
-            mbState = MBState.Moving;
+            MblockState = MBState.Moving;
         }
 
         // On initialization, and on valid collisions with other objects,
@@ -205,7 +221,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.Entity.LinearVelocity = BEPUutilities.Vector3.Zero;
             this.Entity.BecomeDynamic(10000f);
             this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
-            mbState = MBState.Stationary;
+            MblockState = MBState.Stationary;
         }
     }
 }

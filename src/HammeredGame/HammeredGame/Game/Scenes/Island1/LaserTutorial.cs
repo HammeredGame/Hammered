@@ -50,7 +50,7 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
-                ParentGameScreen.InitializeLevel(typeof(ChallengePuzzle).FullName);
+                ParentGameScreen.InitializeLevel(typeof(PrototypePuzzle).FullName);
             };
 
             // Get<Player>("player").OnMove += async _ => {
