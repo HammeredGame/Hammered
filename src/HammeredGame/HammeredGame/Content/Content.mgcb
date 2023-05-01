@@ -615,7 +615,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/island_prototype_puzzle.fbx
@@ -646,7 +646,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/two_island_puzzle.fbx
@@ -665,7 +665,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/voxel_beach.fbx
@@ -684,7 +684,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/voxel_laser_tutorial.fbx
@@ -703,7 +703,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/voxel_tree_tutorial.fbx
@@ -722,7 +722,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/Pressure_plate/pressure_plate.fbx
