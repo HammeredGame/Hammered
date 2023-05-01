@@ -151,7 +151,8 @@
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree">
-    <model>diffuse_tree</model>
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
     <position>80.000 -26.800 -35.300</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -163,7 +164,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree1">
-    <model>diffuse_tree</model>
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
     <position>-74.800 -21.250 15.800</position>
     <rotation>0.000 -0.864 0.000 0.504</rotation>
     <scale>1.000</scale>

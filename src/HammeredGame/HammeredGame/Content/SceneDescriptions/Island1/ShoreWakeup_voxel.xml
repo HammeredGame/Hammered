@@ -147,7 +147,8 @@
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree">
-    <model>diffuse_tree</model>
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
     <position>200.000 -5.000 -110.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -159,7 +160,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree1">
-    <model>diffuse_tree</model>
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
     <position>140.000 -5.000 -140.000</position>
     <rotation>0.000 0.603 0.000 0.798</rotation>
     <scale>1.000</scale>
@@ -171,7 +173,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree2">
-    <model>diffuse_tree</model>
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
     <position>218.000 -5.000 -130.000</position>
     <rotation>0.000 -0.274 0.000 0.962</rotation>
     <scale>1.000</scale>
@@ -183,7 +186,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree3">
-    <model>diffuse_tree</model>
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
     <position>240.000 -5.000 -80.000</position>
     <rotation>0.042 -0.853 -0.004 0.521</rotation>
     <scale>1.000</scale>
@@ -195,7 +199,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree4">
-    <model>diffuse_tree</model>
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
     <position>210.000 -5.000 -180.000</position>
     <rotation>0.070 -0.617 -0.007 0.784</rotation>
     <scale>1.000</scale>

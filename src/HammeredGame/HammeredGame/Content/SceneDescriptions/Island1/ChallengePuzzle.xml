@@ -82,7 +82,8 @@
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree1">
-    <model>diffuse_tree</model>
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
     <position>120.000 -88.350 71.800</position>
     <rotation>0.000 -0.864 0.000 0.504</rotation>
     <scale>1.000</scale>
