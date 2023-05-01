@@ -180,6 +180,10 @@ namespace HammeredGame.Game
         public void CreateFromXML(string fileName)
         {
             (Camera, Lights, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            // Set up the list of debug grid cells for debugging visualization
+            // WARNING: Execute the following line of code if you wish to initialize the grid only once.
+            // Suggested for when (constant) AVAILABLE grid cells are shown.
+            //this.UpdateDebugGrid(); // Quick Patch...maybe it should be put at a better place in the code.
             foreach (GameObject obj in GameObjects.Values) { obj.SetCurrentScene(this); }
         }
 
