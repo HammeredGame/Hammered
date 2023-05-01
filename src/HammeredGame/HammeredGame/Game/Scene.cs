@@ -277,7 +277,7 @@ namespace HammeredGame.Game
         /// </summary>
         /// <param name="prefix">The prefix to add numbers to</param>
         /// <returns>The unique name candidate</returns>
-        private string GenerateUniqueNameWithPrefix(string prefix)
+        protected string GenerateUniqueNameWithPrefix(string prefix)
         {
             string nameCandidate = prefix;
             for (int i = 1; GameObjects.ContainsKey(nameCandidate); i++)

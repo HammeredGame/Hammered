@@ -948,6 +948,9 @@
 #begin SceneDescriptions/Island1/LaserTutorial.xml
 /copy:SceneDescriptions/Island1/LaserTutorial.xml
 
+#begin SceneDescriptions/Island1/PrototypePuzzle_voxel.xml
+/copy:SceneDescriptions/Island1/PrototypePuzzle_voxel.xml
+
 #begin SceneDescriptions/Island1/ShoreWakeup_voxel.xml
 /copy:SceneDescriptions/Island1/ShoreWakeup_voxel.xml
 
