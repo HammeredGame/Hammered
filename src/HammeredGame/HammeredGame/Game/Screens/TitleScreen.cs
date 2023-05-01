@@ -48,13 +48,15 @@ namespace HammeredGame.Game.Screens
             MenuItem menuItemOptions = new()
             {
                 Text = "Options",
-                Id = "_menuItemOptions"
+                Id = "_menuItemOptions",
+                Enabled = false
             };
 
             MenuItem menuItemCredits = new()
             {
                 Text = "Credits",
-                Id = "_menuItemCredits"
+                Id = "_menuItemCredits",
+                Enabled = false
             };
 
             MenuItem menuItemQuitToDesktop = new()
