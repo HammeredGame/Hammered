@@ -12,6 +12,7 @@ namespace HammeredGame.Game.Screens
     {
         public Action ContinueFunc;
         public Action StartNewFunc;
+        public Action ToggleDebugUIFunc;
 
         public override void LoadContent()
         {
@@ -52,11 +53,14 @@ namespace HammeredGame.Game.Screens
                 Enabled = false
             };
 
-            MenuItem menuItemCredits = new()
+            MenuItem menuItemToggleDebugUI = new()
             {
-                Text = "Credits",
-                Id = "_menuItemCredits",
-                Enabled = false
+                Text = "Toggle Debug UI",
+                Id = "_menuItemToggleDebugUI"
+            };
+            menuItemToggleDebugUI.Selected += (s, a) =>
+            {
+                ToggleDebugUIFunc?.Invoke();
             };
 
             MenuItem menuItemQuitToDesktop = new()
@@ -66,7 +70,7 @@ namespace HammeredGame.Game.Screens
             };
             menuItemQuitToDesktop.Selected += (_, _) => Environment.Exit(0);
 
-            MenuItems = new List<MenuItem>() { menuItemContinue, menuItemStartGame, menuItemOptions, menuItemCredits, menuItemQuitToDesktop };
+            MenuItems = new List<MenuItem>() { menuItemContinue, menuItemStartGame, menuItemOptions, menuItemToggleDebugUI, menuItemQuitToDesktop };
             base.LoadContent();
         }
 
