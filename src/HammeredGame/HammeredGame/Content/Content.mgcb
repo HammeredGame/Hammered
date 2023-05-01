@@ -527,6 +527,18 @@
 /processorParam:TextureFormat=Compressed
 /build:Meshes/Doors/stone_gate_open.fbx
 
+#begin Meshes/Doors/stone_gate_tex.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Meshes/Doors/stone_gate_tex.png
+
 #begin Meshes/Doors/stone_gate.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
@@ -545,18 +557,6 @@
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/Doors/stone_gate.fbx
-
-#begin Meshes/Doors/stone_gate.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Meshes/Doors/stone_gate.png
 
 #begin Meshes/Hammer/hammer_Texture.png
 /importer:TextureImporter
@@ -709,8 +709,15 @@
 /build:Meshes/IslandMeshes/voxel_tree_tutorial.fbx
 
 #begin Meshes/PressurePlates/pressure_plate_albedo.png
-/importer:
-/processor:
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
 /build:Meshes/PressurePlates/pressure_plate_albedo.png
 
 #begin Meshes/PressurePlates/pressure_plate.fbx
@@ -936,6 +943,9 @@
 
 #begin SceneDescriptions/Island1/TwoIslandPuzzle_old.xml
 /copy:SceneDescriptions/Island1/TwoIslandPuzzle_old.xml
+
+#begin SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml
+/copy:SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml
 
 #begin SceneDescriptions/Island1/TwoIslandPuzzle.xml
 /copy:SceneDescriptions/Island1/TwoIslandPuzzle.xml
