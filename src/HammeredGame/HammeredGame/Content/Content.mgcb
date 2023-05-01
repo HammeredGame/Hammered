@@ -802,8 +802,14 @@
 #begin SceneDescriptions/Island1/LaserTutorial.xml
 /copy:SceneDescriptions/Island1/LaserTutorial.xml
 
+#begin SceneDescriptions/Island1/ShoreWakeup_voxel.xml
+/copy:SceneDescriptions/Island1/ShoreWakeup_voxel.xml
+
 #begin SceneDescriptions/Island1/ShoreWakeup.xml
 /copy:SceneDescriptions/Island1/ShoreWakeup.xml
+
+#begin SceneDescriptions/Island1/TreeTutorial_voxel.xml
+/copy:SceneDescriptions/Island1/TreeTutorial_voxel.xml
 
 #begin SceneDescriptions/Island1/TreeTutorial.xml
 /copy:SceneDescriptions/Island1/TreeTutorial.xml
