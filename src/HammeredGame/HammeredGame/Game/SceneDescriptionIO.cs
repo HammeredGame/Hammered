@@ -201,6 +201,8 @@ namespace HammeredGame.Game
                     cameraInstance.StaticPositions = cameraElement.Descendants("position").Select(v => Parse<Vector3>(v.Value)).ToArray();
                     break;
             }
+            // Set which of the four directions we should start with
+            cameraInstance.CurrentCameraDirIndex = Parse<int>(cameraElement.Descendants("dir_index").SingleOrDefault()?.Value ?? "0");
 
             // Set the field of view
             cameraInstance.FieldOfView = Parse<float>(cameraElement.Descendants("fov").Single().Value);
@@ -489,7 +491,9 @@ namespace HammeredGame.Game
                     new XElement("target",
                         Show<Vector3>(camera.Target)),
                     new XElement("up",
-                        Show<Vector3>(camera.Up)));
+                        Show<Vector3>(camera.Up)),
+                    new XElement("dir_index",
+                        Show<int>(camera.CurrentCameraDirIndex)));
             }
             else
             {
@@ -502,7 +506,9 @@ namespace HammeredGame.Game
                     new XElement("target",
                         Show<Vector3>(camera.Target)),
                     new XElement("up",
-                        Show<Vector3>(camera.Up)));
+                        Show<Vector3>(camera.Up)),
+                    new XElement("dir_index",
+                        Show<int>(camera.CurrentCameraDirIndex)));
             }
             cameraElement.Add(new XElement("fov", Show<float>(camera.FieldOfView)));
 
