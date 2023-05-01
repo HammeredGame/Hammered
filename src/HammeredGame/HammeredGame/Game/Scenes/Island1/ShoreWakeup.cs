@@ -43,6 +43,10 @@ namespace HammeredGame.Game.Scenes.Island1
 
             await Services.GetService<ScriptUtils>().WaitEvent(Get<TriggerObject>("hammer_trigger"), "OnTrigger");
 
+            // Disable player movement
+            Get<Player>("player1").SetActiveCamera(null);
+            await ParentGameScreen.ShowDialogueAndWait("...Huh, what's that hammer over there?");
+
             // set hammer owner so we can now summon it
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
 
@@ -63,14 +67,14 @@ namespace HammeredGame.Game.Scenes.Island1
 
             // Start following the hammer very closely, in very slow motion
             await Services.GetService<ScriptUtils>().WaitEvent(Get<Hammer>("hammer"), "OnSummon");
-            Space.TimeStepSettings.TimeStepDuration = normalPhysicsTimeDuration * 0.01f;
+            Space.TimeStepSettings.TimeStepDuration = normalPhysicsTimeDuration * 0.1f;
             Camera.FollowDistance = 20f;
             Get<Player>("player1").SetActiveCamera(null);
             Camera.SetFollowTarget(Get<Hammer>("hammer"));
 
             // After three seconds, speed up the slow motion a little bit
             await Services.GetService<ScriptUtils>().WaitSeconds(3);
-            Space.TimeStepSettings.TimeStepDuration = normalPhysicsTimeDuration * 0.1f;
+            Space.TimeStepSettings.TimeStepDuration = normalPhysicsTimeDuration * 0.6f;
 
             // Once it reaches the player, reset to normal physics time and camera distance
             await Services.GetService<ScriptUtils>().WaitEvent(Get<Player>("player1"), "OnHammerRetrieved");
@@ -78,6 +82,7 @@ namespace HammeredGame.Game.Scenes.Island1
             Camera.FollowDistance = normalCameraDistance;
             Get<Player>("player1").SetActiveCamera(Camera);
             Camera.SetFollowTarget(Get<Player>("player1"));
+            await ParentGameScreen.ShowDialogueAndWait("Sweet! A hammer I can summon!?");
 
             // Now show prompts for dropping too
             ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.DropHammer }, hammerPromptTokenSource.Token);
