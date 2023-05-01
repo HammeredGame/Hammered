@@ -27,6 +27,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
         private Texture2D normalMap0;
         private Texture2D normalMap1;
         private float opacity = 0.6f;
+        private bool useBumpMaps = false;
 
         public Water(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -107,8 +108,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
                     part.Effect.Parameters["ModelTextureGammaCorrection"]?.SetValue(true);
 
                     part.Effect.Parameters["GameTimeSeconds"].SetValue((float)gameTime.TotalGameTime.TotalSeconds);
-                    part.Effect.Parameters["WaterNormal0"].SetValue(normalMap0);
-                    part.Effect.Parameters["WaterNormal1"].SetValue(normalMap1);
+                    part.Effect.Parameters["WaterNormal0"].SetValue(useBumpMaps ? normalMap0 : null);
+                    part.Effect.Parameters["WaterNormal1"].SetValue(useBumpMaps ? normalMap1 : null);
                     part.Effect.Parameters["WaterOpacity"].SetValue(opacity);
                 }
                 mesh.Draw();
@@ -119,6 +120,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
         {
             base.UI();
             ImGui.DragFloat("Water Opacity", ref opacity, 0.1f, 0f, 1f);
+            ImGui.Checkbox("BumpMap", ref useBumpMaps);
         }
     }
 }
