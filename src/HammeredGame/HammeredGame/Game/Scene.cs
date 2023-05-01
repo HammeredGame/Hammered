@@ -426,10 +426,16 @@ namespace HammeredGame.Game
             ImGui.Checkbox("Draw Grids", ref DrawDebugGrid);
 
             // Show UI for lights
+            if (ImGui.CollapsingHeader("Sunlight"))
             {
                 System.Numerics.Vector3 sunDir = Lights.Sun.Direction.ToNumerics();
                 ImGui.DragFloat3("Sun Direction", ref sunDir, 0.01f);
                 Lights.Sun.Direction = Vector3.Normalize(sunDir);
+                ImGui.DragFloat("Sun Intensity", ref Lights.Sun.Intensity, 0.01f, 0f);
+                System.Numerics.Vector3 sunColor = Lights.Sun.LightColor.ToVector3().ToNumerics();
+                ImGui.PushItemWidth(200f);
+                ImGui.ColorPicker3("Sun Color", ref sunColor);
+                Lights.Sun.LightColor = new Color(sunColor);
             }
 
             // Show a dual pane layout, with the scene object list on the left and details on the
