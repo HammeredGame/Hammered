@@ -77,6 +77,8 @@ float GameTimeSeconds;
 DECLARE_TEXTURE(WaterNormal0, normalXSampler, Wrap, Wrap)
 DECLARE_TEXTURE(WaterNormal1, normalYSampler, Wrap, Wrap)
 
+bool UseBumpMap;
+
 float WaterOpacity;
 
 struct MainShadingVSInput
@@ -193,7 +195,8 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
     // Sample material texture based on vertex UV passed from the vertex shader
     float4 textureColor = SampleWaterTexture(input.TextureCoordinate);
 
-    float3 normal = SampleWaterNormal(input.Normal, input.Tangent, input.Binormal, input.TextureCoordinate);
+    // Use two bump maps if we have told it so
+    float3 normal = UseBumpMap ? SampleWaterNormal(input.Normal, input.Tangent, input.Binormal, input.TextureCoordinate) : input.Normal;
 
     // The specular and diffuse components are added for every directional light
     // We multiply by two (arbitrary) to add a kind of shininess and transparency
