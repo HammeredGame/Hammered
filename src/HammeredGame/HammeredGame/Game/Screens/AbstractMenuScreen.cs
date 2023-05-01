@@ -98,6 +98,15 @@ namespace HammeredGame.Game.Screens
             };
             foreach (MenuItem menuItem in MenuItems)
             {
+                // MenuItem.Click() resets the hover index to null despite HoverIndexCanBeNull being
+                // false (due to a buggy Myra implementation). Since the .Selected event fires after
+                // this, we can work around it by resetting the HoverIndex to the clicked index in a
+                // click handler.
+                menuItem.Selected += (s, a) =>
+                {
+                    mainMenu.HoverIndex = (s as MenuItem).Index;
+                };
+
                 mainMenu.Items.Add(menuItem);
             }
 
