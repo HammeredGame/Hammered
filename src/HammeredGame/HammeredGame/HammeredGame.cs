@@ -50,6 +50,7 @@ namespace HammeredGame
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
 
+        private bool drawDebugUI;
 
         public HammeredGame()
         {
@@ -123,6 +124,11 @@ namespace HammeredGame
             gameServices.AddService<AudioManager>(audioManager);
 
             manager = new ScreenManager(gameServices, gpu, mainRenderTarget);
+
+#if DEBUG
+            drawDebugUI = true;
+#endif
+
             InitTitleScreen();
 
             base.Initialize();
@@ -143,6 +149,10 @@ namespace HammeredGame
                 StartNewFunc = () =>
                 {
                     manager.AddScreen(new Game.Screens.GameScreen(typeof(Game.Scenes.Island1.ShoreWakeup).FullName));
+                },
+                ToggleDebugUIFunc = () =>
+                {
+                    drawDebugUI = !drawDebugUI;
                 }
             });
         }
@@ -226,17 +236,18 @@ namespace HammeredGame
             // Commit all the data to the back buffer
             spriteBatch.End();
 
-#if DEBUG
-            // == Draw debug UI on top of all rendered base.
-            // Begin by calling BeforeLayout, which handles input
-            imGuiRenderer.BeforeLayout(gameTime, this.IsActive);
+            if (drawDebugUI)
+            {
+                // == Draw debug UI on top of all rendered base.
+                // Begin by calling BeforeLayout, which handles input
+                imGuiRenderer.BeforeLayout(gameTime, this.IsActive);
 
-            // Draw the main developer UI
-            UI();
+                // Draw the main developer UI
+                UI();
 
-            // Call AfterLayout to finish.
-            imGuiRenderer.AfterLayout();
-#endif
+                // Call AfterLayout to finish.
+                imGuiRenderer.AfterLayout();
+            }
 
             base.Draw(gameTime);
         }
