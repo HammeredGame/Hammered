@@ -11,8 +11,7 @@ Welcome to "HAMMERED"! **We recommend playing this game with an Xbox controller*
 | Summon hammer back                       | X Button               | Space Key                           |
 | Change camera angle                      | L / R Shoulder Buttons | Q / E Keys                          |
 | Move in menu (Mouse OK too)              | Left Stick             | WASD Keys                           |
-| Confirm menu item                        | A Button               | Enter Key                           |
-
-Summoning the hammer will make the hammer follows a straight line trajectory from the position the hammer was dropped at towards the player. At the end of the trajectory, the character catches and moves while carrying the hammer.
+| Confirm menu item                        | A Button               | Z Key                               |
+| Pause                                    | Start Button           | Escape Key                          |
 
 Camera angles alternate between four four (4) predetermined camera angles.
