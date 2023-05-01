@@ -121,21 +121,21 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
 
                 animations = this.Model.GetAnimations();
-                var clip_idle = animations.Clips["Armature|idle-hammer"];
+                var clip_idle = animations.Clips["Armature|idle"];
                 animations.SetClip(clip_idle);
 
                 //player_sfx = Services.GetService<List<SoundEffect>>();
                 //listener = Services.GetService<AudioListener>();
                 //emitter = Services.GetService<AudioEmitter>();
-                
+
                 //set player as the listener for all sfx
                 Services.GetService<AudioManager>().listener.Position = this.Position;
-                
-                //emit footsteps 
+
+                //emit footsteps
                 this.AudioEmitter = new AudioEmitter();
-                this.AudioEmitter.Position = this.Position; 
-                
-                
+                this.AudioEmitter.Position = this.Position;
+
+
             }
 
             // Initial position should be on/over ground
@@ -259,8 +259,8 @@ namespace HammeredGame.Game.GameObjects
             /// <remarks> Generally, "dirty flags" are used to indicate that some data has changed </remarks>
             ///</value>
             bool moveDirty = false;
-            
-            
+
+
             // Zero out the player velocity vector (to remove the possibility of
             // previous computations accumulating/carrying over)
             player_vel = Vector3.Zero;
@@ -277,7 +277,7 @@ namespace HammeredGame.Game.GameObjects
             moveDirty = this.HandleInput(forwardDirection);
 
             // Animate player
-            
+
 
             // If there was movement, normalize speed and edit rotation of character model
             // Also account for collisions
@@ -311,17 +311,17 @@ namespace HammeredGame.Game.GameObjects
                     Services.GetService<AudioManager>().Play3DSound("Audio/stereo_step", false, this.AudioEmitter, 1);
                     timeDelay += TimeSpan.FromSeconds(0.2f);
                 }
-                
+
                 if(!previously_moving)
                 {
                     // Start running animation when player starts moving
-                    var clip_run = animations.Clips["Armature|run-hammer"];
+                    var clip_run = animations.Clips["Armature|run"];
                     animations.SetClip(clip_run);
                     previously_moving = true;
                     //SoundEffectInstance step = player_sfx[0].CreateInstance();
                     //step.IsLooped = true;
                     //step.Play();
-                    
+
 
                 }
 
@@ -331,7 +331,7 @@ namespace HammeredGame.Game.GameObjects
                 if(previously_moving)
                 {
                     // Start idle animation when player stops moving
-                    var clip_idle = animations.Clips["Armature|idle-hammer"];
+                    var clip_idle = animations.Clips["Armature|idle"];
                     animations.SetClip(clip_idle);
                     previously_moving = false;
                 }
@@ -347,14 +347,14 @@ namespace HammeredGame.Game.GameObjects
 
                 //position += player_vel;
             }
-            
 
-            animations.Update(gameTime.ElapsedGameTime * 2, true, Matrix.Identity);
+
+            animations.Update(gameTime.ElapsedGameTime * 1.2f, true, Matrix.Identity);
 
             Services.GetService<AudioManager>().listener.Position = this.Position;
-            Services.GetService<AudioManager>().listener.Forward = forwardDirection; 
-            
-            
+            Services.GetService<AudioManager>().listener.Forward = forwardDirection;
+
+
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
 
@@ -423,7 +423,7 @@ namespace HammeredGame.Game.GameObjects
                 player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera);
                 moveDirty = true;
             }
-            
+
             return moveDirty;
         }
 
