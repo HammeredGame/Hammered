@@ -3,11 +3,15 @@ using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using HammeredGame.Core;
+using HammeredGame.Graphics;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework.Audio;
 
 namespace HammeredGame.Game
 {
@@ -38,10 +42,18 @@ namespace HammeredGame.Game
         // Common variables for any object in the game
         public Model Model;
 
+        // Load in shader
+        public Effect Effect;
+
+        protected GraphicsDevice GPU;
+
         public Texture2D Texture;
         private Vector3 position;
 
         protected Scene CurrentScene { get; private set; }
+
+
+        public AudioEmitter AudioEmitter;
 
         // Use the private position vector only if we don't have a physics entity attached.
         // Otherwise, we delegate the position property entirely to the physics body position and
@@ -102,6 +114,10 @@ namespace HammeredGame.Game
             this.Texture = t;
 
             this.ActiveSpace = services.GetService<Space>();
+            this.GPU = services.GetService<GraphicsDevice>();
+
+            // Load in Shader
+            this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/MainShading");
 
             if (this.Model != null && model.GetAnimations() == null)
             {
@@ -132,22 +148,23 @@ namespace HammeredGame.Game
 
         public abstract void Update(GameTime gameTime, bool screenHasFocus);
 
-        // get position and rotation of the object - extract the scale, rotation, and translation matrices
-        // get world matrix and then call draw model to draw the mesh on screen
-        public virtual void Draw(Matrix view, Matrix projection)
+        public virtual void Draw(GameTime gameTime, Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
         {
             if (Visible)
-                DrawModel(Model, view, projection, Texture);
+                DrawModel(gameTime, Model, view, projection, cameraPosition, Texture, lights);
         }
 
         /// <summary>
         /// Common method to draw 3D models
         /// </summary>
+        /// <param name="gameTime"></param>
         /// <param name="model"></param>
         /// <param name="view"></param>
         /// <param name="projection"></param>
+        /// <param name="cameraPosition"></param>
         /// <param name="tex"></param>
-        public void DrawModel(Model model, Matrix view, Matrix projection, Texture2D tex)
+        /// <param name="lights"></param>
+        public virtual void DrawModel(GameTime gameTime, Model model, Matrix view, Matrix projection, Vector3 cameraPosition, Texture2D tex, SceneLightSetup lights)
         {
             Matrix world = GetWorldMatrix();
 
@@ -156,55 +173,44 @@ namespace HammeredGame.Game
 
             foreach (ModelMesh mesh in model.Meshes)
             {
-                // Set the effect class for each mesh part in the model
-                // This is most likely where we attach shaders to the model/mesh
-                foreach (Effect effect in mesh.Effects)
+                foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    if(effect.GetType() == typeof(BasicEffect))
-                    {
-                        BasicEffect _effect = (BasicEffect) effect;
-                        _effect.World = meshTransforms[mesh.ParentBone.Index] * world;
-                        _effect.View = view;
-                        _effect.Projection = projection;
+                    // Load in the shader and set its parameters
+                    part.Effect = this.Effect;
 
-                        _effect.EnableDefaultLighting();
-                        //effect.LightingEnabled = Keyboard.GetState().IsKeyUp(Keys.L);
-                        _effect.LightingEnabled = true;
+                    part.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform * world);
+                    part.Effect.Parameters["View"]?.SetValue(view);
+                    part.Effect.Parameters["Projection"]?.SetValue(projection);
+                    part.Effect.Parameters["CameraPosition"]?.SetValue(cameraPosition);
 
-                        //effect.DiffuseColor = new Vector3(0.25f, 0.25f, 0.25f);
-                        //effect.SpecularColor = new Vector3(0.25f, 0.25f, 0.25f);
-                        //effect.SpecularPower = 0.1f;
-                        _effect.AmbientLightColor = new Vector3(0.5f, 0.5f, 0.5f);
+                    // Pre-compute the inverse transpose of the world matrix to use in shader
+                    Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
 
-                        //effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
-                        //effect.DirectionalLight0.Direction = new Vector3(-1, -1, 0);
-                        //effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
+                    part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
 
-                        _effect.DirectionalLight0.Enabled = true;
-                        _effect.DirectionalLight0.DiffuseColor = Vector3.One * 0.7f;
-                        _effect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1, -1, 0));
-                        _effect.DirectionalLight0.SpecularColor = Vector3.One * 0.2f;
+                    // Set light parameters
+                    part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());
+                    part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
+                    part.Effect.Parameters["DirectionalLightDirections"]?.SetValue(lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray());
+                    part.Effect.Parameters["SunLightIndex"]?.SetValue(lights.Directionals.Count);
 
-                        _effect.DirectionalLight1.Enabled = true;
-                        _effect.DirectionalLight1.DiffuseColor = Vector3.One * 0.2f;
-                        _effect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1, -1, 0));
-                        _effect.DirectionalLight1.SpecularColor = Vector3.One * 0.1f;
+                    part.Effect.Parameters["AmbientLightColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
+                    part.Effect.Parameters["AmbientLightIntensity"]?.SetValue(lights.Ambient.Intensity);
 
-                        _effect.DirectionalLight2.Enabled = true;
-                        _effect.DirectionalLight2.DiffuseColor = Vector3.One * 0.15f;
-                        _effect.DirectionalLight2.Direction = Vector3.Normalize(new Vector3(-1, -1, -1));
-                        _effect.DirectionalLight2.SpecularColor = Vector3.One * 0.1f;
+                    // Set tints for the diffuse color, ambient color, and specular color. These are
+                    // multiplied in the shader by the light color and intensity, as well as each
+                    // component's weight.
+                    part.Effect.Parameters["MaterialDiffuseColor"]?.SetValue(Color.White.ToVector4());
+                    part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
+                    part.Effect.Parameters["MaterialHasSpecular"].SetValue(false);
+                    // Uncomment if specular; will use Blinn-Phong.
+                    // part.Effect.Parameters["MaterialSpecularColor"]?.SetValue(Color.White.ToVector4());
+                    // part.Effect.Parameters["MaterialShininess"]?.SetValue(20f);
 
-                        _effect.TextureEnabled = tex != null;
-                        _effect.Texture = tex;
-
-                        _effect.FogEnabled = true;
-                        _effect.FogStart = 400.0f;
-                        _effect.FogEnd = 450.0f;
-                        _effect.FogColor = Color.AliceBlue.ToVector3();
-                    }
+                    part.Effect.Parameters["ModelTexture"]?.SetValue(tex);
+                    // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
+                    part.Effect.Parameters["ModelTextureGammaCorrection"]?.SetValue(true);
                 }
-
                 mesh.Draw();
             }
         }
@@ -218,7 +224,7 @@ namespace HammeredGame.Game
             Matrix rotationMatrix = Matrix.CreateFromQuaternion(Rotation);
             // For translation, include the model's origin offset so that the collision body
             // position matches with the rendered model
-            Matrix translationMatrix = Matrix.CreateTranslation(Position + EntityModelOffset);
+            Matrix translationMatrix = Matrix.CreateTranslation(Position + Vector3.Transform(EntityModelOffset, rotationMatrix));
             Matrix scaleMatrix = Matrix.CreateScale(Scale);
 
             // Construct world matrix

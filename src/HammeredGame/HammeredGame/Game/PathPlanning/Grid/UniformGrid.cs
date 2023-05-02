@@ -127,20 +127,17 @@ namespace HammeredGame.Game.PathPlanning.Grid
         /// </remarks>
         public uint[] GetCellIndex(Vector3 position)
         {
-            if (position.X < originPoint.X || position.Y < originPoint.Y || position.Z < originPoint.Z)
-                throw new ArgumentException("The provided position is outside the grid.");
-
-            if (position.X < originPoint.X || position.X > originPoint.X + grid.GetLength(0) * sideLength)
+            if (position.X < originPoint.X || position.X > endPoint.X)
                 throw new ArgumentException(String.Format("The provided position's X coordinate is outside the grid." +
-                    "grid max X = {0}. {1} was provided instead.", originPoint.X + grid.GetLength(0) * sideLength, position.X));
+                    "grid max X = {0}. {1} was provided instead.", endPoint.X, position.X));
 
-            if (position.Y < originPoint.Y || position.Y > originPoint.Y + grid.GetLength(1) * sideLength)
+            if (position.Y < originPoint.Y || position.Y > endPoint.Y)
                 throw new ArgumentException(String.Format("The provided position's Y coordinate is outside the grid." +
-                    "grid max Y = {0}. {1} was provided instead.", originPoint.Y + grid.GetLength(1) * sideLength, position.Y));
+                    "grid max Y = {0}. {1} was provided instead.", endPoint.Y, position.Y));
 
-            if (position.X < originPoint.Z || position.Z > originPoint.Z + grid.GetLength(2) * sideLength)
+            if (position.Z < originPoint.Z || position.Z > endPoint.Z)
                 throw new ArgumentException(String.Format("The provided position's Z coordinate is outside the grid." +
-                    "grid max Z = {0}. {1} was provided instead.", originPoint.Z + grid.GetLength(2) * sideLength, position.Z));
+                    "grid max Z = {0}. {1} was provided instead.", endPoint.Z, position.Z));
 
             //// Corner-coordinated grid cells
             //uint xIndex = (uint)Math.Floor((position.X - originPoint.X) / sideLength);
@@ -253,42 +250,92 @@ namespace HammeredGame.Game.PathPlanning.Grid
             }
             catch (System.ArgumentNullException e) // There is no path from the current grid cell towards the destination
             {
-                int step = 1;
+                int step;
+
+                // Initializing required data structures.
+                step = 0;
                 PriorityQueue<uint[], double> availablePositions = new PriorityQueue<uint[], double>();
-                // Search the nearest neighbours in the x-z plane.
-                for (int width = -1 * step; width <= 1 * step; width ++)
+
+                // Find closest available neighbouring positions.
+                while (availablePositions.Count == 0)
                 {
-                    for (int depth = -1 * step; depth <= 1 * step; depth++)
+                    // Search the nearest neighbours in the x-z plane.
+                    for (int width = -1 * step; width <= 1 * step; width++)
                     {
-                        if (Math.Abs(width) == step || Math.Abs(depth) == step) // Care only for the layer that is currently explored.
+                        for (int depth = -1 * step; depth <= 1 * step; depth++)
                         {
-                            uint[] neighbourCellIndex = {
+                            if (Math.Abs(width) == step || Math.Abs(depth) == step) // Care only for the layer that is currently explored.
+                            {
+                                uint[] neighbourCellIndex = {
                                 Convert.ToUInt32(startCellIndex[0] + width),
                                 startCellIndex[1],
                                 Convert.ToUInt32(startCellIndex[2] + depth)
                             };
-                            // WARNING: This will produce errors in cases where there are obstruced obstacles at the boundary
-                            // of the grid (out of bounds error).
-                            if (this.GetCellMark(neighbourCellIndex))
-                                // Priority is done according to Manhattan distance
-                                availablePositions.Enqueue(
-                                    neighbourCellIndex,
-                                    Math.Abs(startCellIndex[0] - neighbourCellIndex[0])
-                                    + Math.Abs(startCellIndex[1] - neighbourCellIndex[1])
-                                    + Math.Abs(startCellIndex[2] - neighbourCellIndex[2])
-                                    );
+                                // WARNING: This will produce errors in cases where there are obstruced obstacles at the boundary
+                                // of the grid (out of bounds error).
+                                if (this.GetCellMark(neighbourCellIndex))
+                                    // Priority is done according to Manhattan distance
+                                    availablePositions.Enqueue(
+                                        neighbourCellIndex,
+                                        Math.Abs(startCellIndex[0] - neighbourCellIndex[0])
+                                        + Math.Abs(startCellIndex[1] - neighbourCellIndex[1])
+                                        + Math.Abs(startCellIndex[2] - neighbourCellIndex[2])
+                                        );
+                            }
                         }
                     }
+                    ++step;
                 }
                 
-                // Find closest available point
                 if (availablePositions.Count > 0)
                 {
                     startCellIndex = availablePositions.Dequeue();
                     startCell = this.grid[startCellIndex[0], startCellIndex[1], startCellIndex[2]];
-                    aResultVertex = AStarAlgorithm.GetMinimumPath(biMap.Forward[startCell], biMap.Forward[finishCell], new Graph(verticesOfGraph));
-
                 }
+
+                // Flush previous data and initialize data structures.
+                step = 0;
+                availablePositions.Clear();
+
+                // Find closest avaiable destination position
+                while (availablePositions.Count == 0)
+                {
+                    // Search the nearest neighbours in the x-z plane.
+                    for (int width = -1 * step; width <= 1 * step; width++)
+                    {
+                        for (int depth = -1 * step; depth <= 1 * step; depth++)
+                        {
+                            if (Math.Abs(width) == step || Math.Abs(depth) == step) // Care only for the layer that is currently explored.
+                            {
+                                uint[] neighbourCellIndex = {
+                                Convert.ToUInt32(finishCellIndex[0] + width),
+                                finishCellIndex[1],
+                                Convert.ToUInt32(finishCellIndex[2] + depth)
+                            };
+                                // WARNING: This will produce errors in cases where there are obstruced obstacles at the boundary
+                                // of the grid (out of bounds error).
+                                if (this.GetCellMark(neighbourCellIndex))
+                                    // Priority is done according to Manhattan distance
+                                    availablePositions.Enqueue(
+                                        neighbourCellIndex,
+                                        Math.Abs(finishCellIndex[0] - neighbourCellIndex[0])
+                                        + Math.Abs(finishCellIndex[1] - neighbourCellIndex[1])
+                                        + Math.Abs(finishCellIndex[2] - neighbourCellIndex[2])
+                                        );
+                            }
+                        }
+                    }
+                    ++step;
+                }
+
+                if (availablePositions.Count > 0)
+                {
+                    finishCellIndex = availablePositions.Dequeue();
+                    finishCell = this.grid[finishCellIndex[0], finishCellIndex[1], finishCellIndex[2]];
+                }
+
+                aResultVertex = AStarAlgorithm.GetMinimumPath(biMap.Forward[startCell], biMap.Forward[finishCell], new Graph(verticesOfGraph));
+
             }
             finally
             {
@@ -527,6 +574,9 @@ namespace HammeredGame.Game.PathPlanning.Grid
              *  4b. advance E2.
              * 5. Repeat steps until the destination of E2 is equal to the destination of the path.
             */
+			
+			// Note:
+			// The fact that this still remains a shortest path is guaranteed by the triangle inequality.
 
             // Edge case.
             if (ShortestPathResult.Length <= 2) { return ShortestPathResult.ToArray(); }

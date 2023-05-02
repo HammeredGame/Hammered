@@ -6,6 +6,7 @@ using BEPUphysics.PositionUpdating;
 ﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
 using BEPUphysics.Entities;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
 
@@ -61,6 +62,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
+                
+                this.AudioEmitter = new AudioEmitter();
+                this.AudioEmitter.Position = this.Position; 
             }
         }
 
@@ -97,7 +101,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     player.ReachedGoal = isGoal; // TEMPORARY
                     //this.Visible = false;
                     //this.ActiveSpace.Remove(sender.Entity);
-                    this.RemoveFromSpace();
+                    this.OpenDoor();
                 }
 
             }
@@ -108,23 +112,25 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.keyFound = keyFound;
         }
 
-        public void RemoveFromSpace()
+        public void OpenDoor()
         {
             if (this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
             {
                 this.Visible = false;
                 this.ActiveSpace.Remove(this.Entity);
+                Services.GetService<AudioManager>().Play3DSound("Audio/door_open", false, this.AudioEmitter, 1);
                 // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
                 //this.CurrentScene.UpdateSceneGrid(this, true);
             }
         }
 
-        public void AddToSpace()
+        public void CloseDoor()
         {
             if (!this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
             {
                 this.Visible = true;
                 this.ActiveSpace.Add(this.Entity);
+                Services.GetService<AudioManager>().Play3DSound("Audio/door_close", false, this.AudioEmitter, 1);
                 // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
                 //this.CurrentScene.UpdateSceneGrid(this, false);
             }

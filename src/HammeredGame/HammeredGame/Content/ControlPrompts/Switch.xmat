@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas Image="Switch.png">
+  <TextureRegion Id="A" Left="0" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="B" Left="100" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPad" Left="200" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadDown" Left="300" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadLeft" Left="400" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadRight" Left="500" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadUp" Left="600" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="Left" Left="700" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="LeftShoulder" Left="800" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="LeftStick" Left="900" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="LeftTrigger" Left="0" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="Right" Left="100" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="RightShoulder" Left="200" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="RightStick" Left="300" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="RightTrigger" Left="400" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="Start" Left="500" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Controllers" Left="600" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Controllers_Separate" Left="700" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Controller_Left" Left="800" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Controller_Right" Left="900" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Down" Left="0" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Left" Left="100" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Minus" Left="200" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Plus" Left="300" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Right" Left="400" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Square" Left="500" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="Switch_Up" Left="600" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="X" Left="700" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="Y" Left="800" Top="200" Width="100" Height="100" />
+</TextureAtlas>

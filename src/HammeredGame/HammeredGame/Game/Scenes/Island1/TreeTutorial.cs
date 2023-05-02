@@ -1,6 +1,7 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Screens;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace HammeredGame.Game.Scenes.Island1
     {
         public TreeTutorial(GameServices services, GameScreen screen) : base(services, screen)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/TreeTutorial.xml");
+            CreateFromXML($"Content/SceneDescriptions/Island1/TreeTutorial_voxel.xml");
             OnSceneStart();
         }
 
@@ -25,6 +26,11 @@ namespace HammeredGame.Game.Scenes.Island1
             Get<Player>("player1").SetActiveCamera(Camera);
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
             Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
+
+            Get<Tree>("tree").SetTreeFallen(true);
+
+            await ParentGameScreen.ShowDialogueAndWait("Woah! Magical teleportation!?");
+            await ParentGameScreen.ShowDialogueAndWait("This hammer must be mythical or something...!");
 
             // Show a hint for camera controls upon entering its trigger area, but set up the event
             // handler without blocking further script execution. This is so that the end trigger

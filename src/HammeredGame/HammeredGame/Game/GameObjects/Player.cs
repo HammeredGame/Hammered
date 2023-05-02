@@ -1,21 +1,16 @@
 ﻿using Aether.Animation;
-using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
-using BEPUphysics.CollisionRuleManagement;
 using BEPUphysics.Entities;
-using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
+using HammeredGame.Graphics;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -52,21 +47,29 @@ namespace HammeredGame.Game.GameObjects
         private Vector3 player_vel;
         private bool previously_moving = false;
 
+        public enum PlayerOnSurfaceState
+        {
+            OnGround,
+            OnTree,
+            OnRock
+        }
+
         // Last known ground position, used to reset player's position
         // if the player comes into contact with a water object
         private Vector3 lastGroundPosition;
 
+        // Variable to keep track of what surface the player is currently standing on
+        public PlayerOnSurfaceState StandingOn { get; set; }
+
+
         // TEMPORARY (FOR TESTING)
-        public bool OnTree = false;
         public bool ReachedGoal = false;
 
         private Camera activeCamera;
 
-        private Animations animations;
+        public Animations Animations;
 
-        private List<SoundEffect> player_sfx = new List<SoundEffect>();
-        private AudioListener listener;
-        private AudioEmitter emitter;
+        TimeSpan timeDelay = TimeSpan.Zero;
 
         public event EventHandler OnHammerRetrieved;
 
@@ -99,7 +102,7 @@ namespace HammeredGame.Game.GameObjects
                 // TODO: May want the flat ground meshes be as even and flat as possible
                 // (except ramps/stairs/ladders to reach higher elevations --> these can maybe be
                 // handled separately within collision handling <-- more testing needed for these settings)
-                this.Entity.Material.KineticFriction = 1.0f;
+                this.Entity.Material.KineticFriction = 2.0f;
 
                 // Add the entity to the level's physics space - this ensures that this game object
                 // will be considered for collision constraint solving (handled by the physics engine)
@@ -110,17 +113,27 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
                 this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
 
-                animations = this.Model.GetAnimations();
-                var clip_idle = animations.Clips["Armature|idle-hammer"];
-                animations.SetClip(clip_idle);
+                Animations = this.Model.GetAnimations();
+                var clip_idle = Animations.Clips["Armature|idle"];
+                Animations.SetClip(clip_idle);
 
-                player_sfx = Services.GetService<List<SoundEffect>>();
-                listener = Services.GetService<AudioListener>();
-                emitter = Services.GetService<AudioEmitter>();
+                //player_sfx = Services.GetService<List<SoundEffect>>();
+                //listener = Services.GetService<AudioListener>();
+                //emitter = Services.GetService<AudioEmitter>();
+
+                //set player as the listener for all sfx
+                Services.GetService<AudioManager>().listener.Position = this.Position;
+
+                //emit footsteps
+                this.AudioEmitter = new AudioEmitter();
+                this.AudioEmitter.Position = this.Position;
+
+
             }
 
             // Initial position should be on/over ground
             this.lastGroundPosition = this.Position;
+            this.StandingOn = PlayerOnSurfaceState.OnGround;
         }
 
         private void Events_ContactCreated(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair, BEPUphysics.CollisionTests.ContactData contact)
@@ -131,6 +144,7 @@ namespace HammeredGame.Game.GameObjects
             if (other.Tag is Water)
             {
                 this.Position = this.lastGroundPosition;
+                this.StandingOn = PlayerOnSurfaceState.OnGround;
             }
         }
 
@@ -139,6 +153,11 @@ namespace HammeredGame.Game.GameObjects
             // Make some checks to identify if the last ground position should be updated
             if (other.Tag is Ground)
             {
+                if (this.StandingOn != PlayerOnSurfaceState.OnGround)
+                {
+                    this.StandingOn = PlayerOnSurfaceState.OnGround;
+                }
+
                 // If the player is also touching water, then don't update ground position
                 foreach (var contactPair in sender.Pairs)
                 {
@@ -234,6 +253,7 @@ namespace HammeredGame.Game.GameObjects
             ///</value>
             bool moveDirty = false;
 
+
             // Zero out the player velocity vector (to remove the possibility of
             // previous computations accumulating/carrying over)
             player_vel = Vector3.Zero;
@@ -251,16 +271,12 @@ namespace HammeredGame.Game.GameObjects
 
             // Animate player
 
+
             // If there was movement, normalize speed and edit rotation of character model
             // Also account for collisions
             if (moveDirty && this.Entity != null && player_vel != Vector3.Zero)
             {
                 BEPUutilities.Vector3 Pos = this.Entity.Position;
-
-                //FIX: sound effect itself is too grainy (composed of many smaller sounds), awful when layered
-                //SoundEffectInstance step = player_sfx[0].CreateInstance();
-                //step.IsLooped = true;
-                //step.Play();
 
 
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
@@ -281,21 +297,35 @@ namespace HammeredGame.Game.GameObjects
                 float angle = (float)Math.Atan2(player_vel.X, player_vel.Z);
                 this.Entity.Orientation = BEPUutilities.Quaternion.Slerp(this.Entity.Orientation, BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle), 0.25f);
 
+                double time = gameTime.TotalGameTime.TotalSeconds;
+                timeDelay -= gameTime.ElapsedGameTime;
+                if (timeDelay < TimeSpan.Zero)
+                {
+                    Services.GetService<AudioManager>().Play3DSound("Audio/stereo_step", false, this.AudioEmitter, 1);
+                    timeDelay += TimeSpan.FromSeconds(0.2f);
+                }
+
                 if(!previously_moving)
                 {
                     // Start running animation when player starts moving
-                    var clip_run = animations.Clips["Armature|run-hammer"];
-                    animations.SetClip(clip_run);
+                    var clip_run = Animations.Clips["Armature|run"];
+                    Animations.SetClip(clip_run);
                     previously_moving = true;
+                    //SoundEffectInstance step = player_sfx[0].CreateInstance();
+                    //step.IsLooped = true;
+                    //step.Play();
+
+
                 }
+
             }
             else
             {
                 if(previously_moving)
                 {
                     // Start idle animation when player stops moving
-                    var clip_idle = animations.Clips["Armature|idle-hammer"];
-                    animations.SetClip(clip_idle);
+                    var clip_idle = Animations.Clips["Armature|idle"];
+                    Animations.SetClip(clip_idle);
                     previously_moving = false;
                 }
                 ///<remark>
@@ -311,7 +341,13 @@ namespace HammeredGame.Game.GameObjects
                 //position += player_vel;
             }
 
-            animations.Update(gameTime.ElapsedGameTime * 2, true, Matrix.Identity);
+
+            Animations.Update(gameTime.ElapsedGameTime * 1.2f, true, Matrix.Identity);
+
+            Services.GetService<AudioManager>().listener.Position = this.Position;
+            Services.GetService<AudioManager>().listener.Forward = forwardDirection;
+
+
 
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
 
@@ -380,6 +416,7 @@ namespace HammeredGame.Game.GameObjects
                 player_vel = (MovePad_LeftRight * Vector3.Cross(forwardDirectionFromCamera, Vector3.Up) + MovePad_UpDown * forwardDirectionFromCamera);
                 moveDirty = true;
             }
+
             return moveDirty;
         }
 
@@ -391,7 +428,7 @@ namespace HammeredGame.Game.GameObjects
             ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
         }
 
-        public override void Draw(Matrix view, Matrix projection)
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
         {
             // Animate mesh
             //Matrix[] transforms = new Matrix[this.Model.Bones.Count];
@@ -405,14 +442,14 @@ namespace HammeredGame.Game.GameObjects
                     //((SkinnedEffect)part.Effect).SpecularColor = Vector3.Zero;
                     //ConfigureEffectMatrices((IEffectMatrices)part.Effect, Matrix.Identity, view, projection);
                     //ConfigureEffectLighting((IEffectLights)part.Effect);
-                    part.UpdateVertices(animations.AnimationTransforms); // animate vertices on CPU
+                    part.UpdateVertices(Animations.AnimationTransforms); // animate vertices on CPU
                     //((SkinnedEffect)part.Effect).SetBoneTransforms(animations.AnimationTransforms);// animate vertices on GPU
                 }
             }
 
             if (Visible)
             {
-                DrawModel(Model, view, projection, Texture);
+                DrawModel(gameTime, Model, view, projection, cameraPosition, Texture, lights);
             }
         }
     }

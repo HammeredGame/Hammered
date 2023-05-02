@@ -1,6 +1,8 @@
-﻿using BEPUphysics.Entities;
+using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using HammeredGame.Core;
+using HammeredGame.Game.PathPlanning.Grid;
+using HammeredGame.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,8 +12,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
-using HammeredGame.Game.PathPlanning.Grid;
 
 namespace HammeredGame.Game
 {
@@ -26,7 +26,7 @@ namespace HammeredGame.Game
         /// <typeparam name="T">Supports bool, float, XNA.Vector3, and XNA.Quaternion</typeparam>
         /// <param name="text">String to parse</param>
         /// <returns>null if the parsing failed, otherwise contains the parsed object</returns>
-        /// 
+        ///
 
         /// <remarks>
         /// Support "int" data type as well.
@@ -37,14 +37,14 @@ namespace HammeredGame.Game
             /// The <code>string[] tokens</code> variable is used to split the singlue input string <code>text</code>
             /// of the XML file into multiple values.
             /// This is required in cases where classes are determined by more than one parameters.
-            /// 
+            ///
             /// <example>
-            /// Input: "position" == in XML == <position>X Y Z</position> 
+            /// Input: "position" == in XML == <position>X Y Z</position>
             /// 1) Split "X Y Z" into <code>float tokens[3] = {"X", "Y", "Z"} </code>
             /// 2) Parse each element of "tokens" independently as scalars.
             /// 3) Create the Vector3 object.
             /// </example>
-            /// 
+            ///
             /// </value>
             string[] tokens; // Is used to split the single input string in the XML file to multiple values.
 
@@ -52,18 +52,18 @@ namespace HammeredGame.Game
             /// <remarks>
             /// The <code>typeof(T).Name</code> function follows the name of the value types of .NET
             /// <see href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types"/>
-            /// 
+            ///
             /// For the built-in types being handled in the following switch case, read:
-            /// 
+            ///
             /// "bool" -> Boolean
             /// <see href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/bool"/>
-            /// 
+            ///
             /// "int" -> Int32
             /// <see href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types"/>
-            /// 
+            ///
             /// "float" -> Single
             /// <see href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/floating-point-numeric-types"/>
-            /// 
+            ///
             /// </remarks>
             switch (typeof(T).Name)
             {
@@ -100,7 +100,7 @@ namespace HammeredGame.Game
         /// <returns>
         /// Empty string if the conversion failed, otherwise the string representation of the object
         /// </returns>
-        
+
         /// <remaks>
         /// Support "int" data type as well.
         /// </remaks>
@@ -139,13 +139,13 @@ namespace HammeredGame.Game
         /// </summary>
         /// <param name="filePath">The file path to the XML file</param>
         /// <exception cref="Exception">Raised if the XML file could not be loaded</exception>
-
+        ///
         /// <remarks>
         ///  WARNING: A quick patch is implemented for parsing the grid of the scene, necessary for the path planning.
         ///          There could be better ways to implement it better.
         ///          Adding more and more explicit outputs in the definition of the function is not maintenance-friendly.
         /// </remarks>
-        public static (Camera, Dictionary<string, GameObject>, UniformGrid grid) ParseFromXML(string filePath, GameServices services)
+        public static (Camera, SceneLightSetup, Dictionary<string, GameObject>, UniformGrid grid) ParseFromXML(string filePath, GameServices services)
         {
             var loadedXML = File.ReadAllText(filePath, Encoding.UTF8);
             var xml = XDocument.Parse(loadedXML);
@@ -158,9 +158,10 @@ namespace HammeredGame.Game
 
             Camera cam = GetCamera(xml, services);
             UniformGrid grid = GetUniformGrid(xml, services);
+            SceneLightSetup lights = GetLightSetup(xml);
             Dictionary<string, GameObject> objs = GetGameObjects(xml, services, cam);
 
-            return (cam, objs, grid);
+            return (cam, lights, objs, grid);
         }
 
         /// <summary>
@@ -192,6 +193,7 @@ namespace HammeredGame.Game
                     cameraInstance.FollowDistance = Parse<float>(cameraElement.Descendants("follow_distance").Single().Value);
                     cameraInstance.FollowAngle = Parse<float>(cameraElement.Descendants("follow_angle").Single().Value);
                     break;
+
                 case "static":
                 default:
                     // Set the four static positions.
@@ -199,6 +201,8 @@ namespace HammeredGame.Game
                     cameraInstance.StaticPositions = cameraElement.Descendants("position").Select(v => Parse<Vector3>(v.Value)).ToArray();
                     break;
             }
+            // Set which of the four directions we should start with
+            cameraInstance.CurrentCameraDirIndex = Parse<int>(cameraElement.Descendants("dir_index").SingleOrDefault()?.Value ?? "0");
 
             // Set the field of view
             cameraInstance.FieldOfView = Parse<float>(cameraElement.Descendants("fov").Single().Value);
@@ -238,6 +242,55 @@ namespace HammeredGame.Game
             UniformGrid output = new UniformGrid(bottomLeftClosePoint, topRightAwayPoint, sideLength);
 
             return output;
+        }
+
+        /// <summary>
+        /// Find the single top-level lights tag and parse it, returning the instantiated
+        /// SceneLightSetup object.
+        /// </summary>
+        /// <param name="targetXML">The XML to parse</param>
+        /// <returns>The instantiated SceneLightSetup object</returns>
+        private static SceneLightSetup GetLightSetup(XDocument targetXML)
+        {
+            try
+            {
+                // Find the top level lights object (otherwise .Descendants("lights") returns nested child ones too)
+                XElement lightsElement = targetXML.Root.Descendants("lights").Single(child => child.Parent == targetXML.Root);
+
+                XElement sunElement = lightsElement.Descendants("sun").Single();
+                Vector3 lightColor = Parse<Vector3>(sunElement.Descendants("color").Single().Value);
+                Vector3 direction = Parse<Vector3>(sunElement.Descendants("direction").Single().Value);
+                float intensity = Parse<float>(sunElement.Descendants("intensity").Single().Value);
+                SunLight sun = new(new Color(lightColor), intensity, direction);
+
+                List<InfiniteDirectionalLight> dirLights = new();
+
+                foreach (XElement directionalElement in lightsElement.Descendants("directional"))
+                {
+                    lightColor = Parse<Vector3>(directionalElement.Descendants("color").Single().Value);
+                    direction = Parse<Vector3>(directionalElement.Descendants("direction").Single().Value);
+                    intensity = Parse<float>(directionalElement.Descendants("intensity").Single().Value);
+                    dirLights.Add(new(new Color(lightColor), intensity, direction));
+                }
+
+                XElement ambientElement = lightsElement.Descendants("ambient").Single();
+                lightColor = Parse<Vector3>(ambientElement.Descendants("color").Single().Value);
+                intensity = Parse<float>(ambientElement.Descendants("intensity").Single().Value);
+                AmbientLight ambient = new(new Color(lightColor), intensity);
+
+                return new SceneLightSetup(sun, dirLights, ambient);
+            }
+            catch (Exception)
+            {
+                // Return a default light setup
+                return new(
+                   new SunLight(Color.LightYellow, 1f, new Vector3(0, 0.97f, 0.20f)),
+                   new List<InfiniteDirectionalLight> {
+                        new InfiniteDirectionalLight(Color.White, 0.05f, new Vector3(0.2f, 0.97f, 0f))
+                   },
+                   new AmbientLight(Color.White, 0.01f)
+               );
+            }
         }
 
         /// <summary>
@@ -413,13 +466,13 @@ namespace HammeredGame.Game
         /// <param name="namedObjects">The game objects in the scene and their unique ids</param>
         /// <param name="services">Core game services. This method needs the Content Manager.</param>
         /// <returns>Whether the write was successful or not</returns>
-
+        ///
         /// <remarks>
         ///  WARNING: A quick patch is implemented for parsing the grid of the scene, necessary for the path planning.
         ///          There could be better ways to implement it better.
         ///          Adding more and more explicit outputs in the definition of the function is not maintenance-friendly.
         /// </remarks>
-        public static bool WriteToXML(string filePath, Camera camera, Dictionary<string, GameObject> namedObjects, UniformGrid grid, GameServices services)
+        public static bool WriteToXML(string filePath, Camera camera, SceneLightSetup lights, Dictionary<string, GameObject> namedObjects, UniformGrid grid, GameServices services)
         {
             // First create the global camera element
             XElement cameraElement = new XElement("camera");
@@ -438,8 +491,11 @@ namespace HammeredGame.Game
                     new XElement("target",
                         Show<Vector3>(camera.Target)),
                     new XElement("up",
-                        Show<Vector3>(camera.Up)));
-            } else
+                        Show<Vector3>(camera.Up)),
+                    new XElement("dir_index",
+                        Show<int>(camera.CurrentCameraDirIndex)));
+            }
+            else
             {
                 cameraElement.Add(
                     new XAttribute("mode", "follow"),
@@ -450,7 +506,9 @@ namespace HammeredGame.Game
                     new XElement("target",
                         Show<Vector3>(camera.Target)),
                     new XElement("up",
-                        Show<Vector3>(camera.Up)));
+                        Show<Vector3>(camera.Up)),
+                    new XElement("dir_index",
+                        Show<int>(camera.CurrentCameraDirIndex)));
             }
             cameraElement.Add(new XElement("fov", Show<float>(camera.FieldOfView)));
 
@@ -463,12 +521,43 @@ namespace HammeredGame.Game
                                             new XElement("side_length",
                                                 Show<float>(grid.sideLength))
                                             );
-                                          
+
             // Create the root <level> tag and add the camera
             XElement rootElement = new XElement("scene",
                 cameraElement);
             // ...and the uniform grid of the scene
             rootElement.Add(uniformGridElement);
+
+            // Then create a <lights> tag for the scene light setup
+            XElement lightsElement = new XElement("lights");
+            lightsElement.Add(
+                new XElement(
+                    "sun",
+                    new XElement("color", Show<Vector3>(lights.Sun.LightColor.ToVector3())),
+                    new XElement("direction", Show<Vector3>(lights.Sun.Direction)),
+                    new XElement("intensity", Show<float>(lights.Sun.Intensity))
+                    )
+                );
+            foreach (InfiniteDirectionalLight dirLight in lights.Directionals)
+            {
+                lightsElement.Add(
+                    new XElement(
+                        "directional",
+                        new XElement("color", Show<Vector3>(dirLight.LightColor.ToVector3())),
+                        new XElement("direction", Show<Vector3>(dirLight.Direction)),
+                        new XElement("intensity", Show<float>(dirLight.Intensity))
+                        )
+                    );
+            }
+            lightsElement.Add(
+                new XElement(
+                    "ambient",
+                    new XElement("color", Show<Vector3>(lights.Ambient.LightColor.ToVector3())),
+                    new XElement("intensity", Show<float>(lights.Ambient.Intensity))
+                    )
+                );
+            rootElement.Add(lightsElement);
+
 
             // Then add all the game objects, including player and hammer
             foreach ((string id, GameObject gameObject) in namedObjects)
@@ -539,7 +628,7 @@ namespace HammeredGame.Game
                 }
                 return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

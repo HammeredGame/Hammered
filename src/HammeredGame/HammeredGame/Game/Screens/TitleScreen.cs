@@ -12,6 +12,7 @@ namespace HammeredGame.Game.Screens
     {
         public Action ContinueFunc;
         public Action StartNewFunc;
+        public Action ToggleDebugUIFunc;
 
         public override void LoadContent()
         {
@@ -34,12 +35,12 @@ namespace HammeredGame.Game.Screens
             //    ExitScreen(alsoUnloadContent: true);
             //};
 
-            MenuItem menuItemRestartLevel = new()
+            MenuItem menuItemStartGame = new()
             {
                 Text = "Start New",
                 Id = "_menuItemStartNew"
             };
-            menuItemRestartLevel.Selected += (s, a) =>
+            menuItemStartGame.Selected += (s, a) =>
             {
                 StartNewFunc?.Invoke();
                 ExitScreen(alsoUnloadContent: true);
@@ -48,13 +49,18 @@ namespace HammeredGame.Game.Screens
             MenuItem menuItemOptions = new()
             {
                 Text = "Options",
-                Id = "_menuItemOptions"
+                Id = "_menuItemOptions",
+                Enabled = false
             };
 
-            MenuItem menuItemCredits = new()
+            MenuItem menuItemToggleDebugUI = new()
             {
-                Text = "Credits",
-                Id = "_menuItemCredits"
+                Text = "Toggle Debug UI",
+                Id = "_menuItemToggleDebugUI"
+            };
+            menuItemToggleDebugUI.Selected += (s, a) =>
+            {
+                ToggleDebugUIFunc?.Invoke();
             };
 
             MenuItem menuItemQuitToDesktop = new()
@@ -64,7 +70,7 @@ namespace HammeredGame.Game.Screens
             };
             menuItemQuitToDesktop.Selected += (_, _) => Environment.Exit(0);
 
-            MenuItems = new List<MenuItem>() { menuItemContinue, menuItemRestartLevel, menuItemOptions, menuItemCredits, menuItemQuitToDesktop };
+            MenuItems = new List<MenuItem>() { menuItemContinue, menuItemStartGame, menuItemOptions, menuItemToggleDebugUI, menuItemQuitToDesktop };
             base.LoadContent();
         }
 

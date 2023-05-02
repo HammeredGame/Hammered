@@ -5,14 +5,12 @@ using System;
 
 namespace HammeredGame.Game
 {
-
     /// <summary>
     /// Represents possible user actions in the game. All actions have a name.
     /// </summary>
     /// <param name="Name"></param>
     public abstract record UserAction(string Name)
     {
-
         /// <summary>
         /// Represents actions with a continuous XY value, such as 4-key movements on the keyboard
         /// or joysticks.
@@ -20,7 +18,8 @@ namespace HammeredGame.Game
         /// <param name="Name"></param>
         /// <param name="GamepadContinuousStickSide"></param>
         /// <param name="KeyboardContinuousKeys"></param>
-        public record ContinuousUserAction(string Name, string GamepadContinuousStickSide, (Keys up, Keys left, Keys down, Keys right) KeyboardContinuousKeys) : UserAction(Name) {
+        public record ContinuousUserAction(string Name, string GamepadContinuousStickSide, (Keys up, Keys left, Keys down, Keys right) KeyboardContinuousKeys) : UserAction(Name)
+        {
             public Vector2 GetValue(Input input)
             {
                 // For keyboard input, simulate a gamepad input but with discrete values in XY scale
@@ -59,8 +58,8 @@ namespace HammeredGame.Game
         /// <param name="Name"></param>
         /// <param name="GamepadButton"></param>
         /// <param name="KeyboardKey"></param>
-        public record DiscreteUserAction(string Name, Buttons GamepadButton, Keys KeyboardKey) : UserAction(Name) {
-
+        public record DiscreteUserAction(string Name, Buttons GamepadButton, Keys KeyboardKey) : UserAction(Name)
+        {
             /// <summary>
             /// Returns true on the moment of press, and false afterwards.
             /// </summary>
