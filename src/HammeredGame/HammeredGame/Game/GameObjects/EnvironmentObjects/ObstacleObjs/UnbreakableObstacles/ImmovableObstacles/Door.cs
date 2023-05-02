@@ -120,7 +120,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Remove(this.Entity);
                 Services.GetService<AudioManager>().Play3DSound("Audio/door_open", false, this.AudioEmitter, 1);
                 // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
-                //this.CurrentScene.UpdateSceneGrid(this, true);
+                this.CurrentScene.UpdateSceneGrid(this, true);
             }
         }
 
@@ -132,7 +132,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
                 Services.GetService<AudioManager>().Play3DSound("Audio/door_close", false, this.AudioEmitter, 1);
                 // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
-                //this.CurrentScene.UpdateSceneGrid(this, false);
+                this.CurrentScene.UpdateSceneGrid(this, false);
             }
         }
 

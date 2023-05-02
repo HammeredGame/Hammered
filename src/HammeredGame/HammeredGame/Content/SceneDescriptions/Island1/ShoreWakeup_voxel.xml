@@ -38,7 +38,7 @@
     <model>Meshes/IslandMeshes/voxel_beach</model>
     <texture type="texture2d">Meshes/IslandMeshes/sand</texture>
     <position>0.000 -9.500 0.000</position>
-    <rotation>0.013 0.000 0.000 -1.000</rotation>
+    <rotation>0.000 0.000 0.000 -1.000</rotation>
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
@@ -58,7 +58,7 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture type="texture2d">Meshes/Hammer/hammer_Texture</texture>
-    <position>200.000 -0.567 -67.321</position>
+    <position>200.000 2.000 -67.321</position>
     <rotation>0.044 0.000 0.000 0.999</rotation>
     <scale>1.000</scale>
     <body type="box">

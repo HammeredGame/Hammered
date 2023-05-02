@@ -17,6 +17,7 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableO
 using BEPUutilities;
 using static HammeredGame.Game.GameObjects.Player;
 using System.Numerics;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles
 {
@@ -143,31 +144,31 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     // If so, and the colliding object is the player or another obstacle,
                     // then handle these cases appropriately (if needed, otherwise default behavior
                     // is for the MoveBlock to come to a stop.
-                    if (other.Tag is Player || other.Tag is ObstacleObject)
+                    if (other.Tag is Player)
+                    {
+                        // A player or blocking obstacle will stop the movable block
+                        this.SetStationary();
+                    }
+                    
+                    if (other.Tag is MoveBlock)
                     {
                         // If hitting another stationary MoveBlock, set that one to move in the
                         // same direction as the current moving MoveBlock
                         // TODO: Revisit this implementation, depending on whether the desired behavior is different.
                         // The current implementation makes the current MoveBlock stop in it's tracks,
                         // and the colliding MoveBlock begins moving
-                        if (other.Tag is MoveBlock)
+                        var otherMoveBlock = other.Tag as MoveBlock;
+                        if (otherMoveBlock != null && otherMoveBlock.MblockState == MBState.Stationary)
                         {
-                            var otherMoveBlock = other.Tag as MoveBlock;
-                            if (otherMoveBlock != null && otherMoveBlock.MblockState == MBState.Stationary)
-                            {
-                                otherMoveBlock.SetMoving(initialMovementVelocity);
-                            }
-                            
-                        }
-                        else if (other.Tag is Laser)
-                        {
-                            // (maybe) TEMPORARY: lasers shall not make the block stationary for now
-                            return;
+                            otherMoveBlock.SetMoving(initialMovementVelocity);
                         }
 
-                        // A player or blocking obstacle will stop the movable block
-                        this.SetStationary();
                     }
+                    
+                    //if (other.Tag is PressurePlate)
+                    //{
+                    //    System.Console.WriteLine("MoveBlock hit pressure plate\n");
+                    //}
                 }
                 
             }

@@ -97,7 +97,36 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //System.Diagnostics.Debug.WriteLine(this.entity.CollisionInformation.Pairs.Count);
             if (otherEntityInformation != null)
             {
-                this.SetActivated(false);
+                // Check if there are no other non-static-mesh objects colliding with the pressure plate.
+                // If there are no other collisions, only then should the pressure plate be deactivated
+                int num_collisions = 0;
+                foreach (var p in sender.Pairs)
+                {
+                    if (p.EntityA.Equals(this.Entity))
+                    {
+                        if (p.EntityB != null)
+                        {
+                            var otherObj = other.Tag as GameObject;
+                            if (!p.EntityB.Equals(otherObj.Entity))
+                            {
+                                num_collisions++;
+                            }
+                        }
+                    }
+                    else if (p.EntityB.Equals(this.Entity))
+                    {
+                        if (p.EntityA != null)
+                        {
+                            var otherObj = other.Tag as GameObject;
+                            if (!p.EntityA.Equals(otherObj.Entity))
+                            {
+                                num_collisions++;
+                            }
+                        }
+                    }
+                }
+
+                if (num_collisions == 0) this.SetActivated(false);
                 //if (sender.Pairs.Count <= 1)
                 //{
                 //    this.SetActivated(false);
