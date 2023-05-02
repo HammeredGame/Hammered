@@ -621,7 +621,7 @@
       <width>7.500</width>
       <height>25.000</height>
       <length>30.000</length>
-      <shift_graphic>11.340 -9.650 0.000</shift_graphic>
+      <shift_graphic>0.000 -9.650 12.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="door_goal">
