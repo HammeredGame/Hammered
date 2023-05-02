@@ -53,7 +53,7 @@
     <texture type="texture2d">Meshes/Character/character_diffuse</texture>
     <position>68.120 -12.855 -162.650</position>
     <rotation>0.000 -0.564 0.000 -0.826</rotation>
-    <scale>0.005</scale>
+    <scale>1.0</scale>
     <body type="box">
       <width>5.000</width>
       <height>17.500</height>
@@ -69,10 +69,10 @@
     <rotation>0.737 0.000 0.000 0.675</rotation>
     <scale>1.000</scale>
     <body type="box">
-      <width>2.200</width>
-      <height>1.300</height>
-      <length>1.000</length>
-      <shift_graphic>0.000 -0.339 0.000</shift_graphic>
+      <width>4.700</width>
+      <height>7.200</height>
+      <length>3.000</length>
+      <shift_graphic>0.000 4.69 0.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="decorobject">
@@ -166,8 +166,13 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree1">
     <model>Meshes/Trees/tree</model>
+<<<<<<< HEAD
     <texture type="texture2d">Meshes/Trees/tree_albedo</texture>
     <position>330.000 -26.000 -155.000</position>
+=======
+    <texture>Meshes/Trees/tree_albedo</texture>
+    <position>355.000 -26.000 -155.000</position>
+>>>>>>> c64a8b2 (Implement hammer move into player's hand when held)
     <rotation>0.000 -0.252 0.000 0.968</rotation>
     <scale>1.000</scale>
     <body type="box">

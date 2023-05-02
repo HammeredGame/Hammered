@@ -30,7 +30,7 @@
     <texture>Meshes/Character/character_diffuse</texture>
     <position>295.001 18.111 94.741</position>
     <rotation>0.000 0.924 0.000 0.383</rotation>
-    <scale>0.005</scale>
+    <scale>1.0</scale>
     <body type="box">
       <width>5.000</width>
       <height>17.500</height>
@@ -47,10 +47,10 @@
     <rotation>0.737 0.000 0.000 0.675</rotation>
     <scale>1.000</scale>
     <body type="box">
-      <width>2.200</width>
-      <height>1.300</height>
-      <length>1.000</length>
-      <shift_graphic>0.000 -0.339 0.000</shift_graphic>
+      <width>4.700</width>
+      <height>7.200</height>
+      <length>3.000</length>
+      <shift_graphic>0.000 4.69 0.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="decorobject">
