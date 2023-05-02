@@ -52,8 +52,8 @@ namespace HammeredGame.Game
 
         protected Scene CurrentScene { get; private set; }
 
-        
-        public AudioEmitter AudioEmitter; 
+
+        public AudioEmitter AudioEmitter;
 
         // Use the private position vector only if we don't have a physics entity attached.
         // Otherwise, we delegate the position property entirely to the physics body position and
@@ -224,7 +224,7 @@ namespace HammeredGame.Game
             Matrix rotationMatrix = Matrix.CreateFromQuaternion(Rotation);
             // For translation, include the model's origin offset so that the collision body
             // position matches with the rendered model
-            Matrix translationMatrix = Matrix.CreateTranslation(Position + EntityModelOffset);
+            Matrix translationMatrix = Matrix.CreateTranslation(Position + Vector3.Transform(EntityModelOffset, rotationMatrix));
             Matrix scaleMatrix = Matrix.CreateScale(Scale);
 
             // Construct world matrix

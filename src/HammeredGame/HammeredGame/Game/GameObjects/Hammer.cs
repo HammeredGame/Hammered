@@ -15,6 +15,9 @@ using Vector3 = Microsoft.Xna.Framework.Vector3; // How is it that this ambigoui
 using Quaternion = Microsoft.Xna.Framework.Quaternion; // How is it that this ambigouity results in an error after adding comments???
 using Microsoft.Xna.Framework.Audio;
 using Aether.Animation;
+using ImGuiNET;
+using ImMonoGame.Thing;
+using BEPUphysics.Entities.Prefabs;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -41,7 +44,7 @@ namespace HammeredGame.Game.GameObjects
     /// <remark>
     /// TODO: Improved path finding - technical achievement of the game!
     /// </remark>
-    public class Hammer : GameObject
+    public class Hammer : GameObject, IImGui
     {
         public enum HammerState
         {
@@ -76,6 +79,10 @@ namespace HammeredGame.Game.GameObjects
         public event EventHandler OnSummon;
         public event EventHandler OnCollision;
         public event EventHandler OnDrop;
+
+        // When held by the player, we have a very specific rotation we want to keep (in addition to
+        // the rotations of the player).
+        private Quaternion rotationWhenHeldByPlayer = new Quaternion(-0.038f, 0.308f, 0.614f, 0.726f);
 
         public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
             : base(services, model, t, pos, rotation, scale, entity)
@@ -113,6 +120,10 @@ namespace HammeredGame.Game.GameObjects
 
                 // Initialize the collision handlers based on the associated collision events
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
+
+                // Move rotation and position pivot to the bottom of the handle, so that the when
+                // it's held, everything is animated with the handle as the pivot
+                this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, (this.Entity as Box).HalfHeight, 0);
 
                 this.AudioEmitter = new AudioEmitter();
                 this.AudioEmitter.Position = this.Position;
@@ -158,16 +169,21 @@ namespace HammeredGame.Game.GameObjects
             // if hammer has not yet been dropped / if hammer is not being called back
             if (hammerState == HammerState.WithCharacter && player != null)
             {
-                // player.Model.Bones[2].ModelTransform *
-                //var transform = player.GetWorldMatrix();
-                //Position = player.Model.Bones[2].ModelTransform.Translation + transform.Translation;
-                //Rotation = player.Rotation;
+                // Get the player's bone index for the right hand
+                int boneIndexForRightHand = player.Model.Bones["mixamorig:RightHand"].Index;
 
-                // temporary solution to attach hammer to back of player while we can't figure out
-                // how to get the position of the right hand bone in world space
-                // todo: remove all Rotation-changing code and replace it
-                Position = player.Position + (player.GetWorldMatrix().Backward * 0.8f);
-                Rotation = player.Rotation;
+                // Retrieve the world space position for the hand by multiplying the bone-to-object
+                // transformation and the object-to-world transformation. Order of multiplication
+                // doesn't matter here since we're only using the Translation property which is additive.
+                Position = (player.Animations.WorldTransforms[boneIndexForRightHand] * player.GetWorldMatrix()).Translation;
+
+                // For the rotation, we have a specific order we want to follow, since Quaternion
+                // multiplication builds on top of each other. First, we'll rotate it in the world
+                // space player rotation, then in the new axis that we now treat as the
+                // object-space, we'll do an object-space bone rotation, and in the new axis that's
+                // now aligned with the bone, we'll do a custom tweaked-rotation so that the hammer
+                // is held in the correct direction.
+                Rotation = player.Rotation * Quaternion.CreateFromRotationMatrix(player.Animations.WorldTransforms[boneIndexForRightHand]) * rotationWhenHeldByPlayer;
             }
 
             // Get the input via keyboard or gamepad
@@ -409,7 +425,6 @@ namespace HammeredGame.Game.GameObjects
                 {
                     Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
                     for (int i = 0; i < aStarRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(aStarRoute[i])); }
-
                 });
             }
             /// <remarks>
@@ -491,6 +506,15 @@ namespace HammeredGame.Game.GameObjects
             }
 
             this.Entity.LinearVelocity = BezierQuadraticSpline.QuadraticBezierVelocity(p0, p1, p2, t);
+        }
+
+        public new void UI()
+        {
+            base.UI();
+            ImGui.Separator();
+            System.Numerics.Vector4 temp = rotationWhenHeldByPlayer.ToVector4().ToNumerics();
+            ImGui.DragFloat4("Rotation when held", ref temp);
+            rotationWhenHeldByPlayer = new Quaternion(Vector4.Normalize(temp));
         }
     }
 }
