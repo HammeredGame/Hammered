@@ -166,13 +166,8 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree1">
     <model>Meshes/Trees/tree</model>
-<<<<<<< HEAD
     <texture type="texture2d">Meshes/Trees/tree_albedo</texture>
     <position>330.000 -26.000 -155.000</position>
-=======
-    <texture>Meshes/Trees/tree_albedo</texture>
-    <position>355.000 -26.000 -155.000</position>
->>>>>>> c64a8b2 (Implement hammer move into player's hand when held)
     <rotation>0.000 -0.252 0.000 0.968</rotation>
     <scale>1.000</scale>
     <body type="box">
