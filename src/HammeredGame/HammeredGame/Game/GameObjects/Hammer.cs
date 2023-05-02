@@ -425,7 +425,6 @@ namespace HammeredGame.Game.GameObjects
                 {
                     Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
                     for (int i = 0; i < aStarRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(aStarRoute[i])); }
-
                 });
             }
             /// <remarks>

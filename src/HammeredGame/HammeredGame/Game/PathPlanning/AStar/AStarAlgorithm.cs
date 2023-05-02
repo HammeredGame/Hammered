@@ -31,7 +31,7 @@ namespace HammeredGame.Game.PathPlanning
     ///     
     /// </summary>
     /// 
-    public class AStarAlgorithm
+    public static class AStarAlgorithm
     {
 
         public static Stack<Vertex> GetMinimumPath(Vertex start, Vertex destination, Graph graph)
