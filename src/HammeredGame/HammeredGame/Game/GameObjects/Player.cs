@@ -1,23 +1,16 @@
 ﻿using Aether.Animation;
-using BEPUphysics;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
-using BEPUphysics.CollisionRuleManagement;
 using BEPUphysics.Entities;
-using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
-using HammeredGame.Game.Screens;
 using HammeredGame.Graphics;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -74,7 +67,7 @@ namespace HammeredGame.Game.GameObjects
 
         private Camera activeCamera;
 
-        private Animations animations;
+        public Animations Animations;
 
         TimeSpan timeDelay = TimeSpan.Zero;
 
@@ -120,9 +113,9 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
                 this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
 
-                animations = this.Model.GetAnimations();
-                var clip_idle = animations.Clips["Armature|idle"];
-                animations.SetClip(clip_idle);
+                Animations = this.Model.GetAnimations();
+                var clip_idle = Animations.Clips["Armature|idle"];
+                Animations.SetClip(clip_idle);
 
                 //player_sfx = Services.GetService<List<SoundEffect>>();
                 //listener = Services.GetService<AudioListener>();
@@ -315,8 +308,8 @@ namespace HammeredGame.Game.GameObjects
                 if(!previously_moving)
                 {
                     // Start running animation when player starts moving
-                    var clip_run = animations.Clips["Armature|run"];
-                    animations.SetClip(clip_run);
+                    var clip_run = Animations.Clips["Armature|run"];
+                    Animations.SetClip(clip_run);
                     previously_moving = true;
                     //SoundEffectInstance step = player_sfx[0].CreateInstance();
                     //step.IsLooped = true;
@@ -331,8 +324,8 @@ namespace HammeredGame.Game.GameObjects
                 if(previously_moving)
                 {
                     // Start idle animation when player stops moving
-                    var clip_idle = animations.Clips["Armature|idle"];
-                    animations.SetClip(clip_idle);
+                    var clip_idle = Animations.Clips["Armature|idle"];
+                    Animations.SetClip(clip_idle);
                     previously_moving = false;
                 }
                 ///<remark>
@@ -349,7 +342,7 @@ namespace HammeredGame.Game.GameObjects
             }
 
 
-            animations.Update(gameTime.ElapsedGameTime * 1.2f, true, Matrix.Identity);
+            Animations.Update(gameTime.ElapsedGameTime * 1.2f, true, Matrix.Identity);
 
             Services.GetService<AudioManager>().listener.Position = this.Position;
             Services.GetService<AudioManager>().listener.Forward = forwardDirection;
@@ -449,7 +442,7 @@ namespace HammeredGame.Game.GameObjects
                     //((SkinnedEffect)part.Effect).SpecularColor = Vector3.Zero;
                     //ConfigureEffectMatrices((IEffectMatrices)part.Effect, Matrix.Identity, view, projection);
                     //ConfigureEffectLighting((IEffectLights)part.Effect);
-                    part.UpdateVertices(animations.AnimationTransforms); // animate vertices on CPU
+                    part.UpdateVertices(Animations.AnimationTransforms); // animate vertices on CPU
                     //((SkinnedEffect)part.Effect).SetBoneTransforms(animations.AnimationTransforms);// animate vertices on GPU
                 }
             }
