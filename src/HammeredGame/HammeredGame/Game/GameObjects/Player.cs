@@ -169,8 +169,11 @@ namespace HammeredGame.Game.GameObjects
 
                 // If player isn't falling, update last known ground position
                 // Falling is currently being determined via a linear y velocity threshold
-                if (Math.Abs(this.Entity.LinearVelocity.Y) < 2.5f)
+                //if (Math.Abs(this.Entity.LinearVelocity.Y) < 2.5f)
+                if (Math.Abs(this.Position.Y - this.lastGroundPosition.Y) < 0.5f)
+                {
                     this.lastGroundPosition = this.Position;
+                }
             }
             else if (other.Tag is Hammer)
             {
