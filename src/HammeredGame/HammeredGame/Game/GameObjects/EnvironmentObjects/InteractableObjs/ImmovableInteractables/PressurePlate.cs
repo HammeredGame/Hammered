@@ -33,7 +33,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         private bool playerOn = false, hammerOn = false;
         private bool pressureActivated = false;
 
-        private List<SoundEffect> pressSfx = new List<SoundEffect>();
+        //private List<SoundEffect> pressSfx = new List<SoundEffect>();
 
         public PressurePlate(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -49,8 +49,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                 //this.entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollision;
                 this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
                 this.Entity.CollisionInformation.Events.CollisionEnded += this.Events_CollisionEnded;
+                //this.AudioEmitter = new AudioEmitter();
 
-                pressSfx = Services.GetService<List<SoundEffect>>();
+                //pressSfx = Services.GetService<List<SoundEffect>>();
             }
         }
 
@@ -96,48 +97,49 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //System.Diagnostics.Debug.WriteLine(this.entity.CollisionInformation.Pairs.Count);
             if (otherEntityInformation != null)
             {
-                if (sender.Pairs.Count <= 1)
-                {
-                    this.SetActivated(false);
-                }
+                this.SetActivated(false);
+                //if (sender.Pairs.Count <= 1)
+                //{
+                //    this.SetActivated(false);
+                //}
             }
         }
 
         public override void Update(GameTime gameTime, bool screenHasFocus)
         {
-            //triggerObject.setVisible(true);
-            //if (playerOn || hammerOn)
+            ////triggerObject.setVisible(true);
+            ////if (playerOn || hammerOn)
+            ////{
+            ////    triggerObject.SetVisible(false);
+            ////}
+            ////else
+            ////{
+            ////    triggerObject.SetVisible(true);
+            ////}
+            //if (this.pressureActivated && triggerObject != null)
             //{
-            //    triggerObject.SetVisible(false);
+            //    // pressSfx[5].Play();
+            //    if (triggerObject is Door)
+            //    {
+            //        var door = triggerObject as Door;
+            //        door.OpenDoor();
+            //    }
+            //    //triggerObject.Visible = false;
+            //    //if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
+            //    //    this.ActiveSpace.Remove(triggerObject.Entity);
             //}
-            //else
+            //else if (triggerObject != null)
             //{
-            //    triggerObject.SetVisible(true);
+            //    // pressSfx[6].Play();
+            //    if (triggerObject is Door)
+            //    {
+            //        var door = triggerObject as Door;
+            //        door.CloseDoor();
+            //    }
+            //    //triggerObject.Visible = true;
+            //    //if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
+            //    //    this.ActiveSpace.Add(triggerObject.Entity);
             //}
-            if (this.pressureActivated && triggerObject != null)
-            {
-                // pressSfx[5].Play();
-                if (triggerObject is Door)
-                {
-                    var door = triggerObject as Door;
-                    door.RemoveFromSpace();
-                }
-                //triggerObject.Visible = false;
-                //if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
-                //    this.ActiveSpace.Remove(triggerObject.Entity);
-            }
-            else if (triggerObject != null)
-            {
-                // pressSfx[6].Play();
-                if (triggerObject is Door)
-                {
-                    var door = triggerObject as Door;
-                    door.AddToSpace();
-                }
-                //triggerObject.Visible = true;
-                //if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
-                //    this.ActiveSpace.Add(triggerObject.Entity);
-            }
         }
 
         public bool IsActivated()
@@ -149,32 +151,5 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         {
             this.pressureActivated = activate;
         }
-
-        //private void ActivateTrigger()
-        //{
-        //    triggerObject.SetVisible(false);
-        //}
-
-        //public override void TouchingPlayer(Player player)
-        //{
-        //    //this.activateTrigger();
-        //    playerOn = true;
-        //}
-
-        //public override void NotTouchingPlayer(Player player)
-        //{
-        //    playerOn = false;
-        //}
-
-        //public override void TouchingHammer(Hammer hammer)
-        //{
-        //    //this.activateTrigger();
-        //    hammerOn = true;
-        //}
-
-        //public override void NotTouchingHammer(Hammer hammer)
-        //{
-        //    hammerOn = false;
-        //}
     }
 }

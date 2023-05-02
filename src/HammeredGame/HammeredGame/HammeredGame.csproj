@@ -10,6 +10,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <StartupObject>HammeredGame.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="lib\ImMonoGame\ImGuiDemo.cs" />
@@ -35,7 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Audio\" />
-    <Folder Include="Graphics\" />
+    <Folder Include="Game\Lights\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Animation">

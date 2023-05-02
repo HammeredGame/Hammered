@@ -2,10 +2,10 @@ using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Settings;
-using BEPUutilities.Threading;
 using HammeredGame.Core;
 using HammeredGame.Game.PathPlanning.Grid;
 using HammeredGame.Game.Screens;
+using HammeredGame.Graphics;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -34,7 +34,7 @@ namespace HammeredGame.Game
         /// <summary>
         /// The uniform grid of the scene.
         /// </summary>
-        public UniformGrid Grid { get; private set; } 
+        public UniformGrid Grid { get; private set; }
 
         /// <summary>
         /// The objects loaded in the scene, keyed by unique identifier strings.
@@ -45,6 +45,23 @@ namespace HammeredGame.Game
         {
             get { return GameObjects.Values.ToList(); }
         }
+
+        /// <summary>
+        /// Any debug objects shown as representations of bounding boxes. This list is updated in this.UpdateDebugObjects().
+        /// </summary>
+        public List<EntityDebugDrawer> DebugObjects = new();
+
+        public bool DrawDebugObjects = false;
+
+        // Uniform Grid debugging variables
+        public List<GridDebugDrawer> DebugGridCells = new();
+
+        public bool DrawDebugGrid = false;
+
+        /// <summary>
+        /// The lighting for the scene. This will be loaded from the XML.
+        /// </summary>
+        public SceneLightSetup Lights;
 
         /// <summary>
         /// The physics space for the scene.
@@ -162,8 +179,96 @@ namespace HammeredGame.Game
         /// <param name="fileName"></param>
         public void CreateFromXML(string fileName)
         {
-            (Camera, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            (Camera, Lights, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            // Set up the list of debug grid cells for debugging visualization
+            // WARNING: Execute the following line of code if you wish to initialize the grid only once.
+            // Suggested for when (constant) AVAILABLE grid cells are shown.
+            //this.UpdateDebugGrid(); // Quick Patch...maybe it should be put at a better place in the code.
             foreach (GameObject obj in GameObjects.Values) { obj.SetCurrentScene(this); }
+        }
+
+        /// <summary>
+        /// Update the scene at every tick
+        /// </summary>
+        public virtual void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
+        {
+            // Update each game object
+            foreach (GameObject gameObject in this.GameObjectsList)
+            {
+                // Game objects updating should depend on whether the screen has input focus, like
+                // for player movement. When a dialogue is shown and screen loses focus, all
+                // interactions with objects should be paused.
+                gameObject.Update(gameTime, screenHasFocus);
+            }
+
+            // For the camera, we use the paused flag instead of whether the screen has focus, since
+            // the camera only has a different behaviour when the game is paused. If there is
+            // dialogue for example, the camera will be the same as regular gameplay.
+            this.Camera.UpdateCamera(isPaused);
+
+            //Steps the simulation forward one time step.
+            // TODO: perhaps this shouldn't update if it's paused (i.e. check for HasFocus)?
+            this.Space.Update();
+
+            // Set up the list of debug entities for debugging visualization
+            if (DrawDebugObjects) this.UpdateDebugObjects();
+
+            // Set up the list of debug grid cells for debugging visualization
+            // WARNING: Execute the following line of code if you wish to update the grid at each frame.
+            // Suggested for when NON available grid cells are shown.
+            if (DrawDebugGrid) this.UpdateDebugGrid();
+        }
+
+        /// <summary>
+        /// Recreate the list of debug objects in this scene, representing bounding boxes. This
+        /// should be called on every game loop Update().
+        /// </summary>
+        public void UpdateDebugObjects()
+        {
+            DebugObjects.Clear();
+            var CubeModel = Services.GetService<ContentManager>().Load<Model>("cube");
+            //Go through the list of entities in the space and create a graphical representation for them.
+            foreach (Entity e in Space.Entities)
+            {
+                Box box = e as Box;
+                if (box != null) //This won't create any graphics for an entity that isn't a box since the model being used is a box.
+                {
+                    BEPUutilities.Matrix scaling = BEPUutilities.Matrix.CreateScale(box.Width, box.Height, box.Length); //Since the cube model is 1x1x1, it needs to be scaled to match the size of each individual box.
+                    EntityDebugDrawer model = new(e, CubeModel, scaling);
+                    //Add the drawable game component for this entity to the game.
+                    DebugObjects.Add(model);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Recreate the debug grid in this scene, representing bounding boxes. This should be
+        /// called on every game loop Update().
+        /// </summary>
+        public void UpdateDebugGrid()
+        {
+            DebugGridCells.Clear();
+            var CubeModel = Services.GetService<ContentManager>().Load<Model>("cube");
+            //Go through the list of entities in the space and create a graphical representation for them.
+            float sideLength = Grid.sideLength;
+            Matrix scaling = Matrix.CreateScale(sideLength);
+
+            int[] gridDimensions = Grid.GetDimensions();
+            for (int i = 0; i < gridDimensions[0]; ++i)
+            {
+                for (int j = 0; j < gridDimensions[1]; ++j)
+                {
+                    for (int k = 0; k < gridDimensions[2]; ++k)
+                    {
+                        if (!Grid.mask[i, j, k])
+                        {
+                            Vector3 gridcell = Grid.grid[i, j, k];
+                            GridDebugDrawer gdd = new GridDebugDrawer(CubeModel, gridcell, scaling);
+                            DebugGridCells.Add(gdd);
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -201,7 +306,7 @@ namespace HammeredGame.Game
                 // just adjust the scalar multiplier 1 to something greater than 1.
                 // This could prove useful, because the size of the hammer is not currently taken into account.
                 // Ideally, the "·Repetitions" variables would also be parameterized w.r.t the dimensions of the hammer.
-                int xRepetitions = (int) (Math.Ceiling(goBox.HalfWidth / sideLength) * 1.0); //xRepetitions = 0;
+                int xRepetitions = (int)(Math.Ceiling(goBox.HalfWidth / sideLength) * 1.0); //xRepetitions = 0;
                 int yRepetitions = (int)(Math.Ceiling(goBox.HalfHeight / sideLength) * 1.0);
                 int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * 1.0); //zRepetitions = 0;
                 for (int i = -xRepetitions; i <= xRepetitions; ++i)
@@ -218,11 +323,8 @@ namespace HammeredGame.Game
                             sampledPoint = Vector3.Transform(sampledPoint, Matrix.CreateTranslation(localOrigin)); // Return to global coordinates
                             this.Grid.MarkCellAs(sampledPoint, availability);
                         }
-
                     }
                 }
-
-
             }
         }
 
@@ -293,10 +395,11 @@ namespace HammeredGame.Game
             // Show the camera UI
             Camera.UI();
 
+            // Show the scene editor
+
             ImGui.Text($"{GameObjects.Count} objects in scene, {Services.GetService<Space>().Entities.Count} entities in physics space");
             ImGui.SameLine();
             // Button to load from XML. This will replace all the scene objects
-            // TODO: update Space and bounding boxes?
             if (ImGui.Button("Load Scene XML"))
             {
                 // open a cross platform file dialog
@@ -316,7 +419,23 @@ namespace HammeredGame.Game
             // Button to export to XML
             if (ImGui.Button("Export Scene"))
             {
-                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, GameObjects, Grid, Services);
+                SceneDescriptionIO.WriteToXML("defaultname.xml", Camera, Lights, GameObjects, Grid, Services);
+            }
+
+            ImGui.Checkbox("Draw Bounding Boxes", ref DrawDebugObjects);
+            ImGui.Checkbox("Draw Grids", ref DrawDebugGrid);
+
+            // Show UI for lights
+            if (ImGui.CollapsingHeader("Sunlight"))
+            {
+                System.Numerics.Vector3 sunDir = Lights.Sun.Direction.ToNumerics();
+                ImGui.DragFloat3("Sun Direction", ref sunDir, 0.01f);
+                Lights.Sun.Direction = Vector3.Normalize(sunDir);
+                ImGui.DragFloat("Sun Intensity", ref Lights.Sun.Intensity, 0.01f, 0f);
+                System.Numerics.Vector3 sunColor = Lights.Sun.LightColor.ToVector3().ToNumerics();
+                ImGui.PushItemWidth(200f);
+                ImGui.ColorPicker3("Sun Color", ref sunColor);
+                Lights.Sun.LightColor = new Color(sunColor);
             }
 
             // Show a dual pane layout, with the scene object list on the left and details on the
@@ -362,9 +481,11 @@ namespace HammeredGame.Game
 
                                 // Copy the entity
                                 Entity entity = null;
-                                if (gameObject.Entity is Box box) {
+                                if (gameObject.Entity is Box box)
+                                {
                                     entity = new Box(box.Position, box.Width, box.Height, box.Length, box.Mass);
-                                } else if (gameObject.Entity is Sphere sph)
+                                }
+                                else if (gameObject.Entity is Sphere sph)
                                 {
                                     entity = new Sphere(sph.Position, sph.Radius, sph.Mass);
                                 }

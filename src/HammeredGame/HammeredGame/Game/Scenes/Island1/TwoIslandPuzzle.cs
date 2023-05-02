@@ -5,6 +5,7 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Collecti
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.Screens;
+using Microsoft.Xna.Framework;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -12,7 +13,7 @@ namespace HammeredGame.Game.Scenes.Island1
     {
         public TwoIslandPuzzle(GameServices services, GameScreen screen) : base(services, screen)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle.xml");
+            CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml");
             OnSceneStart();
         }
 
@@ -31,7 +32,7 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
 
-
+            this.UpdateSceneGrid(Get<Wall>("wall_1"), false);
 
             // No further initialization required for the <c>UniformGrid</c> instance.
 
@@ -48,6 +49,19 @@ namespace HammeredGame.Game.Scenes.Island1
 
             //Create<Player>("player", services, content.Load<Model>("character-colored"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
             //Create<Hammer>("hammer", services, content.Load<Model>("temp_hammer2"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
+        }
+
+        public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
+        {
+            base.Update(gameTime, screenHasFocus, isPaused);
+
+            // Handle Pressure Plate logic
+            var pressureplate_1 = Get<PressurePlate>("pressureplate");
+            if (pressureplate_1 != null)
+            {
+                if (pressureplate_1.IsActivated()) Get<Door>("door_pp").OpenDoor();
+                else Get<Door>("door_pp").CloseDoor();
+            }
         }
     }
 }

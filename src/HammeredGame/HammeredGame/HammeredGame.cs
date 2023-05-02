@@ -1,15 +1,16 @@
+using BEPUutilities.Threading;
 using HammeredGame.Core;
-using HammeredGame.Game;
+using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using BEPUutilities.Threading;
-using System;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Myra;
-using ImGuiNET;
+using System;
+using System.Collections.Generic;
+using Pleasing;
 
 namespace HammeredGame
 {
@@ -41,7 +42,7 @@ namespace HammeredGame
         private readonly GameServices gameServices = new();
 
         // Music variables
-        private List<SoundEffect> sfx = new List<SoundEffect>();
+        //private List<SoundEffect> sfx = new List<SoundEffect>();
         private AudioManager audioManager;
 
         private ScreenManager manager;
@@ -49,6 +50,7 @@ namespace HammeredGame
         // ImGui renderer and list of UIs to render
         private ImGuiRenderer imGuiRenderer;
 
+        private bool drawDebugUI;
 
         public HammeredGame()
         {
@@ -118,10 +120,15 @@ namespace HammeredGame
             gameServices.AddService<Input>(input);
             gameServices.AddService<ContentManager>(Content);
             gameServices.AddService<ScriptUtils>(new ScriptUtils());
-            gameServices.AddService<List<SoundEffect>>(sfx);
+            //gameServices.AddService<List<SoundEffect>>(sfx);
             gameServices.AddService<AudioManager>(audioManager);
 
             manager = new ScreenManager(gameServices, gpu, mainRenderTarget);
+
+#if DEBUG
+            drawDebugUI = true;
+#endif
+
             InitTitleScreen();
 
             base.Initialize();
@@ -142,6 +149,10 @@ namespace HammeredGame
                 StartNewFunc = () =>
                 {
                     manager.AddScreen(new Game.Screens.GameScreen(typeof(Game.Scenes.Island1.ShoreWakeup).FullName));
+                },
+                ToggleDebugUIFunc = () =>
+                {
+                    drawDebugUI = !drawDebugUI;
                 }
             });
         }
@@ -152,6 +163,10 @@ namespace HammeredGame
         /// </summary>
         protected override void LoadContent()
         {
+            // Load assets related to input prompts
+            input.Prompts.LoadContent();
+
+            // Load assets related to shown screens
             manager.LoadContent();
         }
 
@@ -162,9 +177,26 @@ namespace HammeredGame
         /// <param name="gameTime"></param>
         protected override void Update(GameTime gameTime)
         {
-            gameServices.GetService<Input>().Update();
+            // Update global things
+
+            // Input should only be updated if the window is focused. Keyboard events are usually
+            // blocked by the OS and don't fall through from other windows, but click events do.
+            // Without this check, clicking on another window on top of the game can register clicks
+            // in the game, which is annoying.
+            if (this.IsActive)
+            {
+                gameServices.GetService<Input>().Update();
+            }
+
             gameServices.GetService<ScriptUtils>().Update(gameTime);
+
+            // Update any animations that are active (doing this before the ScreenManager update so
+            // that new values are used for it)
+            Tweening.Update(gameTime);
+
+            // Call update on the various active screens to do their thing
             manager.Update(gameTime);
+            audioManager.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -204,19 +236,18 @@ namespace HammeredGame
             // Commit all the data to the back buffer
             spriteBatch.End();
 
-#if DEBUG
-            // == Draw debug UI on top of all rendered base.
-            // Code adapted from ImMonoGame example code.
-            // Begin by calling BeforeLayout
+            if (drawDebugUI)
+            {
+                // == Draw debug UI on top of all rendered base.
+                // Begin by calling BeforeLayout, which handles input
+                imGuiRenderer.BeforeLayout(gameTime, this.IsActive);
 
-            imGuiRenderer.BeforeLayout(gameTime);
+                // Draw the main developer UI
+                UI();
 
-            // Draw the main developer UI
-            UI();
-
-            // Call AfterLayout to finish.
-            imGuiRenderer.AfterLayout();
-#endif
+                // Call AfterLayout to finish.
+                imGuiRenderer.AfterLayout();
+            }
 
             base.Draw(gameTime);
         }
@@ -229,7 +260,7 @@ namespace HammeredGame
             // Show whether the gamepad is detected
             if (input.GamePadState.IsConnected)
             {
-                ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.0f, 1.0f, 1.0f), "Gamepad Connected");
+                ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.0f, 1.0f, 1.0f), "Gamepad Connected - " + GamePad.GetCapabilities(0).DisplayName);
             }
             float fr = ImGui.GetIO().Framerate;
             ImGui.Text($"{1000.0f / fr:F2} ms/frame ({fr:F1} FPS)");

@@ -11,7 +11,7 @@ namespace HammeredGame.Game
 {
     public class Camera : IImGui
     {
-        public const float FAR_PLANE = 500;
+        public const float FAR_PLANE = 1000;
         public Vector3 Position, Target;                 // Camera position and target
         public Matrix ViewMatrix, ProjMatrix, ViewProjMatrix;        // View Matrix, Projection Matrix
         public Vector3 Up;                          // Vector that points up
@@ -21,7 +21,10 @@ namespace HammeredGame.Game
 
         private Vector3 unit_direction;                     // direction of camera (normalized to distance of 1 unit)
 
-        // Camera positions
+        // Which of the 4 directions the camera is pointing to
+        public int CurrentCameraDirIndex = 0;
+
+        // Default camera positions
         public Vector3[] StaticPositions = new Vector3[4]
         {
             new Vector3(300f, 200f, -300f),
@@ -29,8 +32,6 @@ namespace HammeredGame.Game
             new Vector3(-300f, 200f, 300f),
             new Vector3(300f, 200f, 300f)
         };
-
-        private int currentCameraPosIndex = 0;
 
         // Camera follow properties, like distance, angle, and what to follow
         private GameObject followTarget;
@@ -136,7 +137,7 @@ namespace HammeredGame.Game
         /// <param name="newTarget"></param>
         public void UpdatePositionTarget(Vector3 newPosition, Vector3 newTarget)
         {
-            Position = (newPosition - this.Position) / 10.0f + this.Position;
+            Position = Vector3.Lerp(this.Position, newPosition, 0.1f);
             Target = (newTarget - this.Target) / 10.0f + this.Target;
             ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
@@ -146,24 +147,29 @@ namespace HammeredGame.Game
         /// TEMPORARY - needs to be modified Update the camera position and look-at Currently just
         /// switches between 4 predetermined positions given the corresponding keyboard input
         /// </summary>
-        public void UpdateCamera(bool screenHasFocus)
+        public void UpdateCamera(bool isPaused)
         {
-            if (Mode == CameraMode.Follow && screenHasFocus)
+            if (Mode == CameraMode.Follow && followTarget != null && !isPaused)
             {
-                // In the case of follow mode, we modify the 2D vector that is multiplied onto the
-                // base camera offset. This controls the 4 isometric directions that the camera can take.
+                // In player-follow camera mode, we use the input to rotate between four indices for
+                // camera positions.
                 if (UserAction.RotateCameraLeft.Pressed(services.GetService<Input>()))
                 {
-                    // I found a pattern for the 2D camera directions  (1,1)(-1,1)(-1,-1)(1,-1)
-                    // where each successive one is flipping the previous one's elements and
-                    // switching the sign on the first element. So we use that!
-                    followDir2D = new Vector2(-followDir2D.Y, followDir2D.X);
+                    CurrentCameraDirIndex = (CurrentCameraDirIndex + 3) % 4;
                     OnRotateLeft?.Invoke(this, null);
                 } else if (UserAction.RotateCameraRight.Pressed(services.GetService<Input>()))
                 {
-                    followDir2D = new Vector2(followDir2D.Y, -followDir2D.X);
+                    CurrentCameraDirIndex = (CurrentCameraDirIndex + 1) % 4;
                     OnRotateRight?.Invoke(this, null);
                 }
+
+                // A 2D vector will be multiplied onto the base camera offset. We find this from the
+                // index. The 2D camera directions are (1,1)(-1,1)(-1,-1)(1,-1) for indices 0 1 2 3
+                // respectively. So we can use this to calculate the 2D unit direction from the index.
+                followDir2D = new Vector2(
+                    1f - 2f * (float)Convert.ToInt32(CurrentCameraDirIndex % 3 != 0),
+                    1f - 2f * (float)Convert.ToInt32(CurrentCameraDirIndex < 2)
+                );
 
                 // Calculate the base follow offset position (from the follow target) using the
                 // followAngle, between 0 (horizon) and 90 (top down)
@@ -180,25 +186,25 @@ namespace HammeredGame.Game
 
                 UpdatePositionTarget(newPosition, followTarget.Position);
             }
-            else if (Mode == CameraMode.FourPointStatic && screenHasFocus)
+            else if (Mode == CameraMode.FourPointStatic && !isPaused)
             {
                 // In static camera mode, we use the input to select the static camera.
 
                 if (UserAction.RotateCameraLeft.Pressed(services.GetService<Input>()))
                 {
-                    currentCameraPosIndex = (currentCameraPosIndex + 3) % 4;
+                    CurrentCameraDirIndex = (CurrentCameraDirIndex + 3) % 4;
                     OnRotateLeft?.Invoke(this, null);
                 }
                 else if (UserAction.RotateCameraRight.Pressed(services.GetService<Input>()))
                 {
-                    currentCameraPosIndex = (currentCameraPosIndex + 1) % 4;
+                    CurrentCameraDirIndex = (CurrentCameraDirIndex + 1) % 4;
                     OnRotateRight?.Invoke(this, null);
                 }
 
                 ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
 
-                UpdatePositionTarget(StaticPositions[currentCameraPosIndex], Vector3.Zero);
-            } else {
+                UpdatePositionTarget(StaticPositions[CurrentCameraDirIndex], Vector3.Zero);
+            } else if (followTarget != null) {
                 // In paused mode, make the camera really up close. We use const values here and
                 // don't update the camera fields. This way we can reset to the previous values easily.
                 const float tempFollowDistance = 23f;
@@ -241,15 +247,14 @@ namespace HammeredGame.Game
             {
                 Mode = isStatic ? CameraMode.FourPointStatic : CameraMode.Follow;
             }
+            ImGui.SliderInt("Active Camera", ref CurrentCameraDirIndex, 0, 3);
             if (isStatic)
             {
-                ImGui.SliderInt("Active Camera", ref currentCameraPosIndex, 0, 3);
-
                 // imgui accepts system.numerics.vector3 and not XNA.vector3 so temporarily convert
-                System.Numerics.Vector3 pos1 = StaticPositions[currentCameraPosIndex].ToNumerics();
-                ImGui.DragFloat3($"Position for Camera {currentCameraPosIndex}", ref pos1);
+                System.Numerics.Vector3 pos1 = StaticPositions[CurrentCameraDirIndex].ToNumerics();
+                ImGui.DragFloat3($"Position for Camera {CurrentCameraDirIndex}", ref pos1);
                 // other-way around can work implicitly
-                StaticPositions[currentCameraPosIndex] = pos1;
+                StaticPositions[CurrentCameraDirIndex] = pos1;
             }
             else
             {

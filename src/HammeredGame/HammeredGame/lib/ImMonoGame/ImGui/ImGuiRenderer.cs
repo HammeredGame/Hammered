@@ -112,11 +112,18 @@ namespace ImMonoGame.Thing
         /// <summary>
         /// Sets up ImGui for a new frame, should be called at frame start
         /// </summary>
-        public virtual void BeforeLayout(GameTime gameTime)
+        public virtual void BeforeLayout(GameTime gameTime, bool windowIsActive)
         {
             ImGui.GetIO().DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            UpdateInput();
+            // Only register new mouse or keyboard inputs if the window is active. This has a
+            // side-effect that anything that was pressed before the window lost focus will keep
+            // being pressed (since we don't register the button release) but eh, it's a debug UI
+            // and that's not a big problem.
+            if (windowIsActive)
+            {
+                UpdateInput();
+            }
 
             ImGui.NewFrame();
         }

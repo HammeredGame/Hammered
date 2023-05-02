@@ -9,11 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
 using BEPUphysics.CollisionRuleManagement;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using BEPUutilities;
+using static HammeredGame.Game.GameObjects.Player;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles
 {
@@ -65,6 +67,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
                 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollisionDetected;
+                
+                this.AudioEmitter = new AudioEmitter();
+                this.AudioEmitter.Position = this.Position; 
             }
 
             mbState = MBState.Stationary;
@@ -83,13 +88,19 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 if (other.Tag is Player)
                 {
                     var player = other.Tag as Player;
-                    float maxY = player.Entity.Position.Y;
-                    foreach (var contact in pair.Contacts)
+
+                    if (player.StandingOn != PlayerOnSurfaceState.OnRock)
                     {
-                        BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
-                        maxY = Math.Max(maxY, pointOfContact.Y);
+                        float maxY = player.Entity.Position.Y;
+                        foreach (var contact in pair.Contacts)
+                        {
+                            BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
+                            maxY = Math.Max(maxY, pointOfContact.Y);
+                        }
+
+                        player.StandingOn = PlayerOnSurfaceState.OnRock;
+                        player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).HalfHeight, player.Entity.Position.Z);
                     }
-                    player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).Width, player.Entity.Position.Z);
                 }
 
                 return;
@@ -102,14 +113,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 // If colliding with a moving hammer, set the move block to move in the same direction
                 if (other.Tag is Hammer && this.mbState != MBState.Moving)
                 {
+                    Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
                     var hammer = other.Tag as Hammer;
                     if (hammer.IsEnroute())
                     {
-                        this.SetMoving(hammer.Entity.LinearVelocity * 0.5f);
+                        this.SetMoving(hammer.Entity.LinearVelocity);
                     }
                 }
                 else if (this.mbState == MBState.Moving)
                 {
+
                     // Otherwise, the only collisions we care about is if the block is already moving
                     // If so, and the colliding object is the player or another obstacle,
                     // then handle these cases appropriately (if needed, otherwise default behavior
@@ -128,6 +141,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                             {
                                 otherMoveBlock.SetMoving(initialMovementVelocity);
                             }
+                            
                         }
                         else if (other.Tag is Laser)
                         {
@@ -139,6 +153,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         this.SetStationary();
                     }
                 }
+                
             }
             else
             {
@@ -147,6 +162,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 {
                     this.SetStationary();
                     mbState = MBState.InWater;
+                    Services.GetService<AudioManager>().Play3DSound("Audio/rock_water", false, this.AudioEmitter, 1);
                 }
             }
         }
@@ -159,6 +175,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 var speed = this.Entity.LinearVelocity.Length();
                 if (speed <= 0.01f) this.SetStationary();
+                else this.SetMoving(initialMovementVelocity);
             }
 
             //base.Update(gameTime);

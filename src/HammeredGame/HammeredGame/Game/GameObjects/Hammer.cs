@@ -11,11 +11,13 @@ using BEPUphysics.Entities;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using HammeredGame.Game.PathPlanning.Grid;
 using HammeredGame.Game.PathPlanning.TurnSmoothing;
-using BEPUutilities;
 using Vector3 = Microsoft.Xna.Framework.Vector3; // How is it that this ambigouity results in an error after adding comments???
 using Quaternion = Microsoft.Xna.Framework.Quaternion; // How is it that this ambigouity results in an error after adding comments???
 using Microsoft.Xna.Framework.Audio;
-
+using Aether.Animation;
+using ImGuiNET;
+using ImMonoGame.Thing;
+using BEPUphysics.Entities.Prefabs;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -42,7 +44,7 @@ namespace HammeredGame.Game.GameObjects
     /// <remark>
     /// TODO: Improved path finding - technical achievement of the game!
     /// </remark>
-    public class Hammer : GameObject
+    public class Hammer : GameObject, IImGui
     {
         public enum HammerState
         {
@@ -52,7 +54,7 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Hammer specific variables
-        private float hammerSpeed = 40f;
+        private float hammerSpeed = 50f;
         private HammerState hammerState;
 
         public Vector3 OldPosition { get; private set; }
@@ -70,22 +72,23 @@ namespace HammeredGame.Game.GameObjects
         private readonly Queue<BEPUutilities.Vector3> route = new();
         private BEPUutilities.Vector3 nextRoutePosition;
 
-        private List<SoundEffect> hammer_sfx = new List<SoundEffect>();
+        //private List<SoundEffect> hammer_sfx = new List<SoundEffect>();
         //how long till trigger next sound
         //TimeSpan audioDelay = TimeSpan.Zero;
-
-        private AudioManager audioManager;
 
         public event EventHandler OnSummon;
         public event EventHandler OnCollision;
         public event EventHandler OnDrop;
 
+        // When held by the player, we have a very specific rotation we want to keep (in addition to
+        // the rotations of the player).
+        private Quaternion rotationWhenHeldByPlayer = new Quaternion(-0.038f, 0.308f, 0.614f, 0.726f);
+
         public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
             : base(services, model, t, pos, rotation, scale, entity)
         {
             hammerState = HammerState.WithCharacter;
-            hammer_sfx = Services.GetService<List<SoundEffect>>();
-            audioManager = Services.GetService<AudioManager>();
+            //hammer_sfx = Services.GetService<List<SoundEffect>>();
 
             if (this.Entity != null)
             {
@@ -117,19 +120,14 @@ namespace HammeredGame.Game.GameObjects
 
                 // Initialize the collision handlers based on the associated collision events
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
-            }
 
-            //// Adding the grid reference to the hammer.
-            ///// <remarks>
-            ///// TODO:   Storing the grid into the <c>services</c> object is NOT an information-secure solution!
-            /////         Find a better way to insert a parameter which will be used to instantiate <c>grid</c>.
-            /////         <seealso cref="SceneDescriptionIO.ParseFromXML(string, GameServices)"/>
-            /////         IMPACT ASSESSMENT LEVEL: 2 (critical)
-            ///// </remarks>
-            //this.grid = services.GetService<UniformGrid>();
-            //services.RemoveService<UniformGrid>(); // Removing the "UniformGrid" service so that as little as classes possible can access it.
-            /// Update: The grid reference is passed to the hammer via the <see cref="Scene.OnSceneStart"/> ("protected" function)
-            /// <seealso cref="Hammer.SetSceneUniformGrid(UniformGrid)"/>
+                // Move rotation and position pivot to the bottom of the handle, so that the when
+                // it's held, everything is animated with the handle as the pivot
+                this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, (this.Entity as Box).HalfHeight, 0);
+
+                this.AudioEmitter = new AudioEmitter();
+                this.AudioEmitter.Position = this.Position;
+            }
         }
 
         // Collision Handling Event for any initial collisions detected
@@ -171,7 +169,21 @@ namespace HammeredGame.Game.GameObjects
             // if hammer has not yet been dropped / if hammer is not being called back
             if (hammerState == HammerState.WithCharacter && player != null)
             {
-                Position = player.Position;
+                // Get the player's bone index for the right hand
+                int boneIndexForRightHand = player.Model.Bones["mixamorig:RightHand"].Index;
+
+                // Retrieve the world space position for the hand by multiplying the bone-to-object
+                // transformation and the object-to-world transformation. Order of multiplication
+                // doesn't matter here since we're only using the Translation property which is additive.
+                Position = (player.Animations.WorldTransforms[boneIndexForRightHand] * player.GetWorldMatrix()).Translation;
+
+                // For the rotation, we have a specific order we want to follow, since Quaternion
+                // multiplication builds on top of each other. First, we'll rotate it in the world
+                // space player rotation, then in the new axis that we now treat as the
+                // object-space, we'll do an object-space bone rotation, and in the new axis that's
+                // now aligned with the bone, we'll do a custom tweaked-rotation so that the hammer
+                // is held in the correct direction.
+                Rotation = player.Rotation * Quaternion.CreateFromRotationMatrix(player.Animations.WorldTransforms[boneIndexForRightHand]) * rotationWhenHeldByPlayer;
             }
 
             // Get the input via keyboard or gamepad
@@ -193,7 +205,7 @@ namespace HammeredGame.Game.GameObjects
                     float distanceBetweenCurrentAndNext = currentToNextPosition.Length();
                     currentToNextPosition.Normalize();
                     // If the two points are too far apart
-                    if (distanceBetweenCurrentAndNext > 1)
+                    if (distanceBetweenCurrentAndNext > 1.5) // Hard to find the "magic value" to achieve both natural turn smoothing and stability...
                     {
                         //// Follow the path in line segments. Stable, but no curvature.
                         //this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
@@ -211,10 +223,6 @@ namespace HammeredGame.Game.GameObjects
                         else
                             this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
 
-                        //// Hermite curves smoothing. Currently not working!
-                        //this.UpdateHammerPositionHermite(gameTime);
-                        //this.UpdateHammerVelocityHermite(gameTime);
-
 
                     }
                     // If the hammer hasn't reached its destination, travel towards the next position of the route.
@@ -222,7 +230,6 @@ namespace HammeredGame.Game.GameObjects
                     {
                         this.nextRoutePosition = route.Peek(); route.Dequeue();
                         if (route.Count() > 1)
-                            //this.UpdateHermiteCoefficients();
                             this.UpdateQuadraticBezierCurve();
                     }
 
@@ -257,6 +264,9 @@ namespace HammeredGame.Game.GameObjects
                 //}
 
             }
+
+            this.AudioEmitter.Position = Position;
+
         }
 
         public void HandleInput()
@@ -284,8 +294,7 @@ namespace HammeredGame.Game.GameObjects
                 // The hammer, when called back, will follow the shortest path from the point where it was dropped towards
                 // the point the player called it FROM (it does not follow the player).
                 ComputeShortestPath();
-                //UpdateHermiteCoefficients();
-               
+
                 // When hammer is enroute, the physics engine shouldn't solve for
                 // collision constraints with it --> rather we want to manually
                 // handle collisions
@@ -299,7 +308,13 @@ namespace HammeredGame.Game.GameObjects
             // Set hammer state to dropped
             hammerState = HammerState.Dropped;
 
-            hammer_sfx[1].Play();
+            // temporarily assume that a hammer with a character is upright, and rotate it so it
+            // becomes flat.
+            // todo: remove this
+            Rotation *= Quaternion.CreateFromYawPitchRoll(0, -MathHelper.PiOver2, 0);
+
+            //hammer_sfx[1].Play();
+            Services.GetService<AudioManager>().Play3DSound("Audio/hammer_drop", false, this.AudioEmitter, 1);
 
             //audioManager.Play3DSound("Audio/hammer_drop", false);
 
@@ -329,8 +344,11 @@ namespace HammeredGame.Game.GameObjects
             //sound effect instance to try and manipulate the pitch, but not working
             if (hammerState == HammerState.Enroute)
             {
-                SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
-                whoosh.Play();
+                //SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
+                //whoosh.Play();
+
+                Services.GetService<AudioManager>().Play3DSound("Audio/lohi_whoosh", false, this.AudioEmitter, 1);
+
             }
             return hammerState == HammerState.Enroute;
         }
@@ -412,7 +430,7 @@ namespace HammeredGame.Game.GameObjects
             }
             /// <remarks>
             /// INSPIRATION FOR AS TO WHY THE ABOVE IS EXECUTED ASYNCHRONOUSLY (using C# "Tasks").
-            /// 
+            ///
             /// Observation 1
             /// =============
             /// The call
@@ -420,14 +438,14 @@ namespace HammeredGame.Game.GameObjects
             /// is very expensive (takes a few seconds to execute).
             /// This is true even in cases where A* algorithm completes almost instantly(e.g. 60ms or less).
             /// This is because time (seconds)are required to iterate through the data.
-            /// 
+            ///
             /// Observation 2
             /// =============
             /// If an "if-else" structure is adopted i.e.
             /// IF straightPathAchievable => FOLLOW STRAIGHT PATH
             /// ELSE => EXECUTE A*
             /// then instant response from the game is achieved.
-            /// 
+            ///
             /// Combining observrations 1 and 2
             /// ===============================
             /// The hammer may start travelling towards the straight line as much as it can.
@@ -438,35 +456,17 @@ namespace HammeredGame.Game.GameObjects
             /// 2) the full path is computed in the background, without altering the game experience.
             /// </remarks>
 
-
-            // QUADRATIC BEZIER
             await aStarPathComputationTask;
+            // QUADRATIC BEZIER
             UpdateQuadraticBezierCurve();
 
-
-
-            // HERMITEAN VELOCITY...INCOMPLETE!
-            //// Initialize velocity of the hammer (required for Hermitean Velocity)
-            //var temp = this.nextRoutePosition - this.Entity.Position;
-            //if (temp.Length() > 0) { temp.Normalize(); temp *= hammerSpeed; } // If the hammer has started moving
-            //else {
-            //    if (this.route.Count() == 0)
-            //        await aStarPathComputationTask;
-            //    this.route.Dequeue(); // The first element of the queue points towards the current position.
-            //    temp = this.route.Peek() - this.nextRoutePosition;
-            //    temp.Normalize(); temp *= hammerSpeed;
-
-            //}
-            //this.Entity.LinearVelocity = temp;
-
         }
-
 
         // QUADRATIC BEZIER CURVE SECTION for turn smoothing!
 
         // Variables of the "Hammer" required exclusively for the Hermite spline turn smoothing section.
-        private BEPUutilities.Vector3 p0, p1, p2, pc;
         float t = 0;
+        private BEPUutilities.Vector3 p0, p1, p2, pc;
         private double CurveLength; // The Bezier curve length is approximated as the sum of the two linear segments it is comprised of.
 
         private void UpdateQuadraticBezierCurve()
@@ -499,7 +499,7 @@ namespace HammeredGame.Game.GameObjects
             var distanceOfCenterFromEnd = (p2 - pc).Length();
             if (distanceOfCurrentFromEnd > distanceOfCenterFromEnd) // The point has not reached the center point (t=0.5) yet.
             {
-                t = (float) (( 1 - (pc - this.Entity.Position).Length() + distanceOfCenterFromEnd ) / CurveLength);
+                t = (float)((1 - (pc - this.Entity.Position).Length() + distanceOfCenterFromEnd) / CurveLength);
             }
             else
             {
@@ -507,96 +507,15 @@ namespace HammeredGame.Game.GameObjects
             }
 
             this.Entity.LinearVelocity = BezierQuadraticSpline.QuadraticBezierVelocity(p0, p1, p2, t);
-
         }
 
-
-
-
-
-
-
-        // HERMITE CUBIC SPLINE SECTION
-        // STATUS: NOT WORKING...
-        // STATUS: QUADRATIC BEZIER CURVES ARE USED INSTEAD (see above code section)!!!
-        // The reason for (attempting to) incorporate Hermitean splines is for smoothing any turns in the path.
-
-        /* Hermite Cubic Spline := (2(p0 - p1) + p0'+ p1')t^3 + (- 3(p0 - p1) - 2p0' - p1')t^2 + p0't + p0
-         * Derivate w.r.t. t := 3(2(p0 - p1) + p0'+ p1')t^2 + 2(- 3(p0 - p1) - 2p0' - p1')t + p0'
-         * POINTER:
-         * The good thing about the above is that the terms in the parentheses can be PRECOMPUTED and change only the t value.
-         * 
-         * Transitioning from the simple curve to the data of the problem, we would have:
-         * p0 := a zero-order derivative initial condition, i.e. the starting point of the current line segment
-         * p1 := a zero-order derivative (initial) condition, i.e. the destination point of the current line segment
-         * p0' := a first-order derivative initial condition at the start of the line segment.
-         *        This would translate to the velocity of the hammer when it reaches the point.
-         * p1' := a first-order derivative (initial) condition at the destination point of the line segment.
-         *        This right here would depend on design choice.
-         *        Personally, I make the decision on the overall task we wish to accomplish:
-         *        make the already-computed linear segment path smoother.
-         *        As such, the hammer should reach the destination point of the current linear segment,
-         *        --which will be "transformed" into the starting point of the next linear segment--
-         *        in such a way that its velocity is pointing towards the next position/point in the full path. 
-         *        
-         * What is difficult to update in MonoGame is the "t" variable, which parameterizes the curve.
-        */
-
-        // Variables of the "Hammer" required exclusively for the Hermite spline turn smoothing section.
-        private BEPUutilities.Vector3[] HermitePositionCoefficients = new BEPUutilities.Vector3[4];
-        private BEPUutilities.Vector3[] HermiteVelocityCoefficients = new BEPUutilities.Vector3[3];
-        //private float t = 0;
-        //private BEPUutilities.Vector3 CurveStart;
-        // double CurveLength; // The hermitean curve length is approximated as the linear segment connecting the two points.
-
-
-        private void UpdateHermiteCoefficients()
+        public new void UI()
         {
-            BEPUutilities.Vector3 p0 = this.Entity.Position, p1 = this.nextRoutePosition, m0 = this.Entity.LinearVelocity; //m0.Normalize();
-
-            /* [...] Personally, I make the decision on the overall task we wish to accomplish:
-             * make the already-computed linear segment path smoother.
-             * As such, the hammer should reach the destination point of the current linear segment,
-             * --which will be "transformed" into the starting point of the next linear segment--
-             * in such a way that its velocity is pointing towards the next position / point in the full path.
-            */
-            var m1 = this.route.Peek() - this.nextRoutePosition; m1.Normalize(); m1 *= hammerSpeed;
-
-            this.HermitePositionCoefficients = HermiteCubicSpline.HermiteCubicSplinePositionCoefficients(p0, p1, m0, m1);
-            this.HermiteVelocityCoefficients = HermiteCubicSpline.HermiteCubicSplineVelocityCoefficients(p0, p1, m0, m1);
-            t = 0.0f; // Reset t = 0 so as to consider the current position be the start of the new Hermitean spline.
-            CurveLength = (this.nextRoutePosition - this.Entity.Position).Length();
+            base.UI();
+            ImGui.Separator();
+            System.Numerics.Vector4 temp = rotationWhenHeldByPlayer.ToVector4().ToNumerics();
+            ImGui.DragFloat4("Rotation when held", ref temp);
+            rotationWhenHeldByPlayer = new Quaternion(Vector4.Normalize(temp));
         }
-
-        private void UpdateHammerPositionHermite(GameTime gameTime)
-        {
-            //// Simulate a time step using Forward Euler integration. As it is known, this is unstable if the time step is not small enough.
-            //var stepPosition = this.Entity.Position + this.Entity.LinearVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //// Find the (approximate) t of the curve the hammer ends up in.
-            //t = (float)((this.nextRoutePosition - stepPosition).Length() / CurveLength);
-            t += 0.01f;
-            // Correct the time step so that the hammer ends up on the exact spot on the curve.
-            this.Entity.Position = HermiteCubicSpline.HermiteCubicSplinePosition(
-                this.HermitePositionCoefficients[0], this.HermitePositionCoefficients[1],
-                this.HermitePositionCoefficients[2], this.HermitePositionCoefficients[3],
-                t
-            );
-        }
-
-        private void UpdateHammerVelocityHermite(GameTime gameTime)
-        {
-            // THIS COMPUTATION IS PROBLEMATIC!
-            // There may be multiple points on the Hermite curve having the same distance from the endpoint!
-            t = (float)(1 - (this.nextRoutePosition - this.Entity.Position).Length() / CurveLength);
-            // t += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var ComputedHermiteVelocity = HermiteCubicSpline.HermiteCubicSplineVelocity(
-                this.HermiteVelocityCoefficients[0], this.HermiteVelocityCoefficients[1],
-                this.HermiteVelocityCoefficients[2], BEPUutilities.Vector3.Zero,
-                t
-            );
-            ComputedHermiteVelocity.Normalize(); ComputedHermiteVelocity *= hammerSpeed;
-            this.Entity.LinearVelocity = ComputedHermiteVelocity;
-        }
-
     }
 }

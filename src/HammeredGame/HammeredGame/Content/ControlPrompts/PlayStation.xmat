@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas Image="PlayStation.png">
+  <TextureRegion Id="A" Left="0" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="B" Left="100" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPad" Left="200" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadDown" Left="300" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadLeft" Left="400" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadRight" Left="500" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="DPadUp" Left="600" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="Left" Left="700" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="LeftShoulder" Left="800" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="LeftStick" Left="900" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="LeftTrigger" Left="1000" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="PS5_Diagram" Left="0" Top="100" Width="1452" Height="940" />
+  <TextureRegion Id="PS5_Diagram_Simple" Left="0" Top="1040" Width="1452" Height="940" />
+  <TextureRegion Id="PS5_Microphone" Left="1452" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="PS5_Options_Alt" Left="1552" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="PS5_Share" Left="1652" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="PS5_Share_Alt" Left="1752" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="PS5_Touch_Pad" Left="1852" Top="0" Width="100" Height="100" />
+  <TextureRegion Id="RighStick" Left="1452" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="Right" Left="1552" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="RightShoulder" Left="1652" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="RightTrigger" Left="1752" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="Start" Left="1852" Top="100" Width="100" Height="100" />
+  <TextureRegion Id="X" Left="1452" Top="200" Width="100" Height="100" />
+  <TextureRegion Id="Y" Left="1552" Top="200" Width="100" Height="100" />
+</TextureAtlas>
