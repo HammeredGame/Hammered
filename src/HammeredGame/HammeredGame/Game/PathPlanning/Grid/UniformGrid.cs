@@ -7,7 +7,6 @@ using System.Collections.Concurrent;
 using HammeredGame.Game.PathPlanning.AStar;
 using HammeredGame.Game.PathPlanning.AStar.GraphComponents;
 using Microsoft.Xna.Framework;
-using static BEPUphysics.CollisionTests.Manifolds.TriangleMeshConvexContactManifold;
 
 namespace HammeredGame.Game.PathPlanning.Grid
 {
@@ -274,13 +273,23 @@ namespace HammeredGame.Game.PathPlanning.Grid
                                 // WARNING: This will produce errors in cases where there are obstruced obstacles at the boundary
                                 // of the grid (out of bounds error).
                                 if (this.GetCellMark(neighbourCellIndex))
+                                {
                                     // Priority is done according to Manhattan distance
                                     availablePositions.Enqueue(
                                         neighbourCellIndex,
                                         Math.Abs(startCellIndex[0] - neighbourCellIndex[0])
                                         + Math.Abs(startCellIndex[1] - neighbourCellIndex[1])
                                         + Math.Abs(startCellIndex[2] - neighbourCellIndex[2])
-                                        );
+                                    );
+
+                                    //// Priority is done according to (squared) Euclidean distance
+                                    //availablePositions.Enqueue(
+                                    //    neighbourCellIndex,
+                                    //    (startCellIndex[0] - neighbourCellIndex[0]) * (startCellIndex[0] - neighbourCellIndex[0])
+                                    //    + (startCellIndex[1] - neighbourCellIndex[1]) * (startCellIndex[1] - neighbourCellIndex[1])
+                                    //    + (startCellIndex[2] - neighbourCellIndex[2]) * (startCellIndex[2] - neighbourCellIndex[2])
+                                    //);
+                                }
                             }
                         }
                     }
@@ -315,13 +324,23 @@ namespace HammeredGame.Game.PathPlanning.Grid
                                 // WARNING: This will produce errors in cases where there are obstruced obstacles at the boundary
                                 // of the grid (out of bounds error).
                                 if (this.GetCellMark(neighbourCellIndex))
+                                {
                                     // Priority is done according to Manhattan distance
                                     availablePositions.Enqueue(
                                         neighbourCellIndex,
                                         Math.Abs(finishCellIndex[0] - neighbourCellIndex[0])
                                         + Math.Abs(finishCellIndex[1] - neighbourCellIndex[1])
                                         + Math.Abs(finishCellIndex[2] - neighbourCellIndex[2])
-                                        );
+                                    );
+
+                                    //// Priority is done according to (squared) Euclidean distance
+                                    //availablePositions.Enqueue(
+                                    //    neighbourCellIndex,
+                                    //    (finishCellIndex[0] - neighbourCellIndex[0]) * (finishCellIndex[0] - neighbourCellIndex[0])
+                                    //    + (finishCellIndex[1] - neighbourCellIndex[1]) * (finishCellIndex[1] - neighbourCellIndex[1])
+                                    //    + (finishCellIndex[2] - neighbourCellIndex[2]) * (finishCellIndex[2] - neighbourCellIndex[2])
+                                    //);
+                                }
                             }
                         }
                     }
@@ -482,22 +501,29 @@ namespace HammeredGame.Game.PathPlanning.Grid
                             {
                                 for (int depth = -1; depth <= 1; ++depth)
                                 {
-                                    int leftRight = i + horizontal, upDown = j + vertical, deepClose = k + depth;
-                                    if (leftRight >= 0 && leftRight < grid.GetLength(0) &&
-                                        upDown >= 0 && upDown < grid.GetLength(1) &&
-                                        deepClose >= 0 && deepClose < grid.GetLength(2) &&
-                                        (horizontal != 0 || vertical != 0 || depth != 0))
-                                        if (mask[leftRight, upDown, deepClose])
-                                            if (vertical != 1)
-                                                vReference.AddEdge(biMap.Forward[grid[leftRight, upDown, deepClose]],
-                                                                    (grid[i, j, k] - grid[leftRight, upDown, deepClose]).Length());
-                                            else
-                                                vReference.AddEdge(biMap.Forward[grid[leftRight, upDown, deepClose]],
-                                                                    (grid[i, j, k] - grid[leftRight, upDown, deepClose]).Length() * 1000);
-                                                // Game convention: avoiding obstacles by going upwards should be avoided.
-                                                // In order to fulfill this going up is heavily punished.
-                                                // WARNING: this is supposed to be a temporary solution;
-                                                //          the final software should disallow avoiding vertically entirely.
+                                    // This "if" statement reduces the number of adjacent 3D cell connections:
+                                    // <= 1 is 6 neighbours: up (U), down (D), left (L), right (R), forward (F), back (B). Produces much unnatural paths.
+                                    // <= 2 is 18 neighbours
+                                    // <= [3, +inf) is all 26 neighbours.
+                                    if (Math.Abs(horizontal) + Math.Abs(vertical) + Math.Abs(depth) <= 3)
+                                    {
+                                        int leftRight = i + horizontal, upDown = j + vertical, deepClose = k + depth;
+                                        if (leftRight >= 0 && leftRight < grid.GetLength(0) &&
+                                            upDown >= 0 && upDown < grid.GetLength(1) &&
+                                            deepClose >= 0 && deepClose < grid.GetLength(2) &&
+                                            (horizontal != 0 || vertical != 0 || depth != 0))
+                                            if (mask[leftRight, upDown, deepClose])
+                                                if (vertical != 1)
+                                                    vReference.AddEdge(biMap.Forward[grid[leftRight, upDown, deepClose]],
+                                                                        (grid[i, j, k] - grid[leftRight, upDown, deepClose]).Length());
+                                                else
+                                                    vReference.AddEdge(biMap.Forward[grid[leftRight, upDown, deepClose]],
+                                                                        (grid[i, j, k] - grid[leftRight, upDown, deepClose]).Length() * 1000);
+                                        // Game convention: avoiding obstacles by going upwards should be avoided.
+                                        // In order to fulfill this going up is heavily punished.
+                                        // WARNING: this is supposed to be a temporary solution;
+                                        //          the final software should disallow avoiding vertically entirely.
+                                    }
                                 }
                             }
                         }
