@@ -50,6 +50,8 @@ DECLARE_TEXTURE(SunDepthTexture, sunDepthSampler, Clamp, Clamp);
 float ShadowMapDepthBias;
 float ShadowMapNormalOffset;
 
+#define SHADOW_OPACITY 0.7
+
 // We also need the view and projection matrices used by the sun for the shadow
 // map generation. This is for converting the world space vertex position to
 // light screen space, so we can query the shadow map at the corresponding UV
@@ -161,7 +163,8 @@ float4 CalculateLightingContributions(float3 normal, float4 pixelSunSpacePositio
 
             // Multiply the color so far (diffuse + specular) by (1 - shadow) so that
             // we retain more of the original color if there is less shadow.
-            lightContribution *= (1 - shadow);
+            // Tone down the shadow opacity slightly
+            lightContribution *= (1 - shadow * SHADOW_OPACITY);
         }
 
         // Add the final contribution to the output color
