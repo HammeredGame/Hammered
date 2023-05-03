@@ -80,12 +80,42 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         private void Events_PairTouching(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
-            // Check if collided object is a static mesh (ground/water) or an entity
+            //// Check if collided object is a static mesh (ground/water) or an entity
             var otherEntityInformation = other as EntityCollidable;
             if (otherEntityInformation != null)
             {
+                // Check if the moveblock is hitting the player.
+                // If it does, then it should not be possible to move the block,
+                // if hammer lags behind a little bit and hits the block again on the path.
+                bool hittingPlayer = false;
+                foreach (var p in sender.Pairs)
+                {
+                    if (p.EntityA.Equals(this.Entity))
+                    {
+                        if (p.EntityB != null)
+                        {
+                            var playerObj = p.EntityB.CollisionInformation.Tag as Player;
+                            if (playerObj != null)
+                            {
+                                hittingPlayer = true;
+                            }
+                        }
+                    }
+                    else if (p.EntityB.Equals(this.Entity))
+                    {
+                        if (p.EntityA != null)
+                        {
+                            var playerObj = p.EntityA.CollisionInformation.Tag as Player;
+                            if (playerObj != null)
+                            {
+                                hittingPlayer = true;
+                            }
+                        }
+                    }
+                }
+
                 // If colliding with a moving hammer, set the move block to move in the same direction
-                if (other.Tag is Hammer && this.MblockState != MBState.Moving)
+                if (!hittingPlayer && other.Tag is Hammer && this.MblockState != MBState.Moving)
                 {
                     var hammer = other.Tag as Hammer;
                     if (hammer.IsEnroute())

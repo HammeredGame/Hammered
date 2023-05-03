@@ -44,7 +44,7 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture type="texture2d">Meshes/Character/character_diffuse</texture>
-    <position>131.075 7.554 -68.126</position>
+    <position>131.075 9.554 -68.126</position>
     <rotation>0.000 0.338 0.000 0.941</rotation>
     <scale>1.000</scale>
     <body type="box">
