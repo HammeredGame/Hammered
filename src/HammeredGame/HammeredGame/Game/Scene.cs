@@ -11,6 +11,7 @@ using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using SoftCircuits.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,11 +40,11 @@ namespace HammeredGame.Game
         /// <summary>
         /// The objects loaded in the scene, keyed by unique identifier strings.
         /// </summary>
-        public Dictionary<string, GameObject> GameObjects = new();
+        public OrderedDictionary<string, GameObject> GameObjects = new();
 
         public List<GameObject> GameObjectsList
         {
-            get { return GameObjects.Values.ToList(); }
+            get { return GameObjects.Values.Cast<GameObject>().ToList(); }
         }
 
         /// <summary>
@@ -449,9 +450,16 @@ namespace HammeredGame.Game
                     // See explanation later on why this boolean is needed
                     bool openDeletionConfirmation = false;
 
-                    // Show each object key as a selectable item
-                    foreach ((string key, GameObject gameObject) in new Dictionary<string, GameObject>(GameObjects))
+                    // Show each object key as a selectable item, with its own right click menus for
+                    // duplication and deletion. Because we can create and remove items from the
+                    // GameObject dictionary, we need to first create a copy that isn't affected by mutation.
+                    OrderedDictionary<string, GameObject> workingCopy = new();
+                    workingCopy.AddRange(GameObjects);
+
+                    foreach ((string key, GameObject gameObject) in workingCopy)
                     {
+                        // Show a Selectable item, that is highlighted if the current selection
+                        // matches this one
                         if (ImGui.Selectable($"{key}: {gameObject.GetType().Name}", objectListCurrentSelection == key))
                         {
                             // When item in list selected, set the selection variable used in the
@@ -469,6 +477,7 @@ namespace HammeredGame.Game
                                 .WaitMilliseconds(500)
                                 .ContinueWith((_) => gameObject.Texture = currentTexture);
                         }
+
                         // Define the menu that pops up when right clicking an object in the tree
                         if (ImGui.BeginPopupContextItem())
                         {
@@ -519,17 +528,21 @@ namespace HammeredGame.Game
                             // Object deletion
                             if (ImGui.MenuItem("Delete Object"))
                             {
-                                // Explanation on this boolean: We want to call ImGui.OpenPopup()
-                                // here to open the deletion confirmation popup. However, popups can
-                                // only be called from the same ID space, so we need to have the
-                                // popup defined in this block of code, but MenuItem closes on the
-                                // next frame so the popup won't persist. The workaround is to set a flag.
+                                // Explanation on this boolean: We ideally want to call
+                                // ImGui.OpenPopup() here to open the deletion confirmation popup.
+                                // However, popups can only be called from the same ID space as
+                                // where it is defined, so we'd need to have the popup defined in
+                                // this block of code for us to be able to call it here. But that's
+                                // a problem, because MenuItem closes on the next frame so the popup
+                                // won't persist. The workaround is to set a flag.
+                                // This issue is documented on GitHub at ocornut/imgui#331
                                 openDeletionConfirmation = true;
                             }
                             ImGui.EndPopup();
                         }
 
-                        // See above on why this is called here
+                        // See documentation inside the Delete Object menu item on why object
+                        // deletion popup calls are performed outside of the right-click menu definition
                         if (openDeletionConfirmation)
                         {
                             ImGui.OpenPopup("object_deletion_confirmation_" + key);
@@ -537,12 +550,10 @@ namespace HammeredGame.Game
                         }
 
                         // The confirmation popup to show. This has to be in the UI tree always
-                        // regardless of the state of the menu that triggered it, otherwise it'll
-                        // disappear instantly.
-                        ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new System.Numerics.Vector2(0.5f, 0.5f));
-                        if (ImGui.BeginPopupModal("object_deletion_confirmation_" + key))
+                        // regardless of the state of the menu that triggered it.
+                        ImGui.SetNextWindowPos(ImGui.GetCursorScreenPos(), ImGuiCond.Appearing);
+                        if (ImGui.BeginPopupModal($"object_deletion_confirmation_{key}"))
                         {
-                            System.Diagnostics.Debug.WriteLine("b");
                             ImGui.Text($"Confirm delete object \"{key}\"?");
                             if (ImGui.Button("Cancel")) { ImGui.CloseCurrentPopup(); }
                             ImGui.SameLine();
