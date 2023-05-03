@@ -15,7 +15,7 @@
   <lights>
     <sun>
       <color>1.000 1.000 0.875</color>
-      <direction>0.000 0.645 0.764</direction>
+      <direction>0.000 0.882 0.471</direction>
       <intensity>1.000</intensity>
     </sun>
     <directional>
@@ -46,7 +46,7 @@
     <texture type="texture2d">Meshes/Character/character_diffuse</texture>
     <position>131.075 7.554 -68.126</position>
     <rotation>0.000 0.338 0.000 0.941</rotation>
-    <scale>1.0</scale>
+    <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
       <height>17.500</height>
@@ -58,14 +58,15 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture type="texture2d">Meshes/Hammer/hammer_Texture</texture>
-    <position>200.000 -0.567 -67.321</position>
-    <rotation>0.044 0.000 0.000 0.999</rotation>
+    <position>200.004 0.221 -67.319</position>
+    <rotation>-0.675 0.000 0.000 0.738</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>
       <height>7.200</height>
       <length>3.000</length>
-      <shift_graphic>0.000 4.69 0.000</shift_graphic>
+      <mass>10000.000</mass>
+      <shift_graphic>0.000 4.690 0.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="decorobject">
