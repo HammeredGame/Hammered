@@ -9,7 +9,7 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
     ///     - an ID number (for easier identification in other parts of the code)
     ///     - directional edges, which connect it to other <c>Vertex</c> instances.
     /// </summary>
-    public class Vertex : IEquatable<Vertex>
+    public class Vertex
     {
         private static string NextID = "ID00";
         public string ID { get; }
@@ -66,13 +66,17 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
             Edges = edges;
         }
 
-        public void AddEdge(Vertex target, double weight) { this.Edges.Add(new Edge(target, weight)); }
+        public void AddEdge(Vertex target, double weight) {
+            for (int i = 0; i < this.Edges.Count; ++i)  // Sanity check. Do not add a connection to the same vertex multiple times.
+                if (this.Edges[i].TargetVertex == target) return ;
+            this.Edges.Add(new Edge(target, weight));
+        }
 
         public void RemoveEdgeTo(Vertex target)
         {
             for (int i = 0; i <  this.Edges.Count; i++)
             {
-                if (this.Edges[i].TargetVertex == target) {  this.Edges.RemoveAt(i); break; }
+                if (this.Edges[i].TargetVertex == target) {  this.Edges.RemoveAt(i); return; }
             }
         }
 
@@ -98,11 +102,6 @@ namespace HammeredGame.Game.PathPlanning.AStar.GraphComponents
             {
                 this.Edges[i].TargetVertex.RemoveEdgeTo(this);
             }
-        }
-
-        public bool Equals(Vertex other)
-        {
-            return ReferenceEquals(this, other);
         }
     }
 }
