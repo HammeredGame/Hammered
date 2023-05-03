@@ -69,12 +69,32 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
                 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollisionDetected;
+                this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
                 
                 this.AudioEmitter = new AudioEmitter();
                 this.AudioEmitter.Position = this.Position; 
             }
 
             MblockState = MBState.Stationary;
+        }
+
+        private void Events_PairTouching(EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            // Check if collided object is a static mesh (ground/water) or an entity
+            var otherEntityInformation = other as EntityCollidable;
+            if (otherEntityInformation != null)
+            {
+                // If colliding with a moving hammer, set the move block to move in the same direction
+                if (other.Tag is Hammer && this.MblockState != MBState.Moving)
+                {
+                    var hammer = other.Tag as Hammer;
+                    if (hammer.IsEnroute())
+                    {
+                        Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
+                        this.SetMoving(hammer.Entity.LinearVelocity);
+                    }
+                }
+            }
         }
 
         private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
@@ -130,10 +150,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 // If colliding with a moving hammer, set the move block to move in the same direction
                 if (other.Tag is Hammer && this.MblockState != MBState.Moving)
                 {
-                    Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
                     var hammer = other.Tag as Hammer;
                     if (hammer.IsEnroute())
                     {
+                        Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
                         this.SetMoving(hammer.Entity.LinearVelocity);
                     }
                 }
