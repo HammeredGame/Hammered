@@ -915,7 +915,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/Walls/temple.fbx
@@ -956,6 +956,9 @@
 
 #begin SceneDescriptions/Island1/ShoreWakeup.xml
 /copy:SceneDescriptions/Island1/ShoreWakeup.xml
+
+#begin SceneDescriptions/Island1/TempleEndLevel_voxel.xml
+/copy:SceneDescriptions/Island1/TempleEndLevel_voxel.xml
 
 #begin SceneDescriptions/Island1/TreeTutorial_voxel.xml
 /copy:SceneDescriptions/Island1/TreeTutorial_voxel.xml

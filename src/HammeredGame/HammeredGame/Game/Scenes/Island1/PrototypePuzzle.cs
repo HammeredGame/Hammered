@@ -64,10 +64,10 @@ namespace HammeredGame.Game.Scenes.Island1
 
             // No further initialization required for the <c>UniformGrid</c> instance.
 
-            //Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
-            //{
-            //    ParentGameScreen.InitializeLevel(typeof(LaserTutorial).FullName);
-            //};
+            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            {
+                ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName);
+            };
 
             // Get<Player>("player").OnMove += async _ => {
             //     System.Diagnostics.Debug.WriteLine("a");
