@@ -773,7 +773,6 @@
     <position>365.000 -10.500 -285.000</position>
     <rotation>0.000 0.699 0.000 0.715</rotation>
     <scale>0.750</scale>
-    <visibility>False</visibility>
     <body type="box">
       <width>7.500</width>
       <height>25.000</height>

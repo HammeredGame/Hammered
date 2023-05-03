@@ -122,11 +122,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             if (other.Tag is Hammer && !treeFallen)
             {
                 var hammer = other.Tag as Hammer;
-                fallDirection = hammer.Entity.LinearVelocity;
-                fallDirection.Normalize();
-                isFalling = true;
-                //tree_sfx[3].Play();
-                Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+
+                if (hammer.IsEnroute())
+                {
+                    fallDirection = hammer.Entity.LinearVelocity;
+                    fallDirection.Normalize();
+                    isFalling = true;
+                    //tree_sfx[3].Play();
+                    Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+                }
                 
             }
 
@@ -178,9 +182,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 // Update falling position until complete 90 degrees rotation
                 fallingAngle += (int)(0.3 * gameTime.ElapsedGameTime.Milliseconds);
+
+                if (fallingAngle > 90) fallingAngle = 90;
+
                 this.Entity.Orientation = BEPUutilities.Quaternion.Identity *
                     BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection),
                     BEPUutilities.MathHelper.ToRadians(fallingAngle));
+
                 if(fallingAngle >= 90)
                 {
                     SetTreeFallen(true);

@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 using BEPUphysics.Entities;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
+using Microsoft.Xna.Framework.Content;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles
 {
@@ -47,12 +48,33 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     public class Door : ImmovableObstacle
     {
         // Any Unbreakable Obstacle specific variables go here
+        public enum DoorState
+        {
+            Open,
+            Closed
+        }
+
+        private DoorState doorState;
+        
         private bool keyFound = false;
         private bool isGoal = false; // TEMPORARY
+
+        private Model closedDoorModel;
+        private Model openDoorModel;
+
         public Door(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             if (this.Entity != null)
             {
+                // Default state of the door is closed
+                doorState = DoorState.Closed;
+
+                // Set model for closed door - this assumes the passed in model is the closed door model
+                closedDoorModel = this.Model;
+
+                // Set model for the open door - this doesn't scale if we want different types of open doors
+                openDoorModel = services.GetService<ContentManager>().Load<Model>("Meshes/Doors/stone_gate_open");
+
                 //this.Entity = new Box(MathConverter.Convert(this.Position), 5, 10, 3);
                 this.Entity.Tag = "ImmovableObstacleBounds";
                 this.Entity.CollisionInformation.Tag = this;
@@ -66,6 +88,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.AudioEmitter = new AudioEmitter();
                 this.AudioEmitter.Position = this.Position; 
             }
+
+            
         }
 
         public void SetIsGoal(bool isGoal)
@@ -114,25 +138,38 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         public void OpenDoor()
         {
-            if (this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
+            if (this.doorState == DoorState.Closed)
             {
-                this.Visible = false;
-                this.ActiveSpace.Remove(this.Entity);
-                Services.GetService<AudioManager>().Play3DSound("Audio/door_open", false, this.AudioEmitter, 1);
-                // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
-                this.CurrentScene.UpdateSceneGrid(this, true);
+                if (this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
+                {
+                    //this.Visible = false;
+                    //System.Console.WriteLine(this.Visible);
+                    this.ActiveSpace.Remove(this.Entity);
+                    Services.GetService<AudioManager>().Play3DSound("Audio/door_open", false, this.AudioEmitter, 1);
+                    // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
+                    this.CurrentScene.UpdateSceneGrid(this, true);
+
+                    this.doorState = DoorState.Open;
+                    this.Model = openDoorModel;
+                }
             }
         }
 
         public void CloseDoor()
         {
-            if (!this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
+            if (this.doorState == DoorState.Open)
             {
-                this.Visible = true;
-                this.ActiveSpace.Add(this.Entity);
-                Services.GetService<AudioManager>().Play3DSound("Audio/door_close", false, this.AudioEmitter, 1);
-                // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
-                this.CurrentScene.UpdateSceneGrid(this, false);
+                if (!this.ActiveSpace.Entities.Contains(this.Entity) && this.Entity != null)
+                {
+                    //this.Visible = true;
+                    this.ActiveSpace.Add(this.Entity);
+                    Services.GetService<AudioManager>().Play3DSound("Audio/door_close", false, this.AudioEmitter, 1);
+                    // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
+                    this.CurrentScene.UpdateSceneGrid(this, false);
+
+                    this.doorState = DoorState.Closed;
+                    this.Model = closedDoorModel;
+                }
             }
         }
 

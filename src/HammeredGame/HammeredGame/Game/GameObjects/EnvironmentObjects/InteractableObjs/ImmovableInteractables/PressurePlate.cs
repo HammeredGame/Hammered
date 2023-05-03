@@ -136,39 +136,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
 
         public override void Update(GameTime gameTime, bool screenHasFocus)
         {
-            ////triggerObject.setVisible(true);
-            ////if (playerOn || hammerOn)
-            ////{
-            ////    triggerObject.SetVisible(false);
-            ////}
-            ////else
-            ////{
-            ////    triggerObject.SetVisible(true);
-            ////}
-            //if (this.pressureActivated && triggerObject != null)
-            //{
-            //    // pressSfx[5].Play();
-            //    if (triggerObject is Door)
-            //    {
-            //        var door = triggerObject as Door;
-            //        door.OpenDoor();
-            //    }
-            //    //triggerObject.Visible = false;
-            //    //if (this.ActiveSpace.Entities.Contains(triggerObject.Entity))
-            //    //    this.ActiveSpace.Remove(triggerObject.Entity);
-            //}
-            //else if (triggerObject != null)
-            //{
-            //    // pressSfx[6].Play();
-            //    if (triggerObject is Door)
-            //    {
-            //        var door = triggerObject as Door;
-            //        door.CloseDoor();
-            //    }
-            //    //triggerObject.Visible = true;
-            //    //if (!this.ActiveSpace.Entities.Contains(triggerObject.Entity) && triggerObject.Entity != null)
-            //    //    this.ActiveSpace.Add(triggerObject.Entity);
-            //}
         }
 
         public bool IsActivated()
