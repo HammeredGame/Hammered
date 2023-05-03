@@ -6,6 +6,7 @@ using HammeredGame.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using SoftCircuits.Collections;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -145,7 +146,7 @@ namespace HammeredGame.Game
         ///          There could be better ways to implement it better.
         ///          Adding more and more explicit outputs in the definition of the function is not maintenance-friendly.
         /// </remarks>
-        public static (Camera, SceneLightSetup, Dictionary<string, GameObject>, UniformGrid grid) ParseFromXML(string filePath, GameServices services)
+        public static (Camera, SceneLightSetup, OrderedDictionary<string, GameObject>, UniformGrid grid) ParseFromXML(string filePath, GameServices services)
         {
             var loadedXML = File.ReadAllText(filePath, Encoding.UTF8);
             var xml = XDocument.Parse(loadedXML);
@@ -159,7 +160,7 @@ namespace HammeredGame.Game
             Camera cam = GetCamera(xml, services);
             UniformGrid grid = GetUniformGrid(xml, services);
             SceneLightSetup lights = GetLightSetup(xml);
-            Dictionary<string, GameObject> objs = GetGameObjects(xml, services, cam);
+            OrderedDictionary<string, GameObject> objs = GetGameObjects(xml, services, cam);
 
             return (cam, lights, objs, grid);
         }
@@ -305,13 +306,13 @@ namespace HammeredGame.Game
         /// <param name="cam">Camera parameter to pass to the constructors if necessary</param> TODO: UNUSED VARIABLE! Probably remnant of previous implementation.
         /// <returns>A dictionary of unique IDs and parsed GameObjects</returns>
         /// <exception cref="Exception">When some trouble arises trying to create the object</exception>
-        private static Dictionary<string, GameObject> GetGameObjects(XDocument targetXML, GameServices services, Camera cam)
+        private static OrderedDictionary<string, GameObject> GetGameObjects(XDocument targetXML, GameServices services, Camera cam)
         {
             // Maintain a map of named objects (those with attribute "id") so that we can reference
             // them and use them as arguments to constructors if needed in the future. This is used
             // for example for keys and doors, where the door needs to be present first in the XML
             // with an id, and then when parsing the key we'd have access to that.
-            var namedObjects = new Dictionary<string, GameObject>();
+            var namedObjects = new OrderedDictionary<string, GameObject>();
 
             foreach (var obj in targetXML.Root.Descendants("object"))
             {
@@ -383,7 +384,7 @@ namespace HammeredGame.Game
                     // Generate a unique identifier by using the lowercase class name and appending numbers
                     string nameCandidate = t.Name.ToLower();
                     // Check until the candidate ID doesn't exist yet
-                    for (int counter = 1; namedObjects.GetValueOrDefault(nameCandidate) != null; counter++)
+                    for (int counter = 1; namedObjects.ContainsKey(nameCandidate); counter++)
                     {
                         nameCandidate = t.Name.ToLower() + counter.ToString();
                     }
@@ -472,7 +473,7 @@ namespace HammeredGame.Game
         ///          There could be better ways to implement it better.
         ///          Adding more and more explicit outputs in the definition of the function is not maintenance-friendly.
         /// </remarks>
-        public static bool WriteToXML(string filePath, Camera camera, SceneLightSetup lights, Dictionary<string, GameObject> namedObjects, UniformGrid grid, GameServices services)
+        public static bool WriteToXML(string filePath, Camera camera, SceneLightSetup lights, OrderedDictionary<string, GameObject> namedObjects, UniformGrid grid, GameServices services)
         {
             // First create the global camera element
             XElement cameraElement = new XElement("camera");
