@@ -16,6 +16,8 @@ namespace HammeredGame.Game
         public Matrix ViewMatrix, ProjMatrix, ViewProjMatrix;        // View Matrix, Projection Matrix
         public Vector3 Up;                          // Vector that points up
 
+        public BoundingFrustum Frustum; // The view frustum
+
         // Core game services for access to the GPU aspect ratio and Input handlers
         private GameServices services;
 
@@ -68,6 +70,7 @@ namespace HammeredGame.Game
             ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
             ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
+            Frustum = new BoundingFrustum(ViewProjMatrix);
             unit_direction = ViewMatrix.Forward; unit_direction.Normalize();
 
             Mode = CameraMode.FourPointStatic;
@@ -115,6 +118,7 @@ namespace HammeredGame.Game
             Position = (newPosition - this.Position) / 10.0f + this.Position;
             ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
+            Frustum.Matrix = ViewProjMatrix;
         }
 
         /// <summary>
@@ -126,6 +130,7 @@ namespace HammeredGame.Game
             Target = (newTarget - this.Target) / 10.0f + this.Target;
             ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
+            Frustum.Matrix = ViewProjMatrix;
         }
 
         /// <summary>
@@ -141,6 +146,7 @@ namespace HammeredGame.Game
             Target = (newTarget - this.Target) / 10.0f + this.Target;
             ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
+            Frustum.Matrix = ViewProjMatrix;
         }
 
         /// <summary>

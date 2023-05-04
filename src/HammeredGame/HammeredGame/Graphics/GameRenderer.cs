@@ -103,9 +103,7 @@ namespace HammeredGame.Graphics
             gpu.Clear(Color.White);
             Set3DStates();
 
-            Vector3 sunPos = scene.Lights.Sun.Direction * 500f;
-            Matrix sunView = Matrix.CreateLookAt(sunPos, Vector3.Zero, Vector3.Up);
-            Matrix sunProj = Matrix.CreateOrthographic(1000, 1000, 0.01f, 2000f);
+            (Matrix sunView, Matrix sunProj, Vector3 sunPos) = scene.Lights.Sun.CreateSunViewProjPosition(scene.Camera.Frustum);
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
                 gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques["RenderLightDepthMap"];
