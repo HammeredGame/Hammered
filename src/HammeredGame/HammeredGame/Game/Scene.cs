@@ -154,7 +154,7 @@ namespace HammeredGame.Game
             if (GameObjects.ContainsKey(name))
             {
                 Entity associatedEntity = Get<GameObject>(name)?.Entity;
-                if (associatedEntity != null)
+                if (associatedEntity != null && Space.Entities.Contains(associatedEntity))
                 {
                     Space.Remove(associatedEntity);
                 }
@@ -378,6 +378,32 @@ namespace HammeredGame.Game
                 .Select(t => t.FullName);
         }
 
+        /// <summary>
+        /// Reorder a game object queried by the key to the destination index within the scene's
+        /// object list. This removes the object at the original location, and inserts it again as
+        /// the value at the destination index, shifting everything that already exists downwards.
+        /// Reordering can be necessary in the level editor to control render order.
+        /// </summary>
+        /// <param name="sourceKey">The key/id for the game object that will move</param>
+        /// <param name="destinationIndex">The index that the game object should move to</param>
+        private void ReorderObject(string sourceKey, int destinationIndex)
+        {
+            // Grab the source object and its current index, then delete it
+            GameObject sourceObject = GameObjects[sourceKey];
+            int sourceIndex = GameObjects.IndexOf(sourceKey);
+            GameObjects.Remove(sourceKey);
+
+            // If the source was earlier in the list than the destination, the
+            // insertion index would've shifted down by one because of the removal.
+            if (sourceIndex < destinationIndex)
+            {
+                destinationIndex--;
+            }
+
+            // Insert the source object just before the destination index
+            GameObjects.Insert(destinationIndex, sourceKey, sourceObject);
+        }
+
         // Some things for the object creation popup in the debug UI, to make data persistent across frames.
 
         // The default placeholder to show in the object creation class name drop-down
@@ -532,21 +558,7 @@ namespace HammeredGame.Game
                                 // and re-add it with the same key and value but at the location
                                 // under the cursor. Since we use OrderedDictionary, we can access
                                 // the corresponding numerical index of string keys and use those.
-                                int sourceIndex = workingCopy.IndexOf(currentlyDraggingKey);
-                                int destinationIndex = workingCopy.IndexOf(key);
-
-                                // Grab the source object, then delete it
-                                GameObject sourceObject = workingCopy[currentlyDraggingKey];
-                                GameObjects.Remove(currentlyDraggingKey);
-                                // If the source was earlier in the list than the destination, the
-                                // insertion index would've shifted down by one because of the removal.
-                                if (sourceIndex < destinationIndex)
-                                {
-                                    destinationIndex--;
-                                }
-
-                                // Insert the source object just before the destination index
-                                GameObjects.Insert(destinationIndex, currentlyDraggingKey, sourceObject);
+                                ReorderObject(currentlyDraggingKey, GameObjects.IndexOf(key));
                             }
                             ImGui.EndDragDropTarget();
                         }
@@ -609,6 +621,9 @@ namespace HammeredGame.Game
                                 });
                                 // Apply the same model offset as the original
                                 newObj.EntityModelOffset = gameObject.EntityModelOffset;
+
+                                // Move the newly duplicated object just under the source object
+                                ReorderObject(name, GameObjects.IndexOf(key) + 1);
 
                                 // Set sidebar focus to created object
                                 objectListCurrentSelection = name;
@@ -827,6 +842,9 @@ namespace HammeredGame.Game
                             objectCreationEntity
                         }
                     });
+
+                    // Move the newly created object just under the focused object
+                    ReorderObject(name, GameObjects.IndexOf(objectListCurrentSelection) + 1);
 
                     // Set sidebar focus to created object
                     objectListCurrentSelection = name;
