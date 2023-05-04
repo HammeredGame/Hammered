@@ -100,9 +100,9 @@ namespace HammeredGame.Game.PathPlanning.Grid
 
             this.sideLength = sideLength;
 
-            int nrCellsX = (int)Math.Ceiling(Math.Abs(originPoint.X - endPoint.X) / sideLength);
-            int nrCellsY = (int)Math.Ceiling(Math.Abs(originPoint.Y - endPoint.Y) / sideLength);
-            int nrCellsZ = (int)Math.Ceiling(Math.Abs(originPoint.Z - endPoint.Z) / sideLength);
+            int nrCellsX = (int)Math.Ceiling(Math.Abs(originPoint.X - endPoint.X) / sideLength) + 1;
+            int nrCellsY = (int)Math.Ceiling(Math.Abs(originPoint.Y - endPoint.Y) / sideLength) + 1;
+            int nrCellsZ = (int)Math.Ceiling(Math.Abs(originPoint.Z - endPoint.Z) / sideLength) + 1;
 
             grid = new Vector3[Math.Max(1, nrCellsX), Math.Max(1, nrCellsY), Math.Max(1, nrCellsZ)];
             mask = new bool[grid.GetLength(0), grid.GetLength(1), grid.GetLength(2)];
