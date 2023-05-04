@@ -449,22 +449,50 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Write an XML file to the specified file path (overwriting any existing file contents).
-        /// The content will be a valid scene description constructed from the Camera instance
-        /// passed to this method, and the dictionary of objects and their unique identifiers.
+        /// Write an XML file to the specified file path (with a prompt, overwriting any existing
+        /// file contents). The content will be a valid scene description constructed from the
+        /// various components of a scene passed in as arguments.
         /// </summary>
-        /// <param name="filePath">The filepath to write the XML to. </param>
+        /// <param name="filePath">The filepath to write the XML to.</param>
         /// <param name="camera">The camera instance to write to XML</param>
         /// <param name="namedObjects">The game objects in the scene and their unique ids</param>
         /// <param name="services">Core game services. This method needs the Content Manager.</param>
         /// <returns>Whether the write was successful or not</returns>
-        ///
-        /// <remarks>
-        ///  WARNING: A quick patch is implemented for parsing the grid of the scene, necessary for the path planning.
-        ///          There could be better ways to implement it better.
-        ///          Adding more and more explicit outputs in the definition of the function is not maintenance-friendly.
-        /// </remarks>
         public static bool WriteToXML(string filePath, Camera camera, SceneLightSetup lights, OrderedDictionary<string, GameObject> namedObjects, UniformGrid grid, GameServices services)
+        {
+            // Create the root <scene> tag and add the camera, grid, and lights
+            XElement rootElement = new XElement("scene",
+                CameraToXML(camera), UniformGridToXML(grid), LightsToXML(lights));
+
+            // Then add all the game objects, including player and hammer
+            foreach ((string id, GameObject gameObject) in namedObjects)
+            {
+                rootElement.Add(GameObjectToXML(services.GetService<ContentManager>(), id, gameObject));
+            }
+
+            // Show a file dialogue to prompt saving it
+            NativeFileDialogSharp.DialogResult result = NativeFileDialogSharp.Dialog.FileSave("xml", filePath);
+            try
+            {
+                if (result.IsOk)
+                {
+                    File.WriteAllText(result.Path, rootElement.ToString());
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Create a "camera" tag for the XML from a <see cref="Camera"/> instance.
+        /// </summary>
+        /// <param name="camera">The camera instance to write to XML</param>
+        /// <returns>The camera XML element</returns>
+        public static XElement CameraToXML(Camera camera)
         {
             // First create the global camera element
             XElement cameraElement = new XElement("camera");
@@ -479,13 +507,7 @@ namespace HammeredGame.Game
                     new XElement("position",
                         Show<Vector3>(camera.StaticPositions[2])),
                     new XElement("position",
-                        Show<Vector3>(camera.StaticPositions[3])),
-                    new XElement("target",
-                        Show<Vector3>(camera.Target)),
-                    new XElement("up",
-                        Show<Vector3>(camera.Up)),
-                    new XElement("dir_index",
-                        Show<int>(camera.CurrentCameraDirIndex)));
+                        Show<Vector3>(camera.StaticPositions[3])));
             }
             else
             {
@@ -494,18 +516,29 @@ namespace HammeredGame.Game
                     new XElement("follow_distance",
                         Show<float>(camera.FollowDistance)),
                     new XElement("follow_angle",
-                        Show<float>(camera.FollowAngle)),
+                        Show<float>(camera.FollowAngle)));
+            }
+            cameraElement.Add(
                     new XElement("target",
                         Show<Vector3>(camera.Target)),
                     new XElement("up",
                         Show<Vector3>(camera.Up)),
                     new XElement("dir_index",
-                        Show<int>(camera.CurrentCameraDirIndex)));
-            }
-            cameraElement.Add(new XElement("fov", Show<float>(camera.FieldOfView)));
+                        Show<int>(camera.CurrentCameraDirIndex)),
+                    new XElement("fov",
+                        Show<float>(camera.FieldOfView)));
+            return cameraElement;
+        }
 
+        /// <summary>
+        /// Create a "uniform_grid" tag for the XML from a <see cref="UniformGrid"/> instance.
+        /// </summary>
+        /// <param name="grid">The uniform grid instance to write to XML</param>
+        /// <returns>The grid XML element</returns>
+        public static XElement UniformGridToXML(UniformGrid grid)
+        {
             // Create the scene (uniform) grid XML element.
-            XElement uniformGridElement = new XElement("uniform_grid",
+            return new XElement("uniform_grid",
                                             new XElement("bottom_left_close",
                                                 Show<Vector3>(grid.originPoint)),
                                             new XElement("top_right_away",
@@ -513,13 +546,15 @@ namespace HammeredGame.Game
                                             new XElement("side_length",
                                                 Show<float>(grid.sideLength))
                                             );
+        }
 
-            // Create the root <level> tag and add the camera
-            XElement rootElement = new XElement("scene",
-                cameraElement);
-            // ...and the uniform grid of the scene
-            rootElement.Add(uniformGridElement);
-
+        /// <summary>
+        /// Create a "lights" tag for the XML from a <see cref="SceneLightSetup"/> instance.
+        /// </summary>
+        /// <param name="lights">The scene light setup instance to write to XML</param>
+        /// <returns>The lights XML element</returns>
+        public static XElement LightsToXML(SceneLightSetup lights)
+        {
             // Then create a <lights> tag for the scene light setup
             XElement lightsElement = new XElement("lights");
             lightsElement.Add(
@@ -548,81 +583,70 @@ namespace HammeredGame.Game
                     new XElement("intensity", Show<float>(lights.Ambient.Intensity))
                     )
                 );
-            rootElement.Add(lightsElement);
+            return lightsElement;
+        }
 
-            // Then add all the game objects, including player and hammer
-            foreach ((string id, GameObject gameObject) in namedObjects)
+        /// <summary>
+        /// Create an "object" tag for the XML from a <see cref="GameObject"/> instance.
+        /// </summary>
+        /// <param name="cm">The content manager, required to get the loaded model name</param>
+        /// <param name="id">The string name/id of the object in the scene</param>
+        /// <param name="gameObject">The game object instance to write to the XML</param>
+        /// <returns>The camera XML element</returns>
+        public static XElement GameObjectToXML(ContentManager cm, string id, GameObject gameObject)
+        {
+            // Basic attributes
+            XElement objElement = new("object",
+                new XAttribute("type", gameObject.GetType().FullName),
+                new XAttribute("id", id));
+
+            // For the model, gameObject.Model does not contain the name of the file used to
+            // load it, so we will look into the Content Manager's internal cache to find the
+            // key matching the same object reference.
+            Dictionary<string, object> loadedAssets = (Dictionary<string, object>)typeof(ContentManager).GetField("loadedAssets", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(cm);
+
+            string modelName = loadedAssets.Where(asset => asset.Value == gameObject.Model).Select(a => a.Key).FirstOrDefault();
+            objElement.Add(new XElement("model", modelName));
+
+            // Texture can be null, but if it exists, we already have the name available to us
+            if (gameObject.Texture != null)
             {
-                // Basic attributes
-                XElement objElement = new("object",
-                    new XAttribute("type", gameObject.GetType().FullName),
-                    new XAttribute("id", id));
-
-                // For the model, gameObject.Model does not contain the name of the file used to
-                // load it, so we will look into the Content Manager's internal cache to find the
-                // key matching the same object reference.
-                Dictionary<string, object> loadedAssets = (Dictionary<string, object>)typeof(ContentManager).GetField("loadedAssets", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(services.GetService<ContentManager>());
-                string modelName = loadedAssets.Where(asset => asset.Value == gameObject.Model).Select(a => a.Key).FirstOrDefault();
-                objElement.Add(new XElement("model", modelName));
-
-                // Texture can be null
-                if (gameObject.Texture != null)
-                {
-                    objElement.Add(new XElement("texture",
-                        new XAttribute("type", "texture2d"),
-                        gameObject.Texture.Name));
-                }
-
-                objElement.Add(new XElement("position", Show<Vector3>(gameObject.Position)));
-                objElement.Add(new XElement("rotation", Show<Quaternion>(gameObject.Rotation)));
-                objElement.Add(new XElement("scale", Show<float>(gameObject.Scale)));
-
-                // Add visibility tag only if it's not visible
-                if (!gameObject.Visible)
-                {
-                    objElement.Add(new XElement("visibility", Show<bool>(gameObject.Visible)));
-                }
-
-                // Add the physics body entity (if one exists)
-                if (gameObject.Entity != null)
-                {
-                    if (gameObject.Entity is Box box)
-                    {
-                        objElement.Add(new XElement("body",
-                            new XAttribute("type", "box"),
-                            new XElement("width", Show<float>(box.Width)),
-                            new XElement("height", Show<float>(box.Height)),
-                            new XElement("length", Show<float>(box.Length)),
-                            box.IsDynamic ? new XElement("mass", Show<float>(box.Mass)) : null,
-                            new XElement("shift_graphic", Show<Vector3>(gameObject.EntityModelOffset))));
-                    }
-                    else if (gameObject.Entity is Sphere sph)
-                    {
-                        objElement.Add(new XElement("body",
-                            new XAttribute("type", "sphere"),
-                            new XElement("radius", Show<float>(sph.Radius)),
-                            sph.IsDynamic ? new XElement("mass", Show<float>(sph.Mass)) : null,
-                            new XElement("shift_graphic", Show<Vector3>(gameObject.EntityModelOffset))));
-                    }
-                }
-
-                rootElement.Add(objElement);
+                objElement.Add(new XElement("texture", gameObject.Texture.Name));
             }
 
-            NativeFileDialogSharp.DialogResult result = NativeFileDialogSharp.Dialog.FileSave("xml", filePath);
-            try
+            objElement.Add(new XElement("position", Show<Vector3>(gameObject.Position)));
+            objElement.Add(new XElement("rotation", Show<Quaternion>(gameObject.Rotation)));
+            objElement.Add(new XElement("scale", Show<float>(gameObject.Scale)));
+
+            // Add visibility tag only if it's not visible
+            if (!gameObject.Visible)
             {
-                if (result.IsOk)
+                objElement.Add(new XElement("visibility", Show<bool>(gameObject.Visible)));
+            }
+
+            // Add the physics body entity (if one exists)
+            if (gameObject.Entity != null)
+            {
+                if (gameObject.Entity is Box box)
                 {
-                    File.WriteAllText(result.Path, rootElement.ToString());
-                    return true;
+                    objElement.Add(new XElement("body",
+                        new XAttribute("type", "box"),
+                        new XElement("width", Show<float>(box.Width)),
+                        new XElement("height", Show<float>(box.Height)),
+                        new XElement("length", Show<float>(box.Length)),
+                        box.IsDynamic ? new XElement("mass", Show<float>(box.Mass)) : null,
+                        new XElement("shift_graphic", Show<Vector3>(gameObject.EntityModelOffset))));
                 }
-                return false;
+                else if (gameObject.Entity is Sphere sph)
+                {
+                    objElement.Add(new XElement("body",
+                        new XAttribute("type", "sphere"),
+                        new XElement("radius", Show<float>(sph.Radius)),
+                        sph.IsDynamic ? new XElement("mass", Show<float>(sph.Mass)) : null,
+                        new XElement("shift_graphic", Show<Vector3>(gameObject.EntityModelOffset))));
+                }
             }
-            catch (Exception)
-            {
-                return false;
-            }
+            return objElement;
         }
     }
 }
