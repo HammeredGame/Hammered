@@ -18,6 +18,7 @@ using Aether.Animation;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using BEPUphysics.Entities.Prefabs;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -140,6 +141,12 @@ namespace HammeredGame.Game.GameObjects
             if (otherEntityInformation != null)
             {
                 if (other.Tag is Player) return;
+
+                if (other.Tag is Door)
+                {
+                    ComputeShortestPath();
+                }
+
                 OnCollision?.Invoke(this, null);
 
                 Input input = Services.GetService<Input>();

@@ -110,11 +110,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 // If hammer collides with door, set hammer to dropped state
                 // This should only happen when hammer is called back
-                if (other.Tag is Hammer)
-                {
-                    var hammer = other.Tag as Hammer;
-                    hammer.DropHammer();
-                }
+                //if (other.Tag is Hammer)
+                //{
+                //    var hammer = other.Tag as Hammer;
+                //    hammer.DropHammer();
+                //}
 
                 // If player collides with door and player has collected corresponding key
                 // Door disappears (is opened) and the collision box associated with the
