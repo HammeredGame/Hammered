@@ -380,18 +380,26 @@ namespace HammeredGame.Game
         }
 
         // Some things for the object creation popup in the debug UI, to make data persistent across frames.
-        // TODO: if this affects the memory footprint of the game in Release mode, hide with an DEBUG ifdef
+
+        // The default placeholder to show in the object creation class name drop-down
         private string objectCreationSelectedFqn = "...";
 
+        // The default placeholder to show in the object creation model name drop-down
         private string objectCreationSelectedModel = "...";
+
+        // The default placeholder to show in the object creation texture name drop-down
         private string objectCreationSelectedTexture = "...";
+
+        // The default values for position, rotation, scale, and physics entity when creating a new object
         private System.Numerics.Vector3 objectCreationPosition = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector4 objectCreationRotation = Quaternion.Identity.ToVector4().ToNumerics();
         private float objectCreationScale = 1f;
         private Entity objectCreationEntity;
 
+        // The key for the game object that's currently selected in the left pane
         private string objectListCurrentSelection;
 
+        // The key for the game object that's currently being dragged
         private string currentlyDraggingKey;
 
         public void UI()
