@@ -301,8 +301,10 @@ namespace HammeredGame.Game.GameObjects
                 timeDelay -= gameTime.ElapsedGameTime;
                 if (timeDelay < TimeSpan.Zero)
                 {
+                    Random rand = new Random();
+                    float randomFloat = (float)rand.NextDouble() * (0.26f - 0.15f) + 0.15f;
                     Services.GetService<AudioManager>().Play3DSound("Audio/stereo_step", false, this.AudioEmitter, 1);
-                    timeDelay += TimeSpan.FromSeconds(0.2f);
+                    timeDelay += TimeSpan.FromSeconds(randomFloat);
                 }
 
                 if(!previously_moving)
@@ -311,9 +313,6 @@ namespace HammeredGame.Game.GameObjects
                     var clip_run = Animations.Clips["Armature|run"];
                     Animations.SetClip(clip_run);
                     previously_moving = true;
-                    //SoundEffectInstance step = player_sfx[0].CreateInstance();
-                    //step.IsLooped = true;
-                    //step.Play();
 
 
                 }
