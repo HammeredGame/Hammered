@@ -353,6 +353,11 @@ namespace HammeredGame.Game.GameObjects
             return hammerState == HammerState.Enroute;
         }
 
+        public bool IsWithCharacter()
+        {
+            return (hammerState == HammerState.WithCharacter);
+        }
+
         public void SetState(HammerState newState)
         {
             hammerState = newState;

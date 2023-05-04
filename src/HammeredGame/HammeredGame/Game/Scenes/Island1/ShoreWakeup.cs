@@ -90,10 +90,16 @@ namespace HammeredGame.Game.Scenes.Island1
             // Once the user has summoned the hammer at least once, make completion trigger
             // available to load next level. This disallows users exploring before interacting and
             // accidentally loading the next level.
+            // Also, make sure the hammer is being carried by the player. If the player does not have the
+            // hammer, they will be blocked and not allowed to continue to the next level.
+            Get<TriggerObject>("end_trigger").Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
-                hammerPromptTokenSource.Cancel();
-                ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName);
+                if (Get<Hammer>("hammer").IsWithCharacter())
+                {
+                    hammerPromptTokenSource.Cancel();
+                    ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName);
+                }
             };
 
             // Also hide the prompt if it's been retrieved two more times
