@@ -24,14 +24,9 @@ namespace HammeredGame.Game
         /// <summary>
         /// Generic function to parse basic data to classes.
         /// </summary>
-        /// <typeparam name="T">Supports bool, float, XNA.Vector3, and XNA.Quaternion</typeparam>
+        /// <typeparam name="T">Supports bool, float, int, XNA.Vector3, and XNA.Quaternion</typeparam>
         /// <param name="text">String to parse</param>
         /// <returns>null if the parsing failed, otherwise contains the parsed object</returns>
-        ///
-
-        /// <remarks>
-        /// Support "int" data type as well.
-        /// </remarks>
         internal static T Parse<T>(string text)
         {
             /// <value>
@@ -96,15 +91,11 @@ namespace HammeredGame.Game
         /// <summary>
         /// Generic function to write basic classes to strings.
         /// </summary>
-        /// <typeparam name="T">Supports bool, float, XNA.Vector3, and XNA.Quaternion</typeparam>
+        /// <typeparam name="T">Supports bool, float, int, XNA.Vector3, and XNA.Quaternion</typeparam>
         /// <param name="obj">The object to show as string</param>
         /// <returns>
         /// Empty string if the conversion failed, otherwise the string representation of the object
         /// </returns>
-
-        /// <remaks>
-        /// Support "int" data type as well.
-        /// </remaks>
         internal static string Show<T>(T obj)
         {
             switch (typeof(T).Name)
@@ -139,12 +130,14 @@ namespace HammeredGame.Game
         /// Mark it as Copy (instead of Build). Then pass a path prepended with Content/ to this method.
         /// </summary>
         /// <param name="filePath">The file path to the XML file</param>
+        /// <param name="services">
+        /// Core game services, used to load content and to be passed to the game objects
+        /// </param>
         /// <exception cref="Exception">Raised if the XML file could not be loaded</exception>
-        ///
         /// <remarks>
-        ///  WARNING: A quick patch is implemented for parsing the grid of the scene, necessary for the path planning.
-        ///          There could be better ways to implement it better.
-        ///          Adding more and more explicit outputs in the definition of the function is not maintenance-friendly.
+        /// WARNING: A quick patch is implemented for parsing the grid of the scene, necessary for
+        ///          the path planning. There could be better ways to implement it better. Adding
+        /// more and more explicit outputs in the definition of the function is not maintenance-friendly.
         /// </remarks>
         public static (Camera, SceneLightSetup, OrderedDictionary<string, GameObject>, UniformGrid grid) ParseFromXML(string filePath, GameServices services)
         {
@@ -158,9 +151,9 @@ namespace HammeredGame.Game
             }
 
             Camera cam = GetCamera(xml, services);
-            UniformGrid grid = GetUniformGrid(xml, services);
+            UniformGrid grid = GetUniformGrid(xml);
             SceneLightSetup lights = GetLightSetup(xml);
-            OrderedDictionary<string, GameObject> objs = GetGameObjects(xml, services, cam);
+            OrderedDictionary<string, GameObject> objs = GetGameObjects(xml, services);
 
             return (cam, lights, objs, grid);
         }
@@ -168,8 +161,6 @@ namespace HammeredGame.Game
         /// <summary>
         /// Find the single top-level camera tag and parse it, returning the instantiated Camera object.
         /// </summary>
-        /// <param name="gpu">The gpu parameter to pass to the Camera constructor</param> TODO: CHANGE PARAMETER EXPLANATION IN DOCUMENTATION! THIS IS DEPRECATED!
-        /// <param name="input">The input parameter to pass to the Camera constructor</param> TODO: CHANGE PARAMETER EXPLANATION IN DOCUMENTATION! THIS IS DEPRECATED!
         /// <returns>The instantiated Camera object</returns>
         private static Camera GetCamera(XDocument targetXML, GameServices services)
         {
@@ -217,15 +208,14 @@ namespace HammeredGame.Game
         /// <see cref="UniformGrid"/>
         /// </summary>
         /// <param name="targetXML">The XML document from which the required data is extracted. <see cref="ParseFromXML(string, GameServices)"/></param>
-        /// <param name="services"><see cref="GameServices"/></param>
-
+        ///
         /// <remarks>
         /// 1) The current implementation utilizes the constructor <see cref="UniformGrid.UniformGrid(Vector3, Vector3, float)"/>
         /// 2) TODO: Make it possible to create an object using different constructors. Risk severity assessment: Level 4 (Negligible)
         ///         This feature allows the user (XML writer) to be more versatile about how they go about writing the definition of
         ///         the grid, taking advantage of the different constructors of the class <see cref="UniformGrid"/>.
         /// </remarks>
-        private static UniformGrid GetUniformGrid(XDocument targetXML, GameServices services)
+        private static UniformGrid GetUniformGrid(XDocument targetXML)
         {
             // It is expected that a scene consists of a single grid.
             // However, taking precautions for incorrect user (XML writer) input, the unique top-level grid is extracted.
@@ -301,12 +291,13 @@ namespace HammeredGame.Game
         /// identifiers are either taken from the XML if specified via the "id" attribute, or
         /// otherwise generated.
         /// </summary>
-        /// <param name="cm">ContentManager used for loading Models and Textures</param> // TODO: CHANGE DOCUMENTATION! THIS IS DEPRECATED (probably before <class>GameServices</class> was implemented)!
-        /// <param name="input">Input parameter to pass to the constructors if necessary</param> TODO: CHANGE DOCUMENTATION! THIS IS DEPRECATED!
-        /// <param name="cam">Camera parameter to pass to the constructors if necessary</param> TODO: UNUSED VARIABLE! Probably remnant of previous implementation.
+        /// <param name="targetXML">The root XML document containing the whole scene description</param>
+        /// <param name="services">
+        /// Core game services used to load assets and to pass to objects' constructors
+        /// </param>
         /// <returns>A dictionary of unique IDs and parsed GameObjects</returns>
         /// <exception cref="Exception">When some trouble arises trying to create the object</exception>
-        private static OrderedDictionary<string, GameObject> GetGameObjects(XDocument targetXML, GameServices services, Camera cam)
+        private static OrderedDictionary<string, GameObject> GetGameObjects(XDocument targetXML, GameServices services)
         {
             // Maintain a map of named objects (those with attribute "id") so that we can reference
             // them and use them as arguments to constructors if needed in the future. This is used
@@ -399,7 +390,7 @@ namespace HammeredGame.Game
         /// </summary>
         /// <param name="modelPosition">The position of the model</param>
         /// <param name="bodyElement">The XML element for the body tag</param>
-        /// <returns></returns>
+        /// <returns>The BEPUphysics entity, and the visual offset</returns>
         private static (Entity, Vector3) GetBody(Vector3 modelPosition, XElement bodyElement)
         {
             if (bodyElement == null)
@@ -558,7 +549,6 @@ namespace HammeredGame.Game
                     )
                 );
             rootElement.Add(lightsElement);
-
 
             // Then add all the game objects, including player and hammer
             foreach ((string id, GameObject gameObject) in namedObjects)
