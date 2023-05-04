@@ -38,11 +38,11 @@ namespace HammeredGame.Game.Scenes.Island1
             // Show movement prompt 1 second after launch
             await Services.GetService<ScriptUtils>().WaitSeconds(1);
             CancellationTokenSource movementPromptTokenSource = new();
-            ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Movement }, movementPromptTokenSource.Token);
+            ParentGameScreen.ShowPromptsFor(
+                new List<UserAction>() { UserAction.Movement, UserAction.CameraMovement },
+                movementPromptTokenSource.Token);
 
             // On entering hammer vicinity show hammer prompt
-            CancellationTokenSource hammerPromptTokenSource = new();
-
             await Services.GetService<ScriptUtils>().WaitEvent(Get<TriggerObject>("hammer_trigger"), "OnTrigger");
 
             // Disable player movement
@@ -62,6 +62,8 @@ namespace HammeredGame.Game.Scenes.Island1
 
             // hide movement controls and show summoning controls
             movementPromptTokenSource.Cancel();
+
+            CancellationTokenSource hammerPromptTokenSource = new();
             ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.SummonHammer }, hammerPromptTokenSource.Token);
 
             // On summon, show cut scene, hiding the prompts
