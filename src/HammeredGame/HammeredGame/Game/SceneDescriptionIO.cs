@@ -183,7 +183,21 @@ namespace HammeredGame.Game
                     // and the 4 isometric view directions.
                     cameraInstance.Mode = Camera.CameraMode.Follow;
                     cameraInstance.FollowDistance = Parse<float>(cameraElement.Descendants("follow_distance").Single().Value);
-                    cameraInstance.FollowAngle = Parse<float>(cameraElement.Descendants("follow_angle").Single().Value);
+
+                    #region TRANSITION_CODE_REMOVE_LATER
+                    // if the old format with a single angle and dir_index is still used, load it but convert
+                    if (cameraElement.Descendants("follow_angle").Any())
+                    {
+                        cameraInstance.FollowAngleVertical = Parse<float>(cameraElement.Descendants("follow_angle").Single().Value);
+                        cameraInstance.FollowAngleHorizontal = (Parse<int>(cameraElement.Descendants("dir_index").SingleOrDefault()?.Value ?? "0") + 1) * MathHelper.PiOver2 + MathHelper.PiOver4;
+                    }
+                    else
+                    {
+                        cameraInstance.FollowAngleVertical = Parse<float>(cameraElement.Descendants("follow_angle_v").Single().Value);
+                        cameraInstance.FollowAngleHorizontal = Parse<float>(cameraElement.Descendants("follow_angle_h").Single().Value);
+                    }
+                    #endregion
+
                     break;
 
                 case "static":
@@ -191,10 +205,9 @@ namespace HammeredGame.Game
                     // Set the four static positions.
                     cameraInstance.Mode = Camera.CameraMode.FourPointStatic;
                     cameraInstance.StaticPositions = cameraElement.Descendants("position").Select(v => Parse<Vector3>(v.Value)).ToArray();
+                    cameraInstance.CurrentCameraDirIndex = Parse<int>(cameraElement.Descendants("dir_index").SingleOrDefault()?.Value ?? "0");
                     break;
             }
-            // Set which of the four directions we should start with
-            cameraInstance.CurrentCameraDirIndex = Parse<int>(cameraElement.Descendants("dir_index").SingleOrDefault()?.Value ?? "0");
 
             // Set the field of view
             cameraInstance.FieldOfView = Parse<float>(cameraElement.Descendants("fov").Single().Value);
@@ -507,7 +520,9 @@ namespace HammeredGame.Game
                     new XElement("position",
                         Show<Vector3>(camera.StaticPositions[2])),
                     new XElement("position",
-                        Show<Vector3>(camera.StaticPositions[3])));
+                        Show<Vector3>(camera.StaticPositions[3])),
+                    new XElement("dir_index",
+                        Show<int>(camera.CurrentCameraDirIndex)));
             }
             else
             {
@@ -515,16 +530,16 @@ namespace HammeredGame.Game
                     new XAttribute("mode", "follow"),
                     new XElement("follow_distance",
                         Show<float>(camera.FollowDistance)),
-                    new XElement("follow_angle",
-                        Show<float>(camera.FollowAngle)));
+                    new XElement("follow_angle_v",
+                        Show<float>(camera.FollowAngleVertical)),
+                    new XElement("follow_angle_h",
+                        Show<float>(camera.FollowAngleHorizontal)));
             }
             cameraElement.Add(
                     new XElement("target",
                         Show<Vector3>(camera.Target)),
                     new XElement("up",
                         Show<Vector3>(camera.Up)),
-                    new XElement("dir_index",
-                        Show<int>(camera.CurrentCameraDirIndex)),
                     new XElement("fov",
                         Show<float>(camera.FieldOfView)));
             return cameraElement;

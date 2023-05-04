@@ -4,7 +4,6 @@ using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace HammeredGame.Game
@@ -21,10 +20,6 @@ namespace HammeredGame.Game
         // Core game services for access to the GPU aspect ratio and Input handlers
         private GameServices services;
 
-        private Vector3 unit_direction;                     // direction of camera (normalized to distance of 1 unit)
-
-        private float cameraRotation = 0f;
-
         // Which of the 4 directions the camera is pointing to
         public int CurrentCameraDirIndex = 0;
 
@@ -39,9 +34,11 @@ namespace HammeredGame.Game
 
         // Camera follow properties, like distance, angle, and what to follow
         private GameObject followTarget;
+
         public float FollowDistance = 49f;
-        public float FollowAngle = 0.551f;
-        private Vector2 followDir2D = new Vector2(1, -1);
+        public float FollowAngleVertical = 0.551f;
+        public float FollowAngleHorizontal = 0f;
+        private Vector2 followDir2D = Vector2.UnitX;
 
         public float FieldOfView = MathHelper.PiOver4;
 
@@ -51,11 +48,10 @@ namespace HammeredGame.Game
             Follow
         }
 
-        private bool debugFreeMovement;
-
         public CameraMode Mode;
 
         public event EventHandler OnRotateLeft;
+
         public event EventHandler OnRotateRight;
 
         /// <summary>
@@ -75,7 +71,6 @@ namespace HammeredGame.Game
             ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
             Frustum = new BoundingFrustum(ViewProjMatrix);
-            unit_direction = ViewMatrix.Forward; unit_direction.Normalize();
 
             Mode = CameraMode.FourPointStatic;
 
@@ -102,7 +97,7 @@ namespace HammeredGame.Game
         {
             // Calculate the base follow offset position (from the player) using the followAngle,
             // between 0 (horizon) and 90 (top down)
-            var sinCos = Math.SinCos(FollowAngle);
+            var sinCos = Math.SinCos(FollowAngleVertical);
             Vector3 followOffset = new Vector3((float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos), (float)sinCos.Sin, (float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos));
 
             // Multiply by the diagonal direction
@@ -154,84 +149,60 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// TEMPORARY - needs to be modified Update the camera position and look-at Currently just
-        /// switches between 4 predetermined positions given the corresponding keyboard input
+        /// Update the camera for following a target, based on the horizontal angle argument and the
+        /// camera's vertical follow angle and offset fields.
         /// </summary>
+        /// <param name="horizontalAngle">Angle to follow on the ground-plane unit circle in Radians</param>
+        private void UpdateCameraFollow(float horizontalAngle)
+        {
+            // Locate the 2D direction on the unit circle
+            (float sin, float cos) = MathF.SinCos(horizontalAngle);
+            followDir2D = new Vector2(sin, cos);
+
+            // Calculate the base follow offset position (from the follow target) using the
+            // followAngle, between 0 (horizon) and 90 (top down)
+            var sinCos = MathF.SinCos(FollowAngleVertical);
+            Vector3 followOffset = new Vector3(
+                (float)(MathF.Cos(MathHelper.PiOver4) * sinCos.Cos),
+                (float)sinCos.Sin,
+                (float)(MathF.Cos(MathHelper.PiOver4) * sinCos.Cos));
+
+            // Multiply by the diagonal direction
+            followOffset.X *= followDir2D.X;
+            followOffset.Z *= followDir2D.Y;
+
+            Vector3 newPosition = followTarget.Position + Vector3.Normalize(followOffset) * FollowDistance;
+
+            ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
+
+            UpdatePositionTarget(newPosition, followTarget.Position);
+        }
+
         public void UpdateCamera(bool isPaused)
         {
-            if (debugFreeMovement)
+            if ((Mode == CameraMode.Follow) && followTarget != null && !isPaused)
             {
-                // In debug free movement mode, we don't touch any of the XML-saved values like
-                // Position, Target, Mode, etc. Instead, we directly manipulate the view/proj matrices.
-                if (UserAction.RotateCameraLeft.Held(services.GetService<Input>()))
+                // In follow mode, users can use the directional inputs to rotate the camera along a
+                // horizontal axis.
+
+                // horizontal input between [-1, 1]
+                float horizontalInput = UserAction.CameraMovement.GetValue(services.GetService<Input>()).X;
+
+                // We want to use the sign-flipped version of the input, because intuitively, moving
+                // the joystick right means we want to view more of the right, which means we have
+                // the move the camera rotation left.
+                FollowAngleHorizontal -= 0.04f * horizontalInput;
+
+                if (horizontalInput > 0)
                 {
-                    cameraRotation -= 0.05f;
                     OnRotateLeft?.Invoke(this, null);
                 }
-                else if (UserAction.RotateCameraRight.Held(services.GetService<Input>()))
+                else if (horizontalInput < 0)
                 {
-                    cameraRotation += 0.05f;
-                    OnRotateRight?.Invoke(this, null);
-                }
-                (float sin, float cos) = MathF.SinCos(cameraRotation);
-
-                // A 2D vector will be multiplied onto the base camera offset. We find this from the
-                // index. The 2D camera directions are (1,1)(-1,1)(-1,-1)(1,-1) for indices 0 1 2 3
-                // respectively. So we can use this to calculate the 2D unit direction from the index.
-                followDir2D = new Vector2(sin, cos);
-
-                // Calculate the base follow offset position (from the follow target) using the
-                // followAngle, between 0 (horizon) and 90 (top down)
-                var sinCos = Math.SinCos(FollowAngle);
-                Vector3 followOffset = new Vector3((float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos), (float)sinCos.Sin, (float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos));
-
-                // Multiply by the diagonal direction
-                followOffset.X *= followDir2D.X;
-                followOffset.Z *= followDir2D.Y;
-
-                Vector3 newPosition = followTarget.Position + Vector3.Normalize(followOffset) * FollowDistance;
-
-                ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
-
-                UpdatePositionTarget(newPosition, followTarget.Position);
-
-            }
-            else if (Mode == CameraMode.Follow && followTarget != null && !isPaused)
-            {
-                // In player-follow camera mode, we use the input to rotate between four indices for
-                // camera positions.
-                if (UserAction.RotateCameraLeft.Pressed(services.GetService<Input>()))
-                {
-                    CurrentCameraDirIndex = (CurrentCameraDirIndex + 3) % 4;
-                    OnRotateLeft?.Invoke(this, null);
-                } else if (UserAction.RotateCameraRight.Pressed(services.GetService<Input>()))
-                {
-                    CurrentCameraDirIndex = (CurrentCameraDirIndex + 1) % 4;
                     OnRotateRight?.Invoke(this, null);
                 }
 
-                // A 2D vector will be multiplied onto the base camera offset. We find this from the
-                // index. The 2D camera directions are (1,1)(-1,1)(-1,-1)(1,-1) for indices 0 1 2 3
-                // respectively. So we can use this to calculate the 2D unit direction from the index.
-                followDir2D = new Vector2(
-                    1f - 2f * (float)Convert.ToInt32(CurrentCameraDirIndex % 3 != 0),
-                    1f - 2f * (float)Convert.ToInt32(CurrentCameraDirIndex < 2)
-                );
-
-                // Calculate the base follow offset position (from the follow target) using the
-                // followAngle, between 0 (horizon) and 90 (top down)
-                var sinCos = Math.SinCos(FollowAngle);
-                Vector3 followOffset = new Vector3((float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos), (float)sinCos.Sin, (float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos));
-
-                // Multiply by the diagonal direction
-                followOffset.X *= followDir2D.X;
-                followOffset.Z *= followDir2D.Y;
-
-                Vector3 newPosition = followTarget.Position + Vector3.Normalize(followOffset) * FollowDistance;
-
-                ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
-
-                UpdatePositionTarget(newPosition, followTarget.Position);
+                UpdateCameraFollow(FollowAngleHorizontal);
             }
             else if (Mode == CameraMode.FourPointStatic && !isPaused)
             {
@@ -251,7 +222,9 @@ namespace HammeredGame.Game
                 ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
 
                 UpdatePositionTarget(StaticPositions[CurrentCameraDirIndex], Vector3.Zero);
-            } else if (followTarget != null) {
+            }
+            else if (followTarget != null)
+            {
                 // In paused mode, make the camera really up close. We use const values here and
                 // don't update the camera fields. This way we can reset to the previous values easily.
                 const float tempFollowDistance = 23f;
@@ -260,8 +233,11 @@ namespace HammeredGame.Game
 
                 // Calculate the base follow offset position (from the follow target) using the
                 // followAngle, between 0 (horizon) and 90 (top down)
-                var sinCos = Math.SinCos(tempFollowAngle);
-                Vector3 followOffset = new Vector3((float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos), (float)sinCos.Sin, (float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos));
+                var sinCos = MathF.SinCos(tempFollowAngle);
+                Vector3 followOffset = new Vector3(
+                    (float)(MathF.Cos(MathHelper.PiOver4) * sinCos.Cos),
+                    (float)sinCos.Sin,
+                    (float)(MathF.Cos(MathHelper.PiOver4) * sinCos.Cos));
 
                 // Multiply by the diagonal direction
                 followOffset.X *= followDir2D.X;
@@ -273,11 +249,11 @@ namespace HammeredGame.Game
                 // paused screen
                 Vector3 unitScreenLeft = Vector3.Normalize(Vector3.Cross(followOffset, Vector3.UnitY));
 
-                // Tween the projection matrix
+                // Tween the projection matrix for a smooth transition
                 Matrix targetProjMatrix = Matrix.CreatePerspectiveFieldOfView(tempFieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
                 ProjMatrix = (targetProjMatrix - ProjMatrix) / 10f + ProjMatrix;
 
-                UpdatePositionTarget(newPosition, followTarget.Position + unitScreenLeft * 5);
+                UpdatePositionTarget(newPosition, followTarget.Position + unitScreenLeft * 6);
             }
         }
 
@@ -289,27 +265,38 @@ namespace HammeredGame.Game
 
             ImGui.DragFloat("Field of View (rad): ", ref FieldOfView, 0.01f, 0.01f, MathHelper.Pi - 0.01f);
 
-            ImGui.Checkbox("Free Movement (debug)", ref debugFreeMovement);
-
             bool isStatic = Mode == CameraMode.FourPointStatic;
-            if (ImGui.Checkbox("Static Camera Mode", ref isStatic))
+            if (ImGui.BeginCombo("Mode", Mode.ToString()))
             {
-                Mode = isStatic ? CameraMode.FourPointStatic : CameraMode.Follow;
+                if (ImGui.Selectable("Static four points"))
+                {
+                    Mode = CameraMode.FourPointStatic;
+                }
+                else if (ImGui.Selectable("Follow horizontal"))
+                {
+                    Mode = CameraMode.Follow;
+                }
+                ImGui.EndCombo();
             }
-            ImGui.SliderInt("Active Camera", ref CurrentCameraDirIndex, 0, 3);
-            if (isStatic)
+
+            if (Mode == CameraMode.FourPointStatic)
             {
+                ImGui.SliderInt("Active Camera", ref CurrentCameraDirIndex, 0, 3);
+
                 // imgui accepts system.numerics.vector3 and not XNA.vector3 so temporarily convert
                 System.Numerics.Vector3 pos1 = StaticPositions[CurrentCameraDirIndex].ToNumerics();
                 ImGui.DragFloat3($"Position for Camera {CurrentCameraDirIndex}", ref pos1);
                 // other-way around can work implicitly
                 StaticPositions[CurrentCameraDirIndex] = pos1;
             }
-            else
+
+            if (Mode == CameraMode.Follow)
             {
                 ImGui.DragFloat("Follow Offset", ref FollowDistance);
-                ImGui.DragFloat("Follow Angle", ref FollowAngle, 0.01f, 0, MathHelper.Pi / 2.0f);
+                ImGui.DragFloat("Follow Vertical Angle", ref FollowAngleVertical, 0.01f, 0, MathHelper.Pi / 2.0f);
+                ImGui.DragFloat("Follow Horizontal Angle", ref FollowAngleHorizontal, 0.01f);
             }
+
             ImGui.End();
         }
     }
