@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SoftCircuits.Collections;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -44,7 +45,7 @@ namespace HammeredGame.Game
 
         public List<GameObject> GameObjectsList
         {
-            get { return GameObjects.Values.Cast<GameObject>().ToList(); }
+            get { return GameObjects.Values.ToList(); }
         }
 
         /// <summary>
@@ -391,6 +392,8 @@ namespace HammeredGame.Game
 
         private string objectListCurrentSelection;
 
+        private string currentlyDraggingKey;
+
         public void UI()
         {
             // Show the camera UI
@@ -452,14 +455,22 @@ namespace HammeredGame.Game
 
                     // Show each object key as a selectable item, with its own right click menus for
                     // duplication and deletion. Because we can create and remove items from the
-                    // GameObject dictionary, we need to first create a copy that isn't affected by mutation.
+                    // GameObject dictionary, we need to first create a copy that isn't affected by
+                    // mutation. OrderedDictionary doesn't have a copy constructor. It does however,
+                    // have an AddRange() method that takes another OrderedDictionary.
+                    // Unfortunately, that is also flawed because it adds items to the new copy in
+                    // the order that's in the internal key list, which will not be the desired
+                    // order after any manual rearrangements (via drag/drop). We need a copy that
+                    // has the same order as the actual item orderings, which is achieved by casting
+                    // it to an IEnumerable and using another overload of AddRange() that does what
+                    // we want.
                     OrderedDictionary<string, GameObject> workingCopy = new();
-                    workingCopy.AddRange(GameObjects);
+                    workingCopy.AddRange(GameObjects as IEnumerable<KeyValuePair<string, GameObject>>);
 
                     foreach ((string key, GameObject gameObject) in workingCopy)
                     {
                         // Show a Selectable item, that is highlighted if the current selection
-                        // matches this one
+                        // matches this one. This Selectable is also a draggable item.
                         if (ImGui.Selectable($"{key}: {gameObject.GetType().Name}", objectListCurrentSelection == key))
                         {
                             // When item in list selected, set the selection variable used in the
@@ -476,6 +487,60 @@ namespace HammeredGame.Game
                             Services.GetService<ScriptUtils>()
                                 .WaitMilliseconds(500)
                                 .ContinueWith((_) => gameObject.Texture = currentTexture);
+                        }
+
+                        // Mark the previous item (the Selectable) as a draggable source. We want to
+                        // reorder items in the editor because they affect the render order
+                        // directly, and it's a hassle to have to manually rearrange the XML
+                        // whenever we want to change render order.
+                        if (ImGui.BeginDragDropSource())
+                        {
+                            // All draggable sources need to declare a payload. This would make
+                            // sense in C++, but it doesn't in C# unless we want to play around with
+                            // raw pointers, so we just set the payload as zero.
+                            ImGui.SetDragDropPayload("GameObject", IntPtr.Zero, 0);
+                            // The text displayed under the mouse while hovering
+                            ImGui.Text($"Moving {key}");
+                            // Set the item key for the item currently being hovered. This will be
+                            // used upon release to determine what the drag source was, since we
+                            // don't use payloads.
+                            currentlyDraggingKey = key;
+                            ImGui.EndDragDropSource();
+                        }
+
+                        // Mark the previous item (the Selectable) as a drop target, so items can be
+                        // dropped onto other items. It's not possible with ImGui to drop items into
+                        // the space between two items, so this is a compromise.
+                        if (ImGui.BeginDragDropTarget())
+                        {
+                            // Technically, AcceptDragDropPayload() returns a pointer to the payload
+                            // that was being dragged (or null if it wasn't dropped here). But we're
+                            // not using payloads because we don't want to mess with raw pointers,
+                            // so ignore its return value and manually check for mouse release.
+                            ImGui.AcceptDragDropPayload("GameObject");
+                            if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                            {
+                                // On drag release, we want to remove the source from where it was,
+                                // and re-add it with the same key and value but at the location
+                                // under the cursor. Since we use OrderedDictionary, we can access
+                                // the corresponding numerical index of string keys and use those.
+                                int sourceIndex = workingCopy.IndexOf(currentlyDraggingKey);
+                                int destinationIndex = workingCopy.IndexOf(key);
+
+                                // Grab the source object, then delete it
+                                GameObject sourceObject = workingCopy[currentlyDraggingKey];
+                                GameObjects.Remove(currentlyDraggingKey);
+                                // If the source was earlier in the list than the destination, the
+                                // insertion index would've shifted down by one because of the removal.
+                                if (sourceIndex < destinationIndex)
+                                {
+                                    destinationIndex--;
+                                }
+
+                                // Insert the source object just before the destination index
+                                GameObjects.Insert(destinationIndex, currentlyDraggingKey, sourceObject);
+                            }
+                            ImGui.EndDragDropTarget();
                         }
 
                         // Define the menu that pops up when right clicking an object in the tree
@@ -498,11 +563,17 @@ namespace HammeredGame.Game
                                 {
                                     entity = new Sphere(sph.Position, sph.Radius, sph.Mass);
                                 }
-                                // We want to call Create<T>() with T being the type of gameObject.
-                                // However, we can't use variables for generic type parameters, so
-                                // instead we will create a specific version of the method and invoke it
-                                // manually. This causes some changes to how variadic "params dynamic[]"
-                                // behaves, outlined below.
+
+                                // We now want to call Create<T>() with T being the type of
+                                // gameObject. However, we can't use dynamic variables as generic
+                                // type parameters. Instead, we have to create a "specific" version
+                                // of the method tailored for the item, so
+                                // Create<typeof(gameObject)>, and call it with Invoke(). Because
+                                // we're now no longer using the normal way of calling functions, we
+                                // don't get the benefit of the syntactic sugar of "params" in the
+                                // argument list of Create<T>(). Instead of variadic arguments, we
+                                // now need to pass an array of objects, because this is how C#
+                                // internally desugars "params" to.
                                 GameObject newObj = (GameObject)GetType().GetMethod(nameof(Create)).MakeGenericMethod(gameObject.GetType()).Invoke(this, new object[] {
                                     name,
                                     new object[] {
