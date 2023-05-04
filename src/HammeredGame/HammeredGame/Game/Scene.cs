@@ -13,7 +13,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SoftCircuits.Collections;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -460,6 +459,7 @@ namespace HammeredGame.Game
                 {
                     // See explanation later on why this boolean is needed
                     bool openDeletionConfirmation = false;
+                    bool openXMLCopyingPopup = false;
 
                     // Show each object key as a selectable item, with its own right click menus for
                     // duplication and deletion. Because we can create and remove items from the
@@ -554,6 +554,16 @@ namespace HammeredGame.Game
                         // Define the menu that pops up when right clicking an object in the tree
                         if (ImGui.BeginPopupContextItem())
                         {
+                            // Copying an individual object XML, this makes editing small values
+                            // easy when you've already moved your player or tweaked other things,
+                            // and don't necessarily want to save those.
+                            if (ImGui.MenuItem("Show XML (for copying)"))
+                            {
+                                // We use a flag to show the popup later. For more info, see the
+                                // comment under the "Delete Object" context menu item.
+                                openXMLCopyingPopup = true;
+                            }
+
                             // Object duplication (creates a new object with a new name but everything
                             // else the same)
                             if (ImGui.MenuItem("Duplicate Object"))
@@ -624,7 +634,7 @@ namespace HammeredGame.Game
                         // deletion popup calls are performed outside of the right-click menu definition
                         if (openDeletionConfirmation)
                         {
-                            ImGui.OpenPopup("object_deletion_confirmation_" + key);
+                            ImGui.OpenPopup($"object_deletion_confirmation_{key}");
                             openDeletionConfirmation = false;
                         }
 
@@ -639,10 +649,41 @@ namespace HammeredGame.Game
                             if (ImGui.Button("Delete")) { Remove(key); ImGui.CloseCurrentPopup(); }
                             ImGui.EndPopup();
                         }
+
+                        // Similar to a deletion popup, we have a popup for copying the XML source
+                        // of a game object. It's shown using the same trick of a flag + popup.
+                        if (openXMLCopyingPopup)
+                        {
+                            ImGui.OpenPopup($"object_copy_xml_{key}");
+                            openXMLCopyingPopup = false;
+                        }
+
+                        // The actual popup for copying the XML source. We use BeginPopupModal to
+                        // prevent clicks outside the popup, because we don't want the object to be
+                        // deleted or anything.
+                        ImGui.SetNextWindowPos(ImGui.GetCursorScreenPos(), ImGuiCond.Appearing);
+                        if (ImGui.BeginPopupModal($"object_copy_xml_{key}"))
+                        {
+                            // Generate the XML source for the game object
+                            string element = SceneDescriptionIO.GameObjectToXML(
+                                Services.GetService<ContentManager>(),
+                                key,
+                                gameObject).ToString();
+                            ImGui.Text("XML Source: (ctrl/cmd + A to select all before copying)");
+                            // Show a read-only input box where text can be copied
+                            ImGui.InputTextMultiline("##xml" + key, ref element, 1000, new System.Numerics.Vector2(500, 200), ImGuiInputTextFlags.ReadOnly | ImGuiInputTextFlags.AutoSelectAll);
+
+                            // We need some way of exiting, since a popup modal can't be exited in
+                            // another way
+                            if (ImGui.Button("Done")) { ImGui.CloseCurrentPopup(); }
+                            ImGui.EndPopup();
+                        }
                     }
                     ImGui.EndChild();
                 }
-                // A button to launch the popup for creating a new object
+
+                // A button to launch the popup for creating a new object. The actual popup is
+                // defined later.
                 if (ImGui.Button("Create New Object", new System.Numerics.Vector2(sideBarWidth, 0f)))
                 {
                     objectCreationEntity = null;
