@@ -87,12 +87,22 @@ namespace HammeredGame.Game.PathPlanning.Grid
                 throw new ArgumentException(String.Format("First input must be closer to origin than the second input. Instead, {0} > {1} was provided", bottomLeftClosePoint.Z, topRightAwayPoint.Z));
 
             originPoint = bottomLeftClosePoint;
-            endPoint = topRightAwayPoint;
+            endPoint = topRightAwayPoint; // Corner-coordinated grid cells
+            // Center-coordinated grid cells START
+            // Remove the below endPoint allocations if you wish to preserve corner-coordinated grid cells
+            var temp = new Vector3(
+                (float)(originPoint.X + Math.Floor((topRightAwayPoint.X - originPoint.X + sideLength / 2) / sideLength) * sideLength),
+                (float)(originPoint.Y + Math.Floor((topRightAwayPoint.Y - originPoint.Y + sideLength / 2) / sideLength) * sideLength),
+                (float)(originPoint.Z + Math.Floor((topRightAwayPoint.Z - originPoint.Z + sideLength / 2) / sideLength) * sideLength)
+               );
+            endPoint = temp;
+            // Center-coordinated grid cells FINISH
+
             this.sideLength = sideLength;
 
-            int nrCellsX = (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.X - topRightAwayPoint.X) / sideLength);
-            int nrCellsY = (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.Y - topRightAwayPoint.Y) / sideLength);
-            int nrCellsZ = (int)Math.Ceiling(Math.Abs(bottomLeftClosePoint.Z - topRightAwayPoint.Z) / sideLength);
+            int nrCellsX = (int)Math.Ceiling(Math.Abs(originPoint.X - endPoint.X) / sideLength);
+            int nrCellsY = (int)Math.Ceiling(Math.Abs(originPoint.Y - endPoint.Y) / sideLength);
+            int nrCellsZ = (int)Math.Ceiling(Math.Abs(originPoint.Z - endPoint.Z) / sideLength);
 
             grid = new Vector3[Math.Max(1, nrCellsX), Math.Max(1, nrCellsY), Math.Max(1, nrCellsZ)];
             mask = new bool[grid.GetLength(0), grid.GetLength(1), grid.GetLength(2)];
@@ -126,17 +136,41 @@ namespace HammeredGame.Game.PathPlanning.Grid
         /// </remarks>
         public uint[] GetCellIndex(Vector3 position)
         {
-            if (position.X < originPoint.X || position.X > endPoint.X)
+            // Sanity checks.
+
+            //// Corner-coordinated grid cells START
+            //if (position.X < originPoint.X || position.X > endPoint.X)
+            //    throw new ArgumentException(String.Format("The provided position's X coordinate is outside the grid." +
+            //        "grid max X = {0}. {1} was provided instead.", endPoint.X, position.X));
+
+            //if (position.Y < originPoint.Y || position.Y > endPoint.Y)
+            //    throw new ArgumentException(String.Format("The provided position's Y coordinate is outside the grid." +
+            //        "grid max Y = {0}. {1} was provided instead.", endPoint.Y, position.Y));
+
+
+            //if (position.Z < originPoint.Z || position.Z > endPoint.Z)
+            //    throw new ArgumentException(String.Format("The provided position's Z coordinate is outside the grid." +
+            //        "grid max Z = {0}. {1} was provided instead.", endPoint.Z, position.Z));
+
+            //// Corner-coordinated grid cells FINISH
+
+            // Center-coordinated grid cells START
+            if (position.X < originPoint.X - sideLength / 2 || position.X > endPoint.X + sideLength / 2)
                 throw new ArgumentException(String.Format("The provided position's X coordinate is outside the grid." +
                     "grid max X = {0}. {1} was provided instead.", endPoint.X, position.X));
 
-            if (position.Y < originPoint.Y || position.Y > endPoint.Y)
+            if (position.Y < originPoint.Y - sideLength/2 || position.Y > endPoint.Y + sideLength/2)
                 throw new ArgumentException(String.Format("The provided position's Y coordinate is outside the grid." +
                     "grid max Y = {0}. {1} was provided instead.", endPoint.Y, position.Y));
 
-            if (position.Z < originPoint.Z || position.Z > endPoint.Z)
+            if (position.Z < originPoint.Z - sideLength / 2 || position.Z > endPoint.Z + sideLength / 2)
                 throw new ArgumentException(String.Format("The provided position's Z coordinate is outside the grid." +
                     "grid max Z = {0}. {1} was provided instead.", endPoint.Z, position.Z));
+
+            // Center-coordinated grid cells START
+
+            
+            // Compute cell index
 
             //// Corner-coordinated grid cells
             //uint xIndex = (uint)Math.Floor((position.X - originPoint.X) / sideLength);
