@@ -23,6 +23,8 @@ namespace HammeredGame.Game
 
         private Vector3 unit_direction;                     // direction of camera (normalized to distance of 1 unit)
 
+        private float cameraRotation = 0f;
+
         // Which of the 4 directions the camera is pointing to
         public int CurrentCameraDirIndex = 0;
 
@@ -48,6 +50,8 @@ namespace HammeredGame.Game
             FourPointStatic,
             Follow
         }
+
+        private bool debugFreeMovement;
 
         public CameraMode Mode;
 
@@ -155,7 +159,44 @@ namespace HammeredGame.Game
         /// </summary>
         public void UpdateCamera(bool isPaused)
         {
-            if (Mode == CameraMode.Follow && followTarget != null && !isPaused)
+            if (debugFreeMovement)
+            {
+                // In debug free movement mode, we don't touch any of the XML-saved values like
+                // Position, Target, Mode, etc. Instead, we directly manipulate the view/proj matrices.
+                if (UserAction.RotateCameraLeft.Held(services.GetService<Input>()))
+                {
+                    cameraRotation -= 0.05f;
+                    OnRotateLeft?.Invoke(this, null);
+                }
+                else if (UserAction.RotateCameraRight.Held(services.GetService<Input>()))
+                {
+                    cameraRotation += 0.05f;
+                    OnRotateRight?.Invoke(this, null);
+                }
+                (float sin, float cos) = MathF.SinCos(cameraRotation);
+
+                // A 2D vector will be multiplied onto the base camera offset. We find this from the
+                // index. The 2D camera directions are (1,1)(-1,1)(-1,-1)(1,-1) for indices 0 1 2 3
+                // respectively. So we can use this to calculate the 2D unit direction from the index.
+                followDir2D = new Vector2(sin, cos);
+
+                // Calculate the base follow offset position (from the follow target) using the
+                // followAngle, between 0 (horizon) and 90 (top down)
+                var sinCos = Math.SinCos(FollowAngle);
+                Vector3 followOffset = new Vector3((float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos), (float)sinCos.Sin, (float)(Math.Cos(Math.PI / 4.0f) * sinCos.Cos));
+
+                // Multiply by the diagonal direction
+                followOffset.X *= followDir2D.X;
+                followOffset.Z *= followDir2D.Y;
+
+                Vector3 newPosition = followTarget.Position + Vector3.Normalize(followOffset) * FollowDistance;
+
+                ProjMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, services.GetService<GraphicsDevice>().Viewport.AspectRatio, 0.1f, FAR_PLANE);
+
+                UpdatePositionTarget(newPosition, followTarget.Position);
+
+            }
+            else if (Mode == CameraMode.Follow && followTarget != null && !isPaused)
             {
                 // In player-follow camera mode, we use the input to rotate between four indices for
                 // camera positions.
@@ -247,6 +288,8 @@ namespace HammeredGame.Game
             ImGui.Text($"Camera Focus: {Target}");
 
             ImGui.DragFloat("Field of View (rad): ", ref FieldOfView, 0.01f, 0.01f, MathHelper.Pi - 0.01f);
+
+            ImGui.Checkbox("Free Movement (debug)", ref debugFreeMovement);
 
             bool isStatic = Mode == CameraMode.FourPointStatic;
             if (ImGui.Checkbox("Static Camera Mode", ref isStatic))
