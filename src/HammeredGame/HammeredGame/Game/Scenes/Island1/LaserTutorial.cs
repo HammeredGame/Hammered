@@ -48,9 +48,15 @@ namespace HammeredGame.Game.Scenes.Island1
             rock1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
             //rock2.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
 
+            // Make sure the hammer is being carried by the player. If the player does not have the
+            // hammer, they will be blocked and not allowed to continue to the next level.
+            Get<TriggerObject>("end_trigger").Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
             Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
             {
-                ParentGameScreen.InitializeLevel(typeof(PrototypePuzzle).FullName);
+                if (Get<Hammer>("hammer").IsWithCharacter())
+                {
+                    ParentGameScreen.InitializeLevel(typeof(PrototypePuzzle).FullName);
+                }
             };
 
             // Get<Player>("player").OnMove += async _ => {
