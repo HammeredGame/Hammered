@@ -51,11 +51,15 @@ namespace HammeredGame.Game.Scenes.Island1
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
             Get<TriggerObject>("end_trigger").Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
-            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            Get<TriggerObject>("end_trigger").OnTrigger += async (_, _) =>
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
                     ParentGameScreen.InitializeLevel(typeof(PrototypePuzzle).FullName);
+                }
+                else
+                {
+                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let me bring it.");
                 }
             };
 
