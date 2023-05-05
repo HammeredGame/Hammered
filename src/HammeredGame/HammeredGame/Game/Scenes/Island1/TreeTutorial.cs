@@ -55,11 +55,13 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
+                    await ParentGameScreen.ShowDialogueAndWait("(Huh, you found some traffic cones)");
+                    await ParentGameScreen.ShowDialogueAndWait("(Did you bring them here yesterday?)");
                     ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName);
                 }
                 else
                 {
-                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let me bring it.");
+                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let's bring it.");
                 }
             };
         }

@@ -77,7 +77,7 @@ namespace HammeredGame.Game.Scenes.Island1
             Camera.SetFollowTarget(Get<Player>("player1"));
 
             await ParentGameScreen.ShowDialogueAndWait("Sweet! A hammer I can summon!?");
-            await ParentGameScreen.ShowDialogueAndWait("I've got no memory of why I'm here\nbut hey, I have a... hammer!");
+            await ParentGameScreen.ShowDialogueAndWait("I've got no memory of why I'm here but hey,\nI have a... hammer!");
 
             // Now show prompts for dropping too
             hammerPromptTokenSource = new();
@@ -100,7 +100,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 }
                 else
                 {
-                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let me bring it.");
+                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let's bring it.");
                 }
             };
 

@@ -55,22 +55,14 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
+                    await ParentGameScreen.ShowDialogueAndWait("That was surprisingly easy...! I hope the next one\nis also like that.");
                     ParentGameScreen.InitializeLevel(typeof(PrototypePuzzle).FullName);
                 }
                 else
                 {
-                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let me bring it.");
+                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let's bring it.");
                 }
             };
-
-            // Get<Player>("player").OnMove += async _ => {
-            //     System.Diagnostics.Debug.WriteLine("a");
-            //     services.GetService<ScriptUtils>.WaitSeconds(5);
-            //     System.Diagnostics.Debug.WriteLine("written after 5 seconds of player movement");
-            // };
-
-            //Create<Player>("player", services, content.Load<Model>("character-colored"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
-            //Create<Hammer>("hammer", services, content.Load<Model>("temp_hammer2"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
         }
     }
 }

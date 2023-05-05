@@ -39,22 +39,20 @@ namespace HammeredGame.Game.Scenes.Island1
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
             Get<TriggerObject>("end_trigger").Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
-            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            Get<TriggerObject>("end_trigger").OnTrigger += async (_, _) =>
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
+                    await ParentGameScreen.ShowDialogueAndWait("(You found polaroid photos of yourself together with\na handsome god-like man)");
+                    await ParentGameScreen.ShowDialogueAndWait("(The man is holding a hammer that looks just like\nthe one in your hand)");
+                    await ParentGameScreen.ShowDialogueAndWait("Is that... Thor? And this... his hammer?\nI need to give it back to him!");
                     ParentGameScreen.InitializeLevel(typeof(LaserTutorial).FullName);
                 }
+                else
+                {
+                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let's bring it.");
+                }
             };
-
-            // Get<Player>("player").OnMove += async _ => {
-            //     System.Diagnostics.Debug.WriteLine("a");
-            //     services.GetService<ScriptUtils>.WaitSeconds(5);
-            //     System.Diagnostics.Debug.WriteLine("written after 5 seconds of player movement");
-            // };
-
-            //Create<Player>("player", services, content.Load<Model>("character-colored"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
-            //Create<Hammer>("hammer", services, content.Load<Model>("temp_hammer2"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
         }
 
         public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
