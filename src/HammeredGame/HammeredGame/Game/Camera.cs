@@ -139,10 +139,10 @@ namespace HammeredGame.Game
         /// </summary>
         /// <param name="newPosition"></param>
         /// <param name="newTarget"></param>
-        public void UpdatePositionTarget(Vector3 newPosition, Vector3 newTarget)
+        public void UpdatePositionTarget(Vector3 newPosition, Vector3 newTarget, bool lerp = true)
         {
-            Position = Vector3.Lerp(this.Position, newPosition, 0.1f);
-            Target = (newTarget - this.Target) / 10.0f + this.Target;
+            Position = lerp ? Vector3.Lerp(this.Position, newPosition, 0.1f) : newPosition;
+            Target = lerp ? ((newTarget - this.Target) / 10.0f + this.Target) : newTarget;
             ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
             Frustum.Matrix = ViewProjMatrix;
