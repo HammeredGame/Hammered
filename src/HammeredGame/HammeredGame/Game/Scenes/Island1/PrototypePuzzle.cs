@@ -10,13 +10,13 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableO
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
-using Myra.MML;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
     internal class PrototypePuzzle : Scene
     {
         private bool spawnedNewRock = false;
+        private bool openedGoalDoor = false;
         private Vector3 newSpawnRockPosition = new Vector3(257.390f, 0.000f, -187.414f);
         private CollisionGroup laserRockGroup;
 
@@ -26,7 +26,7 @@ namespace HammeredGame.Game.Scenes.Island1
             OnSceneStart();
         }
 
-        protected override void OnSceneStart()
+        protected override async void OnSceneStart()
         {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
@@ -67,22 +67,17 @@ namespace HammeredGame.Game.Scenes.Island1
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
             Get<TriggerObject>("end_trigger").Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
-            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            Get<TriggerObject>("end_trigger").OnTrigger += async (_, _) =>
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
                     ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName);
                 }
+                else
+                {
+                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let me bring it.");
+                }
             };
-
-            // Get<Player>("player").OnMove += async _ => {
-            //     System.Diagnostics.Debug.WriteLine("a");
-            //     services.GetService<ScriptUtils>.WaitSeconds(5);
-            //     System.Diagnostics.Debug.WriteLine("written after 5 seconds of player movement");
-            // };
-
-            //Create<Player>("player", services, content.Load<Model>("character-colored"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
-            //Create<Hammer>("hammer", services, content.Load<Model>("temp_hammer2"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
         }
 
         private int GetNumActiveRocks()
@@ -101,7 +96,7 @@ namespace HammeredGame.Game.Scenes.Island1
             return num_active;
         }
 
-        public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
+        public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
 
@@ -112,10 +107,32 @@ namespace HammeredGame.Game.Scenes.Island1
             if (pressureplate_1.IsActivated()) Get<Door>("door_pp").OpenDoor();
             else Get<Door>("door_pp").CloseDoor();
 
+            if (pressureplate_1.IsActivated() && pressureplate_2.IsActivated())
+            {
+                if (!openedGoalDoor)
+                {
+                    openedGoalDoor = true;
+                    Camera.SetFollowTarget(Get<Door>("door_goal"));
+                    await Services.GetService<ScriptUtils>().WaitSeconds(1);
+
+                    Get<Door>("door_goal").OpenDoor();
+
+                    await Services.GetService<ScriptUtils>().WaitSeconds(1);
+                    Camera.SetFollowTarget(Get<Player>("player1"));
+                }
+            }
+            else
+            {
+                openedGoalDoor = false;
+                Get<Door>("door_goal").CloseDoor();
+            }
+
             if (pressureplate_2.IsActivated())
             {
                 if (!spawnedNewRock)
                 {
+                    spawnedNewRock = true;
+
                     // Spawn New Rock, if the number of active rocks is less than 2
                     if (GetNumActiveRocks() < 2)
                     {
@@ -155,26 +172,38 @@ namespace HammeredGame.Game.Scenes.Island1
                                 });
                         // Apply the same model offset as the original
                         newObj.EntityModelOffset = template_rock.EntityModelOffset;
-
+                        newObj.Visible = false;
                         newObj.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
-                    }
 
-                    spawnedNewRock = true;
+                        if (openedGoalDoor)
+                        {
+                            // synchronise so it we start cut scene after the goal one is done,
+                            // because the two branches containing awaits will be executed in
+                            // succession without waiting apparently
+                            await Services.GetService<ScriptUtils>().WaitSeconds(2);
+                        }
+
+                        // focus on the new rock, and make it appear on camera
+                        Camera.SetFollowTarget(newObj);
+                        float oldFov = Camera.FieldOfView;
+                        float oldFollowDistance = Camera.FollowDistance;
+                        Camera.FieldOfView = 1.3f;
+                        Camera.FollowDistance = 50f;
+                        await Services.GetService<ScriptUtils>().WaitSeconds(1);
+
+                        newObj.Visible = true;
+                        await ParentGameScreen.ShowDialogueAndWait("A new rock appeared!");
+
+                        Camera.SetFollowTarget(Get<Player>("player1"));
+                        Camera.FieldOfView = oldFov;
+                        Camera.FollowDistance = oldFollowDistance;
+                    }
                 }
-                
+
             }
             else
             {
                 spawnedNewRock = false;
-            }
-
-            if (pressureplate_1.IsActivated() && pressureplate_2.IsActivated()) 
-            {
-                Get<Door>("door_goal").OpenDoor();
-            }
-            else
-            {
-                Get<Door>("door_goal").CloseDoor();
             }
         }
     }
