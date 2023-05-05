@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using Pleasing;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
 {
@@ -145,6 +146,14 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
 
         public void SetActivated(bool activate)
         {
+            // animate visually down by 10cm when activated, while retaining same hitbox
+            Tweening.Tween(
+                this,
+                nameof(EntityModelOffset),
+                new Vector3(0, activate ? -1 : 0, 0),
+                100,
+                Easing.Quadratic.InOut,
+                LerpFunctions.Vector3);
             this.pressureActivated = activate;
         }
     }
