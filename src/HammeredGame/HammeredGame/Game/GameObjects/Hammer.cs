@@ -192,6 +192,8 @@ namespace HammeredGame.Game.GameObjects
                 // now aligned with the bone, we'll do a custom tweaked-rotation so that the hammer
                 // is held in the correct direction.
                 Rotation = player.Rotation * Quaternion.CreateFromRotationMatrix(player.Animations.WorldTransforms[boneIndexForRightHand]) * rotationWhenHeldByPlayer;
+
+                player.playerSpeedModifier = 1.0f;
             }
 
             // Get the input via keyboard or gamepad
@@ -259,6 +261,8 @@ namespace HammeredGame.Game.GameObjects
                     //}
 
                     //this.ComputeBounds();
+
+                    player.playerSpeedModifier = 0.5f;
                 }
 
                 //// Check for any collisions along the way

@@ -41,6 +41,7 @@ namespace HammeredGame.Game.GameObjects
     public class Player : GameObject, IImGui
     {
         // Private variables specific to the player class
+        public float playerSpeedModifier = 1f;
         private float baseSpeed = 50f;
 
         private float baseControllerSpeed = 0.5f;
@@ -285,7 +286,7 @@ namespace HammeredGame.Game.GameObjects
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
                 // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
                 player_vel.Normalize();
-                player_vel *= baseSpeed;
+                player_vel *= baseSpeed * playerSpeedModifier;
 
                 this.Entity.LinearVelocity = MathConverter.Convert(new Vector3(player_vel.X, this.Entity.LinearVelocity.Y, player_vel.Z));
 
