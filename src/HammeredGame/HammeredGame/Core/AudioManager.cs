@@ -44,11 +44,13 @@ namespace HammeredGame.Core
         public AudioManager(Microsoft.Xna.Framework.Game game)
             : base(game)
         {
+            SoundEffect.DistanceScale = 50;
+            SoundEffect.DopplerScale = 0.1f;
             foreach (string soundName in soundNames)
             {
                 sfx.Add(soundName, Game.Content.Load<SoundEffect>(soundName));
             }
-            SoundEffect.DistanceScale = 2000;
+            
         }
 
         //load all of the sound effects 
