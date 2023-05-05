@@ -32,8 +32,6 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
 
-            this.UpdateSceneGrid(Get<Wall>("wall_1"), false);
-
             // No further initialization required for the <c>UniformGrid</c> instance.
 
             // Make sure the hammer is being carried by the player. If the player does not have the
