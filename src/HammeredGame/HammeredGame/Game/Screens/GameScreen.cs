@@ -14,6 +14,7 @@ using System.Threading;
 using HammeredGame.Graphics;
 using ImMonoGame.Thing;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace HammeredGame.Game.Screens
 {
@@ -64,7 +65,7 @@ namespace HammeredGame.Game.Screens
             // script might already use some of the sound effects.
             //List<SoundEffect> sfx = GameServices.GetService<List<SoundEffect>>();
             bgMusic = Content.Load<Song>("Audio/BGM_V2_4x");
-            
+
             //List<SoundEffect> sfx = GameServices.GetService<List<SoundEffect>>();
             //sfx.Add(Content.Load<SoundEffect>("Audio/step"));
             //sfx.Add(Content.Load<SoundEffect>("Audio/hammer_drop"));
@@ -89,6 +90,17 @@ namespace HammeredGame.Game.Screens
             {
                 QuitMethod = () =>
                 {
+                    #region TEMPORARY SOLUTION TO CONTINUE/NEW GAME BEFORE SETTINGS AND PERSISTENT DATA IS IMPLEMENTED
+                    try
+                    {
+                        File.WriteAllText("save.txt", currentSceneName);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex);
+                    }
+                    #endregion
+
                     // Specify the callback function when Quit To Title is called. We also need to
                     // specify the Restart Level callback, but this is done just before each time the
                     // screen is added to the manager, since we need the name of the currently active level.

@@ -9,8 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Myra;
 using System;
-using System.Collections.Generic;
 using Pleasing;
+using System.IO;
 
 namespace HammeredGame
 {
@@ -139,12 +139,33 @@ namespace HammeredGame
         /// </summary>
         public void InitTitleScreen()
         {
+            #region TEMPORARY SOLUTION TO LEVEL SAVE/LOAD UNTIL PERSISTENT DATA IS PROPERLY IMPLEMENTED
+            bool continuable;
+            string savedSceneName = "";
+            try
+            {
+                savedSceneName = File.ReadAllText("save.txt");
+                if (Type.GetType(savedSceneName) == null)
+                {
+                    continuable = false;
+                }
+                else
+                {
+                    continuable = true;
+                }
+            } catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                continuable = false;
+            }
+            #endregion
+
             manager.AddScreen(new Game.Screens.TitleScreen()
             {
+                Continuable = continuable,
                 ContinueFunc = () =>
                 {
-                    // load scene name from file
-                    manager.AddScreen(new Game.Screens.GameScreen(typeof(Game.Scenes.Island1.TreeTutorial).FullName));
+                    manager.AddScreen(new Game.Screens.GameScreen(savedSceneName));
                 },
                 StartNewFunc = () =>
                 {
