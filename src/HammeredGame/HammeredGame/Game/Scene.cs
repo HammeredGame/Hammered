@@ -307,9 +307,9 @@ namespace HammeredGame.Game
                 // just adjust the scalar multiplier 1 to something greater than 1.
                 // This could prove useful, because the size of the hammer is not currently taken into account.
                 // Ideally, the "·Repetitions" variables would also be parameterized w.r.t the dimensions of the hammer.
-                int xRepetitions = (int)(Math.Ceiling(goBox.HalfWidth / sideLength) * tightness); //xRepetitions = 0;
+                int xRepetitions = (int)(Math.Ceiling(goBox.HalfWidth / sideLength) * tightness); 
                 int yRepetitions = (int)(Math.Ceiling(goBox.HalfHeight / sideLength) * tightness);
-                int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * tightness); //zRepetitions = 0;
+                int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * tightness); 
                 for (int i = -xRepetitions; i <= xRepetitions; ++i)
                 {
                     for (int j = -yRepetitions; j <= yRepetitions; ++j)

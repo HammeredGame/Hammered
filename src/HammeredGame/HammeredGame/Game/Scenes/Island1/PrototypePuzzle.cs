@@ -52,15 +52,15 @@ namespace HammeredGame.Game.Scenes.Island1
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_key"));
 
             Get<Door>("door_goal").SetIsGoal(true);
-            this.UpdateSceneGrid(Get<Door>("door_key"), false);
-            this.UpdateSceneGrid(Get<Door>("door_pp"), false);
+            this.UpdateSceneGrid(Get<Door>("door_key"), false, 0.9);
+            this.UpdateSceneGrid(Get<Door>("door_pp"), false, 0.9);
 
             //Get<PressurePlate>("pressureplate").SetTriggerObject(Get<Door>("door_pp"));
 
-            this.UpdateSceneGrid(Get<Wall>("wall"), false);
-            this.UpdateSceneGrid(Get<Wall>("wall1"), false);
-            this.UpdateSceneGrid(Get<Wall>("wall2"), false);
-            this.UpdateSceneGrid(Get<Wall>("wall3"), false);
+            this.UpdateSceneGrid(Get<Wall>("wall"), false, 0.9);
+            this.UpdateSceneGrid(Get<Wall>("wall1"), false, 0.9);
+            this.UpdateSceneGrid(Get<Wall>("wall2"), false, 0.9);
+            this.UpdateSceneGrid(Get<Wall>("wall3"), false, 0.9);
 
             // No further initialization required for the <c>UniformGrid</c> instance.
 
