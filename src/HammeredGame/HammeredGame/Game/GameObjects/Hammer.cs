@@ -277,6 +277,8 @@ namespace HammeredGame.Game.GameObjects
             if (hammerState == HammerState.WithCharacter && UserAction.DropHammer.Pressed(input))
             {
                 //hammerState = HammerState.Dropped;
+                // Make it flat in the direction opposite of the player, assuming the hammer model is upright
+                Rotation = player.Rotation * Quaternion.CreateFromYawPitchRoll(0, -MathHelper.PiOver2, 0);
                 DropHammer();
                 //this.ComputeBounds();
             }
@@ -307,11 +309,6 @@ namespace HammeredGame.Game.GameObjects
         {
             // Set hammer state to dropped
             hammerState = HammerState.Dropped;
-
-            // temporarily assume that a hammer with a character is upright, and rotate it so it
-            // becomes flat.
-            // todo: remove this
-            Rotation *= Quaternion.CreateFromYawPitchRoll(0, -MathHelper.PiOver2, 0);
 
             //hammer_sfx[1].Play();
             Services.GetService<AudioManager>().Play3DSound("Audio/hammer_drop", false, this.AudioEmitter, 1);
