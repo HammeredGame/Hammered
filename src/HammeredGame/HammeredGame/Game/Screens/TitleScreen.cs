@@ -10,6 +10,7 @@ namespace HammeredGame.Game.Screens
     /// </summary>
     internal class TitleScreen : AbstractMenuScreen
     {
+        public bool Continuable;
         public Action ContinueFunc;
         public Action StartNewFunc;
         public Action ToggleDebugUIFunc;
@@ -26,14 +27,15 @@ namespace HammeredGame.Game.Screens
                 Id = "menuItemContinue",
                 Enabled = false
             };
-            // Setting Enabled = false when creating a MenuItem doesn't seem to disable its
-            // click handler events, so it's commented for now:
-            //
-            //menuItemContinue.Selected += (s, a) =>
-            //{
-            //    ContinueFunc?.Invoke();
-            //    ExitScreen(alsoUnloadContent: true);
-            //};
+
+            if (Continuable) {
+                menuItemContinue.Enabled = true;
+                menuItemContinue.Selected += (s, a) =>
+                {
+                    ContinueFunc?.Invoke();
+                    ExitScreen(alsoUnloadContent: true);
+                };
+            }
 
             MenuItem menuItemStartGame = new()
             {
