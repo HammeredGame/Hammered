@@ -3,6 +3,7 @@ using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Screens;
+using Pleasing;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -30,50 +31,37 @@ namespace HammeredGame.Game.Scenes.Island1
             Get<Tree>("tree").SetTreeFallen(true);
 
             await ParentGameScreen.ShowDialogueAndWait("Woah! Magical teleportation!?");
-            await ParentGameScreen.ShowDialogueAndWait("This hammer must be mythical or something...!");
+            await ParentGameScreen.ShowDialogueAndWait("This hammer must be mythical or something!");
+            await utils.WaitSeconds(1);
+            await ParentGameScreen.ShowDialogueAndWait("...Hold on, mythical?");
+            await ParentGameScreen.ShowDialogueAndWait("I vaguely recall that I met some people\nwho called themselves \"Gods\" yesterday...");
 
-            // Show a hint for camera controls upon entering its trigger area, but set up the event
-            // handler without blocking further script execution. This is so that the end trigger
-            // can be activated without doing the camera actions.
-            CancellationTokenSource cameraHintTokenSource = new();
-            EventHandler cameraHintTriggerOnce = null;
-            Get<TriggerObject>("camera_hint_trigger").OnTrigger += cameraHintTriggerOnce = async (_, _) =>
+            // Zoom in on the player while crossing the first bridge to emphasise the log
+            float originalCameraFollowDistance = Camera.FollowDistance;
+
+            Get<TriggerObject>("log_bridge_trigger").OnTrigger += (_, _) =>
             {
-                // remove the handler so we don't keep prompting repeatedly
-                Get<TriggerObject>("camera_hint_trigger").OnTrigger -= cameraHintTriggerOnce;
-
-                // Show prompts
-                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.RotateCameraLeft, UserAction.RotateCameraRight }, cameraHintTokenSource.Token);
-
-                // Player must perform one of each action to get rid of the hint
-                await Task.WhenAll(
-                    utils.WaitEvent(Camera, "OnRotateLeft"),
-                    utils.WaitEvent(Camera, "OnRotateRight")
-                );
-                cameraHintTokenSource.Cancel();
+                Tweening.Tween(Camera, nameof(Camera.FollowDistance), 150f, 500, Easing.Quadratic.InOut, LerpFunctions.Float);
+            };
+            Get<TriggerObject>("log_bridge_trigger").OnTriggerEnd += (_, _) =>
+            {
+                Tweening.Tween(Camera, nameof(Camera.FollowDistance), originalCameraFollowDistance, 500, Easing.Quadratic.InOut, LerpFunctions.Float);
             };
 
-            // End trigger will be active regardless of camera actions
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
             Get<TriggerObject>("end_trigger").Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
-            Get<TriggerObject>("end_trigger").OnTrigger += (_, _) =>
+            Get<TriggerObject>("end_trigger").OnTrigger += async (_, _) =>
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
-                    cameraHintTokenSource.Cancel();
                     ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName);
                 }
+                else
+                {
+                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let me bring it.");
+                }
             };
-
-            // Get<Player>("player").OnMove += async _ => {
-            //     System.Diagnostics.Debug.WriteLine("a");
-            //     services.GetService<ScriptUtils>.WaitSeconds(5);
-            //     System.Diagnostics.Debug.WriteLine("written after 5 seconds of player movement");
-            // };
-
-            //Create<Player>("player", services, content.Load<Model>("character-colored"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
-            //Create<Hammer>("hammer", services, content.Load<Model>("temp_hammer2"), null, Vector3.Zero, Quaternion.Identity, 0.3f);
         }
     }
 }
