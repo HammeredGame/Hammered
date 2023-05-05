@@ -1,4 +1,5 @@
 ﻿using HammeredGame.Game;
+using Microsoft.Xna.Framework.Input;
 using Myra;
 using Myra.Graphics2D.TextureAtlases;
 using System;
@@ -107,13 +108,17 @@ namespace HammeredGame.Core
                         return new();
 
                     case InputType.KeyboardMouse:
-                        // todo: for keyboard, create an image with all four keys somehow
-                        return new List<TextureRegion>() {
-                                    controlsAtlas[InputType.KeyboardMouse][up.ToString()],
-                                    controlsAtlas[InputType.KeyboardMouse][left.ToString()],
-                                    controlsAtlas[InputType.KeyboardMouse][down.ToString()],
-                                    controlsAtlas[InputType.KeyboardMouse][right.ToString()]
-                                };
+                        // Ignore any keys that we don't have an atlas entry for
+                        List<TextureRegion> regions = new();
+                        foreach (Keys key in new[] { up, left, down, right}) {
+                            try
+                            {
+                                regions.Add(controlsAtlas[InputType.KeyboardMouse][key.ToString()]);
+                            }
+                            catch (KeyNotFoundException)
+                            { }
+                        }
+                        return regions;
 
                     default:
                         throw new NotSupportedException();
