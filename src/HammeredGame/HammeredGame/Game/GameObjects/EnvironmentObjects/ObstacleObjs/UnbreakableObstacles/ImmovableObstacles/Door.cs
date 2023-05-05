@@ -110,11 +110,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 // If hammer collides with door, set hammer to dropped state
                 // This should only happen when hammer is called back
-                if (other.Tag is Hammer)
-                {
-                    var hammer = other.Tag as Hammer;
-                    hammer.DropHammer();
-                }
+                //if (other.Tag is Hammer)
+                //{
+                //    var hammer = other.Tag as Hammer;
+                //    hammer.DropHammer();
+                //}
 
                 // If player collides with door and player has collected corresponding key
                 // Door disappears (is opened) and the collision box associated with the
@@ -147,7 +147,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     this.ActiveSpace.Remove(this.Entity);
                     Services.GetService<AudioManager>().Play3DSound("Audio/door_open", false, this.AudioEmitter, 1);
                     // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
-                    this.CurrentScene.UpdateSceneGrid(this, true);
+                    this.CurrentScene.UpdateSceneGrid(this, true, 0.9);
 
                     this.doorState = DoorState.Open;
                     this.Model = openDoorModel;
@@ -165,7 +165,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     this.ActiveSpace.Add(this.Entity);
                     Services.GetService<AudioManager>().Play3DSound("Audio/door_close", false, this.AudioEmitter, 1);
                     // Uncomment the following line if we do not wish the hammer to dodge the door, but instead collide with it.
-                    this.CurrentScene.UpdateSceneGrid(this, false);
+                    this.CurrentScene.UpdateSceneGrid(this, false, 0.9);
 
                     this.doorState = DoorState.Closed;
                     this.Model = closedDoorModel;
