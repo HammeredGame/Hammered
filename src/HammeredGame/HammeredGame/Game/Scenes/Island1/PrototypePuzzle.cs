@@ -71,11 +71,12 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
+                    await ParentGameScreen.ShowDialogueAndWait("Phewww, that was tough...!");
                     ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName);
                 }
                 else
                 {
-                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let me bring it.");
+                    await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let's bring it.");
                 }
             };
         }
