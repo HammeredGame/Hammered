@@ -152,7 +152,7 @@
     <rotation>-0.138 -0.069 -0.129 0.980</rotation>
     <scale>1.000</scale>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate" id="pressureplate1">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate" id="temple_pressure_plate">
     <model>Meshes/PressurePlates/pressure_plate</model>
     <texture type="texture2d">Meshes/PressurePlates/pressure_plate_albedo</texture>
     <position>207.500 5.000 -195.000</position>
