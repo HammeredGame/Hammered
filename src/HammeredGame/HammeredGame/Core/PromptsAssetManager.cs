@@ -111,12 +111,10 @@ namespace HammeredGame.Core
                         // Ignore any keys that we don't have an atlas entry for
                         List<TextureRegion> regions = new();
                         foreach (Keys key in new[] { up, left, down, right}) {
-                            try
+                            if (controlsAtlas[InputType.KeyboardMouse].Regions.ContainsKey(key.ToString()))
                             {
                                 regions.Add(controlsAtlas[InputType.KeyboardMouse][key.ToString()]);
                             }
-                            catch (KeyNotFoundException)
-                            { }
                         }
                         return regions;
 
