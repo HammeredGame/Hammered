@@ -84,12 +84,12 @@ namespace HammeredGame.Game
         // Default keys. TODO: allow changing these from config file (and remove the readonly modifier)
         public static readonly ContinuousUserAction Movement = new("Move", "Left", (Keys.W, Keys.A, Keys.S, Keys.D));
         public static readonly ContinuousUserAction CameraMovement = new("Move Camera", "Right", (Keys.F20, Keys.Q, Keys.F20, Keys.E));
-        public static readonly DiscreteUserAction Interact = new("Interact", Buttons.A, Keys.Z);
+        public static readonly DiscreteUserAction Interact = new("Interact", Buttons.A, Keys.F);
         public static readonly DiscreteUserAction SummonHammer = new("Summon Hammer", Buttons.X, Keys.Space);
         public static readonly DiscreteUserAction DropHammer = new("Drop Hammer", Buttons.X, Keys.Space);
         public static readonly DiscreteUserAction Pause = new("Pause", Buttons.Start, Keys.Escape);
         public static readonly DiscreteUserAction Back = new("Back", Buttons.B, Keys.Escape);
-        public static readonly DiscreteUserAction Confirm = new("Confirm", Buttons.A, Keys.Enter);
+        public static readonly DiscreteUserAction Confirm = new("Confirm", Buttons.X, Keys.Space);
         public static readonly DiscreteUserAction Dash = new("Dash", Buttons.LeftTrigger, Keys.LeftShift);
         public static readonly DiscreteUserAction RotateCameraLeft = new("Rotate Camera Left", Buttons.LeftShoulder, Keys.Q);
         public static readonly DiscreteUserAction RotateCameraRight = new("Rotate Camera Right", Buttons.RightShoulder, Keys.E);

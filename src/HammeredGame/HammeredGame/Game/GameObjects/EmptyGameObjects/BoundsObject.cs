@@ -25,7 +25,7 @@ namespace HammeredGame.Game.GameObjects.EmptyGameObjects
         public BoundsObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             this.Entity.Tag = "BoundsObjectBounds";
-
+            this.Entity.CollisionInformation.Tag = this;
             this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
         }
 

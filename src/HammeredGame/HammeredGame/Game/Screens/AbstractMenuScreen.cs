@@ -332,7 +332,7 @@ namespace HammeredGame.Game.Screens
 
             // Update the OK input prompt based on the currently active input type - this is safe to
             // perform synchronously since it will only query loaded images and will not cause file IO.
-            okPromptImage.Renderable = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Interact)[0];
+            okPromptImage.Renderable = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Confirm)[0];
 
             // Update the UI layout based on any changes to it above
             Desktop.UpdateLayout();

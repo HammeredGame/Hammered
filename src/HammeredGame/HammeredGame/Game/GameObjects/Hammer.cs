@@ -197,7 +197,7 @@ namespace HammeredGame.Game.GameObjects
             }
 
             // Get the input via keyboard or gamepad
-            HandleInput();
+            if (player != null) HandleInput();
 
             // If hammer is called back (successfully), update its position
             // and handle interactions along the way - ending once the hammer is back with player
