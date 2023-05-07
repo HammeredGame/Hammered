@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HammeredGame.Core
@@ -37,7 +38,7 @@ namespace HammeredGame.Core
             return (T)method.MakeGenericMethod(typeof(T)).Invoke(contentReader, args);
         }
 
-        public static async Task<T> LoadAsync<T>(this ContentManager contentManager, string assetName)
+        public static async Task<T> LoadAsync<T>(this ContentManager contentManager, ScriptUtils utils, string assetName)
         {
             if (string.IsNullOrEmpty(assetName))
             {
@@ -59,12 +60,12 @@ namespace HammeredGame.Core
                 return (T)value;
             }
 
-            val = await contentManager.ReadAssetAsync<T>(assetName, null);
+            val = await contentManager.ReadAssetAsync<T>(utils, assetName, null);
             loadedAssets[key] = val;
             return val;
         }
 
-        public static async Task<T> ReadAssetAsync<T>(this ContentManager contentManager, string assetName, Action<IDisposable> recordDisposableObject)
+        public static async Task<T> ReadAssetAsync<T>(this ContentManager contentManager, ScriptUtils utils, string assetName, Action<IDisposable> recordDisposableObject)
         {
             if (string.IsNullOrEmpty(assetName))
             {
@@ -78,8 +79,19 @@ namespace HammeredGame.Core
 
             object obj = null;
             Stream stream = contentManager.CallPrivate<Stream>("OpenStream", assetName);
+
+            System.Diagnostics.Debug.WriteLine(assetName + Thread.CurrentThread.ManagedThreadId);
+            MemoryStream memory = new MemoryStream();
+            await stream.CopyToAsync(memory);
+            memory.Seek(0, SeekOrigin.Begin);
+            stream.Close();
+            stream = memory;
+
             using (BinaryReader xnbReader = new BinaryReader(stream))
             {
+                await utils.WaitNextUpdate();
+
+                System.Diagnostics.Debug.WriteLine(assetName + Thread.CurrentThread.ManagedThreadId);
                 using ContentReader contentReader = contentManager.CallPrivate<ContentReader>("GetContentReaderFromXnb", assetName, stream, xnbReader, recordDisposableObject);
                 obj = contentReader.CallPrivate<T>("ReadAsset", new object[] { });
                 if (obj is GraphicsResource)

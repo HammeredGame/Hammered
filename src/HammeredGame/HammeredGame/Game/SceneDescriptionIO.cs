@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace HammeredGame.Game
@@ -139,8 +141,9 @@ namespace HammeredGame.Game
         ///          the path planning. There could be better ways to implement it better. Adding
         /// more and more explicit outputs in the definition of the function is not maintenance-friendly.
         /// </remarks>
-        public static (Camera, SceneLightSetup, OrderedDictionary<string, GameObject>, UniformGrid grid) ParseFromXML(string filePath, GameServices services)
+        public static async Task<(Camera, SceneLightSetup, OrderedDictionary<string, GameObject>, UniformGrid grid)> ParseFromXML(string filePath, GameServices services)
         {
+            System.Diagnostics.Debug.WriteLine("Parsing XML from " + Thread.CurrentThread.ManagedThreadId);
             var loadedXML = File.ReadAllText(filePath, Encoding.UTF8);
             var xml = XDocument.Parse(loadedXML);
 
@@ -151,10 +154,11 @@ namespace HammeredGame.Game
             }
 
             Camera cam = GetCamera(xml, services);
-            UniformGrid grid = GetUniformGrid(xml);
+            UniformGrid grid = await GetUniformGrid(xml);
             SceneLightSetup lights = GetLightSetup(xml);
-            OrderedDictionary<string, GameObject> objs = GetGameObjects(xml, services);
-
+            System.Diagnostics.Debug.WriteLine("load!");
+            OrderedDictionary<string, GameObject> objs = await GetGameObjects(xml, services);
+            System.Diagnostics.Debug.WriteLine("donesies!");
             return (cam, lights, objs, grid);
         }
 
@@ -228,7 +232,7 @@ namespace HammeredGame.Game
         ///         This feature allows the user (XML writer) to be more versatile about how they go about writing the definition of
         ///         the grid, taking advantage of the different constructors of the class <see cref="UniformGrid"/>.
         /// </remarks>
-        private static UniformGrid GetUniformGrid(XDocument targetXML)
+        private static async Task<UniformGrid> GetUniformGrid(XDocument targetXML)
         {
             // It is expected that a scene consists of a single grid.
             // However, taking precautions for incorrect user (XML writer) input, the unique top-level grid is extracted.
@@ -243,9 +247,8 @@ namespace HammeredGame.Game
             float sideLength = Parse<float>(uniformGridElement.Descendants("side_length").Single().Value); // ii)
 
             // Instantiate the <c>UniformGrid</c> object.
-            UniformGrid output = new UniformGrid(bottomLeftClosePoint, topRightAwayPoint, sideLength);
 
-            return output;
+            return await Task.Run(() => new UniformGrid(bottomLeftClosePoint, topRightAwayPoint, sideLength));
         }
 
         /// <summary>
@@ -310,7 +313,7 @@ namespace HammeredGame.Game
         /// </param>
         /// <returns>A dictionary of unique IDs and parsed GameObjects</returns>
         /// <exception cref="Exception">When some trouble arises trying to create the object</exception>
-        private static OrderedDictionary<string, GameObject> GetGameObjects(XDocument targetXML, GameServices services)
+        private static async Task<OrderedDictionary<string, GameObject>> GetGameObjects(XDocument targetXML, GameServices services)
         {
             // Maintain a map of named objects (those with attribute "id") so that we can reference
             // them and use them as arguments to constructors if needed in the future. This is used
@@ -345,7 +348,7 @@ namespace HammeredGame.Game
                 Model model = null;
                 if (!string.IsNullOrEmpty(modelName))
                 {
-                    model = services.GetService<ContentManager>().LoadAsync<Model>(modelName).Result;
+                    model = await services.GetService<ContentManager>().LoadAsync<Model>(services.GetService<ScriptUtils>(), modelName);
                 }
                 arguments.Add(model);
 
@@ -356,7 +359,7 @@ namespace HammeredGame.Game
                 Texture2D texture = null;
                 if (!string.IsNullOrEmpty(textureName))
                 {
-                    texture = services.GetService<ContentManager>().LoadAsync<Texture2D>(textureName).Result;
+                    texture = await services.GetService<ContentManager>().LoadAsync<Texture2D>(services.GetService<ScriptUtils>(), textureName);
                 }
                 arguments.Add(texture);
 

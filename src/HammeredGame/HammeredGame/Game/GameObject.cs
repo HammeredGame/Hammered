@@ -118,27 +118,6 @@ namespace HammeredGame.Game
 
             // Load in Shader
             this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/MainShading");
-
-            if (this.Model != null && model.GetAnimations() == null)
-            {
-                // Precalculate the vertex buffer data, since VertextBuffer.GetData is very
-                // expensive to perform on every Update. We can find the bounding box of the
-                // mesh by applying the transformations to this precalculated vertex data.
-                allVertexData = new();
-                foreach (ModelMesh mesh in Model.Meshes)
-                {
-                    foreach (ModelMeshPart meshPart in mesh.MeshParts)
-                    {
-                        int vertexStride = meshPart.VertexBuffer.VertexDeclaration.VertexStride;
-                        int vertexBufferSize = meshPart.NumVertices * vertexStride;
-
-                        int vertexDataSize = vertexBufferSize / sizeof(float);
-                        float[] vertexData = new float[vertexDataSize];
-                        meshPart.VertexBuffer.GetData(vertexData);
-                        allVertexData.Add((vertexStride, vertexData));
-                    }
-                }
-            }
         }
 
         public void SetCurrentScene(Scene currentScene)

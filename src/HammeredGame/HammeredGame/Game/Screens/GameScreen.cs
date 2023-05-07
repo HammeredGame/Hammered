@@ -241,7 +241,11 @@ namespace HammeredGame.Game.Screens
                 {
                     if (ImGui.Selectable(fqn, fqn == currentScene.GetType().FullName))
                     {
-                        GameServices.GetService<ScriptUtils>().WaitNextUpdate().ContinueWith(_ => InitializeLevel(fqn));
+                        Task.Factory.StartNew(async () =>
+                        {
+                            await GameServices.GetService<ScriptUtils>().WaitNextUpdate();
+                            InitializeLevel(fqn);
+                        });
                     }
                 }
                 ImGui.EndCombo();
