@@ -1,6 +1,7 @@
 ﻿using FontStashSharp;
 using HammeredGame.Core;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D;
@@ -47,6 +48,18 @@ namespace HammeredGame.Game.Screens
         private VerticalStackPanel menuContainer;
 
         private Image okPromptImage;
+
+        private AudioEmitter audioEmitter = new();
+
+        /// <summary>
+        /// Convenience function to play a sound effect from the default position (is it world center?)
+        /// </summary>
+        /// <param name="sfxName"></param>
+        /// <param name="volume"></param>
+        protected void PlaySFX(string sfxName, float volume)
+        {
+            GameServices.GetService<AudioManager>().Play3DSound(sfxName, false, audioEmitter, volume);
+        }
 
         public override void LoadContent()
         {
@@ -104,6 +117,7 @@ namespace HammeredGame.Game.Screens
                 // click handler.
                 menuItem.Selected += (s, a) =>
                 {
+                    PlaySFX("Audio/UI/selection_confirm", 1);
                     mainMenu.HoverIndex = (s as MenuItem).Index;
                 };
 
@@ -224,6 +238,8 @@ namespace HammeredGame.Game.Screens
                     .AddFrame(200, menuWidthMax, Easing.Exponential.Out);
                 TransitionAnimationTimeline.AddFloat(this, nameof(MenuTriangleWidth))
                     .AddFrame(200, 300f, Easing.Exponential.Out);
+
+                PlaySFX("Audio/lohi_whoosh", 1f);
                 return false;
             }
             // Set the width on the Myra menu UI.
@@ -252,6 +268,8 @@ namespace HammeredGame.Game.Screens
                     .AddFrame(200, 0, Easing.Exponential.Out);
                 TransitionAnimationTimeline.AddFloat(this, nameof(MenuTriangleWidth))
                     .AddFrame(200, 0f, Easing.Exponential.Out);
+
+                PlaySFX("Audio/lohi_whoosh", 1f);
                 return false;
             }
             // Set the width on the Myra menu UI.
@@ -320,6 +338,7 @@ namespace HammeredGame.Game.Screens
             {
                 if (menuItem.Index == mainMenu.HoverIndex && menuItem.Text[0] != '>')
                 {
+                    PlaySFX("Audio/UI/selection_change", 0.7f);
                     menuItem.Text = "> " + menuItem.Text;
                     menuItem.Color = new Color(246, 101, 255);
                 }
