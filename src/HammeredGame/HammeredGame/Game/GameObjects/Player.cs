@@ -47,6 +47,8 @@ namespace HammeredGame.Game.GameObjects
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
         private bool previously_moving = false;
+        private bool waking_up = false;
+        private TimeSpan wakeup_time_passed = TimeSpan.Zero;
 
         public enum PlayerOnSurfaceState
         {
@@ -115,7 +117,7 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
 
                 Animations = this.Model.GetAnimations();
-                var clip_idle = Animations.Clips["Armature|idle"];
+                var clip_idle = Animations.Clips["Armature|Armature|Armature|idle"];
                 Animations.SetClip(clip_idle);
 
                 //player_sfx = Services.GetService<List<SoundEffect>>();
@@ -229,21 +231,11 @@ namespace HammeredGame.Game.GameObjects
             activeCamera = camera;
         }
 
-        private void ConfigureEffectMatrices(IEffectMatrices effect, Matrix world, Matrix view, Matrix projection)
+        public void TriggerWakeUp()
         {
-            effect.World = world;
-            effect.View = view;
-            effect.Projection = projection;
-        }
-
-        private void ConfigureEffectLighting(IEffectLights effect)
-        {
-            effect.EnableDefaultLighting();
-            effect.DirectionalLight0.Direction = Vector3.Backward;
-            effect.DirectionalLight0.Enabled = true;
-            effect.DirectionalLight1.Enabled = false;
-            effect.DirectionalLight2.Enabled = false;
-            effect.AmbientLightColor = Vector3.One;
+            waking_up = true;
+            var clip_wakeup = Animations.Clips["Armature|wakeup"];            
+            Animations.SetClip(clip_wakeup);
         }
 
         // Update (called every tick)
@@ -312,7 +304,7 @@ namespace HammeredGame.Game.GameObjects
                 if(!previously_moving)
                 {
                     // Start running animation when player starts moving
-                    var clip_run = Animations.Clips["Armature|run"];
+                    var clip_run = Animations.Clips["Armature|Armature|Armature|run"];
                     Animations.SetClip(clip_run);
                     previously_moving = true;
                     //SoundEffectInstance step = player_sfx[0].CreateInstance();
@@ -328,7 +320,7 @@ namespace HammeredGame.Game.GameObjects
                 if(previously_moving)
                 {
                     // Start idle animation when player stops moving
-                    var clip_idle = Animations.Clips["Armature|idle"];
+                    var clip_idle = Animations.Clips["Armature|Armature|Armature|idle"];
                     Animations.SetClip(clip_idle);
                     previously_moving = false;
                 }
@@ -345,8 +337,28 @@ namespace HammeredGame.Game.GameObjects
                 //position += player_vel;
             }
 
-
-            Animations.Update(gameTime.ElapsedGameTime * 1.2f, true, Matrix.Identity);
+            // Play wake up animation (not optimal to handle it here...)
+            if(waking_up)
+            {
+                if(wakeup_time_passed < (Animations.CurrentClip.Duration * 0.9f))
+                {
+                    Animations.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
+                    wakeup_time_passed += gameTime.ElapsedGameTime;
+                } else
+                {
+                    // Stop wake up animation end of clip has been reached
+                    waking_up = false;
+                    // Correct position do to wake up position offset
+                    // this.Position -= new Vector3(0, 0, 3);
+                    // Start idle animation
+                    var clip_idle = Animations.Clips["Armature|Armature|Armature|idle"];
+                    Animations.SetClip(clip_idle);
+                }
+                
+            } else
+            {
+                Animations.Update(gameTime.ElapsedGameTime * 1.2f, true, Matrix.Identity);
+            }
 
             Services.GetService<AudioManager>().listener.Position = this.Position;
             Services.GetService<AudioManager>().listener.Forward = forwardDirection;
