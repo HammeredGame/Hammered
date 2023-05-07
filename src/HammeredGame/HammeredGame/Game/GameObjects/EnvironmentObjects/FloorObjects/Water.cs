@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Content;
 using HammeredGame.Graphics;
 using ImMonoGame.Thing;
 using ImGuiNET;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
@@ -24,8 +25,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
     class Water : FloorObject, IImGui
     {
         // Water options
-        private Texture2D normalMap0;
-        private Texture2D normalMap1;
         private float opacity = 0.6f;
         private bool useBumpMaps = false;
 
@@ -40,10 +39,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
             this.ActiveSpace.Add(mesh);
 
             this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/Water");
-
-            // Normal maps courtesy of royalty free https://www.cadhatch.com/seamless-water-textures
-            this.normalMap0 = services.GetService<ContentManager>().Load<Texture2D>("WaterNormalMap0");
-            this.normalMap1 = services.GetService<ContentManager>().Load<Texture2D>("WaterNormalMap1");
         }
 
         public override void Update(GameTime gameTime, bool screenHasFocus)
@@ -108,8 +103,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
                     part.Effect.Parameters["ModelTextureGammaCorrection"]?.SetValue(true);
 
                     part.Effect.Parameters["GameTimeSeconds"].SetValue((float)gameTime.TotalGameTime.TotalSeconds);
-                    part.Effect.Parameters["WaterNormal0"].SetValue(normalMap0);
-                    part.Effect.Parameters["WaterNormal1"].SetValue(normalMap1);
                     part.Effect.Parameters["UseBumpMap"].SetValue(useBumpMaps);
                     part.Effect.Parameters["WaterOpacity"].SetValue(opacity);
                 }

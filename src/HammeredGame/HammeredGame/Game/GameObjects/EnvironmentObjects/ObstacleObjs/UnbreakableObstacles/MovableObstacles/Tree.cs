@@ -91,7 +91,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 //this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
                 //this.Entity.CollisionInformation.Events.RemovingPair += Events_RemovingPair;
                 this.AudioEmitter = new AudioEmitter();
-                this.AudioEmitter.Position = this.Position; 
+                this.AudioEmitter.Position = this.Position;
             }
         }
 
@@ -131,7 +131,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     //tree_sfx[3].Play();
                     Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
                 }
-                
+
             }
 
             // If tree is fallen, player can walk on top of the tree

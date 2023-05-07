@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
+using System;
 
 namespace HammeredGame.Game.Screens
 {
@@ -14,7 +15,7 @@ namespace HammeredGame.Game.Screens
         private Texture2D whiteRectangle;
         private Color backgroundColor;
 
-        private int lastTick = 0;
+        private TimeSpan lastTick = TimeSpan.Zero;
         private Label text;
 
         public LoadingScreen()
@@ -43,6 +44,7 @@ namespace HammeredGame.Game.Screens
             text = new Label
             {
                 Text = "Loading",
+                Wrap = true,
                 TextColor = Color.White,
                 Font = skranjiFontSystem.GetFont(fontSize),
                 Margin = new Thickness(0, 0, 100, 100),
@@ -67,10 +69,10 @@ namespace HammeredGame.Game.Screens
         {
             base.Update(gameTime);
 
-            if (gameTime.TotalGameTime.Seconds > lastTick)
+            if (gameTime.TotalGameTime > lastTick + TimeSpan.FromMilliseconds(500))
             {
                 text.Text += ".";
-                lastTick = gameTime.TotalGameTime.Seconds;
+                lastTick = gameTime.TotalGameTime;
             }
 
             Desktop.UpdateInput();

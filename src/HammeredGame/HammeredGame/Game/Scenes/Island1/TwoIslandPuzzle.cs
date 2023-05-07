@@ -8,6 +8,7 @@ using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -17,10 +18,10 @@ namespace HammeredGame.Game.Scenes.Island1
 
         public TwoIslandPuzzle(GameServices services, GameScreen screen) : base(services, screen)
         { }
-        protected override void LoadContent()
+        protected override async Task LoadContent()
         {
-            base.LoadContent();
-            CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml");
+            await base.LoadContent();
+            await CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml");
         }
 
         protected override void OnSceneStart()

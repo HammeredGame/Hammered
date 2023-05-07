@@ -90,16 +90,13 @@ namespace HammeredGame.Game
             this.ParentGameScreen = screen;
         }
 
-        public Task LoadContentAsync()
+        public async Task LoadContentAsync()
         {
-            return Task.Run(() =>
-            {
-                LoadContent();
-                IsLoaded = true;
-            });
+            await LoadContent();
+            IsLoaded = true;
         }
 
-        protected virtual void LoadContent()
+        protected async virtual Task LoadContent()
         {
             InitNewSpace();
         }
@@ -198,9 +195,9 @@ namespace HammeredGame.Game
         /// </summary>
         /// <param name="services"></param>
         /// <param name="fileName"></param>
-        public void CreateFromXML(string fileName)
+        public async Task CreateFromXML(string fileName)
         {
-            (Camera, Lights, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            (Camera, Lights, GameObjects, Grid) = await SceneDescriptionIO.ParseFromXML(fileName, Services);
             // Set up the list of debug grid cells for debugging visualization
             // WARNING: Execute the following line of code if you wish to initialize the grid only once.
             // Suggested for when (constant) AVAILABLE grid cells are shown.
@@ -335,9 +332,9 @@ namespace HammeredGame.Game
                 // just adjust the scalar multiplier 1 to something greater than 1.
                 // This could prove useful, because the size of the hammer is not currently taken into account.
                 // Ideally, the "·Repetitions" variables would also be parameterized w.r.t the dimensions of the hammer.
-                int xRepetitions = (int)(Math.Ceiling(goBox.HalfWidth / sideLength) * tightness); 
+                int xRepetitions = (int)(Math.Ceiling(goBox.HalfWidth / sideLength) * tightness);
                 int yRepetitions = (int)(Math.Ceiling(goBox.HalfHeight / sideLength) * tightness);
-                int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * tightness); 
+                int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * tightness);
                 for (int i = -xRepetitions; i <= xRepetitions; ++i)
                 {
                     for (int j = -yRepetitions; j <= yRepetitions; ++j)

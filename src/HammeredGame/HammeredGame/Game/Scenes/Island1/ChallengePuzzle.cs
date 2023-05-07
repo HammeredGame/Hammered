@@ -1,6 +1,7 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.Screens;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -8,10 +9,10 @@ namespace HammeredGame.Game.Scenes.Island1
     {
         public ChallengePuzzle(GameServices services, GameScreen screen) : base(services, screen)
         { }
-        protected override void LoadContent()
+        protected override async Task LoadContent()
         {
-            base.LoadContent();
-            CreateFromXML($"Content/SceneDescriptions/Island1/ChallengePuzzle.xml");
+            await base.LoadContent();
+            await CreateFromXML($"Content/SceneDescriptions/Island1/ChallengePuzzle.xml");
         }
 
         protected override void OnSceneStart()
