@@ -345,7 +345,7 @@ namespace HammeredGame.Game
                 Model model = null;
                 if (!string.IsNullOrEmpty(modelName))
                 {
-                    model = services.GetService<ContentManager>().Load<Model>(modelName);
+                    model = services.GetService<ContentManager>().LoadAsync<Model>(modelName).Result;
                 }
                 arguments.Add(model);
 
@@ -356,7 +356,7 @@ namespace HammeredGame.Game
                 Texture2D texture = null;
                 if (!string.IsNullOrEmpty(textureName))
                 {
-                    texture = services.GetService<ContentManager>().Load<Texture2D>(textureName);
+                    texture = services.GetService<ContentManager>().LoadAsync<Texture2D>(textureName).Result;
                 }
                 arguments.Add(texture);
 
