@@ -117,7 +117,7 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.CollisionInformation.Events.ContactCreated += Events_ContactCreated;
 
                 Animations = this.Model.GetAnimations();
-                var clip_idle = Animations.Clips["Armature|Armature|Armature|idle"];
+                var clip_idle = Animations.Clips["Armature|idle"];
                 Animations.SetClip(clip_idle);
 
                 //player_sfx = Services.GetService<List<SoundEffect>>();
@@ -304,7 +304,7 @@ namespace HammeredGame.Game.GameObjects
                 if(!previously_moving)
                 {
                     // Start running animation when player starts moving
-                    var clip_run = Animations.Clips["Armature|Armature|Armature|run"];
+                    var clip_run = Animations.Clips["Armature|run"];
                     Animations.SetClip(clip_run);
                     previously_moving = true;
                     //SoundEffectInstance step = player_sfx[0].CreateInstance();
@@ -320,7 +320,7 @@ namespace HammeredGame.Game.GameObjects
                 if(previously_moving)
                 {
                     // Start idle animation when player stops moving
-                    var clip_idle = Animations.Clips["Armature|Armature|Armature|idle"];
+                    var clip_idle = Animations.Clips["Armature|idle"];
                     Animations.SetClip(clip_idle);
                     previously_moving = false;
                 }
@@ -340,18 +340,16 @@ namespace HammeredGame.Game.GameObjects
             // Play wake up animation (not optimal to handle it here...)
             if(waking_up)
             {
-                if(wakeup_time_passed < (Animations.CurrentClip.Duration * 0.9f))
+                if(wakeup_time_passed < (Animations.CurrentClip.Duration * 0.98))
                 {
                     Animations.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
                     wakeup_time_passed += gameTime.ElapsedGameTime;
                 } else
                 {
-                    // Stop wake up animation end of clip has been reached
+                    // Stop wake up animation when end of clip has been reached
                     waking_up = false;
-                    // Correct position do to wake up position offset
-                    // this.Position -= new Vector3(0, 0, 3);
                     // Start idle animation
-                    var clip_idle = Animations.Clips["Armature|Armature|Armature|idle"];
+                    var clip_idle = Animations.Clips["Armature|idle"];
                     Animations.SetClip(clip_idle);
                 }
                 
