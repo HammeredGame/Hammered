@@ -55,6 +55,8 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Hammer specific variables
+        public bool InputEnabled = true;
+
         public float hammerSpeed { get; private set; } = 70f;
         private HammerState hammerState;
 
@@ -193,11 +195,11 @@ namespace HammeredGame.Game.GameObjects
                 // is held in the correct direction.
                 Rotation = player.Rotation * Quaternion.CreateFromRotationMatrix(player.Animations.WorldTransforms[boneIndexForRightHand]) * rotationWhenHeldByPlayer;
 
-                player.playerSpeedModifier = 1.0f;
+                player.PlayerSpeedModifier = 1.0f;
             }
 
             // Get the input via keyboard or gamepad
-            if (player != null) HandleInput();
+            if (InputEnabled && player != null && screenHasFocus) HandleInput();
 
             // If hammer is called back (successfully), update its position
             // and handle interactions along the way - ending once the hammer is back with player
@@ -262,7 +264,7 @@ namespace HammeredGame.Game.GameObjects
 
                     //this.ComputeBounds();
 
-                    player.playerSpeedModifier = 0.5f;
+                    player.PlayerSpeedModifier = 0.5f;
                 }
 
                 //// Check for any collisions along the way

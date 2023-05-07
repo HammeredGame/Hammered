@@ -47,6 +47,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 await ParentGameScreen.ShowDialogueAndWait("(You hear Thor sounding happy! He'll send you home!");
                 await Services.GetService<ScriptUtils>().WaitSeconds(2);
                 await ParentGameScreen.ShowDialogueAndWait("The End! (for now)");
+                Get<Hammer>("hammer").InputEnabled = false;
             }
         }
     }

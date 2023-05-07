@@ -46,7 +46,9 @@ namespace HammeredGame.Game.Scenes.Island1
             await Services.GetService<ScriptUtils>().WaitEvent(Get<TriggerObject>("hammer_trigger"), "OnTrigger");
 
             // Disable player movement
-            Get<Player>("player1").SetActiveCamera(null);
+            //Get<Player>("player1").SetActiveCamera(null);
+            Get<Player>("player1").InputEnabled = false;
+            Get<Hammer>("hammer").InputEnabled = false;
             await ParentGameScreen.ShowDialogueAndWait("...Huh, what's that over there?");
             Camera.SetFollowTarget(Get<Hammer>("hammer"));
             await ParentGameScreen.ShowDialogueAndWait("Looks like a hammer, and I feel it... calling to me.");
@@ -67,17 +69,23 @@ namespace HammeredGame.Game.Scenes.Island1
             ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.SummonHammer }, hammerPromptTokenSource.Token);
 
             // On summon, show cut scene, hiding the prompts
+            Get<Hammer>("hammer").InputEnabled = true;
             await Services.GetService<ScriptUtils>().WaitEvent(Get<Hammer>("hammer"), "OnSummon");
             hammerPromptTokenSource.Cancel();
 
             // Temporarily take away player controls
-            Get<Player>("player1").SetActiveCamera(null);
+            //Get<Player>("player1").SetActiveCamera(null);
+            Get<Player>("player1").InputEnabled = false;
             await SummonCutScene();
-            Get<Player>("player1").SetActiveCamera(Camera);
+            //Get<Player>("player1").SetActiveCamera(Camera);
+            Get<Player>("player1").InputEnabled = true;
             Camera.SetFollowTarget(Get<Player>("player1"));
 
+            //Get<Hammer>("hammer").InputEnabled = false;
             await ParentGameScreen.ShowDialogueAndWait("Sweet! A hammer I can summon!?");
             await ParentGameScreen.ShowDialogueAndWait("I've got no memory of why I'm here but hey,\nI have a... hammer!");
+
+            //Get<Hammer>("hammer").InputEnabled = true;
 
             // Now show prompts for dropping too
             hammerPromptTokenSource = new();
