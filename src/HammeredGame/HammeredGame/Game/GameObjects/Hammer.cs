@@ -502,7 +502,7 @@ namespace HammeredGame.Game.GameObjects
 
         private void UpdateQuadraticBezierPosition()
         {
-            t += 0.010f;
+            t += 0.012f;
             var previousPosition = this.Entity.Position;
             this.Entity.Position = BezierQuadraticSpline.QuadraticBezierPosition(p0, p1, p2, t);
             var temp = this.Entity.Position - previousPosition; temp.Normalize(); temp *= hammerSpeed;
