@@ -350,6 +350,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
             catch (System.ArgumentNullException e) // There is no path from the current grid cell towards the destination
             {
                 int step;
+                var gridDimensions = this.GetDimensions(); // Used for handling edge cases of neighbours.
 
                 // Initializing required data structures.
                 step = 0;
@@ -366,9 +367,9 @@ namespace HammeredGame.Game.PathPlanning.Grid
                             if (Math.Abs(width) == step || Math.Abs(depth) == step) // Care only for the layer that is currently explored.
                             {
                                 uint[] neighbourCellIndex = {
-                                Convert.ToUInt32(startCellIndex[0] + width),
+                                Convert.ToUInt32(Math.Min(Math.Max(0, startCellIndex[0] + width), gridDimensions[0]-1)),
                                 startCellIndex[1],
-                                Convert.ToUInt32(startCellIndex[2] + depth)
+                                Convert.ToUInt32(Math.Min(Math.Max(0, startCellIndex[2] + depth), gridDimensions[2]-1))
                             };
                                 // WARNING: This will produce errors in cases where there are obstruced obstacles at the boundary
                                 // of the grid (out of bounds error).
@@ -417,9 +418,9 @@ namespace HammeredGame.Game.PathPlanning.Grid
                             if (Math.Abs(width) == step || Math.Abs(depth) == step) // Care only for the layer that is currently explored.
                             {
                                 uint[] neighbourCellIndex = {
-                                Convert.ToUInt32(finishCellIndex[0] + width),
+                                Convert.ToUInt32(Math.Min(Math.Max(0,finishCellIndex[0] + width), gridDimensions[0]-1)),
                                 finishCellIndex[1],
-                                Convert.ToUInt32(finishCellIndex[2] + depth)
+                                Convert.ToUInt32(Math.Min(Math.Max(0, finishCellIndex[2] + depth), gridDimensions[2]-1))
                             };
                                 // WARNING: This will produce errors in cases where there are obstruced obstacles at the boundary
                                 // of the grid (out of bounds error).
