@@ -5,11 +5,6 @@ using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Screens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island1
 {

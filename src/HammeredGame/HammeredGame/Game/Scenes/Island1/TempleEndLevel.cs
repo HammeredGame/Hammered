@@ -27,6 +27,13 @@ namespace HammeredGame.Game.Scenes.Island1
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
             Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
 
+            // MANUALLY setting areas of the level/scenethe to be unavailable for path routing.
+            // Such areas include the floor and the walls of the temple.
+            // The player may decide to deviate from the main story (i.e. drop the hammer to the temple)
+            // and instead intends to "play around" the scene.
+            SetInaccessible();
+
+
             await ParentGameScreen.ShowDialogueAndWait("A temple with a huge statue of a hammer...\nGee, I wonder which god this is for.");
             await ParentGameScreen.ShowDialogueAndWait("Let's hurry up and drop off the hammer!");
             
@@ -48,6 +55,68 @@ namespace HammeredGame.Game.Scenes.Island1
                 await Services.GetService<ScriptUtils>().WaitSeconds(2);
                 await ParentGameScreen.ShowDialogueAndWait("The End! (for now)");
             }
+        }
+
+        // Consider making this function (with perhaps a more fitting signature name) an abstract function
+        // which may optionally be implemented in each scene class.
+        // The default implementation should be <c>return;</c> (a.k.a. "do nothing").
+        void SetInaccessible()
+        {
+            // Floor
+            Microsoft.Xna.Framework.Vector3 wallStart = new(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z),
+                wallFinish = new(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+
+            const float lowestBrickHeight = 3.0f;
+
+            // Wall 1 (right of hammer statue):
+            wallStart = new(269.0f, this.Grid.originPoint.Y, -264.0f);
+            wallFinish = new(273.0f, 40.0f, -139.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+
+            // Wall 2 (behind the hammer statue) PART 1:
+            wallStart = new(210.0f, this.Grid.originPoint.Y, -264.0f);
+            wallFinish = new(273.0f, 40.0f, -264.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+            // Wall 2 (behind the hammer statue) PART 2:
+            wallStart = new(172.0f, this.Grid.originPoint.Y, -260.0f);
+            wallFinish = new(210.0f, lowestBrickHeight, -260.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+            // Wall 2 (behind the hammer statue) PART 3:
+            wallStart = new(150.0f, this.Grid.originPoint.Y, -260.0f);
+            wallFinish = new(172.0f, 40.0f, -260.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+
+            // Wall 3 (left of the hammer statue) PART 1:
+            wallStart = new(142.0f, this.Grid.originPoint.Y, -260.0f);
+            wallFinish = new(142.0f, 40.0f, -178.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+            // Wall 3 (left of the hammer statue) PART 2:
+            wallStart = new(142.0f, this.Grid.originPoint.Y, -178.0f);
+            wallFinish = new(142.0f, lowestBrickHeight + this.Grid.sideLength, -140.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+
+            // Wall 4 (front of the hammer statue, main entrance) PART 1
+            wallStart = new(142.0f, this.Grid.originPoint.Y, -140.0f);
+            wallFinish = new(182.0f, lowestBrickHeight + this.Grid.sideLength, -140.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+            // Wall 4 (front of the hammer statue, main entrance) PART 2
+            wallStart = new(230.0f, this.Grid.originPoint.Y, -140.0f);
+            wallFinish = new(270.0f, lowestBrickHeight + this.Grid.sideLength, -140.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+
+            // Gate (front of the hammer statue, main entrance) LEFT COLUMN
+            wallStart = new(190.0f, this.Grid.originPoint.Y, -140.0f);
+            wallFinish = new(190.0f, this.Grid.endPoint.Y, -140.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+            // Gate (front of the hammer statue, main entrance) ARC
+            wallStart = new(190.0f, this.Grid.endPoint.Y - this.Grid.sideLength, -140.0f);
+            wallFinish = new(220.0f, this.Grid.endPoint.Y - this.Grid.sideLength, -140.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+            // Gate (front of the hammer statue, main entrance) RIGHT COLUMN
+            wallStart = new(220.0f, this.Grid.originPoint.Y, -140.0f);
+            wallFinish = new(220.0f, this.Grid.endPoint.Y, -140.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
         }
     }
 }
