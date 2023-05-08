@@ -241,6 +241,12 @@ namespace HammeredGame.Game.Screens
             // events) to the one with the hover index.
             Desktop.FocusedKeyboardWidget = MenuWidgets[HoverIndex];
 
+            // Whenever a widget gets new keyboard focus, we should play a sound
+            Desktop.WidgetGotKeyboardFocus += (s, a) =>
+            {
+                PlaySFX("Audio/UI/selection_change", 0.7f);
+            };
+
             // Pre-calculate layout once, so we know the width of the text to draw the background for
             Desktop.UpdateLayout();
 
@@ -413,7 +419,6 @@ namespace HammeredGame.Game.Screens
                     if (index == HoverIndex && label.Text[0] != '>')
                     {
                         // This is an item that's hovered but wasn't hovered before
-                        PlaySFX("Audio/UI/selection_change", 0.7f);
                         label.Text = "> " + label.Text;
                         label.TextColor = new Color(246, 101, 255);
                     }
