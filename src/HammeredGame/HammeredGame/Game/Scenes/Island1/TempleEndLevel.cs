@@ -62,10 +62,17 @@ namespace HammeredGame.Game.Scenes.Island1
         // The default implementation should be <c>return;</c> (a.k.a. "do nothing").
         void SetInaccessible()
         {
-            // Floor
-            Microsoft.Xna.Framework.Vector3 wallStart = new(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z),
-                wallFinish = new(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
-            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+            Microsoft.Xna.Framework.Vector3 wallStart, wallFinish;
+
+            //// Floor
+            //wallStart = new(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z),
+            //wallFinish = new(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
+            //this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+
+            // Not worth doing the hammer. The particular level can lead to unwanted behaviour.
+            // If the hammer is dropped at the very edge of the map, and the character distances themselves
+            // sufficiently away from the shore, then the hammer cannot return to the character.
+            // Functionality is preferred over completeness.
 
             const float lowestBrickHeight = 3.0f;
 
