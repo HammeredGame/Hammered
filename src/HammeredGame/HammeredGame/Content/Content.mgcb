@@ -142,17 +142,17 @@
 /processorParam:Quality=Best
 /build:Audio/tree_fall.wav
 
-#begin Audio/UI/selection_change.ogg
-/importer:OggImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/UI/selection_change.ogg
-
-#begin Audio/UI/selection_confirm.mp3
+#begin Audio/UI/selection_change.mp3
 /importer:Mp3Importer
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Audio/UI/selection_confirm.mp3
+/build:Audio/UI/selection_change.mp3
+
+#begin Audio/UI/selection_confirm.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/UI/selection_confirm.ogg
 
 #begin awesome_goal_texture.jpg
 /importer:TextureImporter

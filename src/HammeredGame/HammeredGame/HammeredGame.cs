@@ -109,6 +109,8 @@ namespace HammeredGame
             //initialize audio manager
             audioManager = new AudioManager(this);
 
+            SoundEffect.MasterVolume = 0.2f;
+
             // Initialize ImGui's internal renderer and build its font atlas
             imGuiRenderer = new ImGuiRenderer(this);
             imGuiRenderer.RebuildFontAtlas();
