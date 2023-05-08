@@ -90,21 +90,33 @@ namespace HammeredGame.Game
             this.ParentGameScreen = screen;
         }
 
-        public async Task LoadContentAsync()
+        /// <summary>
+        /// Load the scene contents and mark it as IsLoaded. This is a public wrapper for <see
+        /// cref="LoadSceneContent(IProgress{int})"/>, which individual scenes can override without
+        /// worrying about setting IsLoaded after everything.
+        /// </summary>
+        /// <param name="progress">For reporting progress back, as an integer from 0 to 100</param>
+        /// <returns>An awaitable task with progress percentage being returned in "progress"</returns>
+        public async Task LoadContentAsync(IProgress<int> progress)
         {
-            await LoadContent();
+            // Before loading XMLs or creating assets, initialize the physics Space since they might
+            // need it
+            InitNewSpace();
+            await LoadSceneContent(progress);
+            // Mark the scene as loaded and ready to be Update()-ed.
             IsLoaded = true;
         }
 
-        protected async virtual Task LoadContent()
-        {
-            InitNewSpace();
-        }
+        /// <summary>
+        /// For individual scenes to override, and create objects, initialize maps from XML, etc.
+        /// </summary>
+        /// <param name="progress"></param>
+        /// <returns></returns>
+        protected async virtual Task LoadSceneContent(IProgress<int> progress) {}
 
         /// <summary>
-        /// Script to run after loading the scene description. Called during the first Update()
-        /// after the scene has fully finished loading. Any initialization before this should be
-        /// done in LoadContent().
+        /// Script that is called during the first Update() after the scene has fully finished
+        /// loading. Any initialization before this should be done in <see cref="LoadSceneContent(IProgress{int})"/>.
         /// </summary>
         protected abstract void OnSceneStart();
 
@@ -190,14 +202,16 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Initialize the scene from the XML scene description. This will set up the Camera and the
-        /// GameObjects. An XML scene description will not contain any game scripts or triggers.
+        /// Initialize the scene from the XML scene description. This will set up the various
+        /// components of a scene. An XML scene description will not contain any game scripts or
+        /// triggers. Since this is an asynchronous function that takes quite a while and we'd like
+        /// to know the progress of (for loading screens), we take an IProgress as input.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="fileName"></param>
-        public async Task CreateFromXML(string fileName)
+        /// <param name="fileName">The filename to load</param>
+        /// <param name="progress">For reporting progress back, as an integer from 0 to 100</param>
+        public async Task CreateFromXML(string fileName, IProgress<int> progress)
         {
-            (Camera, Lights, GameObjects, Grid) = await SceneDescriptionIO.ParseFromXML(fileName, Services);
+            (Camera, Lights, GameObjects, Grid) = await SceneDescriptionIO.ParseFromXML(fileName, Services, progress);
             // Set up the list of debug grid cells for debugging visualization
             // WARNING: Execute the following line of code if you wish to initialize the grid only once.
             // Suggested for when (constant) AVAILABLE grid cells are shown.
@@ -471,9 +485,17 @@ namespace HammeredGame.Game
                 {
                     // Clear the scene objects and the physics space
                     Clear();
-                    CreateFromXML(result.Path);
-                    // Re-run the scene start script
-                    OnSceneStart();
+                    Task.Run(async () =>
+                    {
+                        // Reset the loaded and started flags so we don't render + we don't call
+                        // Update() while we load
+                        IsLoaded = false;
+                        SceneStarted = false;
+                        // Pass in a dummy progress reporter
+                        var progress = new Progress<int>(_ => { });
+                        await CreateFromXML(result.Path, progress);
+                        IsLoaded = true;
+                    });
                 }
             }
 

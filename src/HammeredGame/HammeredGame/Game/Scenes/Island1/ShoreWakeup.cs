@@ -16,10 +16,10 @@ namespace HammeredGame.Game.Scenes.Island1
         public ShoreWakeup(GameServices services, GameScreen screen) : base(services, screen)
         { }
 
-        protected override async Task LoadContent()
+        protected override async Task LoadSceneContent(IProgress<int> progress)
         {
-            await base.LoadContent();
-            await CreateFromXML($"Content/SceneDescriptions/Island1/ShoreWakeup_voxel.xml");
+            await base.LoadSceneContent(progress);
+            await CreateFromXML($"Content/SceneDescriptions/Island1/ShoreWakeup_voxel.xml", progress);
         }
 
         protected override async void OnSceneStart()

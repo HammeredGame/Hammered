@@ -6,6 +6,7 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immovabl
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,10 +19,10 @@ namespace HammeredGame.Game.Scenes.Island1
 
         public TwoIslandPuzzle(GameServices services, GameScreen screen) : base(services, screen)
         { }
-        protected override async Task LoadContent()
+        protected override async Task LoadSceneContent(IProgress<int> progress)
         {
-            await base.LoadContent();
-            await CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml");
+            await base.LoadSceneContent(progress);
+            await CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml", progress);
         }
 
         protected override void OnSceneStart()

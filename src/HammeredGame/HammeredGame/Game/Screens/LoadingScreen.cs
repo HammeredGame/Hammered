@@ -15,8 +15,13 @@ namespace HammeredGame.Game.Screens
         private Texture2D whiteRectangle;
         private Color backgroundColor;
 
-        private TimeSpan lastTick = TimeSpan.Zero;
+        public int Progress;
         private Label text;
+
+        public Progress<int> ReportProgress
+        {
+            get { return new Progress<int>(i => this.Progress = i); }
+        }
 
         public LoadingScreen()
         {
@@ -69,11 +74,7 @@ namespace HammeredGame.Game.Screens
         {
             base.Update(gameTime);
 
-            if (gameTime.TotalGameTime > lastTick + TimeSpan.FromMilliseconds(500))
-            {
-                text.Text += ".";
-                lastTick = gameTime.TotalGameTime;
-            }
+            text.Text = Progress.ToString();
 
             Desktop.UpdateInput();
             Desktop.UpdateLayout();

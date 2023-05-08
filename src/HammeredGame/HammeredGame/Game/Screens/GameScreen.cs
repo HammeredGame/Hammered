@@ -154,9 +154,18 @@ namespace HammeredGame.Game.Screens
 
             ScreenManager.AddScreen(loadingScreen);
             Scene temporaryScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
-            temporaryScene.LoadContentAsync()
-                .ContinueWith(_ => GameServices.GetService<ScriptUtils>().WaitNextUpdate())
+            temporaryScene
+                // Pass a progress reporting function to retrieve the asynchronous progress
+                .LoadContentAsync(progress: loadingScreen.ReportProgress)
+                // Make sure we run in the next update synchronously since we will be overwriting
+                // currentScene and also removing the loading screen (which we don't want to do in a
+                // Draw). This is necessary because .ContinueWith can run in an asynchronous thread
+                // of its own.
                 .ContinueWith(_ => {
+                    GameServices.GetService<ScriptUtils>().WaitNextUpdate();
+                    // Reset the progress so that there isn't a flash of 100 the next time we show it
+                    loadingScreen.Progress = 0;
+
                     currentScene = temporaryScene;
                     loadingScreen.ExitScreen(false);
                 });
