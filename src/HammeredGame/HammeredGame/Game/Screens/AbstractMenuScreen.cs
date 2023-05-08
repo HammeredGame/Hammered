@@ -148,7 +148,13 @@ namespace HammeredGame.Game.Screens
                 // explicitly copy it to a different variable. If we use i as-is, it will always
                 // contain the last index value because the lambda is evaluated at a later point.
                 var capturedIndex = i;
-                menuItem.MouseEntered += (s, a) => HoverIndex = capturedIndex;
+                menuItem.MouseEntered += (s, a) =>
+                {
+                    HoverIndex = capturedIndex;
+                    // Set the currently focused widget (nothing visual, but for receiving the KeyDown
+                    // events) to the one with the hover index.
+                    Desktop.FocusedKeyboardWidget = MenuWidgets[HoverIndex];
+                };
 
                 // We play the sound effect on mouse click press
                 menuItem.TouchDown += (s, a) => PlaySFX("Audio/UI/selection_confirm", 1);
@@ -231,10 +237,9 @@ namespace HammeredGame.Game.Screens
                 Root = menuContainer
             };
 
-            // Make main menu permanently hold keyboard focus as long as it's the active screen, by
-            // canceling the lose-keyboard-focus event when necessary. I'm not really sure if this
-            // does anything, but it's safer than nothing.
-            Desktop.WidgetLosingKeyboardFocus += (s, a) => a.Cancel = HasFocus;
+            // Set the currently focused widget (nothing visual, but for receiving the KeyDown
+            // events) to the one with the hover index.
+            Desktop.FocusedKeyboardWidget = MenuWidgets[HoverIndex];
 
             // Pre-calculate layout once, so we know the width of the text to draw the background for
             Desktop.UpdateLayout();
@@ -340,6 +345,10 @@ namespace HammeredGame.Game.Screens
             // allow one whole loop before stopping (<= instead of <) to make sure we don't end up
             // setting HoverIndex to the one before the current position.
             while (!MainMenu.Widgets[HoverIndex].Enabled && i <= MainMenu.Widgets.Count);
+
+            // Set the currently focused widget (nothing visual, but for receiving the KeyDown
+            // events) to the one with the hover index.
+            Desktop.FocusedKeyboardWidget = MainMenu.Widgets[HoverIndex];
         }
 
         public override void Update(GameTime gameTime)
@@ -375,26 +384,22 @@ namespace HammeredGame.Game.Screens
             TimeSpan scrollCooldown = TimeSpan.FromMilliseconds(500);
             if (UserAction.MenuItemUp.Pressed(input))
             {
-                // Remove one from HoverIndex and wrap around
-                HoverIndex = (HoverIndex + MainMenu.Widgets.Count - 1) % MainMenu.Widgets.Count;
+                MoveHover(-1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
             else if (UserAction.MenuItemUp.Held(input) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
             {
-                // Remove one from HoverIndex and wrap around
-                HoverIndex = (HoverIndex + MainMenu.Widgets.Count - 1) % MainMenu.Widgets.Count;
+                MoveHover(-1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
             else if (UserAction.MenuItemDown.Pressed(input))
             {
-                // Add one to HoverIndex and wrap around
-                HoverIndex = (HoverIndex + 1) % MainMenu.Widgets.Count;
+                MoveHover(1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
             else if (UserAction.MenuItemDown.Held(input) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
             {
-                // Add one to HoverIndex and wrap around
-                HoverIndex = (HoverIndex + 1) % MainMenu.Widgets.Count;
+                MoveHover(1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
 
