@@ -118,6 +118,7 @@ namespace HammeredGame
             // Add useful game services that might want to be accessed globally
             gameServices.AddService<HammeredGame>(this);
             gameServices.AddService<GraphicsDevice>(gpu);
+            gameServices.AddService<GraphicsDeviceManager>(graphics);
             gameServices.AddService<SpriteBatch>(spriteBatch);
             gameServices.AddService<Input>(input);
             gameServices.AddService<ContentManager>(Content);
