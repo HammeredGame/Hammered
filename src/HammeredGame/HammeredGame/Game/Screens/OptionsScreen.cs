@@ -134,6 +134,10 @@ namespace HammeredGame.Game.Screens
                 // by simulating the KeyDown event through calling OnKeyDown(Left) or OnKeyDown(Right).
                 if (a.Data == Microsoft.Xna.Framework.Input.Keys.Left)
                 {
+                    // We should play the confirmation sound when changing values via keyboard,
+                    // because this is the sound played when clicking/confirming too.
+                    PlaySFX("Audio/UI/selection_confirm", 0.7f);
+
                     // Same procedure as the click event, although since it is a decrement, we add
                     // (max - min + 1) to make sure we don't go into negatives.
                     optionToggle.Tag = ((int)optionToggle.Tag - 1 - min + (max - min + 1)) % (max - min + 1) + min;
@@ -142,6 +146,10 @@ namespace HammeredGame.Game.Screens
                 }
                 else if (a.Data == Microsoft.Xna.Framework.Input.Keys.Right)
                 {
+                    // We should play the confirmation sound when changing values via keyboard,
+                    // because this is the sound played when clicking/confirming too.
+                    PlaySFX("Audio/UI/selection_confirm", 0.7f);
+
                     optionToggle.Tag = ((int)optionToggle.Tag + 1 - min + (max - min + 1)) % (max - min + 1) + min;
                     optionToggle.Text = displayer((int)optionToggle.Tag);
                     setter((int)optionToggle.Tag);
@@ -187,8 +195,6 @@ namespace HammeredGame.Game.Screens
                 {
                     if (index == HoverIndex && toggleLabel.Text[0] != '>')
                     {
-                        // This is an item that's hovered but wasn't hovered before
-                        PlaySFX("Audio/UI/selection_change", 0.7f);
                         toggleLabel.Text = "> " + toggleLabel.Text;
                         toggleLabel.TextColor = new Color(246, 101, 255);
                     }
