@@ -65,7 +65,11 @@ namespace HammeredGame.Game.Scenes.Island1
             this.UpdateSceneGrid(Get<Wall>("wall2"), false, 0.9);
             this.UpdateSceneGrid(Get<Wall>("wall3"), false, 0.9);
 
-            // No further initialization required for the <c>UniformGrid</c> instance.
+            // Insert any limitations on the paths the hammer may travel by calling functions from the <c>UniformGrid</c> instance.
+            Vector3 floorDisableStart = new Vector3(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z);
+            Vector3 floorDisableFinish = new Vector3(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
+            this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
+
 
             CancellationTokenSource doorInteractTokenSource = new();
             Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>

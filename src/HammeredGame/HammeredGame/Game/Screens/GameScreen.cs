@@ -81,8 +81,6 @@ namespace HammeredGame.Game.Screens
             MediaPlayer.Volume = 0.1f;
             MediaPlayer.Play(bgMusic);
 
-            SoundEffect.MasterVolume = 0.2f;
-
             // Preload the pause screen, so that adding the pause screen to the screen stack doesn't
             // call LoadContent every time (which lags because it has to loads fonts and create the
             // UI layout)
