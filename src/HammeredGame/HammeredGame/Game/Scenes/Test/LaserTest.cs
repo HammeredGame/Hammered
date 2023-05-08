@@ -2,6 +2,7 @@
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.Screens;
+using System;
 using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Test
@@ -11,10 +12,10 @@ namespace HammeredGame.Game.Scenes.Test
         public LaserTest(GameServices services, GameScreen screen) : base(services, screen)
         { }
 
-        protected override async Task LoadContent()
+        protected override async Task LoadSceneContent(IProgress<int> progress)
         {
-            await base.LoadContent();
-            await CreateFromXML($"Content/SceneDescriptions/Test/LaserTest.xml");
+            await base.LoadSceneContent(progress);
+            await CreateFromXML($"Content/SceneDescriptions/Test/LaserTest.xml", progress);
         }
 
         protected override void OnSceneStart()

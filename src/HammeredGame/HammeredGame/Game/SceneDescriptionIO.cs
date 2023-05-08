@@ -135,13 +135,14 @@ namespace HammeredGame.Game
         /// <param name="services">
         /// Core game services, used to load content and to be passed to the game objects
         /// </param>
+        /// <param name="progress">For reporting progress back, as an integer from 0 to 100</param>
         /// <exception cref="Exception">Raised if the XML file could not be loaded</exception>
         /// <remarks>
         /// WARNING: A quick patch is implemented for parsing the grid of the scene, necessary for
-        ///          the path planning. There could be better ways to implement it better. Adding
-        /// more and more explicit outputs in the definition of the function is not maintenance-friendly.
+        /// the path planning. There could be better ways to implement it better. Adding more and
+        /// more explicit outputs in the definition of the function is not maintenance-friendly.
         /// </remarks>
-        public static async Task<(Camera, SceneLightSetup, OrderedDictionary<string, GameObject>, UniformGrid grid)> ParseFromXML(string filePath, GameServices services)
+        public static async Task<(Camera, SceneLightSetup, OrderedDictionary<string, GameObject>, UniformGrid grid)> ParseFromXML(string filePath, GameServices services, IProgress<int> progress)
         {
             System.Diagnostics.Debug.WriteLine("Parsing XML from " + Thread.CurrentThread.ManagedThreadId);
             var loadedXML = File.ReadAllText(filePath, Encoding.UTF8);
@@ -156,9 +157,8 @@ namespace HammeredGame.Game
             Camera cam = GetCamera(xml, services);
             UniformGrid grid = await GetUniformGrid(xml);
             SceneLightSetup lights = GetLightSetup(xml);
-            System.Diagnostics.Debug.WriteLine("load!");
-            OrderedDictionary<string, GameObject> objs = await GetGameObjects(xml, services);
-            System.Diagnostics.Debug.WriteLine("donesies!");
+            OrderedDictionary<string, GameObject> objs = await GetGameObjects(xml, services, progress);
+
             return (cam, lights, objs, grid);
         }
 
@@ -221,16 +221,21 @@ namespace HammeredGame.Game
 
 
         /// <summary>
-        /// Identify the single top-level "uniform_grid" tag, parse it and return it as an instantiated <c>UniformGrid</c> object.
-        /// <see cref="UniformGrid"/>
+        /// Identify the single top-level "uniform_grid" tag, parse it and return it as an
+        /// instantiated <c>UniformGrid</c> object. <see cref="UniformGrid"/> This function is
+        /// expensive as the UniformGrid constructor is also expensive -- it is await-able for that reason.
         /// </summary>
-        /// <param name="targetXML">The XML document from which the required data is extracted. <see cref="ParseFromXML(string, GameServices)"/></param>
-        ///
+        /// <param name="targetXML">
+        /// The XML document from which the required data is extracted. <see
+        /// cref="ParseFromXML(string, GameServices)"/>
+        /// </param>
         /// <remarks>
-        /// 1) The current implementation utilizes the constructor <see cref="UniformGrid.UniformGrid(Vector3, Vector3, float)"/>
-        /// 2) TODO: Make it possible to create an object using different constructors. Risk severity assessment: Level 4 (Negligible)
-        ///         This feature allows the user (XML writer) to be more versatile about how they go about writing the definition of
-        ///         the grid, taking advantage of the different constructors of the class <see cref="UniformGrid"/>.
+        /// 1) The current implementation utilizes the constructor <see
+        ///    cref="UniformGrid.UniformGrid(Vector3, Vector3, float)"/>
+        /// 2) TODO: Make it possible to create an object using different constructors. Risk
+        /// severity assessment: Level 4 (Negligible) This feature allows the user (XML writer) to
+        /// be more versatile about how they go about writing the definition of the grid, taking
+        /// advantage of the different constructors of the class <see cref="UniformGrid"/>.
         /// </remarks>
         private static async Task<UniformGrid> GetUniformGrid(XDocument targetXML)
         {
@@ -246,8 +251,7 @@ namespace HammeredGame.Game
             Vector3 topRightAwayPoint = Parse<Vector3>(uniformGridElement.Descendants("top_right_away").Single().Value); // i)
             float sideLength = Parse<float>(uniformGridElement.Descendants("side_length").Single().Value); // ii)
 
-            // Instantiate the <c>UniformGrid</c> object.
-
+            // Instantiate the <c>UniformGrid</c> object in a separate thread and await for it.
             return await Task.Run(() => new UniformGrid(bottomLeftClosePoint, topRightAwayPoint, sideLength));
         }
 
@@ -311,15 +315,20 @@ namespace HammeredGame.Game
         /// <param name="services">
         /// Core game services used to load assets and to pass to objects' constructors
         /// </param>
+        /// <param name="progress">For reporting progress back, as an integer from 0 to 100</param>
         /// <returns>A dictionary of unique IDs and parsed GameObjects</returns>
         /// <exception cref="Exception">When some trouble arises trying to create the object</exception>
-        private static async Task<OrderedDictionary<string, GameObject>> GetGameObjects(XDocument targetXML, GameServices services)
+        private static async Task<OrderedDictionary<string, GameObject>> GetGameObjects(XDocument targetXML, GameServices services, IProgress<int> progress)
         {
             // Maintain a map of named objects (those with attribute "id") so that we can reference
             // them and use them as arguments to constructors if needed in the future. This is used
             // for example for keys and doors, where the door needs to be present first in the XML
             // with an id, and then when parsing the key we'd have access to that.
             var namedObjects = new OrderedDictionary<string, GameObject>();
+
+            // We will report back our progress as the percentage loaded out of the total number of objects
+            int totalObjectCount = targetXML.Root.Descendants("object").Count();
+            int i = 0;
 
             foreach (var obj in targetXML.Root.Descendants("object"))
             {
@@ -397,6 +406,10 @@ namespace HammeredGame.Game
                     }
                     namedObjects.Add(nameCandidate, instance);
                 }
+
+                // Increment the number of objects completed, and report back progress
+                i++;
+                progress.Report(i * 100 / totalObjectCount);
             }
             return namedObjects;
         }
