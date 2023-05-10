@@ -96,19 +96,7 @@ namespace HammeredGame.Core
             {
                 Screen screen = screensWorkingCopy[i];
 
-                // Screens that are transitioning should not get focus even if they otherwise would,
-                // so we add another condition on top of hasFocus when passing the focus. This is
-                // because players could potentially mess around with the previous screen
-                // mid-transition and negate what is about to happen (e.g. press a different
-                // button). It's also safer to disable input focus for the new screen too because
-                // not everything is shown and input could be unpredictable. What this
-                // implementation means is that no screens will have input focus when something is
-                // transitioning in over another screen (because the one below will not get focus
-                // due to the something-is-above-me conditional, and the one above is mid-transition).
-                screen.UpdateWithPrelude(
-                    gameTime,
-                    hasFocus && screen.State != ScreenState.TransitionIn && screen.State != ScreenState.TransitionOut,
-                    isCoveredByNonPartialScreen);
+                screen.UpdateWithPrelude(gameTime, hasFocus, isCoveredByNonPartialScreen);
 
                 // If the screen is drawn in some amount (even mid-transition), then mark it as
                 // having stolen focus from the rest of the stack, unless it passes through focus

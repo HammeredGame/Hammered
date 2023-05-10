@@ -103,9 +103,8 @@ namespace HammeredGame.Core
         /// <param name="isCoveredByNonPartialScreen">
         /// Whether a non-partial screen exists above this
         /// </param>
-        public void UpdateWithPrelude(GameTime gameTime, bool hasFocus, bool isCoveredByNonPartialScreen) {
-            this.HasFocus = hasFocus;
-
+        public void UpdateWithPrelude(GameTime gameTime, bool hasFocus, bool isCoveredByNonPartialScreen)
+        {
             // The screen is marked to exit by ExitScreen(), we should transition off and remove
             // ourselves from the screen manager when done.
             if (isNowExiting)
@@ -169,6 +168,19 @@ namespace HammeredGame.Core
                     State = ScreenState.TransitionIn;
                 }
             }
+
+            // If we are transitioning, we should not get focus even if we otherwise would, so we
+            // add another condition on top of hasFocus when setting the focus. For the outward
+            // transition, this is justified because otherwise players could potentially mess around
+            // with the previous screen mid-transition and negate what is about to happen (e.g.
+            // press a different button). Disabling focus during inward transition is also justified
+            // because not everything is shown and input could be unpredictable.
+            //
+            // This piece of conditionals needs to be performed here, after the change in States
+            // above, instead of for example, in the caller of this function (in ScreenManager). We
+            // need to use the latest state as a result of this particular Update, because otherwise
+            // we may have one frame with input focus before the inward transition starts.
+            this.HasFocus = hasFocus && State != ScreenState.TransitionIn && State != ScreenState.TransitionOut;
 
             Update(gameTime);
         }
