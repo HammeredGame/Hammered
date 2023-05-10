@@ -103,6 +103,17 @@ namespace HammeredGame.Game
             // need it
             InitNewSpace();
             await LoadSceneContent(progress);
+
+            // Perform one time-step update of the physics space here since the very first call to
+            // Update() after adding all the entities seems to be taking around 200ms and noticeably
+            // lagging, and there's probably no disadvantage to doing it once while loading to
+            // smoothen the gameplay.
+            //
+            // Note how we have to switch to the main UI thread because bepuphysics can freeze if
+            // it's updated from multiple threads.
+            await Services.GetService<ScriptUtils>().WaitNextUpdate();
+            Space.Update();
+
             // Mark the scene as loaded and ready to be Update()-ed.
             IsLoaded = true;
         }
