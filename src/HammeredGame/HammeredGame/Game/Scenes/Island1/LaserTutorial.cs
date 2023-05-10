@@ -32,9 +32,9 @@ namespace HammeredGame.Game.Scenes.Island1
 
             // Set laser to desired length within level
             Laser laser1 = Get<Laser>("laser1");
-            laser1.SetLaserDefaultScale(15.0f);
+            laser1.SetLaserDefaultScale(10.0f);
             Laser laser2 = Get<Laser>("laser2");
-            laser2.SetLaserDefaultScale(15.0f);
+            laser2.SetLaserDefaultScale(12.0f);
 
             MoveBlock rock1 = Get<MoveBlock>("rock1");
             //MoveBlock rock2 = Get<MoveBlock>("rock2");
@@ -47,6 +47,23 @@ namespace HammeredGame.Game.Scenes.Island1
             laser2.Entity.CollisionInformation.CollisionRules.Group= laserRockGroup;
             rock1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
             //rock2.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+
+            foreach (var gO in GameObjectsList)
+            {
+                // Check for rocks in the scene
+                var rock = gO as MoveBlock;
+                if (rock != null)
+                {
+                    rock.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+                }
+
+                // Check for walls in the scene
+                var wall = gO as Wall;
+                if (wall != null)
+                {
+                    this.UpdateSceneGrid(wall, false, 0.9);
+                }
+            }
 
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
