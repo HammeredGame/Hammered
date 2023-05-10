@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
+using Pleasing;
 using System;
 
 namespace HammeredGame.Game.Screens
@@ -15,7 +16,7 @@ namespace HammeredGame.Game.Screens
         protected Desktop Desktop;
         private SpriteBatch spriteBatch;
         private Texture2D whiteRectangle;
-        private Color backgroundColor;
+        private TweenTimeline transitionTimeline;
 
         public int Progress;
         private Label text;
@@ -30,7 +31,7 @@ namespace HammeredGame.Game.Screens
 
         public LoadingScreen()
         {
-            IsPartial = false;
+            IsPartial = true;
             PassesFocusThrough = false;
         }
 
@@ -117,6 +118,74 @@ namespace HammeredGame.Game.Screens
         {
             Progress = 0;
             progressBar.Value = 0;
+            animatedStripeEffect.Parameters["TransitionInProgress"].SetValue(0);
+            animatedStripeEffect.Parameters["TransitionOutProgress"].SetValue(0);
+        }
+
+        /// <summary>
+        /// Inward transition. On the first call to this function, it will set up a tween for the
+        /// stripe shader's TransitionInProgress property and a fade for the UI (with the progress
+        /// bar and Loading text), and will keep returning false until this tween is completed.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="firstCall"></param>
+        /// <returns></returns>
+        public override bool UpdateTransitionIn(GameTime gameTime, bool firstCall)
+        {
+            base.UpdateTransitionIn(gameTime, firstCall);
+
+            if (firstCall)
+            {
+                transitionTimeline = Tweening.NewTimeline();
+                transitionTimeline
+                    .AddFloat(0, f => animatedStripeEffect.Parameters["TransitionInProgress"].SetValue(f))
+                    .AddFrame(300, 1f, Easing.Quadratic.Out);
+                // Fade the UI too because otherwise the text and loading bar will appear abruptly
+                // before the background transition is completed
+                transitionTimeline
+                    .AddFloat(0, f => Desktop.Opacity = f)
+                    .AddFrame(200, 0f)
+                    .AddFrame(300, 1f);
+                return false;
+            }
+
+            return transitionTimeline.State == TweenState.Stopped;
+        }
+
+        /// <summary>
+        /// Outward transition. On the first call to this function, it will set up a tween for the
+        /// stripe shader's TransitionOutProgress property and a fade for the UI (with the progress
+        /// bar and Loading text), and will keep returning false until this tween is completed.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="firstCall"></param>
+        /// <returns></returns>
+        public override bool UpdateTransitionOut(GameTime gameTime, bool firstCall)
+        {
+            base.UpdateTransitionOut(gameTime, firstCall);
+
+            if (firstCall)
+            {
+                // If we are still transitioning in (this can happen when the load is too quick),
+                // then let's delay everything by a few hundred frames, so we don't have visual
+                // glitches from two simultaneous conflicting tweens on the same properties.
+                int frameDelay = transitionTimeline.State == TweenState.Running ? 200 : 0;
+
+                transitionTimeline = Tweening.NewTimeline();
+                transitionTimeline
+                    .AddFloat(0, f => animatedStripeEffect.Parameters["TransitionOutProgress"].SetValue(f))
+                    .AddFrame(frameDelay, 0f)
+                    .AddFrame(frameDelay + 300, 1f, Easing.Quadratic.In);
+                // Fade the UI too because otherwise the text and loading bar will disappear
+                // abruptly before the background transition is completed
+                transitionTimeline
+                    .AddFloat(1, f => Desktop.Opacity = f)
+                    .AddFrame(frameDelay, 1f)
+                    .AddFrame(frameDelay + 100, 0f);
+                return false;
+            }
+
+            return transitionTimeline.State == TweenState.Stopped;
         }
 
         public override void Update(GameTime gameTime)
@@ -125,7 +194,6 @@ namespace HammeredGame.Game.Screens
 
             progressBar.Value = Progress;
 
-            Desktop.UpdateInput();
             Desktop.UpdateLayout();
         }
 
@@ -140,8 +208,12 @@ namespace HammeredGame.Game.Screens
             // Draw a black rectangle of screen size by stretching the 1x1 pixel texture and filling
             // the vertices with black. The magic of animated stripes happens entirely within the
             // shader we're using here.
-            spriteBatch.Begin(effect: animatedStripeEffect);
-            spriteBatch.Draw(whiteRectangle, Vector2.Zero, null, Color.Black, 0f, Vector2.Zero, new Vector2(ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height), SpriteEffects.None, 0f);
+            //
+            // We also need to use NonPremultiplied for the blend state for the transparency of this
+            // screen to work well for some reason. AlphaBlend for some reason seems to add to the
+            // game screen renders underneath and cause everything to look near-white.
+            spriteBatch.Begin(effect: animatedStripeEffect, blendState: BlendState.NonPremultiplied);
+            spriteBatch.Draw(whiteRectangle, Vector2.Zero, null, Color.Transparent, 0f, Vector2.Zero, new Vector2(ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height), SpriteEffects.None, 0f);
             spriteBatch.End();
 
             Desktop.RenderVisual();

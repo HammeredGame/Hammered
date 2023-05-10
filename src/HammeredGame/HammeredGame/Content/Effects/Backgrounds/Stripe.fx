@@ -30,10 +30,19 @@ float AspectRatio;
 // The speed of horizontal movement
 float Speed;
 
-// The angle of the lines in radians. 0 is straight vertical lines movnig
+// The angle of the lines in radians. 0 is straight vertical lines moving
 // horizontally, while positive Pi/4 would be something like forward slashes,
 // and negative Pi/4 would be like backward slashes.
 float Angle;
+
+// How much of the right side to cut away for transitioning in, with 0 being
+// the start of the transition-in and 1 for the stripes being fully visible.
+float TransitionInProgress;
+
+// How much of the left side to cut away, similar to the InProgress parameter.
+// 0 is when stripes are completely visible, while 1 means transition completed
+// and all is transparent.
+float TransitionOutProgress;
 
 // Amount of total elapsed game time in floating point seconds
 float GameTimeSeconds;
@@ -63,14 +72,26 @@ float4 PixelShaderFunction(float2 TexCoord : TEXCOORD0) : COLOR0
     // return those colours.
     float valueWithinOneWidth = mod(TexCoord.x * cos(Angle) / AspectRatio + Speed * GameTimeSeconds + TexCoord.y * sin(Angle), 1.0 / Divisions) * Divisions;
 
+    float4 color;
     if (valueWithinOneWidth <= (1.0 / (Ratio + 1.0)))
     {
-        return Color1;
+        color = Color1;
     }
     else
     {
-        return Color2;
+        color = Color2;
     }
+
+    // For transitions, we cut the left or right sides diagonally, so
+    // essentially we just use the same formula as above but without the
+    // containing modulo and multiplication operation, and compare it against
+    // some threshold.
+    if ((TexCoord.x * cos(Angle) / AspectRatio + TexCoord.y * sin(Angle)) < TransitionOutProgress ||
+        (TexCoord.x * cos(Angle) / AspectRatio + TexCoord.y * sin(Angle)) > TransitionInProgress)
+    {
+        color.a = 0;
+    }
+    return color;
 };
 
 technique StripeBackground
