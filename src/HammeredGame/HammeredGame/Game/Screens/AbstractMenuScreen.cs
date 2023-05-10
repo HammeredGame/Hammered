@@ -244,6 +244,7 @@ namespace HammeredGame.Game.Screens
             }
             // Set the width on the Myra menu UI.
             menuContainer.Width = (int)MenuWidthCurrent;
+            Desktop.UpdateLayout();
 
             // Return true and indicate the transition is finished only after animation is done
             return TransitionAnimationTimeline.State == TweenState.Stopped;
@@ -274,6 +275,7 @@ namespace HammeredGame.Game.Screens
             }
             // Set the width on the Myra menu UI.
             menuContainer.Width = (int)MenuWidthCurrent;
+            Desktop.UpdateLayout();
 
             // Return true and indicate the transition is finished only after animation is done
             return TransitionAnimationTimeline.State == TweenState.Stopped;
@@ -281,10 +283,9 @@ namespace HammeredGame.Game.Screens
 
         public override void Update(GameTime gameTime)
         {
-            // Update screen state and HasFocus so we can use it
             base.Update(gameTime);
 
-            // Do nothing if the screen doesn't have focus
+            // Do nothing if the screen doesn't have focus yet (e.g. mid-transition or hidden)
             if (!HasFocus) return;
 
             Input input = GameServices.GetService<Input>();
