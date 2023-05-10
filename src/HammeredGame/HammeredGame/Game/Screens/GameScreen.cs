@@ -152,6 +152,8 @@ namespace HammeredGame.Game.Screens
 
             currentSceneName = sceneToLoad;
 
+            // Reset the progress so that there isn't a flash of 100 from the previous use
+            loadingScreen.ResetProgress();
             ScreenManager.AddScreen(loadingScreen);
             Scene temporaryScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
 
@@ -164,9 +166,6 @@ namespace HammeredGame.Game.Screens
                     // want to do in a Draw). This is necessary because .ContinueWith can run in an
                     // asynchronous thread of its own.
                     GameServices.GetService<ScriptUtils>().WaitNextUpdate();
-
-                    // Reset the progress so that there isn't a flash of 100 the next time we show it
-                    loadingScreen.ResetProgress();
 
                     currentScene = temporaryScene;
                     loadingScreen.ExitScreen(false);
