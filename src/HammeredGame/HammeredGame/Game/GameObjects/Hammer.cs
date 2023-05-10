@@ -19,6 +19,7 @@ using ImGuiNET;
 using ImMonoGame.Thing;
 using BEPUphysics.Entities.Prefabs;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using BEPUphysics.CollisionRuleManagement;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -166,6 +167,14 @@ namespace HammeredGame.Game.GameObjects
         public void SetOwnerPlayer(Player player)
         {
             this.player = player;
+
+            var hammerGroup = new CollisionGroup();
+            var playerGroup = new CollisionGroup();
+            CollisionGroupPair pair = new CollisionGroupPair(hammerGroup, playerGroup);
+            CollisionRules.CollisionGroupRules.Add(pair, CollisionRule.NoSolver);
+
+            this.player.Entity.CollisionInformation.CollisionRules.Group = playerGroup;
+            this.Entity.CollisionInformation.CollisionRules.Group = hammerGroup;
         }
 
         public void SetSceneUniformGrid(UniformGrid grid) { this.grid = grid; }
@@ -354,7 +363,7 @@ namespace HammeredGame.Game.GameObjects
 
                 // Normal collisions to ensure the physics engine solves collision constraint with
                 // this entity --> Also, probably a cause for issues
-                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
             }
         }
 
