@@ -30,36 +30,67 @@ namespace HammeredGame.Game.Screens
             HorizontalStackPanel optionsMusicVolume = CreateSliderOption(
                 oneLineHeight,
                 "Music Volume",
-                (int)(MediaPlayer.Volume * 10f),
+                (int)(GameServices.GetService<UserSettings>().MasterVolume * 10f),
                 0,
                 10,
                 (i) =>
                 {
-                    // todo: write to setting file
+                    GameServices.GetService<UserSettings>().MasterVolume = i / 10f;
+                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
                     MediaPlayer.Volume = i / 10f;
                 });
 
             HorizontalStackPanel optionsSFXVolume = CreateSliderOption(
                 oneLineHeight,
                 "SFX Volume",
-                (int)(SoundEffect.MasterVolume * 10f),
+                (int)(GameServices.GetService<UserSettings>().SFXVolume * 10f),
                 0,
                 10,
                 (i) =>
                 {
-                    // todo: write to settings file
+                    GameServices.GetService<UserSettings>().SFXVolume = i / 10f;
+                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
                     SoundEffect.MasterVolume = i / 10f;
+                });
+
+            HorizontalStackPanel optionsResolution = CreateSliderOption(
+                oneLineHeight,
+                "Resolution",
+                GameServices.GetService<UserSettings>().ResolutionY / 10,
+                72,
+                108,
+                (i) =>
+                {
+                    GameServices.GetService<UserSettings>().ResolutionY = i * 10;
+                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
+                    GameServices.GetService<HammeredGame>().UpdateResolution(i * 160 / 9, i * 10);
                 });
 
             HorizontalStackPanel optionsFullScreen = CreateToggleOption(
                 oneLineHeight,
                 "Full Screen",
-                GameServices.GetService<GraphicsDeviceManager>().IsFullScreen,
+                GameServices.GetService<UserSettings>().FullScreen,
                 "Yes",
                 "No",
                 (i) =>
                 {
+                    GameServices.GetService<UserSettings>().FullScreen = i;
+                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
                     GameServices.GetService<GraphicsDeviceManager>().IsFullScreen = i;
+                    GameServices.GetService<GraphicsDeviceManager>().ApplyChanges();
+                });
+
+            HorizontalStackPanel optionsBorderless = CreateToggleOption(
+                oneLineHeight,
+                "Borderless",
+                GameServices.GetService<UserSettings>().Borderless,
+                "Yes",
+                "No",
+                (i) =>
+                {
+                    GameServices.GetService<UserSettings>().Borderless = i;
+                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
+                    GameServices.GetService<HammeredGame>().Window.IsBorderless = i;
                     GameServices.GetService<GraphicsDeviceManager>().ApplyChanges();
                 });
 
@@ -74,12 +105,18 @@ namespace HammeredGame.Game.Screens
                 ExitScreen(alsoUnloadContent: true);
             };
 
-            MenuWidgets = new List<Widget>() { optionsMusicVolume, optionsSFXVolume, optionsFullScreen, menuItemBack };
+            MenuWidgets = new List<Widget>() {
+                optionsMusicVolume,
+                optionsSFXVolume,
+                optionsResolution,
+                optionsFullScreen,
+                optionsBorderless,
+                menuItemBack
+            };
         }
 
         /// <summary>
-        /// Create a multi-item toggle as a menu item. The label is shown on the left side. The
-        /// value will be an integer between min and max inclusive.
+        /// Create a slider toggle as a menu item. The label is shown on the left side.
         /// </summary>
         /// <param name="fontSize">The font size for the text</param>
         /// <param name="label">The label description</param>
@@ -184,6 +221,16 @@ namespace HammeredGame.Game.Screens
             return optionContainer;
         }
 
+        /// <summary>
+        /// Create a boolean toggle as a menu item. The label is shown on the left side.
+        /// </summary>
+        /// <param name="fontSize">The font size for the text</param>
+        /// <param name="label">The label description</param>
+        /// <param name="initialValue">The initial value</param>
+        /// <param name="yesText">The text to show when the value is true</param>
+        /// <param name="noText">The text to show when the value is false</param>
+        /// <param name="setter">The callback to actually set the option</param>
+        /// <returns>The widget that you can add to MenuWidgets</returns>
         private HorizontalStackPanel CreateToggleOption(int fontSize, string label, bool initialValue, string yesText, string noText, Action<bool> setter)
         {
             // Create the horizontal layout, left is label, right is the slider

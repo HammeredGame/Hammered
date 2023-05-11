@@ -56,8 +56,8 @@ namespace HammeredGame
         public HammeredGame()
         {
             // Get width and height of desktop and set the graphics device settings
-            int desktop_width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 10;
-            int desktop_height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 10;
+            int desktop_width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            int desktop_height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferWidth = desktop_width,
@@ -75,6 +75,14 @@ namespace HammeredGame
 
         protected override void Initialize()
         {
+            // Load user settings
+            UserSettings settings = UserSettings.LoadFromFile("settings.txt");
+
+            // Set full screen and border-less based on settings
+            graphics.IsFullScreen = settings.FullScreen;
+            Window.IsBorderless = settings.FullScreen;
+            graphics.ApplyChanges();
+
             gpu = GraphicsDevice;
             PresentationParameters pp = gpu.PresentationParameters;
             spriteBatch = new SpriteBatch(gpu);
@@ -105,13 +113,13 @@ namespace HammeredGame
                 }
             }
 
+            // Set up the UI library (Myra)'s access to the game context
             MyraEnvironment.Game = this;
 
-            //initialize audio manager
+            //initialize audio manager and set initial volumes
             audioManager = new AudioManager(this);
-
-            MediaPlayer.Volume = 0.1f;
-            SoundEffect.MasterVolume = 0.2f;
+            MediaPlayer.Volume = settings.MasterVolume;
+            SoundEffect.MasterVolume = settings.SFXVolume;
 
             // Initialize ImGui's internal renderer and build its font atlas
             imGuiRenderer = new ImGuiRenderer(this);
@@ -123,9 +131,9 @@ namespace HammeredGame
             gameServices.AddService<GraphicsDeviceManager>(graphics);
             gameServices.AddService<SpriteBatch>(spriteBatch);
             gameServices.AddService<Input>(input);
+            gameServices.AddService<UserSettings>(settings);
             gameServices.AddService<ContentManager>(Content);
             gameServices.AddService<ScriptUtils>(new ScriptUtils());
-            //gameServices.AddService<List<SoundEffect>>(sfx);
             gameServices.AddService<AudioManager>(audioManager);
 
             manager = new ScreenManager(gameServices, gpu, mainRenderTarget);
@@ -144,33 +152,12 @@ namespace HammeredGame
         /// </summary>
         public void InitTitleScreen()
         {
-            #region TEMPORARY SOLUTION TO LEVEL SAVE/LOAD UNTIL PERSISTENT DATA IS PROPERLY IMPLEMENTED
-            bool continuable;
-            string savedSceneName = "";
-            try
-            {
-                savedSceneName = File.ReadAllText("save.txt");
-                if (Type.GetType(savedSceneName) == null)
-                {
-                    continuable = false;
-                }
-                else
-                {
-                    continuable = true;
-                }
-            } catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex);
-                continuable = false;
-            }
-            #endregion
-
             manager.AddScreen(new Game.Screens.TitleScreen()
             {
-                Continuable = continuable,
+                Continuable = gameServices.GetService<UserSettings>().LastSaveScene != null,
                 ContinueFunc = () =>
                 {
-                    manager.AddScreen(new Game.Screens.GameScreen(savedSceneName));
+                    manager.AddScreen(new Game.Screens.GameScreen(gameServices.GetService<UserSettings>().LastSaveScene));
                 },
                 StartNewFunc = () =>
                 {
@@ -194,6 +181,13 @@ namespace HammeredGame
 
             // Load assets related to shown screens
             manager.LoadContent();
+        }
+
+        public void UpdateResolution(int width, int height)
+        {
+            graphics.PreferredBackBufferWidth = width;
+            graphics.PreferredBackBufferHeight = height;
+            graphics.ApplyChanges();
         }
 
         /// <summary>
@@ -253,12 +247,6 @@ namespace HammeredGame
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
             spriteBatch.Draw(mainRenderTarget, desktopRect, Color.White);
-
-            // FOR THE PURPOSES OF THE DEMO, we indicate whether the puzzle is solved here
-            //if (player.ReachedGoal)
-            //{
-            //    spriteBatch.DrawString(tempFont, "PUZZLE SOLVED!! \nPress R on keyboard or Y on controller to reload level", new Microsoft.Xna.Framework.Vector2(100, 100), Color.Red);
-            //}
 
             // Commit all the data to the back buffer
             spriteBatch.End();
