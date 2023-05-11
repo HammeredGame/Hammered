@@ -20,7 +20,7 @@ namespace HammeredGame.Game.Scenes.Island1
             await CreateFromXML($"Content/SceneDescriptions/Island1/LaserTutorial_voxel.xml", progress);
         }
 
-        protected override void OnSceneStart()
+        protected override async void OnSceneStart()
         {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
@@ -46,6 +46,8 @@ namespace HammeredGame.Game.Scenes.Island1
             laser2.Entity.CollisionInformation.CollisionRules.Group= laserRockGroup;
             rock1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
             //rock2.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+
+            await ParentGameScreen.ShowDialogueAndWait("“I can’t see any trees in the area…I’ve been caught between a rock and a hard place.");
 
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.

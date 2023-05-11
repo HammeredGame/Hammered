@@ -85,8 +85,15 @@ namespace HammeredGame.Game.Scenes.Island1
             Camera.SetFollowTarget(Get<Player>("player1"));
 
             //Get<Hammer>("hammer").InputEnabled = false;
-            await ParentGameScreen.ShowDialogueAndWait("Sweet! A hammer I can summon!?");
-            await ParentGameScreen.ShowDialogueAndWait("I've got no memory of why I'm here but hey,\nI have a... hammer!");
+            //await ParentGameScreen.ShowDialogueAndWait("Sweet! A hammer I can summon!?");
+            //await ParentGameScreen.ShowDialogueAndWait("I've got no memory of why I'm here but hey,\nI have a... hammer!");
+            await ParentGameScreen.ShowDialogueAndWait("Dear Loser,");
+            await ParentGameScreen.ShowDialogueAndWait("You might be wondering how you ended up /nstranded on a beach accompanied by my pet hammer, Mjölnir.");
+            await ParentGameScreen.ShowDialogueAndWait("As per last night’s honorable drinking duel,/n which I double handedly –one hand per glass- won,/n you have to make it all the way back to my summer temple.");
+            await ParentGameScreen.ShowDialogueAndWait("(Me and the boys are currently having/n a meeting about a “Rag a rock” or something.)");
+            await ParentGameScreen.ShowDialogueAndWait("Well, a deal is a deal! C U soon! XOXO Thor");
+            await ParentGameScreen.ShowDialogueAndWait("P.S. Don’t worry, the hammer isn’t that heavy!");
+            await ParentGameScreen.ShowDialogueAndWait("it weighs less than what you drank last night ;)");
 
             //Get<Hammer>("hammer").InputEnabled = true;
 
