@@ -11,6 +11,7 @@ namespace HammeredGame.Core
 
         readonly string[] soundNames =
         {
+            //combination of self-recored foley and sounds from zapsplat.com 
             "Audio/stereo_step",
             "Audio/hammer_drop",
             "Audio/lohi_whoosh",
