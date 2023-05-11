@@ -150,10 +150,7 @@ namespace HammeredGame.Game.Screens
                 var capturedIndex = i;
                 menuItem.MouseEntered += (s, a) =>
                 {
-                    HoverIndex = capturedIndex;
-                    // Set the currently focused widget (nothing visual, but for receiving the KeyDown
-                    // events) to the one with the hover index.
-                    Desktop.FocusedKeyboardWidget = MenuWidgets[HoverIndex];
+                    MoveHoverTo(capturedIndex);
                 };
 
                 // We play the sound effect on mouse click press
@@ -161,11 +158,6 @@ namespace HammeredGame.Game.Screens
 
                 MainMenu.Widgets.Add(menuItem);
             }
-
-            // Select first non-disabled menu item. In the case where everything is disabled and the
-            // first expression returns MenuItems.Count, we want to avoid an index-out-of-bounds, so
-            // take the minimum with the largest allowed index
-            HoverIndex = Math.Min(MenuWidgets.TakeWhile(i => !i.Enabled).Count(), MenuWidgets.Count - 1);
 
             // Create a horizontal panel that's displayed at the very bottom of the screen for an
             // input prompt saying "Press this for OK"
@@ -241,6 +233,11 @@ namespace HammeredGame.Game.Screens
             // events) to the one with the hover index.
             Desktop.FocusedKeyboardWidget = MenuWidgets[HoverIndex];
 
+            // Select first non-disabled menu item. In the case where everything is disabled and the
+            // first expression returns MenuItems.Count, we want to avoid an index-out-of-bounds, so
+            // take the minimum with the largest allowed index
+            MoveHoverTo(Math.Min(MenuWidgets.TakeWhile(i => !i.Enabled).Count(), MenuWidgets.Count - 1));
+
             // Whenever a widget gets new keyboard focus, we should play a sound
             Desktop.WidgetGotKeyboardFocus += (s, a) =>
             {
@@ -279,6 +276,7 @@ namespace HammeredGame.Game.Screens
                 menuContainer.Width = 0;
                 MenuTriangleWidth = 0f;
                 MenuWidthCurrent = 0f;
+                Desktop.UpdateLayout();
 
                 TransitionAnimationTimeline = Tweening.NewTimeline();
                 TransitionAnimationTimeline.AddFloat(this, nameof(MenuWidthCurrent))
@@ -330,31 +328,45 @@ namespace HammeredGame.Game.Screens
         }
 
         /// <summary>
+        /// Move the hovered pointer to an absolute index. This function will wrap around at the top
+        /// and bottom as long as the supplied <paramref name="pos"/> is within the range of
+        /// [-WidgetCount, inf]. This function should be used instead of directly manipulating
+        /// HoverIndex, since we also set Desktop.FocusedKeyboardWidget in this function which you
+        /// might forget to do otherwise.
+        /// </summary>
+        /// <param name="pos"></param>
+        public virtual void MoveHoverTo(int pos)
+        {
+            HoverIndex = (pos + MainMenu.Widgets.Count) % MainMenu.Widgets.Count;
+
+            // Set the currently focused widget (nothing visual, but for receiving the KeyDown
+            // events, required for e.g. slider control via keys/buttons) to the one with the hover index.
+            Desktop.FocusedKeyboardWidget = MainMenu.Widgets[HoverIndex];
+        }
+
+        /// <summary>
         /// Move the hovered pointer by some delta. Positive delta is downwards, negative is
         /// upwards. This function will properly wrap around at the top and bottom, and also skip
         /// any disabled items as long as there is at least one enabled item.
         /// </summary>
         /// <param name="delta"></param>
-        public void MoveHover(int delta)
+        protected virtual void MoveHoverBy(int delta)
         {
             // Counter to make sure we only check once for each item and don't perform an endless
             // loop looking for an enabled item within an all-disabled list
             int i = 0;
+            int originalHoverIndex = HoverIndex;
 
-            // Modify the hover index by the delta, wrapping around at the top and bottom
+            // Modify the hover index by the delta
             do
             {
-                HoverIndex = (HoverIndex + MainMenu.Widgets.Count + delta) % MainMenu.Widgets.Count;
+                MoveHoverTo(originalHoverIndex + delta + Math.Sign(delta) * i);
                 i++;
             }
             // As long as the new menu item isn't disabled, and we haven't looped back around. We
             // allow one whole loop before stopping (<= instead of <) to make sure we don't end up
             // setting HoverIndex to the one before the current position.
             while (!MainMenu.Widgets[HoverIndex].Enabled && i <= MainMenu.Widgets.Count);
-
-            // Set the currently focused widget (nothing visual, but for receiving the KeyDown
-            // events) to the one with the hover index.
-            Desktop.FocusedKeyboardWidget = MainMenu.Widgets[HoverIndex];
         }
 
         public override void Update(GameTime gameTime)
@@ -388,24 +400,26 @@ namespace HammeredGame.Game.Screens
             // then we want to slowly go through each item, so we use a cooldown timer that is reset
             // whenever any of the actions are handled.
             TimeSpan scrollCooldown = TimeSpan.FromMilliseconds(500);
-            if (UserAction.MenuItemUp.Pressed(input))
+            if (UserAction.MenuItemUp.Pressed(input) || UserAction.Movement.FlickedUp(input))
             {
-                MoveHover(-1);
+                MoveHoverBy(-1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
-            else if (UserAction.MenuItemUp.Held(input) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
+            else if ((UserAction.MenuItemUp.Held(input) || UserAction.Movement.HeldUp(input)) &&
+                gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
             {
-                MoveHover(-1);
+                MoveHoverBy(-1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
-            else if (UserAction.MenuItemDown.Pressed(input))
+            else if (UserAction.MenuItemDown.Pressed(input) || UserAction.Movement.FlickedDown(input))
             {
-                MoveHover(1);
+                MoveHoverBy(1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
-            else if (UserAction.MenuItemDown.Held(input) && gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
+            else if ((UserAction.MenuItemDown.Held(input) ||  UserAction.Movement.HeldDown(input)) &&
+                gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
             {
-                MoveHover(1);
+                MoveHoverBy(1);
                 lastContinuousInput = gameTime.TotalGameTime;
             }
 
@@ -421,12 +435,14 @@ namespace HammeredGame.Game.Screens
                         // This is an item that's hovered but wasn't hovered before
                         label.Text = "> " + label.Text;
                         label.TextColor = new Color(246, 101, 255);
+                        label.Left = (-1) * (int)label.Font.MeasureString("> ").X;
                     }
                     else if (index != HoverIndex && label.Text[0] == '>')
                     {
                         // This is an item that was hovered but now isn't
                         label.Text = label.Text.Substring(2);
                         label.TextColor = new Color(255, 255, 255, 198);
+                        label.Left = 0;
                     }
                 }
             }
