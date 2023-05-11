@@ -11,6 +11,7 @@ using Myra;
 using System;
 using Pleasing;
 using System.IO;
+using Microsoft.Xna.Framework.Media;
 
 namespace HammeredGame
 {
@@ -109,6 +110,7 @@ namespace HammeredGame
             //initialize audio manager
             audioManager = new AudioManager(this);
 
+            MediaPlayer.Volume = 0.1f;
             SoundEffect.MasterVolume = 0.2f;
 
             // Initialize ImGui's internal renderer and build its font atlas

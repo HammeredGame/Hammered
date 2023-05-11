@@ -56,8 +56,11 @@ namespace HammeredGame.Game.Screens
             {
                 Text = "Options",
                 Id = "_menuItemOptions",
-                Enabled = false,
                 Font = BarlowFont.GetFont(oneLineHeight)
+            };
+            menuItemOptions.TouchUp += (s, a) =>
+            {
+                ScreenManager.AddScreen(new OptionsScreen());
             };
 
             Label menuItemQuitToTitle = new()

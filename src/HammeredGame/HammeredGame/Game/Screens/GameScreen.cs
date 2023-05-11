@@ -82,7 +82,6 @@ namespace HammeredGame.Game.Screens
             InitializeLevel(currentSceneName);
 
             MediaPlayer.IsRepeating = true;
-            MediaPlayer.Volume = 0.1f;
             MediaPlayer.Play(bgMusic);
 
             // Preload the pause screen, so that adding the pause screen to the screen stack doesn't
