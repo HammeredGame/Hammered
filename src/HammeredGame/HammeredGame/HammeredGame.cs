@@ -35,11 +35,6 @@ namespace HammeredGame
         // displayed on the screen
         private RenderTarget2D mainRenderTarget;
 
-        // The rectangle on the GPU back buffer to where we will copy the main render target to.
-        // This may be different to the render target size. For example, we could have a 1920x1080
-        // render target, rendered onto a GPU back buffer size of 1280x720.
-        private Rectangle displayRect;
-
         private readonly GameServices gameServices = new();
 
         // Music variables
@@ -78,8 +73,8 @@ namespace HammeredGame
             // Load user settings
             UserSettings settings = UserSettings.LoadFromFile("settings.txt");
 
-            // Set full screen and border-less based on settings
-            graphics.IsFullScreen = settings.FullScreen;
+            // Set full screen (Windows-only) and border-less based on settings
+            graphics.IsFullScreen = OperatingSystem.IsWindows() && settings.FullScreen;
             Window.IsBorderless = settings.FullScreen;
             graphics.ApplyChanges();
 
@@ -97,7 +92,7 @@ namespace HammeredGame
             // we have.
             if (ParallelLooper == null)
             {
-                // Initialize paraller looper to tell the physics engine that it can use
+                // Initialize parallel looper to tell the physics engine that it can use
                 // multithreading, if possible
                 ParallelLooper = new ParallelLooper();
                 if (Environment.ProcessorCount > 1)
@@ -198,12 +193,6 @@ namespace HammeredGame
             // Set up the render target, which we will render to, which gets copied to the GPU back buffer.
             mainRenderTarget = new RenderTarget2D(gpu, width, height, false, gpu.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
 
-            // Set the rectangle amounting to the size of the location on the back buffer where we
-            // are copying our mainRenderTarget to -- this is always equal to the back buffer size.
-            // We make sure to use the value after having set it above (and not use width/height
-            // variables directly) to make sure we respect device preferences and limitations.
-            displayRect = new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight);
-
             if (manager != null)
             {
                 manager.MainRenderTarget = mainRenderTarget;
@@ -267,7 +256,7 @@ namespace HammeredGame
             gpu.SetRenderTarget(null);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
-            spriteBatch.Draw(mainRenderTarget, displayRect, Color.White);
+            spriteBatch.Draw(mainRenderTarget,  new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
 
             // Commit all the data to the back buffer
             spriteBatch.End();
