@@ -1,6 +1,7 @@
 ﻿using HammeredGame.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
@@ -20,6 +21,7 @@ namespace HammeredGame.Game.Screens
             base.LoadMenuWidgets();
 
             MenuHeaderText = "OPTIONS";
+            BackgroundOverlayOpacity = 0.3f;
 
             // We use a smaller font size here, 5% of the screen height
             int oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 20;
@@ -106,7 +108,7 @@ namespace HammeredGame.Game.Screens
                 optionsSFXVolume,
                 optionsResolution
             };
-            
+
             // Only add the full screen option Windows OSes since as far as we've tested, Mac has a very very
             // frustrating implementation of full screen apps (both hardware switch mode and not) that doesn't
             // consistently set the back buffer size and everything will just become terrible if you change

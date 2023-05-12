@@ -27,14 +27,19 @@ namespace HammeredGame.Game.Screens
 
         private int trianglwWidthMax = 300;
 
+        public float BackgroundOverlayOpacity = 0f;
+
         // These values are going to be animated. It represents the menu width going from 0 to
-        // menuWidthMax, and the width of the triangle next to it, going from 0 to trianglwWidthMax.
-        // The tween library requires the properties to be accessible from the target class (which
-        // in our case are the inherited menu classes), which means these have to be marked no less
+        // menuWidthMax, the width of the triangle next to it going from 0 to triangleWidthMax, and
+        // the opacity of the background darkening, going from 0 to BackgroundOverlayOpacity. The
+        // tween library requires the properties to be accessible from the target class (which in
+        // our case are the inherited menu classes), which means these have to be marked no less
         // accessible than protected.
         protected float MenuWidthCurrent;
 
         protected float MenuTriangleWidth;
+
+        protected float MenuOverlayOpacityCurrent;
 
         // Store the game time when the last input for moving up/down was pressed. This is used to
         // limit the scrolling speed when an input is held for long.
@@ -301,6 +306,7 @@ namespace HammeredGame.Game.Screens
                 menuContainer.Width = 0;
                 MenuTriangleWidth = 0f;
                 MenuWidthCurrent = 0f;
+                MenuOverlayOpacityCurrent = 0f;
                 Desktop.UpdateLayout();
 
                 TransitionAnimationTimeline = Tweening.NewTimeline();
@@ -308,6 +314,8 @@ namespace HammeredGame.Game.Screens
                     .AddFrame(200, menuWidthMax, Easing.Exponential.Out);
                 TransitionAnimationTimeline.AddFloat(this, nameof(MenuTriangleWidth))
                     .AddFrame(200, trianglwWidthMax, Easing.Exponential.Out);
+                TransitionAnimationTimeline.AddFloat(this, nameof(MenuOverlayOpacityCurrent))
+                    .AddFrame(200, BackgroundOverlayOpacity, Easing.Exponential.Out);
 
                 PlaySFX("Audio/lohi_whoosh", 1f);
                 return false;
@@ -338,6 +346,8 @@ namespace HammeredGame.Game.Screens
                 TransitionAnimationTimeline.AddFloat(this, nameof(MenuWidthCurrent))
                     .AddFrame(200, 0, Easing.Exponential.Out);
                 TransitionAnimationTimeline.AddFloat(this, nameof(MenuTriangleWidth))
+                    .AddFrame(200, 0f, Easing.Exponential.Out);
+                TransitionAnimationTimeline.AddFloat(this, nameof(MenuOverlayOpacityCurrent))
                     .AddFrame(200, 0f, Easing.Exponential.Out);
 
                 PlaySFX("Audio/lohi_whoosh", 1f);
@@ -484,8 +494,14 @@ namespace HammeredGame.Game.Screens
         {
             base.Draw(gameTime);
 
-            // Draw everything in a batch for speed
+            // Draw a dark overlay for the whole screen covering the background
             GameServices.GetService<SpriteBatch>().Begin();
+            GameServices.GetService<SpriteBatch>().Draw(
+                whiteRectangle,
+                new Rectangle(0, 0, ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height),
+                null,
+                new Color(0, 0, 0, MenuOverlayOpacityCurrent));
+            GameServices.GetService<SpriteBatch>().End();
 
             // Draw a triangle beside where the menu would be drawn, by manually specifying the
             // three coloured vertices, with 0,0 being the top left corner.
@@ -520,7 +536,6 @@ namespace HammeredGame.Game.Screens
                 pass.Apply();
                 ScreenManager.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, 1);
             }
-            GameServices.GetService<SpriteBatch>().End();
 
             // Render the UI
             Desktop.RenderVisual();
