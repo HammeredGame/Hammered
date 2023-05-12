@@ -4,17 +4,14 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
-using Myra.Utility;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HammeredGame.Game.Screens
 {
     /// <summary>
-    /// The pause screen is a menu screen that shows Paused stuff. In general, whenever
-    /// ExitScreen() is called within PauseScreen, it shouldn't unload its contents. This
-    /// is because GameScreen reuses the same pause screen and removes/adds it, to save
-    /// on expensive content-loading at runtime.
+    /// The options screen is a menu screen that shows Options/Settings.
     /// </summary>
     internal class OptionsScreen : AbstractMenuScreen
     {
@@ -53,17 +50,16 @@ namespace HammeredGame.Game.Screens
                     SoundEffect.MasterVolume = i / 10f;
                 });
 
-            HorizontalStackPanel optionsResolution = CreateSliderOption(
+            HorizontalStackPanel optionsResolution = CreateMultipleOption(
                 oneLineHeight,
                 "Resolution",
-                GameServices.GetService<UserSettings>().ResolutionY / 10,
-                72,
-                108,
+                GameServices.GetService<UserSettings>().Resolution,
+                new Resolution[] { Resolution.Res1280720, Resolution.Res1360768, Resolution.Res1366768, Resolution.Res1600900, Resolution.Res19201080 },
                 (i) =>
                 {
-                    GameServices.GetService<UserSettings>().ResolutionY = i * 10;
+                    GameServices.GetService<UserSettings>().Resolution = i;
                     UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
-                    GameServices.GetService<HammeredGame>().UpdateResolution(i * 160 / 9, i * 10);
+                    GameServices.GetService<HammeredGame>().SetResolution(i.Width, i.Height);
                 });
 
             HorizontalStackPanel optionsFullScreen = CreateToggleOption(
@@ -264,6 +260,86 @@ namespace HammeredGame.Game.Screens
                 optionValue.Tag = !(bool)optionValue.Tag;
                 optionValue.Text = (bool)optionValue.Tag ? yesText : noText;
                 setter((bool)optionValue.Tag);
+            };
+
+            // Make sure that the second item stretches the remaining space if possible. This will
+            // stretch as far as the widest sibling element, but not as far as the widest siblings
+            // of the parent (like the heading/footer).
+            optionContainer.Proportions.Add(new Proportion());
+            optionContainer.AddChild(optionLabel);
+            optionContainer.Proportions.Add(new Proportion { Type = ProportionType.Fill });
+            optionContainer.AddChild(optionValue);
+            return optionContainer;
+        }
+
+        /// <summary>
+        /// Create a toggle for an Enum. The label is shown on the left side.
+        /// </summary>
+        /// <param name="fontSize">The font size for the text</param>
+        /// <param name="label">The label description</param>
+        /// <param name="initialValue">The initial value</param>
+        /// <param name="setter">The callback to actually set the option</param>
+        /// <returns>The widget that you can add to MenuWidgets</returns>
+        private HorizontalStackPanel CreateMultipleOption<T>(int fontSize, string label, T initialValue, T[] possibleValues, Action<T> setter) where T : class
+        {
+            // Create the horizontal layout, left is label, right is the slider
+            HorizontalStackPanel optionContainer = new();
+            Label optionLabel = new()
+            {
+                Text = label,
+                Id = "option" + label,
+                Font = BarlowFont.GetFont(fontSize),
+                TextColor = new Color(255, 255, 255, 198)
+            };
+
+            Label optionValue = new()
+            {
+                Text = initialValue.ToString(),
+                Font = BarlowFont.GetFont(fontSize),
+                // Align to the right, in the center vertically with respect to the text on the left
+                TextAlign = FontStashSharp.RichText.TextHorizontalAlignment.Right,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                // Arbitrary length and height, this might need to change based on resolution somehow
+                MinWidth = 300,
+                TextColor = new Color(255, 255, 255, 198),
+                // We use the Tag to store the Enum here.
+                Tag = initialValue
+            };
+
+            void changeValue(int delta)
+            {
+                // Select the item in the possible value array at index (current index + delta) but
+                // providing wrap-arounds for both negative and positive deltas as long as delta > -count.
+                int currentIndex = possibleValues.TakeWhile(v => v != (T)optionValue.Tag).Count();
+                optionValue.Tag = possibleValues[(currentIndex + delta + possibleValues.Length) % possibleValues.Length];
+                optionValue.Text = ((T)optionValue.Tag).ToString();
+                setter((T)optionValue.Tag);
+
+                PlaySFX("Audio/UI/selection_confirm", 0.7f);
+            }
+
+            // On mouse release on this element, invert the value stored in the Tag, update the
+            // text, and call the setter.
+            optionContainer.TouchUp += (s, a) =>
+            {
+                changeValue(1);
+            };
+
+            // On keyboard down (this is only called if the widget has keyboard focus -- this is
+            // ensured in the parent class where every change to HoverIndex also changes the focused widget)
+            optionContainer.KeyDown += (s, a) =>
+            {
+                // By default we use the left right keyboard keys regardless of any input type or
+                // key remapping, but further customisations can be added on top of this in Update()
+                // by simulating the KeyDown event through calling OnKeyDown(Left) or OnKeyDown(Right).
+                if (a.Data == Microsoft.Xna.Framework.Input.Keys.Left)
+                {
+                    changeValue(-1);
+                }
+                else if (a.Data == Microsoft.Xna.Framework.Input.Keys.Right)
+                {
+                    changeValue(1);
+                }
             };
 
             // Make sure that the second item stretches the remaining space if possible. This will

@@ -100,19 +100,20 @@ namespace HammeredGame.Game.Screens
 
         /// <summary>
         /// Perform any creation of menu widgets here and add them to MenuItems. Also load any
-        /// required assets for the particular menu screen.
+        /// required assets for the particular menu screen. Can be called more than once, when the
+        /// game resolution changes and the UI needs to be reconstructed.
         /// </summary>
         public virtual void LoadMenuWidgets()
         { }
 
         /// <summary>
         /// Using the widgets added to MenuItems in LoadMenuWidgets, construct the main menu with a
-        /// heading and a footer.
+        /// heading and a footer. Can be called more than once, when the game resolution changes and
+        /// the UI needs to be reconstructed.
         /// </summary>
         private void SetupMenu()
         {
-            // todo: handle viewport resize by checking if .Height changed in Update()
-            int oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
+            var oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
 
             // Set up the header with display font
             var header = new Label
@@ -257,6 +258,30 @@ namespace HammeredGame.Game.Screens
 
             // Any assets created or loaded without the content manager should be disposed of.
             whiteRectangle.Dispose();
+        }
+
+        /// <summary>
+        /// A custom override handling resolution changes, which reconstructs the menu UI based on
+        /// the new resolution. An alternative implementation (less expensive, but more
+        /// implementation effort) would be to change all fonts in the existing UI to a new size.
+        /// But UI widgets can be nested, text might have font size coefficients (e.g. 1.5 *
+        /// oneLineHeight) so it's easier to just re-create the whole UI, replace the Desktop, and
+        /// register new event handlers.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public override void SetResolution(int width, int height)
+        {
+            // Re-build all menu widgets, they probably depend on resolution for font sizes
+            LoadMenuWidgets();
+            SetupMenu();
+
+            // Set the current menu width to be the newly calculated width. This is something that
+            // would normally be done during the inward transition, but since resolution changes
+            // don't trigger one, we do it manually.
+            MenuWidthCurrent = menuWidthMax;
+            menuContainer.Width = menuWidthMax;
+            Desktop.UpdateLayout();
         }
 
         /// <summary>

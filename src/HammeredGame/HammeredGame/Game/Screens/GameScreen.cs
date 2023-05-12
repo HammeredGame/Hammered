@@ -51,6 +51,21 @@ namespace HammeredGame.Game.Screens
         }
 
         /// <summary>
+        /// Called when the game resolution changes. We re-create the game renderer.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public override void SetResolution(int width, int height)
+        {
+            base.SetResolution(width, height);
+
+            // Re-create the game renderer since many of its internal render targets need to use the
+            // correct resolution
+            ContentManager Content = GameServices.GetService<ContentManager>();
+            gameRenderer = new GameRenderer(GameServices.GetService<GraphicsDevice>(), Content);
+        }
+
+        /// <summary>
         /// Called once when loading the game. Load all assets here since it is expensive to load
         /// them on demand when we need it in e.g. Update() or Draw().
         /// </summary>

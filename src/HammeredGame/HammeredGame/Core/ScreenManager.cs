@@ -202,6 +202,19 @@ namespace HammeredGame.Core
         }
 
         /// <summary>
+        /// Updates the resolution for each of the screens on the stack by calling SetResolution on them.
+        /// </summary>
+        /// <param name="width">The new render resolution</param>
+        /// <param name="height">The new render resolution</param>
+        public void SetResolution(int width, int height)
+        {
+            foreach (Screen screen in screens)
+            {
+                screen.SetResolution(width, height);
+            }
+        }
+
+        /// <summary>
         /// Debug information about the UI.
         /// </summary>
         public void UI()
