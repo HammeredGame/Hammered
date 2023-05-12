@@ -143,12 +143,16 @@ namespace HammeredGame
         /// </summary>
         public void InitTitleScreen()
         {
+            // We allow continuation if we a last saved scene exists and is a valid scene
+            string lastSaveName = gameServices.GetService<UserSettings>().LastSaveScene;
+            bool continuable = lastSaveName != null && Type.GetType(lastSaveName) != null;
+            
             manager.AddScreen(new Game.Screens.TitleScreen()
             {
-                Continuable = gameServices.GetService<UserSettings>().LastSaveScene != null,
+                Continuable = continuable,
                 ContinueFunc = () =>
                 {
-                    manager.AddScreen(new Game.Screens.GameScreen(gameServices.GetService<UserSettings>().LastSaveScene));
+                    manager.AddScreen(new Game.Screens.GameScreen(lastSaveName));
                 },
                 StartNewFunc = () =>
                 {
