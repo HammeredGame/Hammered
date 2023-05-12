@@ -104,11 +104,19 @@ namespace HammeredGame.Game.Screens
             MenuWidgets = new List<Widget>() {
                 optionsMusicVolume,
                 optionsSFXVolume,
-                optionsResolution,
-                optionsFullScreen,
-                optionsBorderless,
-                menuItemBack
+                optionsResolution
             };
+            
+            // Only add the full screen option Windows OSes since as far as we've tested, Mac has a very very
+            // frustrating implementation of full screen apps (both hardware switch mode and not) that doesn't
+            // consistently set the back buffer size and everything will just become terrible if you change
+            // resolutions mid- full-screen.
+            if (OperatingSystem.IsWindows())
+            {
+                MenuWidgets.Add(optionsFullScreen);
+            }
+            MenuWidgets.Add(optionsBorderless);
+            MenuWidgets.Add(menuItemBack);
         }
 
         /// <summary>
