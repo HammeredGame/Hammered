@@ -34,6 +34,12 @@
 /processorParam:Quality=Best
 /build:Audio/BGM_V2_4x.mp3
 
+#begin Audio/bgm4_4x.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/bgm4_4x.mp3
+
 #begin Audio/const_water.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
