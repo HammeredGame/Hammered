@@ -4,6 +4,12 @@ using System.Text.Json;
 
 namespace HammeredGame.Core
 {
+    /// <summary>
+    /// Resolution represents possible values for the game resolution. The options
+    /// screen would use these values for showing which values are selectable.
+    /// </summary>
+    /// <param name="Width"></param>
+    /// <param name="Height"></param>
     public record Resolution(int Width, int Height)
     {
         public static readonly Resolution Res1280720 = new(1280, 720);
@@ -18,6 +24,11 @@ namespace HammeredGame.Core
         }
     }
 
+    /// <summary>
+    /// UserSettings represents settings chosen by the user for the game. Each property
+    /// has a default value, but users can overwrite them in the options screen, which
+    /// will call Save on it.
+    /// </summary>
     public record UserSettings
     {
         public float MasterVolume { get; set; } = 0.2f;
@@ -25,8 +36,17 @@ namespace HammeredGame.Core
         public Resolution Resolution { get; set; } = Resolution.Res19201080;
         public bool FullScreen { get; set; } = false;
         public bool Borderless { get; set; } = false;
+        
+        // TODO: LastSaveScene is not a setting value but a game context or save state.
+        //       Perhaps it should be a different data structure, but it's just this
+        //       single string so for now it's placed within settings.
         public string LastSaveScene { get; set; } = null;
 
+        /// <summary>
+        /// Save user settings to a file, overwriting any existing contents.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="fileName"></param>
         public static void SaveToFile(UserSettings settings, string fileName)
         {
             string output = JsonSerializer.Serialize<UserSettings>(settings, new JsonSerializerOptions()
@@ -37,6 +57,12 @@ namespace HammeredGame.Core
             File.WriteAllText(fileName, output);
         }
 
+        /// <summary>
+        /// Read user settings from a file. If any exceptions are raised, this function will
+        /// suppress them and return the default settings.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static UserSettings LoadFromFile(string fileName)
         {
             try
