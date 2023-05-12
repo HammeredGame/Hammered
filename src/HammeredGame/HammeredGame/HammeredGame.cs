@@ -25,20 +25,20 @@ namespace HammeredGame
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private GraphicsDevice gpu;
-        public int ScreenW, ScreenH;
 
         public static ParallelLooper ParallelLooper;
 
         // INPUT and other related stuff
         private Input input;
 
-        // RENDER TARGET
+        // The render target, which may have a different resolution to the actual number of pixels
+        // displayed on the screen
         private RenderTarget2D mainRenderTarget;
 
-        // RECTANGLES (need to modify to allow modifiable resolutions, etc.)
-        private Rectangle desktopRect;
-
-        private Rectangle screenRect;
+        // The rectangle on the GPU back buffer to where we will copy the main render target to.
+        // This may be different to the render target size. For example, we could have a 1920x1080
+        // render target, rendered onto a GPU back buffer size of 1280x720.
+        private Rectangle displayRect;
 
         private readonly GameServices gameServices = new();
 
@@ -87,12 +87,8 @@ namespace HammeredGame
             PresentationParameters pp = gpu.PresentationParameters;
             spriteBatch = new SpriteBatch(gpu);
 
-            // Set Render Target to SCREENWIDTH x SCREENHEIGHT
-            mainRenderTarget = new RenderTarget2D(gpu, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, DepthFormat.Depth24);
-            ScreenW = mainRenderTarget.Width;
-            ScreenH = mainRenderTarget.Height;
-            desktopRect = new Rectangle(0, 0, pp.BackBufferWidth, pp.BackBufferHeight);
-            screenRect = new Rectangle(0, 0, ScreenW, ScreenH);
+            // Update render resolution and set up mainRenderTarget
+            SetResolution(settings.Resolution.Width, settings.Resolution.Height);
 
             // Initialize Input class
             input = new Input(pp, mainRenderTarget);
@@ -183,11 +179,36 @@ namespace HammeredGame
             manager.LoadContent();
         }
 
-        public void UpdateResolution(int width, int height)
+        /// <summary>
+        /// Changes the game resolution. Specifically, it changes the GPU's back buffer size, the
+        /// intermediate render target size (the one before copying to the GPU), and any other
+        /// screen-specific things by issuing <see cref="ScreenManager.SetResolution(int, int)"/>.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public void SetResolution(int width, int height)
         {
+            // Update the GPU back buffer size, this changes the window size as well unless we're
+            // full-screen (in which case the device resolution temporarily becomes equal to the GPU
+            // back buffer size and everything appears full-screen, although possibly blurry)
             graphics.PreferredBackBufferWidth = width;
             graphics.PreferredBackBufferHeight = height;
             graphics.ApplyChanges();
+
+            // Set up the render target, which we will render to, which gets copied to the GPU back buffer.
+            mainRenderTarget = new RenderTarget2D(gpu, width, height, false, gpu.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+
+            // Set the rectangle amounting to the size of the location on the back buffer where we
+            // are copying our mainRenderTarget to -- this is always equal to the back buffer size.
+            // We make sure to use the value after having set it above (and not use width/height
+            // variables directly) to make sure we respect device preferences and limitations.
+            displayRect = new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight);
+
+            if (manager != null)
+            {
+                manager.MainRenderTarget = mainRenderTarget;
+                manager.SetResolution(width, height);
+            }
         }
 
         /// <summary>
@@ -246,7 +267,7 @@ namespace HammeredGame
             gpu.SetRenderTarget(null);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
-            spriteBatch.Draw(mainRenderTarget, desktopRect, Color.White);
+            spriteBatch.Draw(mainRenderTarget, displayRect, Color.White);
 
             // Commit all the data to the back buffer
             spriteBatch.End();
