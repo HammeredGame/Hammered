@@ -323,11 +323,27 @@ namespace HammeredGame.Game.Screens
                 // Align to the right, in the center vertically with respect to the text on the left
                 TextAlign = FontStashSharp.RichText.TextHorizontalAlignment.Right,
                 HorizontalAlignment = HorizontalAlignment.Right,
-                // Arbitrary length and height, this might need to change based on resolution somehow
-                MinWidth = 300,
                 TextColor = new Color(255, 255, 255, 198),
                 // We use the Tag to store the Enum here.
                 Tag = initialValue
+            };
+
+            Label optionDecrement = new()
+            {
+                Text = "< ",
+                Font = BarlowFont.GetFont(fontSize),
+                TextAlign = FontStashSharp.RichText.TextHorizontalAlignment.Right,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Visible = false
+            };
+
+            Label optionIncrement = new()
+            {
+                Text = " >",
+                Font = BarlowFont.GetFont(fontSize),
+                TextAlign = FontStashSharp.RichText.TextHorizontalAlignment.Left,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Visible = false
             };
 
             // Helper function to change the toggle value by some delta, update the stored Tag and
@@ -346,9 +362,24 @@ namespace HammeredGame.Game.Screens
                 PlaySFX("Audio/UI/selection_confirm", 0.7f);
             }
 
-            // On mouse release on this element, invert the value stored in the Tag, update the
-            // text, and call the setter.
-            optionContainer.TouchUp += (s, a) =>
+            // Show decrement and increment buttons on mouse hover
+            optionContainer.MouseEntered += (s, a) =>
+            {
+                optionDecrement.Visible = true;
+                optionIncrement.Visible = true;
+            };
+            optionContainer.MouseLeft += (s, a) =>
+            {
+                optionDecrement.Visible = false;
+                optionIncrement.Visible = false;
+            };
+
+            // Set up click handlers on decrement and increment widgets
+            optionDecrement.TouchUp += (s, a) =>
+            {
+                changeValue(-1);
+            };
+            optionIncrement.TouchUp += (s, a) =>
             {
                 changeValue(1);
             };
@@ -377,8 +408,10 @@ namespace HammeredGame.Game.Screens
             // of the parent (like the heading/footer).
             optionContainer.Proportions.Add(new Proportion());
             optionContainer.AddChild(optionLabel);
-            optionContainer.Proportions.Add(new Proportion { Type = ProportionType.Fill });
+            optionContainer.Proportions.Add(Proportion.Fill);
+            optionContainer.AddChild(optionDecrement);
             optionContainer.AddChild(optionValue);
+            optionContainer.AddChild(optionIncrement);
             return optionContainer;
         }
 
@@ -462,9 +495,16 @@ namespace HammeredGame.Game.Screens
                             // The second item is a slider, change its background to pink
                             slider.Background = new SolidBrush(new Color(246, 101, 255));
                         }
-                        else if (panel.Widgets[1] is Label toggleValue)
+                        else if (panel.Widgets.Count == 4 && panel.Widgets[2] is Label)
+                        {
+                            // The third item is a label (so it's a multi-toggle), change its text color
+                            Label toggleValue = panel.Widgets[2] as Label;
+                            toggleValue.TextColor = new Color(246, 101, 255);
+                        }
+                        else if (panel.Widgets[1] is Label)
                         {
                             // The second item is a label (so it's a text toggle), change its text colour
+                            Label toggleValue = panel.Widgets[1] as Label;
                             toggleValue.TextColor = new Color(246, 101, 255);
                         }
                     }
@@ -477,9 +517,16 @@ namespace HammeredGame.Game.Screens
                             // The second item is a slider, change its background to the default
                             slider.Background = new SolidBrush(new Color(255, 255, 255, 198));
                         }
-                        else if (panel.Widgets[1] is Label toggleValue)
+                        else if (panel.Widgets.Count == 4 && panel.Widgets[2] is Label)
+                        {
+                            // The third item is a label (so it's a multi-toggle), change its text color
+                            Label toggleValue = panel.Widgets[2] as Label;
+                            toggleValue.TextColor = new Color(255, 255, 255, 198);
+                        }
+                        else if (panel.Widgets[1] is Label)
                         {
                             // The second item is a label (so it's a text toggle), change its text colour
+                            Label toggleValue = panel.Widgets[1] as Label;
                             toggleValue.TextColor = new Color(255, 255, 255, 198);
                         }
                     }

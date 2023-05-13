@@ -431,30 +431,38 @@ namespace HammeredGame.Game.Screens
                 MainMenu.Widgets[HoverIndex].OnTouchUp();
             }
 
-            // If the keybind for menu-item-up/down is pressed once, shift the index. If it is held,
-            // then we want to slowly go through each item, so we use a cooldown timer that is reset
-            // whenever any of the actions are handled.
+            // If the keybind for menu-item-up/down is pressed once, shift the index, simulating any
+            // mouse hover events as well. If the input is held, then we want to slowly go through
+            // each item, so we use a cooldown timer that is reset whenever any of the actions are handled.
             TimeSpan scrollCooldown = TimeSpan.FromMilliseconds(500);
             if (UserAction.MenuItemUp.Pressed(input) || UserAction.Movement.FlickedUp(input))
             {
+                MainMenu.Widgets[HoverIndex].OnMouseLeft();
                 MoveHoverBy(-1);
+                MainMenu.Widgets[HoverIndex].OnMouseEntered();
                 lastContinuousInput = gameTime.TotalGameTime;
             }
             else if ((UserAction.MenuItemUp.Held(input) || UserAction.Movement.HeldUp(input)) &&
                 gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
             {
+                MainMenu.Widgets[HoverIndex].OnMouseLeft();
                 MoveHoverBy(-1);
+                MainMenu.Widgets[HoverIndex].OnMouseEntered();
                 lastContinuousInput = gameTime.TotalGameTime;
             }
             else if (UserAction.MenuItemDown.Pressed(input) || UserAction.Movement.FlickedDown(input))
             {
+                MainMenu.Widgets[HoverIndex].OnMouseLeft();
                 MoveHoverBy(1);
+                MainMenu.Widgets[HoverIndex].OnMouseEntered();
                 lastContinuousInput = gameTime.TotalGameTime;
             }
             else if ((UserAction.MenuItemDown.Held(input) ||  UserAction.Movement.HeldDown(input)) &&
                 gameTime.TotalGameTime > lastContinuousInput + scrollCooldown)
             {
+                MainMenu.Widgets[HoverIndex].OnMouseLeft();
                 MoveHoverBy(1);
+                MainMenu.Widgets[HoverIndex].OnMouseEntered();
                 lastContinuousInput = gameTime.TotalGameTime;
             }
 
