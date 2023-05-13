@@ -33,6 +33,7 @@ namespace HammeredGame.Game.Screens
 
         private ControlPromptsScreen promptsScreen;
         private OnScreenDialogueScreen dialoguesScreen;
+        private LoadingScreen loadingScreen;
 
         // Music variables
         private Song bgMusic;
@@ -75,13 +76,14 @@ namespace HammeredGame.Game.Screens
             //sfx.Add(Content.Load<SoundEffect>("Audio/door_open"));
             //sfx.Add(Content.Load<SoundEffect>("Audio/door_close"));
 
+            loadingScreen = new LoadingScreen();
+            ScreenManager.PreloadScreen(loadingScreen);
+
             InitializeLevel(currentSceneName);
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 0.1f;
             MediaPlayer.Play(bgMusic);
-
-            SoundEffect.MasterVolume = 0.2f;
 
             // Preload the pause screen, so that adding the pause screen to the screen stack doesn't
             // call LoadContent every time (which lags because it has to loads fonts and create the
@@ -131,6 +133,7 @@ namespace HammeredGame.Game.Screens
             pauseScreen?.ExitScreen();
             promptsScreen?.ExitScreen();
             dialoguesScreen?.ExitScreen();
+            loadingScreen?.ExitScreen();
 
             MediaPlayer.Stop();
         }
@@ -148,12 +151,25 @@ namespace HammeredGame.Game.Screens
             dialoguesScreen?.ClearAllDialogues();
 
             currentSceneName = sceneToLoad;
-            currentScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
 
-            //// Set up the list of debug grid cells for debugging visualization
-            //// WARNING: Execute the following line of code if you wish to initialize the grid once.
-            //// Suggested for when AVAILABLE grid cells are shown in debug mode.
-            //SetupDebugGrid();
+            // Reset the progress so that there isn't a flash of 100 from the previous use
+            loadingScreen.ResetProgress();
+            ScreenManager.AddScreen(loadingScreen);
+            Scene temporaryScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
+
+            temporaryScene
+                // Pass a progress reporting function to retrieve the asynchronous progress
+                .LoadContentAsync(progress: loadingScreen.ReportProgress)
+                .ContinueWith(async _ => {
+                    // Make sure we run in the next update synchronously since we will be
+                    // overwriting currentScene and also removing the loading screen (which we don't
+                    // want to do in a Draw). This is necessary because .ContinueWith can run in an
+                    // asynchronous thread of its own.
+                    await GameServices.GetService<ScriptUtils>().WaitNextUpdate();
+
+                    currentScene = temporaryScene;
+                    loadingScreen.ExitScreen(false);
+                });
         }
 
         /// <summary>
@@ -184,6 +200,8 @@ namespace HammeredGame.Game.Screens
         {
             base.Update(gameTime);
 
+            if (currentScene == null || !currentScene.IsLoaded) return;
+
             Input input = GameServices.GetService<Input>();
 
             if (HasFocus && UserAction.Pause.Pressed(input))
@@ -210,6 +228,8 @@ namespace HammeredGame.Game.Screens
         {
             base.Draw(gameTime);
 
+            if (currentScene == null) return;
+
             gameRenderer.DrawScene(gameTime, currentScene);
             gameRenderer.PostProcess();
             gameRenderer.CopyOutputTo(ScreenManager.MainRenderTarget);
@@ -220,6 +240,8 @@ namespace HammeredGame.Game.Screens
         /// </summary>
         public override void UI()
         {
+            if (currentScene == null) return;
+
             // Show a scene switcher dropdown, with the list of all scene class names in this assembly
             ImGui.Text("Current Loaded Scene: ");
             ImGui.SameLine();
@@ -229,7 +251,11 @@ namespace HammeredGame.Game.Screens
                 {
                     if (ImGui.Selectable(fqn, fqn == currentScene.GetType().FullName))
                     {
-                        InitializeLevel(fqn);
+                        Task.Factory.StartNew(async () =>
+                        {
+                            await GameServices.GetService<ScriptUtils>().WaitNextUpdate();
+                            InitializeLevel(fqn);
+                        });
                     }
                 }
                 ImGui.EndCombo();

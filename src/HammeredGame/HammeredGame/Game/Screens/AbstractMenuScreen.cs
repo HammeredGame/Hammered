@@ -1,6 +1,7 @@
 ﻿using FontStashSharp;
 using HammeredGame.Core;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D;
@@ -47,6 +48,18 @@ namespace HammeredGame.Game.Screens
         private VerticalStackPanel menuContainer;
 
         private Image okPromptImage;
+
+        private AudioEmitter audioEmitter = new();
+
+        /// <summary>
+        /// Convenience function to play a sound effect from the default position (is it world center?)
+        /// </summary>
+        /// <param name="sfxName"></param>
+        /// <param name="volume"></param>
+        protected void PlaySFX(string sfxName, float volume)
+        {
+            GameServices.GetService<AudioManager>().Play3DSound(sfxName, false, audioEmitter, volume);
+        }
 
         public override void LoadContent()
         {
@@ -104,6 +117,7 @@ namespace HammeredGame.Game.Screens
                 // click handler.
                 menuItem.Selected += (s, a) =>
                 {
+                    PlaySFX("Audio/UI/selection_confirm", 1);
                     mainMenu.HoverIndex = (s as MenuItem).Index;
                 };
 
@@ -224,10 +238,13 @@ namespace HammeredGame.Game.Screens
                     .AddFrame(200, menuWidthMax, Easing.Exponential.Out);
                 TransitionAnimationTimeline.AddFloat(this, nameof(MenuTriangleWidth))
                     .AddFrame(200, 300f, Easing.Exponential.Out);
+
+                PlaySFX("Audio/lohi_whoosh", 1f);
                 return false;
             }
             // Set the width on the Myra menu UI.
             menuContainer.Width = (int)MenuWidthCurrent;
+            Desktop.UpdateLayout();
 
             // Return true and indicate the transition is finished only after animation is done
             return TransitionAnimationTimeline.State == TweenState.Stopped;
@@ -252,10 +269,13 @@ namespace HammeredGame.Game.Screens
                     .AddFrame(200, 0, Easing.Exponential.Out);
                 TransitionAnimationTimeline.AddFloat(this, nameof(MenuTriangleWidth))
                     .AddFrame(200, 0f, Easing.Exponential.Out);
+
+                PlaySFX("Audio/lohi_whoosh", 1f);
                 return false;
             }
             // Set the width on the Myra menu UI.
             menuContainer.Width = (int)MenuWidthCurrent;
+            Desktop.UpdateLayout();
 
             // Return true and indicate the transition is finished only after animation is done
             return TransitionAnimationTimeline.State == TweenState.Stopped;
@@ -263,10 +283,9 @@ namespace HammeredGame.Game.Screens
 
         public override void Update(GameTime gameTime)
         {
-            // Update screen state and HasFocus so we can use it
             base.Update(gameTime);
 
-            // Do nothing if the screen doesn't have focus
+            // Do nothing if the screen doesn't have focus yet (e.g. mid-transition or hidden)
             if (!HasFocus) return;
 
             Input input = GameServices.GetService<Input>();
@@ -320,6 +339,7 @@ namespace HammeredGame.Game.Screens
             {
                 if (menuItem.Index == mainMenu.HoverIndex && menuItem.Text[0] != '>')
                 {
+                    PlaySFX("Audio/UI/selection_change", 0.7f);
                     menuItem.Text = "> " + menuItem.Text;
                     menuItem.Color = new Color(246, 101, 255);
                 }
@@ -332,7 +352,7 @@ namespace HammeredGame.Game.Screens
 
             // Update the OK input prompt based on the currently active input type - this is safe to
             // perform synchronously since it will only query loaded images and will not cause file IO.
-            okPromptImage.Renderable = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Interact)[0];
+            okPromptImage.Renderable = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Confirm)[0];
 
             // Update the UI layout based on any changes to it above
             Desktop.UpdateLayout();

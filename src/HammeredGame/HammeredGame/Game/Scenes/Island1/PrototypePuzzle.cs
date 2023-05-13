@@ -10,6 +10,10 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableO
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -17,17 +21,19 @@ namespace HammeredGame.Game.Scenes.Island1
     {
         private bool spawnedNewRock = false;
         private bool openedGoalDoor = false;
+        private bool withinDoorInteractTrigger = false;
         private Vector3 newSpawnRockPosition = new Vector3(257.390f, 0.000f, -187.414f);
         private CollisionGroup laserRockGroup;
 
-        public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen)
+        public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen) { }
+
+        protected override async Task LoadSceneContent(IProgress<int> progress)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/PrototypePuzzle_voxel.xml");
-            OnSceneStart();
+            await base.LoadSceneContent(progress);
+            await CreateFromXML($"Content/SceneDescriptions/Island1/PrototypePuzzle_voxel.xml", progress);
         }
 
-        protected override async void OnSceneStart()
-        {
+        protected override void OnSceneStart() {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
 
@@ -62,7 +68,25 @@ namespace HammeredGame.Game.Scenes.Island1
             this.UpdateSceneGrid(Get<Wall>("wall2"), false, 0.9);
             this.UpdateSceneGrid(Get<Wall>("wall3"), false, 0.9);
 
-            // No further initialization required for the <c>UniformGrid</c> instance.
+            // Insert any limitations on the paths the hammer may travel by calling functions from the <c>UniformGrid</c> instance.
+            Vector3 floorDisableStart = new Vector3(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z);
+            Vector3 floorDisableFinish = new Vector3(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
+            this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
+
+
+            CancellationTokenSource doorInteractTokenSource = new();
+            Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
+            {
+                doorInteractTokenSource = new();
+                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                withinDoorInteractTrigger = true;
+            };
+
+            Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += async (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinDoorInteractTrigger = false;
+            };
 
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
@@ -205,6 +229,22 @@ namespace HammeredGame.Game.Scenes.Island1
             else
             {
                 spawnedNewRock = false;
+            }
+
+            if (withinDoorInteractTrigger)
+            {
+                Input inp = this.Services.GetService<Input>();
+                if (UserAction.Interact.Pressed(inp))
+                {
+                    if (Get<Key>("key").IsPickedUp())
+                    {
+                        Get<Door>("door_key").OpenDoor();
+                    }
+                    else
+                    {
+                        await ParentGameScreen.ShowDialogueAndWait("Hmm... Maybe I need something to open this?");
+                    }
+                }
             }
         }
     }

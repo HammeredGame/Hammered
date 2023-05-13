@@ -92,15 +92,15 @@ namespace HammeredGame.Game.Screens
                 HorizontalAlignment = HorizontalAlignment.Center
             };
 
-            // Show a small image with the Interact button in the corner, so players know what to
+            // Show a small image with the Confirm button in the corner, so players know what to
             // press to move forward. This image can be overriden in Update() based on the currently
             // active input type too.
-            List<TextureRegion> interactButton = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Interact);
+            List<TextureRegion> confirmButton = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Confirm);
             dialoguePromptImage = new Image
             {
-                // Since the interact action is discrete, there is only one possible button for it:
+                // Since the confirm action is discrete, there is only one possible button for it:
                 // we show the 0th index
-                Renderable = interactButton[0],
+                Renderable = confirmButton[0],
                 Opacity = 0.5f,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 // Make sure to set both width and height to prevent any weird stretching issues
@@ -148,7 +148,7 @@ namespace HammeredGame.Game.Screens
 
                 // Dequeue the top item if the confirmation action is performed, and call into any
                 // callbacks it had
-                if (UserAction.Interact.Pressed(GameServices.GetService<Input>()))
+                if (UserAction.Confirm.Pressed(GameServices.GetService<Input>()))
                 {
                     (_, TaskCompletionSource taskCompletionSource) = dialogueQueue.Dequeue();
                     taskCompletionSource.SetResult();
@@ -164,8 +164,8 @@ namespace HammeredGame.Game.Screens
                     // store, but will never cause an expensive IO operation (it will default to
                     // keyboard if atlas not found) so we're fine to perform this in Update().
                     // Updating the Myra UI is probably the more expensive bottleneck if at all.
-                    List<TextureRegion> interactButton = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Interact);
-                    dialoguePromptImage.Renderable = interactButton[0];
+                    List<TextureRegion> confirmButton = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Confirm);
+                    dialoguePromptImage.Renderable = confirmButton[0];
                 }
 
                 desktop.UpdateLayout();

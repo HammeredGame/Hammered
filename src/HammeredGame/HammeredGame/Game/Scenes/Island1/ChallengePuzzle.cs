@@ -1,15 +1,20 @@
 ﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.Screens;
+using System;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
     internal class ChallengePuzzle : Scene
     {
         public ChallengePuzzle(GameServices services, GameScreen screen) : base(services, screen)
+        { }
+
+        protected override async Task LoadSceneContent(IProgress<int> progress)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/ChallengePuzzle.xml");
-            OnSceneStart();
+            await base.LoadSceneContent(progress);
+            await CreateFromXML($"Content/SceneDescriptions/Island1/ChallengePuzzle.xml", progress);
         }
 
         protected override void OnSceneStart()
