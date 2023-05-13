@@ -24,46 +24,48 @@ namespace HammeredGame.Game.Screens
             MenuHeaderText = "OPTIONS";
             BackgroundOverlayOpacity = 0.3f;
 
+            UserSettings settings = GameServices.GetService<UserSettings>();
+
             // We use a smaller font size here, 5% of the screen height
             int oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 20;
 
             HorizontalStackPanel optionsMusicVolume = CreateSliderOption(
                 oneLineHeight,
                 "Music Volume",
-                (int)(GameServices.GetService<UserSettings>().MasterVolume * 10f),
+                (int)(settings.MasterVolume * 10f),
                 0,
                 10,
                 (i) =>
                 {
-                    GameServices.GetService<UserSettings>().MasterVolume = i / 10f;
-                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
+                    settings.MasterVolume = i / 10f;
+                    settings.Save();
                     MediaPlayer.Volume = i / 10f;
                 });
 
             HorizontalStackPanel optionsSFXVolume = CreateSliderOption(
                 oneLineHeight,
                 "SFX Volume",
-                (int)(GameServices.GetService<UserSettings>().SFXVolume * 10f),
+                (int)(settings.SFXVolume * 10f),
                 0,
                 10,
                 (i) =>
                 {
-                    GameServices.GetService<UserSettings>().SFXVolume = i / 10f;
-                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
+                    settings.SFXVolume = i / 10f;
+                    settings.Save();
                     SoundEffect.MasterVolume = i / 10f;
                 });
 
             HorizontalStackPanel optionsResolution = CreateMultipleOption(
                 oneLineHeight,
                 "Resolution",
-                GameServices.GetService<UserSettings>().Resolution,
+                settings.Resolution,
                 Resolution.AcceptedList.Where(r =>
                     r.Width <= GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Last().Width &&
                     r.Height <= GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Last().Height).ToArray(),
                 (i) =>
                 {
-                    GameServices.GetService<UserSettings>().Resolution = i;
-                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
+                    settings.Resolution = i;
+                    settings.Save();
                     GameServices.GetService<HammeredGame>().SetResolution(i.Width, i.Height);
                 });
             optionsResolution.Enabled = !GameServices.GetService<GraphicsDeviceManager>().IsFullScreen;
@@ -71,35 +73,35 @@ namespace HammeredGame.Game.Screens
             HorizontalStackPanel optionsFullScreen = CreateToggleOption(
                 oneLineHeight,
                 "Full Screen",
-                GameServices.GetService<UserSettings>().FullScreen,
+                settings.FullScreen,
                 "Yes",
                 "No",
                 (i) =>
                 {
-                    GameServices.GetService<UserSettings>().FullScreen = i;
-                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
-                    GameServices.GetService<GraphicsDeviceManager>().IsFullScreen = i;
-                    GameServices.GetService<GraphicsDeviceManager>().ApplyChanges();
-                    GameServices.GetService<UserSettings>().Resolution = new Resolution(
+                    settings.FullScreen = i;
+                    GameServices.GetService<HammeredGame>().SetFullScreen(i);
+
+                    settings.Resolution = new Resolution(
                         GameServices.GetService<GraphicsDevice>().DisplayMode.Width,
                         GameServices.GetService<GraphicsDevice>().DisplayMode.Height);
                     GameServices.GetService<HammeredGame>().SetResolution(
                         GameServices.GetService<GraphicsDevice>().DisplayMode.Width,
                         GameServices.GetService<GraphicsDevice>().DisplayMode.Height);
+
+                    settings.Save();
                 });
 
             HorizontalStackPanel optionsBorderless = CreateToggleOption(
                 oneLineHeight,
                 "Borderless",
-                GameServices.GetService<UserSettings>().Borderless,
+                settings.Borderless,
                 "Yes",
                 "No",
                 (i) =>
                 {
-                    GameServices.GetService<UserSettings>().Borderless = i;
-                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
-                    GameServices.GetService<HammeredGame>().Window.IsBorderless = i;
-                    GameServices.GetService<GraphicsDeviceManager>().ApplyChanges();
+                    settings.Borderless = i;
+                    settings.Save();
+                    GameServices.GetService<HammeredGame>().SetBorderless(i);
                 });
 
             Label menuItemBack = new()

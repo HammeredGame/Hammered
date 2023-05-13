@@ -59,7 +59,8 @@ namespace HammeredGame
                 PreferredBackBufferHeight = desktop_height,
                 IsFullScreen = false,
                 PreferredDepthStencilFormat = DepthFormat.None,
-                GraphicsProfile = GraphicsProfile.HiDef
+                GraphicsProfile = GraphicsProfile.HiDef,
+                HardwareModeSwitch = false
             };
 
             Window.Title = "HAMMERED";
@@ -71,18 +72,15 @@ namespace HammeredGame
         protected override void Initialize()
         {
             // Load user settings
-            UserSettings settings = UserSettings.LoadFromFile("settings.txt");
-
-            // Set full screen (Windows-only) and border-less based on settings
-            graphics.IsFullScreen = settings.FullScreen;
-            graphics.HardwareModeSwitch = false;
-            Window.IsBorderless = settings.Borderless;
-            graphics.ApplyChanges();
+            UserSettings settings = UserSettings.CreateFromFile("settings.txt");
 
             gpu = GraphicsDevice;
             PresentationParameters pp = gpu.PresentationParameters;
             spriteBatch = new SpriteBatch(gpu);
 
+            // Set full screen (Windows-only) and border-less based on settings
+            SetFullScreen(settings.FullScreen);
+            SetBorderless(settings.Borderless);
             // Update render resolution and set up mainRenderTarget
             SetResolution(settings.Resolution.Width, settings.Resolution.Height);
 
@@ -189,8 +187,8 @@ namespace HammeredGame
         public void SetResolution(int width, int height)
         {
             // Update the GPU back buffer size, this changes the window size as well unless we're
-            // full-screen (in which case the device resolution temporarily becomes equal to the GPU
-            // back buffer size and everything appears full-screen, although possibly blurry)
+            // full-screen (in which case the result is inconsistent between platforms, and is
+            // generally supposed to be avoided unless the resolution is equal to the display)
             graphics.PreferredBackBufferWidth = width;
             graphics.PreferredBackBufferHeight = height;
             graphics.ApplyChanges();
@@ -203,6 +201,31 @@ namespace HammeredGame
                 manager.MainRenderTarget = mainRenderTarget;
                 manager.SetResolution(width, height);
             }
+        }
+
+        /// <summary>
+        /// Changes the game's full-screen status. This uses a soft full screen (set by <see
+        /// cref="GraphicsDeviceManager.HardwareModeSwitch"/> being false), which means we aren't
+        /// taking over the GPU exclusively (which is buggy on Mac for example and not recommended
+        /// on Windows). As a consequence though, you generally also have to set the back buffer
+        /// size to be equal to the display resolution (with <see cref="SetResolution(int, int)"/>
+        /// whenever you call this function with the true argument.
+        /// </summary>
+        /// <param name="fullScreen"></param>
+        public void SetFullScreen(bool fullScreen)
+        {
+            graphics.IsFullScreen = fullScreen;
+            graphics.ApplyChanges();
+        }
+
+        /// <summary>
+        /// Toggles the game's OS border/chrome.
+        /// </summary>
+        /// <param name="borderless"></param>
+        public void SetBorderless(bool borderless)
+        {
+            Window.IsBorderless = borderless;
+            graphics.ApplyChanges();
         }
 
         /// <summary>
