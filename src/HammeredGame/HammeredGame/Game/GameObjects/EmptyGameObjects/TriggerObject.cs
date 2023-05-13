@@ -30,6 +30,7 @@ namespace HammeredGame.Game.GameObjects.EmptyGameObjects
         public TriggerObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             this.Entity.Tag = "TriggerObjectBounds";
+            this.Entity.CollisionInformation.Tag = this;
             this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
             this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
         }

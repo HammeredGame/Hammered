@@ -40,8 +40,10 @@ namespace HammeredGame.Game.GameObjects
 
     public class Player : GameObject, IImGui
     {
-        // Private variables specific to the player class
-        public float playerSpeedModifier = 1f;
+        // Variables specific to the player class
+        public bool InputEnabled = true;
+
+        public float PlayerSpeedModifier = 1f;
         private float baseSpeed = 50f;
 
         private float baseControllerSpeed = 0.5f;
@@ -255,7 +257,7 @@ namespace HammeredGame.Game.GameObjects
             player_vel = Vector3.Zero;
 
             Vector3 forwardDirection = Vector3.Zero;
-            if (activeCamera != null && screenHasFocus) {
+            if (InputEnabled && activeCamera != null && screenHasFocus) {
                 // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
                 // "forward" from the current camera perspective. Calculated by projecting the vector of
                 // the current camera position to the player position, onto the ground, and normalising it.
@@ -278,7 +280,7 @@ namespace HammeredGame.Game.GameObjects
                 // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
                 // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
                 player_vel.Normalize();
-                player_vel *= baseSpeed * playerSpeedModifier;
+                player_vel *= baseSpeed * PlayerSpeedModifier;
 
                 this.Entity.LinearVelocity = MathConverter.Convert(new Vector3(player_vel.X, this.Entity.LinearVelocity.Y, player_vel.Z));
 

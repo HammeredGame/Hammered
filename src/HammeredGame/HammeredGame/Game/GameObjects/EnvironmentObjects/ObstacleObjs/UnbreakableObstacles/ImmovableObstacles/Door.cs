@@ -119,14 +119,14 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 // If player collides with door and player has collected corresponding key
                 // Door disappears (is opened) and the collision box associated with the
                 // door is removed from the physics space
-                if (other.Tag is Player && this.keyFound)
-                {
-                    var player = other.Tag as Player;
-                    player.ReachedGoal = isGoal; // TEMPORARY
-                    //this.Visible = false;
-                    //this.ActiveSpace.Remove(sender.Entity);
-                    this.OpenDoor();
-                }
+                //if (other.Tag is Player && this.keyFound)
+                //{
+                //    var player = other.Tag as Player;
+                //    player.ReachedGoal = isGoal; // TEMPORARY
+                //    //this.Visible = false;
+                //    //this.ActiveSpace.Remove(sender.Entity);
+                //    this.OpenDoor();
+                //}
 
             }
         }

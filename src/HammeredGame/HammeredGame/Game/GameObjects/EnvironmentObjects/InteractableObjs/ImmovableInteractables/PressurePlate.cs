@@ -71,7 +71,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                 //{
                 //    System.Diagnostics.Debug.WriteLine("pressureplate and player pair touching");
                 //}
-
+                if (other.Tag is EmptyGameObject) return;
                 this.SetActivated(true);
             }
         }
@@ -85,6 +85,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             if (otherEntityInformation != null)
             {
                 //We hit an entity!
+                if (other.Tag is EmptyGameObject) return;
                 this.SetActivated(true);
             }
         }
@@ -98,6 +99,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             //System.Diagnostics.Debug.WriteLine(this.entity.CollisionInformation.Pairs.Count);
             if (otherEntityInformation != null)
             {
+                if (other.Tag is EmptyGameObject) return;
+
                 // Check if there are no other non-static-mesh objects colliding with the pressure plate.
                 // If there are no other collisions, only then should the pressure plate be deactivated
                 int num_collisions = 0;
@@ -108,9 +111,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                         if (p.EntityB != null)
                         {
                             var otherObj = other.Tag as GameObject;
-                            if (!p.EntityB.Equals(otherObj.Entity))
+                            if (otherObj != null)
                             {
-                                num_collisions++;
+                                if (otherObj is EmptyGameObject) continue;
+                                if (!p.EntityB.Equals(otherObj.Entity))
+                                {
+                                    num_collisions++;
+                                }
                             }
                         }
                     }
@@ -119,9 +126,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                         if (p.EntityA != null)
                         {
                             var otherObj = other.Tag as GameObject;
-                            if (!p.EntityA.Equals(otherObj.Entity))
+                            if (otherObj != null)
                             {
-                                num_collisions++;
+                                if (otherObj is EmptyGameObject) continue;
+                                if (!p.EntityA.Equals(otherObj.Entity))
+                                {
+                                    num_collisions++;
+                                }
                             }
                         }
                     }

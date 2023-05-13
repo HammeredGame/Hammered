@@ -19,6 +19,7 @@ using ImGuiNET;
 using ImMonoGame.Thing;
 using BEPUphysics.Entities.Prefabs;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using BEPUphysics.CollisionRuleManagement;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -55,6 +56,8 @@ namespace HammeredGame.Game.GameObjects
         }
 
         // Hammer specific variables
+        public bool InputEnabled = true;
+
         public float hammerSpeed { get; private set; } = 70f;
         private HammerState hammerState;
 
@@ -164,6 +167,14 @@ namespace HammeredGame.Game.GameObjects
         public void SetOwnerPlayer(Player player)
         {
             this.player = player;
+
+            var hammerGroup = new CollisionGroup();
+            var playerGroup = new CollisionGroup();
+            CollisionGroupPair pair = new CollisionGroupPair(hammerGroup, playerGroup);
+            CollisionRules.CollisionGroupRules.Add(pair, CollisionRule.NoSolver);
+
+            this.player.Entity.CollisionInformation.CollisionRules.Group = playerGroup;
+            this.Entity.CollisionInformation.CollisionRules.Group = hammerGroup;
         }
 
         public void SetSceneUniformGrid(UniformGrid grid) { this.grid = grid; }
@@ -193,11 +204,11 @@ namespace HammeredGame.Game.GameObjects
                 // is held in the correct direction.
                 Rotation = player.Rotation * Quaternion.CreateFromRotationMatrix(player.Animations.WorldTransforms[boneIndexForRightHand]) * rotationWhenHeldByPlayer;
 
-                player.playerSpeedModifier = 1.0f;
+                player.PlayerSpeedModifier = 1.0f;
             }
 
             // Get the input via keyboard or gamepad
-            HandleInput();
+            if (InputEnabled && player != null && screenHasFocus) HandleInput();
 
             // If hammer is called back (successfully), update its position
             // and handle interactions along the way - ending once the hammer is back with player
@@ -262,7 +273,7 @@ namespace HammeredGame.Game.GameObjects
 
                     //this.ComputeBounds();
 
-                    player.playerSpeedModifier = 0.5f;
+                    player.PlayerSpeedModifier = 0.5f;
                 }
 
                 //// Check for any collisions along the way
@@ -352,7 +363,7 @@ namespace HammeredGame.Game.GameObjects
 
                 // Normal collisions to ensure the physics engine solves collision constraint with
                 // this entity --> Also, probably a cause for issues
-                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+                this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
             }
         }
 
@@ -502,7 +513,7 @@ namespace HammeredGame.Game.GameObjects
 
         private void UpdateQuadraticBezierPosition()
         {
-            t += 0.015f;
+            t += 0.012f;
             var previousPosition = this.Entity.Position;
             this.Entity.Position = BezierQuadraticSpline.QuadraticBezierPosition(p0, p1, p2, t);
             var temp = this.Entity.Position - previousPosition; temp.Normalize(); temp *= hammerSpeed;

@@ -1,4 +1,4 @@
-using System.Collections.Generic; 
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
@@ -21,6 +21,13 @@ namespace HammeredGame.Core
             "Audio/new_laser",
             "Audio/rock_water",
             "Audio/short_roll",
+            // no idea where I should be noting this down but credits & licenses:
+            // selection_change: CC0
+            // Kenney UI Audio pack (https://kenney.nl/assets/ui-audio)
+            "Audio/UI/selection_change",
+            // selection_confirm: CC BY 4.0 (attribution required, modification indication required)
+            // Universal UI/Menu Soundpack (https://ellr.itch.io/universal-ui-soundpack)
+            "Audio/UI/selection_confirm"
         };
 
         //public AudioListener Listener
@@ -29,11 +36,11 @@ namespace HammeredGame.Core
         //    set { Listener = value; }
         //}
 
-        //Listener and Emitter for 3D positioning 
+        //Listener and Emitter for 3D positioning
         public AudioListener listener = new AudioListener();
         readonly AudioEmitter emitter = new AudioEmitter();
 
-        //store loaded soundeffects 
+        //store loaded soundeffects
         private Dictionary<string, SoundEffect> sfx = new Dictionary<string, SoundEffect>();
 
         //keep track of those that are active
@@ -50,16 +57,16 @@ namespace HammeredGame.Core
             {
                 sfx.Add(soundName, Game.Content.Load<SoundEffect>(soundName));
             }
-            
+
         }
 
-        //load all of the sound effects 
+        //load all of the sound effects
         public override void Initialize()
         {
             //SoundEffect.DistanceScale = 2000;
             //SoundEffect.DopplerScale = 0.1f;
-            
-            
+
+
 
             base.Initialize();
         }
@@ -85,7 +92,7 @@ namespace HammeredGame.Core
             }
         }
 
-        //cleanup sounds that are no longer active, apply3D to those who are 
+        //cleanup sounds that are no longer active, apply3D to those who are
         public override void Update(GameTime gameTime)
         {
             int i = 0;
@@ -106,7 +113,7 @@ namespace HammeredGame.Core
             }
             base.Update(gameTime);
         }
-        //should have an IAudioEmitter in params, need to assign Hammer to emitting instance 
+        //should have an IAudioEmitter in params, need to assign Hammer to emitting instance
         public SoundEffectInstance Play3DSound(string soundName, bool isLooped, AudioEmitter obj_emitter, float volume)
         {
             ActiveSound active = new ActiveSound();
@@ -118,12 +125,12 @@ namespace HammeredGame.Core
 
             Apply3D(active);
 
-            active.Instance.Volume = volume; 
+            active.Instance.Volume = volume;
             active.Instance.Play();
 
             ActiveSounds.Add(active);
 
-            return active.Instance; 
+            return active.Instance;
 
         }
 
@@ -132,7 +139,7 @@ namespace HammeredGame.Core
             emitter.Position = activeSound.Emitter.Position;
             //emitter.Forward = activeSound.Emitter.Forward;
             //emitter.Up = activeSound.Emitter.Up;
-            //emitter.Velocity = activeSound.Emitter.Velocity; 
+            //emitter.Velocity = activeSound.Emitter.Velocity;
 
             activeSound.Instance.Apply3D(listener, emitter);
         }
@@ -140,7 +147,7 @@ namespace HammeredGame.Core
         public class ActiveSound
         {
             public SoundEffectInstance Instance;
-            public AudioEmitter Emitter; 
+            public AudioEmitter Emitter;
         }
     }
 }

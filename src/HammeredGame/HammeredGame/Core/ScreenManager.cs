@@ -34,6 +34,7 @@ namespace HammeredGame.Core
         /// game scene should be done within GameScreen.
         /// </summary>
         private readonly GameServices services;
+
         public GraphicsDevice GraphicsDevice;
         public RenderTarget2D MainRenderTarget;
 
@@ -52,9 +53,11 @@ namespace HammeredGame.Core
         {
             // Screens may load additional screens, so use a for loop instead of a foreach loop.
             // We assume screens won't exit during content load...
-            for (int i = 0; i < screens.Count; i++) {
+            for (int i = 0; i < screens.Count; i++)
+            {
                 screens[i].LoadContent();
             }
+
             // Set the internal flag that indicates that any further handling of
             // this.AddScreen() will need to call LoadContent() on it, since the main game LoadContent()
             // has already passed.
@@ -92,16 +95,18 @@ namespace HammeredGame.Core
             for (int i = screensWorkingCopy.Count - 1; i >= 0; i--)
             {
                 Screen screen = screensWorkingCopy[i];
+
                 screen.UpdateWithPrelude(gameTime, hasFocus, isCoveredByNonPartialScreen);
 
-                // If the screen is drawn in some amount, then mark it as having stolen focus from
-                // the rest of the stack, unless it passes through focus
-                if (screen.State == ScreenState.Active)
+                // If the screen is drawn in some amount (even mid-transition), then mark it as
+                // having stolen focus from the rest of the stack, unless it passes through focus
+                if (screen.State != ScreenState.Hidden)
                 {
                     if (!screen.PassesFocusThrough)
                     {
                         hasFocus = false;
                     }
+
                     if (!screen.IsPartial)
                     {
                         isCoveredByNonPartialScreen = true;
@@ -158,6 +163,12 @@ namespace HammeredGame.Core
         /// <param name="screen"></param>
         public void AddScreen(Screen screen)
         {
+            // Do nothing if the screen already exists. This is fine for the current set up but
+            // may need to change if we legitimately need to have two identical instances of a
+            // screen added to the stack. When that happens, care needs to be taken to prevent
+            // quick double-clicks from adding two screens from menus.
+            if (screens.Contains(screen)) return;
+
             // Set the variables that we are passing to the screen
             screen.GameServices = services;
             screen.ScreenManager = this;

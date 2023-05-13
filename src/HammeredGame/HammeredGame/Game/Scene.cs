@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game
 {
@@ -46,6 +47,10 @@ namespace HammeredGame.Game
         {
             get { return GameObjects.Values.ToList(); }
         }
+
+        public bool IsLoaded { get; protected set; } = false;
+
+        public bool SceneStarted { get; private set; } = false;
 
         /// <summary>
         /// Any debug objects shown as representations of bounding boxes. This list is updated in this.UpdateDebugObjects().
@@ -83,11 +88,46 @@ namespace HammeredGame.Game
         {
             this.Services = services;
             this.ParentGameScreen = screen;
-            InitNewSpace();
         }
 
         /// <summary>
-        /// Script to run after loading the scene description. Should be called from the constructor.
+        /// Load the scene contents and mark it as IsLoaded. This is a public wrapper for <see
+        /// cref="LoadSceneContent(IProgress{int})"/>, which individual scenes can override without
+        /// worrying about setting IsLoaded after everything.
+        /// </summary>
+        /// <param name="progress">For reporting progress back, as an integer from 0 to 100</param>
+        /// <returns>An awaitable task with progress percentage being returned in "progress"</returns>
+        public async Task LoadContentAsync(IProgress<int> progress)
+        {
+            // Before loading XMLs or creating assets, initialize the physics Space since they might
+            // need it
+            InitNewSpace();
+            await LoadSceneContent(progress);
+
+            // Perform one time-step update of the physics space here since the very first call to
+            // Update() after adding all the entities seems to be taking around 200ms and noticeably
+            // lagging, and there's probably no disadvantage to doing it once while loading to
+            // smoothen the gameplay.
+            //
+            // Note how we have to switch to the main UI thread because bepuphysics can freeze if
+            // it's updated from multiple threads.
+            await Services.GetService<ScriptUtils>().WaitNextUpdate();
+            Space.Update();
+
+            // Mark the scene as loaded and ready to be Update()-ed.
+            IsLoaded = true;
+        }
+
+        /// <summary>
+        /// For individual scenes to override, and create objects, initialize maps from XML, etc.
+        /// </summary>
+        /// <param name="progress"></param>
+        /// <returns></returns>
+        protected async virtual Task LoadSceneContent(IProgress<int> progress) {}
+
+        /// <summary>
+        /// Script that is called during the first Update() after the scene has fully finished
+        /// loading. Any initialization before this should be done in <see cref="LoadSceneContent(IProgress{int})"/>.
         /// </summary>
         protected abstract void OnSceneStart();
 
@@ -173,14 +213,16 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
-        /// Initialize the scene from the XML scene description. This will set up the Camera and the
-        /// GameObjects. An XML scene description will not contain any game scripts or triggers.
+        /// Initialize the scene from the XML scene description. This will set up the various
+        /// components of a scene. An XML scene description will not contain any game scripts or
+        /// triggers. Since this is an asynchronous function that takes quite a while and we'd like
+        /// to know the progress of (for loading screens), we take an IProgress as input.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="fileName"></param>
-        public void CreateFromXML(string fileName)
+        /// <param name="fileName">The filename to load</param>
+        /// <param name="progress">For reporting progress back, as an integer from 0 to 100</param>
+        public async Task CreateFromXML(string fileName, IProgress<int> progress)
         {
-            (Camera, Lights, GameObjects, Grid) = SceneDescriptionIO.ParseFromXML(fileName, Services);
+            (Camera, Lights, GameObjects, Grid) = await SceneDescriptionIO.ParseFromXML(fileName, Services, progress);
             // Set up the list of debug grid cells for debugging visualization
             // WARNING: Execute the following line of code if you wish to initialize the grid only once.
             // Suggested for when (constant) AVAILABLE grid cells are shown.
@@ -193,6 +235,14 @@ namespace HammeredGame.Game
         /// </summary>
         public virtual void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
+            if (!IsLoaded) return;
+
+            if (!SceneStarted)
+            {
+                SceneStarted = true;
+                OnSceneStart();
+            }
+
             // Update each game object
             foreach (GameObject gameObject in this.GameObjectsList)
             {
@@ -307,9 +357,9 @@ namespace HammeredGame.Game
                 // just adjust the scalar multiplier 1 to something greater than 1.
                 // This could prove useful, because the size of the hammer is not currently taken into account.
                 // Ideally, the "·Repetitions" variables would also be parameterized w.r.t the dimensions of the hammer.
-                int xRepetitions = (int)(Math.Ceiling(goBox.HalfWidth / sideLength) * tightness); 
+                int xRepetitions = (int)(Math.Ceiling(goBox.HalfWidth / sideLength) * tightness);
                 int yRepetitions = (int)(Math.Ceiling(goBox.HalfHeight / sideLength) * tightness);
-                int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * tightness); 
+                int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * tightness);
                 for (int i = -xRepetitions; i <= xRepetitions; ++i)
                 {
                     for (int j = -yRepetitions; j <= yRepetitions; ++j)
@@ -446,9 +496,17 @@ namespace HammeredGame.Game
                 {
                     // Clear the scene objects and the physics space
                     Clear();
-                    CreateFromXML(result.Path);
-                    // Re-run the scene start script
-                    OnSceneStart();
+                    Task.Run(async () =>
+                    {
+                        // Reset the loaded and started flags so we don't render + we don't call
+                        // Update() while we load
+                        IsLoaded = false;
+                        SceneStarted = false;
+                        // Pass in a dummy progress reporter
+                        var progress = new Progress<int>(_ => { });
+                        await CreateFromXML(result.Path, progress);
+                        IsLoaded = true;
+                    });
                 }
             }
 

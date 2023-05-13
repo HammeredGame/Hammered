@@ -6,15 +6,23 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immovabl
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
     internal class TwoIslandPuzzle : Scene
     {
+        private bool withinDoorInteractTrigger = false;
+
         public TwoIslandPuzzle(GameServices services, GameScreen screen) : base(services, screen)
+        { }
+        protected override async Task LoadSceneContent(IProgress<int> progress)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml");
-            OnSceneStart();
+            await base.LoadSceneContent(progress);
+            await CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml", progress);
         }
 
         protected override void OnSceneStart()
@@ -51,9 +59,23 @@ namespace HammeredGame.Game.Scenes.Island1
                     await ParentGameScreen.ShowDialogueAndWait("The hammer might be needed later, let's bring it.");
                 }
             };
+
+            CancellationTokenSource doorInteractTokenSource = new();
+            Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
+            {
+                doorInteractTokenSource = new();
+                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                withinDoorInteractTrigger = true;
+            };
+
+            Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += async (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinDoorInteractTrigger = false;
+            };
         }
 
-        public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
+        public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
 
@@ -63,6 +85,22 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (pressureplate_1.IsActivated()) Get<Door>("door_pp").OpenDoor();
                 else Get<Door>("door_pp").CloseDoor();
+            }
+
+            if (withinDoorInteractTrigger)
+            {
+                Input inp = this.Services.GetService<Input>();
+                if (UserAction.Interact.Pressed(inp))
+                {
+                    if (Get<Key>("key").IsPickedUp())
+                    {
+                        Get<Door>("door_goal").OpenDoor();
+                    }
+                    else
+                    {
+                        await ParentGameScreen.ShowDialogueAndWait("Hmm... Maybe I need something to open this?");
+                    }
+                }
             }
         }
     }

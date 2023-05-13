@@ -2,8 +2,8 @@
   <camera mode="follow">
     <follow_distance>257.000</follow_distance>
     <follow_angle_v>0.460</follow_angle_v>
-    <follow_angle_h>0.789</follow_angle_h>
-    <target>280.786 -12.856 -117.189</target>
+    <follow_angle_h>7.029</follow_angle_h>
+    <target>254.147 -12.854 -116.079</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.495</fov>
   </camera>
@@ -52,8 +52,8 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture>Meshes/Character/character_diffuse</texture>
-    <position>280.786 -12.856 -117.189</position>
-    <rotation>0.000 -0.235 0.000 -0.972</rotation>
+    <position>254.147 -12.853 -116.079</position>
+    <rotation>0.000 0.914 0.000 -0.405</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
@@ -94,8 +94,8 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
-    <position>279.027 -16.302 -115.999</position>
-    <rotation>-0.558 0.527 -0.596 0.236</rotation>
+    <position>255.369 -16.424 -118.270</position>
+    <rotation>0.415 -0.070 -0.701 0.576</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>
@@ -998,6 +998,19 @@
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="end_trigger">
     <model />
     <position>485.000 0.000 -250.000</position>
+    <rotation>0.000 0.700 0.000 0.714</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>50.000</width>
+      <height>50.000</height>
+      <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="door_interact_trigger">
+    <model />
+    <position>455.000 0.000 -250.000</position>
     <rotation>0.000 0.700 0.000 0.714</rotation>
     <scale>1.000</scale>
     <visibility>False</visibility>

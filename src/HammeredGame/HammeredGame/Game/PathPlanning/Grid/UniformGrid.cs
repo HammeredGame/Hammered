@@ -156,18 +156,18 @@ namespace HammeredGame.Game.PathPlanning.Grid
 
             // Center-coordinated grid cells START
             if (position.X < originPoint.X - sideLength / 2 || position.X > endPoint.X + sideLength / 2)
-                throw new ArgumentException(String.Format("The provided position's X coordinate is outside the grid." +
+                throw new ArgumentOutOfRangeException(String.Format("The provided position's X coordinate is outside the grid." +
                     "grid max X = {0}. {1} was provided instead.", endPoint.X, position.X));
 
             if (position.Y < originPoint.Y - sideLength/2 || position.Y > endPoint.Y + sideLength/2)
-                throw new ArgumentException(String.Format("The provided position's Y coordinate is outside the grid." +
+                throw new ArgumentOutOfRangeException(String.Format("The provided position's Y coordinate is outside the grid." +
                     "grid max Y = {0}. {1} was provided instead.", endPoint.Y, position.Y));
 
             if (position.Z < originPoint.Z - sideLength / 2 || position.Z > endPoint.Z + sideLength / 2)
-                throw new ArgumentException(String.Format("The provided position's Z coordinate is outside the grid." +
+                throw new ArgumentOutOfRangeException(String.Format("The provided position's Z coordinate is outside the grid." +
                     "grid max Z = {0}. {1} was provided instead.", endPoint.Z, position.Z));
 
-            // Center-coordinated grid cells START
+            // Center-coordinated grid cells FINISH
 
             
             // Compute cell index
@@ -227,6 +227,72 @@ namespace HammeredGame.Game.PathPlanning.Grid
         public void MarkCellAs(Vector3 position, bool value) { MarkCellAs(GetCellIndex(position), value); }
 
         /// <summary>
+        /// Sets all grid cells in-between the "indexStart" and "indexFinish" range to the provided "value".
+        /// Pre-conditions:
+        /// 
+        /// </summary>
+        /// <param name="indexStart">The (i, j, k) grid cell index from which the values will be changed</param>
+        /// <param name="indexFinish">The (i, j, k) grid cell (inclusive) index where the values stop being changed</param>
+        /// <param name="value">
+        /// The value which will be assigned to all the grid cells.
+        /// As a reminder, "true" will make the cells available for use in path planning,
+        /// while "false" will make them unavailable for use in path planning.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// The function expects the following three pre-conditions to hold:
+        /// 1) indexStart[0] <= indexFinish[0]
+        /// 2) indexStart[1] <= indexFinish[1]
+        /// 3) indexStart[2] <= indexFinish[2]
+        /// </exception>
+        public void MarkRangeAs(uint[] indexStart, uint[] indexFinish, bool value)
+        {
+            // Dynamic sanity checks.
+            if (indexStart[0] > indexFinish[0])
+                throw new ArgumentOutOfRangeException(String.Format(
+                    "The provided index in the x-axis of the starting position starts after the finish position in the x-axis.\n" +
+                    "Start x-index: {0}\n" +
+                    "Finish x-index: {1}\n" +
+                    "Expected start x-index = {0} <= {1} = finish x-index", indexStart[0], indexFinish[0]));
+
+            if (indexStart[1] > indexFinish[1])
+                throw new ArgumentOutOfRangeException(String.Format(
+                    "The provided index in the y-axis of the starting position starts after the finish position in the y-axis.\n" +
+                    "Start y-index: {0}\n" +
+                    "Finish y-index: {1}\n" +
+                    "Expected start y-index = {0} <= {1} = finish y-index", indexStart[1], indexFinish[1]));
+
+            if (indexStart[2] > indexFinish[2])
+                throw new ArgumentOutOfRangeException(String.Format(
+                    "The provided index in the z-axis of the starting position starts after the finish position in the z-axis.\n" +
+                    "Start z-index: {0}\n" +
+                    "Finish z-index: {1}\n" +
+                    "Expected start z-index = {0} <= {1} = finish z-index", indexStart[2], indexFinish[2]));
+
+            for (uint i = indexStart[0]; i <= indexFinish[0]; i++)
+            {
+                for (uint j = indexStart[1]; j <= indexFinish[1]; j++)
+                {
+                    for (uint k = indexStart[2]; k <= indexFinish[2]; k++)
+                    {
+                        uint[] cellIndex = { i, j, k };
+                        MarkCellAs(cellIndex, value);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// See "MarkRangeAs(uint[], uint[], value) for the documentation.
+        /// </summary>
+        /// <param name="pointStart"></param>
+        /// <param name="pointFinish"></param>
+        /// <param name="value"></param>
+        public void MarkRangeAs(Vector3 pointStart, Vector3 pointFinish, bool value)
+        {
+            MarkRangeAs(GetCellIndex(pointStart), GetCellIndex(pointFinish), value);
+        }
+
+        /// <summary>
         /// Finds the shortest available path from first input position to the second input by travelling only between a set of provided points.
         /// </summary>
         /// <param name="start">A 3D position in space from where the A* algorithm begins.</param>
@@ -284,6 +350,7 @@ namespace HammeredGame.Game.PathPlanning.Grid
             catch (System.ArgumentNullException e) // There is no path from the current grid cell towards the destination
             {
                 int step;
+                var gridDimensions = this.GetDimensions(); // Used for handling edge cases of neighbours.
 
                 // Initializing required data structures.
                 step = 0;
@@ -300,9 +367,9 @@ namespace HammeredGame.Game.PathPlanning.Grid
                             if (Math.Abs(width) == step || Math.Abs(depth) == step) // Care only for the layer that is currently explored.
                             {
                                 uint[] neighbourCellIndex = {
-                                Convert.ToUInt32(startCellIndex[0] + width),
+                                Convert.ToUInt32(Math.Min(Math.Max(0, startCellIndex[0] + width), gridDimensions[0]-1)),
                                 startCellIndex[1],
-                                Convert.ToUInt32(startCellIndex[2] + depth)
+                                Convert.ToUInt32(Math.Min(Math.Max(0, startCellIndex[2] + depth), gridDimensions[2]-1))
                             };
                                 // WARNING: This will produce errors in cases where there are obstruced obstacles at the boundary
                                 // of the grid (out of bounds error).
@@ -351,9 +418,9 @@ namespace HammeredGame.Game.PathPlanning.Grid
                             if (Math.Abs(width) == step || Math.Abs(depth) == step) // Care only for the layer that is currently explored.
                             {
                                 uint[] neighbourCellIndex = {
-                                Convert.ToUInt32(finishCellIndex[0] + width),
+                                Convert.ToUInt32(Math.Min(Math.Max(0,finishCellIndex[0] + width), gridDimensions[0]-1)),
                                 finishCellIndex[1],
-                                Convert.ToUInt32(finishCellIndex[2] + depth)
+                                Convert.ToUInt32(Math.Min(Math.Max(0, finishCellIndex[2] + depth), gridDimensions[2]-1))
                             };
                                 // WARNING: This will produce errors in cases where there are obstruced obstacles at the boundary
                                 // of the grid (out of bounds error).
