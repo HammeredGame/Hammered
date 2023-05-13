@@ -226,12 +226,12 @@ namespace HammeredGame
             graphics.ApplyChanges();
 
             // Set up the render target, which we will render to, which gets copied to the GPU back buffer.
-            mainRenderTarget = new RenderTarget2D(gpu, windowWidth, windowHeight, false, gpu.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+            mainRenderTarget = new RenderTarget2D(gpu, gpu.Viewport.Width, gpu.Viewport.Height, false, gpu.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
 
             if (manager != null)
             {
                 manager.MainRenderTarget = mainRenderTarget;
-                manager.SetResolution(windowWidth, windowHeight);
+                manager.SetResolution(gpu.Viewport.Width, gpu.Viewport.Height);
             }
         }
 
