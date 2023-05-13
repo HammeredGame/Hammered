@@ -1,4 +1,5 @@
 ﻿using HammeredGame.Core;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -56,7 +57,9 @@ namespace HammeredGame.Game.Screens
                 oneLineHeight,
                 "Resolution",
                 GameServices.GetService<UserSettings>().Resolution,
-                Resolution.AcceptedList,
+                Resolution.AcceptedList.Where(r =>
+                    r.Width <= GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Last().Width &&
+                    r.Height <= GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Last().Height).ToArray(),
                 (i) =>
                 {
                     GameServices.GetService<UserSettings>().Resolution = i;
@@ -473,6 +476,22 @@ namespace HammeredGame.Game.Screens
             }
 
             Desktop.UpdateLayout();
+        }
+
+        public override void UI()
+        {
+            base.UI();
+            ImGui.Separator();
+            ImGui.Text($"IsFullScreen: {GameServices.GetService<GraphicsDeviceManager>().IsFullScreen}");
+            ImGui.Text($"HardwareModeSwitch: {GameServices.GetService<GraphicsDeviceManager>().HardwareModeSwitch}");
+            ImGui.Text($"Selected Resolution: {GameServices.GetService<UserSettings>().Resolution}");
+            ImGui.Text($"Max GPU Supported Resolution: {GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Last().Width}x{GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Last().Height}");
+            ImGui.Text($"GPU DisplayMode: {GameServices.GetService<GraphicsDevice>().DisplayMode.Width}x{GameServices.GetService<GraphicsDevice>().DisplayMode.Height}");
+            ImGui.Text($"GPU CurrentDisplayMode: {GameServices.GetService<GraphicsDevice>().Adapter.CurrentDisplayMode.Width}x{GameServices.GetService<GraphicsDevice>().Adapter.CurrentDisplayMode.Height}");
+            ImGui.Text($"GPU BackBuffer: {GameServices.GetService<GraphicsDevice>().PresentationParameters.BackBufferWidth}x{GameServices.GetService<GraphicsDevice>().PresentationParameters.BackBufferHeight}");
+            ImGui.Text($"GPU Viewport: {GameServices.GetService<GraphicsDevice>().Viewport.Width}x{GameServices.GetService<GraphicsDevice>().Viewport.Height}");
+            ImGui.Text($"Main RenderTarget: {ScreenManager.MainRenderTarget.Width}x{ScreenManager.MainRenderTarget.Height}");
+            ImGui.TextWrapped($"GPU SupportedDisplayModes: {string.Join(", ", GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Select(m => m.Width + "x" + m.Height))}");
         }
     }
 }
