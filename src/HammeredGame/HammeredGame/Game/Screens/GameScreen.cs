@@ -109,13 +109,13 @@ namespace HammeredGame.Game.Screens
                     // Specifies the callback function when Quit To Title is called. We also need to
                     // specify the Restart Level callback, but this is done just before each time the
                     // screen is added to the manager, since we need the name of the currently active level.
-                    
+
                     // Save the last scene
                     GameServices.GetService<UserSettings>().LastSaveScene = currentSceneName;
-                    UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
+                    GameServices.GetService<UserSettings>().Save();
 
                     ExitScreen(true);
-                    
+
                     // Ask the main game class to recreate the title screen, since it needs to
                     // assign handlers that we don't have access to
                     GameServices.GetService<HammeredGame>().InitTitleScreen();

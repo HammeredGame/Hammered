@@ -38,6 +38,7 @@ namespace HammeredGame.Core
     /// </summary>
     public record UserSettings
     {
+        private string SaveFilePath { get; set; }
         public float MasterVolume { get; set; } = 0.2f;
         public float SFXVolume { get; set; } = 0.3f;
         public Resolution Resolution { get; set; } = Resolution.Res19201080;
@@ -50,18 +51,16 @@ namespace HammeredGame.Core
         public string LastSaveScene { get; set; } = null;
 
         /// <summary>
-        /// Save user settings to a file, overwriting any existing contents.
+        /// Save user settings to the file it was loaded from, overwriting any existing contents.
         /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="fileName"></param>
-        public static void SaveToFile(UserSettings settings, string fileName)
+        public void Save()
         {
-            string output = JsonSerializer.Serialize<UserSettings>(settings, new JsonSerializerOptions()
+            string output = JsonSerializer.Serialize<UserSettings>(this, new JsonSerializerOptions()
             {
                  WriteIndented = true,
             });
 
-            File.WriteAllText(fileName, output);
+            File.WriteAllText(this.SaveFilePath, output);
         }
 
         /// <summary>
@@ -70,18 +69,21 @@ namespace HammeredGame.Core
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public static UserSettings LoadFromFile(string fileName)
+        public static UserSettings CreateFromFile(string fileName)
         {
+            UserSettings settings;
             try
             {
                 string contents = File.ReadAllText(fileName);
-                return JsonSerializer.Deserialize<UserSettings>(contents);
+                settings = JsonSerializer.Deserialize<UserSettings>(contents);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Settings file '{fileName}' couldn't be loaded, using default settings: {ex}");
-                return new UserSettings();
+                settings = new UserSettings();
             }
+            settings.SaveFilePath = fileName;
+            return settings;
         }
 
     }
