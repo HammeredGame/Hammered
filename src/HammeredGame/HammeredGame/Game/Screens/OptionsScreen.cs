@@ -92,22 +92,11 @@ namespace HammeredGame.Game.Screens
                 "No",
                 (i) =>
                 {
-                    // Update and save settings, then update the value in the main game class. We
-                    // use software full screening in our game (see HardwareModeSwitch being false
-                    // in main game), which means that we need to treat going to full screen as a
-                    // window resolution change too. (In contrast, hardware full screen changes the
-                    // device resolution to match the game resolution, which can be buggy on some platforms).
+                    // Update and save settings, then update the value in the main game class.
+                    // Setting full screen will also set the resolution to match the screen.
                     settings.FullScreen = i;
-                    settings.Resolution = new Resolution(
-                        // DisplayMode contains the device full screen size
-                        GameServices.GetService<GraphicsDevice>().DisplayMode.Width,
-                        GameServices.GetService<GraphicsDevice>().DisplayMode.Height);
                     settings.Save();
-
                     GameServices.GetService<HammeredGame>().SetFullScreen(i);
-                    GameServices.GetService<HammeredGame>().SetResolution(
-                        GameServices.GetService<GraphicsDevice>().DisplayMode.Width,
-                        GameServices.GetService<GraphicsDevice>().DisplayMode.Height);
                 });
 
             // Borderless toggle

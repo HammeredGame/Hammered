@@ -71,18 +71,21 @@ namespace HammeredGame
 
         protected override void Initialize()
         {
-            // Load user settings
-            UserSettings settings = UserSettings.CreateFromFile("settings.txt");
-
             gpu = GraphicsDevice;
             PresentationParameters pp = gpu.PresentationParameters;
             spriteBatch = new SpriteBatch(gpu);
 
-            // Set full screen (Windows-only) and border-less based on settings
-            SetFullScreen(settings.FullScreen);
-            SetBorderless(settings.Borderless);
+            // Load user settings
+            UserSettings settings = UserSettings.CreateFromFile("settings.txt");
+
             // Update render resolution and set up mainRenderTarget
             SetResolution(settings.Resolution.Width, settings.Resolution.Height);
+
+            // Set full screen (Windows-only) and border-less based on settings, which should be
+            // done after setting the first resolution, because it might change the resolution to
+            // fit the full screen size
+            SetFullScreen(settings.FullScreen);
+            SetBorderless(settings.Borderless);
 
             // Initialize Input class, todo: this isn't updated when resolution changes, although
             // it's currently not a serious issue since we don't use mouse position (Myra UI and
@@ -208,17 +211,23 @@ namespace HammeredGame
 
         /// <summary>
         /// Changes the game's full-screen status. This uses a soft full screen (set by <see
-        /// cref="GraphicsDeviceManager.HardwareModeSwitch"/> being false), which means we aren't
-        /// taking over the GPU exclusively (which is buggy on Mac for example and not recommended
-        /// on Windows). As a consequence though, you generally also have to set the back buffer
-        /// size to be equal to the display resolution (with <see cref="SetResolution(int, int)"/>
-        /// whenever you call this function with the true argument.
+        /// cref="GraphicsDeviceManager.HardwareModeSwitch"/> being false). Hardware full screen
+        /// changes the device resolution to match the game resolution, which can be buggy on some
+        /// platforms), whereas software full screen is like changing the game's window size to fill
+        /// the screen. We need to do a two-step process of "signal to OS that it's full-screen"
+        /// followed by "pretend it's a window size change". As a consequence, this function will
+        /// also call <see cref="SetResolution(int, int)"/> to set the new resolution.
         /// </summary>
         /// <param name="fullScreen"></param>
         public void SetFullScreen(bool fullScreen)
         {
             graphics.IsFullScreen = fullScreen;
             graphics.ApplyChanges();
+
+            if (fullScreen)
+            {
+                SetResolution(gpu.DisplayMode.Width, gpu.DisplayMode.Height);
+            }
         }
 
         /// <summary>
