@@ -38,6 +38,9 @@ namespace HammeredGame.Core
     /// </summary>
     public record UserSettings
     {
+        /// <summary>
+        /// The file path of this settings instance.
+        /// </summary>
         private string SaveFilePath { get; set; }
         public float MediaVolume { get; set; } = 0.4f;
         public float SfxVolume { get; set; } = 0.8f;
@@ -49,6 +52,8 @@ namespace HammeredGame.Core
         // should be a different data structure, but it's just this single string so for now it's
         // placed within settings.
         public string LastSaveScene { get; set; } = null;
+
+        private UserSettings() { }
 
         /// <summary>
         /// Save user settings to the file it was loaded from, overwriting any existing contents.
@@ -85,6 +90,5 @@ namespace HammeredGame.Core
             settings.SaveFilePath = fileName;
             return settings;
         }
-
     }
 }
