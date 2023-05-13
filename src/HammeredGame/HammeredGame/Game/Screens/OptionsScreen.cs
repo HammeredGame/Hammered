@@ -549,6 +549,7 @@ namespace HammeredGame.Game.Screens
             ImGui.Text($"GPU BackBuffer: {GameServices.GetService<GraphicsDevice>().PresentationParameters.BackBufferWidth}x{GameServices.GetService<GraphicsDevice>().PresentationParameters.BackBufferHeight}");
             ImGui.Text($"GPU Viewport: {GameServices.GetService<GraphicsDevice>().Viewport.Width}x{GameServices.GetService<GraphicsDevice>().Viewport.Height}");
             ImGui.Text($"Main RenderTarget: {ScreenManager.MainRenderTarget.Width}x{ScreenManager.MainRenderTarget.Height}");
+            ImGui.Text($"GPU Viewport Bounds Start: ({GameServices.GetService<GraphicsDevice>().Viewport.Bounds.Location.X}, {GameServices.GetService<GraphicsDevice>().Viewport.Bounds.Location.Y})");
             ImGui.TextWrapped($"GPU SupportedDisplayModes: {string.Join(", ", GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Select(m => m.Width + "x" + m.Height))}");
         }
     }
