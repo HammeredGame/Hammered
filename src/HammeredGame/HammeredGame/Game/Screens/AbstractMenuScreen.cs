@@ -277,9 +277,14 @@ namespace HammeredGame.Game.Screens
         /// <param name="height"></param>
         public override void SetResolution(int width, int height)
         {
+            int oldHoverIndex = HoverIndex;
             // Re-build all menu widgets, they probably depend on resolution for font sizes
             LoadMenuWidgets();
             SetupMenu();
+            // Restore the hover index which would've been reset after the recreation of all menu
+            // items, and trigger any mouse-enter hover events for it.
+            HoverIndex = oldHoverIndex;
+            MainMenu.Widgets[HoverIndex].OnMouseEntered();
 
             // Set the current menu width to be the newly calculated width. This is something that
             // would normally be done during the inward transition, but since resolution changes
