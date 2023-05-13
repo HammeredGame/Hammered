@@ -39,8 +39,8 @@ namespace HammeredGame.Core
     public record UserSettings
     {
         private string SaveFilePath { get; set; }
-        public float MasterVolume { get; set; } = 0.2f;
-        public float SFXVolume { get; set; } = 0.3f;
+        public float MediaVolume { get; set; } = 0.4f;
+        public float SfxVolume { get; set; } = 0.8f;
         public Resolution Resolution { get; set; } = Resolution.Res19201080;
         public bool FullScreen { get; set; } = false;
         public bool Borderless { get; set; } = false;
