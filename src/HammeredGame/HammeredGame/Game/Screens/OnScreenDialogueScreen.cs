@@ -8,6 +8,7 @@ using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Pleasing;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -150,7 +151,11 @@ namespace HammeredGame.Game.Screens
                 }
                 else
                 {
-                    dialoguesPanel.Opacity = 1f;
+                    if (dialogueLabel.Text == "")
+                    {
+                        Tweening.Tween(dialoguesPanel, nameof(dialoguesPanel.Opacity), 1f, 100, Easing.Linear, LerpFunctions.Float);
+                        Tweening.Tween((f) => dialoguesPanel.Top = (int)f, 10f, 0f, 100, Easing.Quadratic.Out, LerpFunctions.Float);
+                    }
                     // Otherwise show the top dialogue in the queue without dequeuing it
                     dialogueLabel.Text = dialogueQueue.Peek().Item1;
 
@@ -167,7 +172,11 @@ namespace HammeredGame.Game.Screens
             }
             else
             {
-                dialoguesPanel.Opacity = 0f;
+                if (dialogueLabel.Text != "")
+                {
+                    Tweening.Tween(dialoguesPanel, nameof(dialoguesPanel.Opacity), 0f, 100, Easing.Linear, LerpFunctions.Float);
+                    Tweening.Tween((f) => dialoguesPanel.Top = (int)f, 0f, 10f, 100, Easing.Quadratic.Out, LerpFunctions.Float);
+                }
                 dialogueLabel.Text = "";
                 PassesFocusThrough = true;
             }
