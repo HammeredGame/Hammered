@@ -84,8 +84,15 @@ namespace HammeredGame
             // Update render resolution and set up mainRenderTarget
             SetResolution(settings.Resolution.Width, settings.Resolution.Height);
 
-            // Initialize Input class
+            // Initialize Input class, todo: this isn't updated when resolution changes, although
+            // it's currently not a serious issue since we don't use mouse position (Myra UI and
+            // ImGui have their own handling code)
             input = new Input(pp, mainRenderTarget);
+
+            //initialize audio manager and set initial volumes
+            audioManager = new AudioManager(this);
+            SetMediaVolume(settings.MediaVolume);
+            SetSfxVolume(settings.SfxVolume);
 
             // Set up the parallelization pool for the physics engine based on the amount of cores
             // we have.
@@ -105,11 +112,6 @@ namespace HammeredGame
 
             // Set up the UI library (Myra)'s access to the game context
             MyraEnvironment.Game = this;
-
-            //initialize audio manager and set initial volumes
-            audioManager = new AudioManager(this);
-            MediaPlayer.Volume = settings.MasterVolume;
-            SoundEffect.MasterVolume = settings.SFXVolume;
 
             // Initialize ImGui's internal renderer and build its font atlas
             imGuiRenderer = new ImGuiRenderer(this);
@@ -187,8 +189,9 @@ namespace HammeredGame
         public void SetResolution(int width, int height)
         {
             // Update the GPU back buffer size, this changes the window size as well unless we're
-            // full-screen (in which case the result is inconsistent between platforms, and is
-            // generally supposed to be avoided unless the resolution is equal to the display)
+            // full-screen. If we are full screen, then the input arguments should equal to the
+            // display resolution (obtained from gpu.DisplayMode), and the result otherwise is
+            // inconsistent and buggy across platforms.
             graphics.PreferredBackBufferWidth = width;
             graphics.PreferredBackBufferHeight = height;
             graphics.ApplyChanges();
@@ -226,6 +229,34 @@ namespace HammeredGame
         {
             Window.IsBorderless = borderless;
             graphics.ApplyChanges();
+        }
+
+        /// <summary>
+        /// Set the music volume, taking a linear input from [0,1] and scaling exponentially and
+        /// shifted to the [0,1] range to fit the natural human hearing curve. Since the exponential
+        /// function doesn't reach 0 at x = 0, we switch to a linear function near that point.
+        /// <para/>
+        /// Explanation here: https://www.dr-lex.be/info-stuff/volumecontrols.html
+        /// </summary>
+        /// <param name="mediaVolume"></param>
+        public void SetMediaVolume(float mediaVolume)
+        {
+            // The value 0.296 is the intersection between the exp(5x - 5) graph and the 0.1x graph,
+            // and is the point where we switch from exponential to linear falloff as x nears 0
+            MediaPlayer.Volume = mediaVolume > 0.296f ? MathF.Exp(5f * mediaVolume - 5f) : mediaVolume * 0.1f;
+        }
+
+        /// <summary>
+        /// Set the sound effect volume, taking a linear input from [0,1] and scaling exponentially
+        /// and shifted to the [0,1] range to fit the natural human hearing curve. Since the
+        /// exponential function doesn't reach 0 at x = 0, we switch to a linear function near that point.
+        /// <para/>
+        /// Explanation here: https://www.dr-lex.be/info-stuff/volumecontrols.html
+        /// </summary>
+        /// <param name="sfxVolume"></param>
+        public void SetSfxVolume(float sfxVolume)
+        {
+            SoundEffect.MasterVolume = sfxVolume > 0.296f ? MathF.Exp(5f * sfxVolume - 5f) : sfxVolume * 0.1f;
         }
 
         /// <summary>

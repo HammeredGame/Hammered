@@ -29,47 +29,61 @@ namespace HammeredGame.Game.Screens
             // We use a smaller font size here, 5% of the screen height
             int oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 20;
 
+            // Music volume slider, which controls the MediaPlayer volume
             HorizontalStackPanel optionsMusicVolume = CreateSliderOption(
                 oneLineHeight,
                 "Music Volume",
-                (int)(settings.MasterVolume * 10f),
+                (int)(settings.MediaVolume * 10f),
                 0,
                 10,
                 (i) =>
                 {
-                    settings.MasterVolume = i / 10f;
+                    // Update and save settings, then update the value in the main game class
+                    settings.MediaVolume = i / 10f;
                     settings.Save();
-                    MediaPlayer.Volume = i / 10f;
+                    GameServices.GetService<HammeredGame>().SetMediaVolume(i / 10f);
                 });
 
+            // SFX volume slider, which controls the SFX volume
             HorizontalStackPanel optionsSFXVolume = CreateSliderOption(
                 oneLineHeight,
                 "SFX Volume",
-                (int)(settings.SFXVolume * 10f),
+                (int)(settings.SfxVolume * 10f),
                 0,
                 10,
                 (i) =>
                 {
-                    settings.SFXVolume = i / 10f;
+                    // Update and save settings, then update the value in the main game class
+                    settings.SfxVolume = i / 10f;
                     settings.Save();
-                    SoundEffect.MasterVolume = i / 10f;
+                    GameServices.GetService<HammeredGame>().SetSfxVolume(i / 10f);
                 });
 
+            // Get the largest possible resolution for this computer. SupportedDisplayModes comes sorted.
+            DisplayMode largest = GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Last();
+
+            // Resolution toggle, which cycles through resolutions, filtered by the largest
+            // resolution the GPU supports. On retina Macs, these resolutions are the raw high
+            // quality resolutions and not the downscaled one MonoGame sees, which means some of the
+            // larger ones will inevitably be larger than what can be displayed. This becomes a
+            // problem in full screen but as long as its windowed, players can move it around and
+            // scale it down so it's fine for now.
             HorizontalStackPanel optionsResolution = CreateMultipleOption(
                 oneLineHeight,
                 "Resolution",
                 settings.Resolution,
-                Resolution.AcceptedList.Where(r =>
-                    r.Width <= GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Last().Width &&
-                    r.Height <= GameServices.GetService<GraphicsDevice>().Adapter.SupportedDisplayModes.Last().Height).ToArray(),
+                Resolution.AcceptedList.Where(r => r.Width <= largest.Width && r.Height <= largest.Height).ToArray(),
                 (i) =>
                 {
+                    // Update and save settings, then update the value in the main game class
                     settings.Resolution = i;
                     settings.Save();
                     GameServices.GetService<HammeredGame>().SetResolution(i.Width, i.Height);
                 });
+            // The above resolution toggle is only enabled when it's not full-screen
             optionsResolution.Enabled = !GameServices.GetService<GraphicsDeviceManager>().IsFullScreen;
 
+            // Full screen toggle
             HorizontalStackPanel optionsFullScreen = CreateToggleOption(
                 oneLineHeight,
                 "Full Screen",
@@ -78,19 +92,25 @@ namespace HammeredGame.Game.Screens
                 "No",
                 (i) =>
                 {
+                    // Update and save settings, then update the value in the main game class. We
+                    // use software full screening in our game (see HardwareModeSwitch being false
+                    // in main game), which means that we need to treat going to full screen as a
+                    // window resolution change too. (In contrast, hardware full screen changes the
+                    // device resolution to match the game resolution, which can be buggy on some platforms).
                     settings.FullScreen = i;
-                    GameServices.GetService<HammeredGame>().SetFullScreen(i);
-
                     settings.Resolution = new Resolution(
+                        // DisplayMode contains the device full screen size
                         GameServices.GetService<GraphicsDevice>().DisplayMode.Width,
                         GameServices.GetService<GraphicsDevice>().DisplayMode.Height);
+                    settings.Save();
+
+                    GameServices.GetService<HammeredGame>().SetFullScreen(i);
                     GameServices.GetService<HammeredGame>().SetResolution(
                         GameServices.GetService<GraphicsDevice>().DisplayMode.Width,
                         GameServices.GetService<GraphicsDevice>().DisplayMode.Height);
-
-                    settings.Save();
                 });
 
+            // Borderless toggle
             HorizontalStackPanel optionsBorderless = CreateToggleOption(
                 oneLineHeight,
                 "Borderless",
@@ -99,11 +119,13 @@ namespace HammeredGame.Game.Screens
                 "No",
                 (i) =>
                 {
+                    // Update and save settings, then update the value in the main game class.
                     settings.Borderless = i;
                     settings.Save();
                     GameServices.GetService<HammeredGame>().SetBorderless(i);
                 });
 
+            // An option at the bottom to exit
             Label menuItemBack = new()
             {
                 Text = "Back",
