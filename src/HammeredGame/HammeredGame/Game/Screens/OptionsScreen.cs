@@ -56,7 +56,7 @@ namespace HammeredGame.Game.Screens
                 oneLineHeight,
                 "Resolution",
                 GameServices.GetService<UserSettings>().Resolution,
-                new Resolution[] { Resolution.Res1280720, Resolution.Res1360768, Resolution.Res1366768, Resolution.Res1600900, Resolution.Res19201080 },
+                Resolution.AcceptedList,
                 (i) =>
                 {
                     GameServices.GetService<UserSettings>().Resolution = i;
@@ -316,11 +316,15 @@ namespace HammeredGame.Game.Screens
                 Tag = initialValue
             };
 
+            // Helper function to change the toggle value by some delta, update the stored Tag and
+            // Text, and call the setter function.
             void changeValue(int delta)
             {
                 // Select the item in the possible value array at index (current index + delta) but
-                // providing wrap-arounds for both negative and positive deltas as long as delta > -count.
-                int currentIndex = possibleValues.TakeWhile(v => v != (T)optionValue.Tag).Count();
+                // providing wrap-arounds for both negative and positive deltas as long as delta >
+                // -count. We need to use object.Equals instead of == here so we get value equality
+                // for records, and otherwise behaves identical to ==.
+                int currentIndex = possibleValues.TakeWhile(v => !v.Equals((T)optionValue.Tag)).Count();
                 optionValue.Tag = possibleValues[(currentIndex + delta + possibleValues.Length) % possibleValues.Length];
                 optionValue.Text = ((T)optionValue.Tag).ToString();
                 setter((T)optionValue.Tag);
@@ -342,6 +346,8 @@ namespace HammeredGame.Game.Screens
                 // By default we use the left right keyboard keys regardless of any input type or
                 // key remapping, but further customisations can be added on top of this in Update()
                 // by simulating the KeyDown event through calling OnKeyDown(Left) or OnKeyDown(Right).
+                // todo: this is a bit janky, we ideally don't want to define any default keys and
+                // just have those that are defined in Update() from the key mapping.
                 if (a.Data == Microsoft.Xna.Framework.Input.Keys.Left)
                 {
                     changeValue(-1);

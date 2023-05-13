@@ -17,6 +17,14 @@ namespace HammeredGame.Core
         public static readonly Resolution Res1366768 = new(1366, 768);
         public static readonly Resolution Res1600900 = new(1600, 900);
         public static readonly Resolution Res19201080 = new(1920, 1080);
+        public static readonly Resolution Res20481152 = new(2048, 1152);
+        public static readonly Resolution Res25601440 = new(2560, 1440);
+        public static readonly Resolution Res25761450 = new(2576, 1450);
+
+        public static readonly Resolution[] AcceptedList = new Resolution[]
+        {
+            Res1280720, Res1360768, Res1366768, Res1600900, Res19201080, Res20481152, Res25601440, Res25761450
+        };
 
         public override string ToString()
         {
