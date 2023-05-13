@@ -1,5 +1,6 @@
 ﻿using FontStashSharp;
 using HammeredGame.Core;
+using HammeredGame.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Myra;
@@ -75,21 +76,21 @@ namespace HammeredGame.Game.Screens
             // The panel at the bottom to add text to
             dialoguesPanel = new VerticalStackPanel()
             {
-                VerticalAlignment = VerticalAlignment.Bottom,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 0, 0, tenthPercentageHeight),
-                Background = new SolidBrush(new Color(75, 43, 58)), // purple background
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Margin = new Thickness(0, 0, 0, (int)(tenthPercentageHeight * 0.5f)),
                 Opacity = 0f // begin its life as transparent
             };
 
             dialogueLabel = new Label
             {
                 TextColor = Color.White,
-                Padding = new Thickness(50, 20, 50, 0),
+                Padding = new Thickness(50, 20, 50, 20),
                 Text = "",
                 // minimum 16 font size
-                Font = barlowFontSystem.GetFont(MathHelper.Max(tenthPercentageHeight * 0.3f, 16f)),
-                HorizontalAlignment = HorizontalAlignment.Center
+                Font = barlowFontSystem.GetFont(MathHelper.Max(tenthPercentageHeight * 0.4f, 16f)),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Background = new SolidBrush(new Color(75, 43, 58)), // purple background
             };
 
             // Show a small image with the Confirm button in the corner, so players know what to
@@ -101,17 +102,11 @@ namespace HammeredGame.Game.Screens
                 // Since the confirm action is discrete, there is only one possible button for it:
                 // we show the 0th index
                 Renderable = confirmButton[0],
-                Opacity = 0.5f,
-                HorizontalAlignment = HorizontalAlignment.Right,
+                Opacity = 0.7f,
+                HorizontalAlignment = HorizontalAlignment.Center,
                 // Make sure to set both width and height to prevent any weird stretching issues
-                Width = (int)MathHelper.Max(tenthPercentageHeight * 0.3f, 16f),
-                Height = (int)MathHelper.Max(tenthPercentageHeight * 0.3f, 16f),
-                // Adding some padding on the right and bottom somehow causes the image to become
-                // smaller to a nice size (?)
-                Padding = new Thickness(0, 0, 10, 10),
-                // But we want it a little bit bigger without affecting the rest of the UI, so use a
-                // Scale transform
-                Scale = new Vector2(2, 2)
+                Width = (int)MathHelper.Max(tenthPercentageHeight * 0.6f, 24f),
+                Height = (int)MathHelper.Max(tenthPercentageHeight * 0.6f, 24f)
             };
 
             dialoguesPanel.AddChild(dialogueLabel);
