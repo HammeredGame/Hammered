@@ -45,15 +45,13 @@ namespace HammeredGame.Core
         public float MediaVolume { get; set; } = 0.4f;
         public float SfxVolume { get; set; } = 0.8f;
         public Resolution Resolution { get; set; } = Resolution.Res19201080;
-        public bool FullScreen { get; set; } = false;
-        public bool Borderless { get; set; } = false;
+        public bool FullScreen { get; set; } = true;
+        public bool Borderless { get; set; } = true;
 
         // TODO: LastSaveScene is not a setting value but a game context or save state. Perhaps it
         // should be a different data structure, but it's just this single string so for now it's
         // placed within settings.
         public string LastSaveScene { get; set; } = null;
-
-        private UserSettings() { }
 
         /// <summary>
         /// Save user settings to the file it was loaded from, overwriting any existing contents.
