@@ -230,12 +230,12 @@ namespace HammeredGame.Core
             // Call screenProps on all current screens and show them on the UI
             ImGui.TextWrapped($"Current screen stack: {string.Join(", ", screens.Select(s => s.GetType().Name + screenProps(s)))}");
 
-            // Show any screen-specific UI for any active screen
-            foreach (Screen screen in screens)
+            // Show any screen-specific UI for any active screen, from the top
+            for (int i = screens.Count - 1; i >= 0; i--)
             {
-                if (screen.State != ScreenState.Hidden)
+                if (screens[i].State != ScreenState.Hidden)
                 {
-                    screen.UI();
+                    screens[i].UI();
                 }
             }
         }
