@@ -74,8 +74,9 @@ namespace HammeredGame
             UserSettings settings = UserSettings.LoadFromFile("settings.txt");
 
             // Set full screen (Windows-only) and border-less based on settings
-            graphics.IsFullScreen = OperatingSystem.IsWindows() && settings.FullScreen;
-            Window.IsBorderless = settings.FullScreen;
+            graphics.IsFullScreen = settings.FullScreen;
+            graphics.HardwareModeSwitch = false;
+            Window.IsBorderless = settings.Borderless;
             graphics.ApplyChanges();
 
             gpu = GraphicsDevice;

@@ -66,6 +66,7 @@ namespace HammeredGame.Game.Screens
                     UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
                     GameServices.GetService<HammeredGame>().SetResolution(i.Width, i.Height);
                 });
+            optionsResolution.Enabled = !GameServices.GetService<GraphicsDeviceManager>().IsFullScreen;
 
             HorizontalStackPanel optionsFullScreen = CreateToggleOption(
                 oneLineHeight,
@@ -79,6 +80,12 @@ namespace HammeredGame.Game.Screens
                     UserSettings.SaveToFile(GameServices.GetService<UserSettings>(), "settings.txt");
                     GameServices.GetService<GraphicsDeviceManager>().IsFullScreen = i;
                     GameServices.GetService<GraphicsDeviceManager>().ApplyChanges();
+                    GameServices.GetService<UserSettings>().Resolution = new Resolution(
+                        GameServices.GetService<GraphicsDevice>().DisplayMode.Width,
+                        GameServices.GetService<GraphicsDevice>().DisplayMode.Height);
+                    GameServices.GetService<HammeredGame>().SetResolution(
+                        GameServices.GetService<GraphicsDevice>().DisplayMode.Width,
+                        GameServices.GetService<GraphicsDevice>().DisplayMode.Height);
                 });
 
             HorizontalStackPanel optionsBorderless = CreateToggleOption(
@@ -109,19 +116,11 @@ namespace HammeredGame.Game.Screens
             MenuWidgets = new List<Widget>() {
                 optionsMusicVolume,
                 optionsSFXVolume,
-                optionsResolution
+                optionsFullScreen,
+                optionsResolution,
+                optionsBorderless,
+                menuItemBack
             };
-
-            // Only add the full screen option Windows OSes since as far as we've tested, Mac has a very very
-            // frustrating implementation of full screen apps (both hardware switch mode and not) that doesn't
-            // consistently set the back buffer size and everything will just become terrible if you change
-            // resolutions mid- full-screen.
-            if (OperatingSystem.IsWindows())
-            {
-                MenuWidgets.Add(optionsFullScreen);
-            }
-            MenuWidgets.Add(optionsBorderless);
-            MenuWidgets.Add(menuItemBack);
         }
 
         /// <summary>
