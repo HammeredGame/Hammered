@@ -92,11 +92,10 @@ namespace HammeredGame.Game.Screens
                 "No",
                 (i) =>
                 {
-                    // Update and save settings, then update the value in the main game class.
-                    // Setting full screen will also set the resolution to match the screen.
+                    // Update and save settings, then update the value in the main game class
                     settings.FullScreen = i;
                     settings.Save();
-                    GameServices.GetService<HammeredGame>().SetFullScreen(i);
+                    GameServices.GetService<HammeredGame>().SetResolution(settings.Resolution.Width, settings.Resolution.Height, i);
                 });
 
             // Borderless toggle

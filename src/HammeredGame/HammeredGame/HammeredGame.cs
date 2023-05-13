@@ -79,12 +79,12 @@ namespace HammeredGame
             UserSettings settings = UserSettings.CreateFromFile("settings.txt");
 
             // Update render resolution and set up mainRenderTarget
-            SetResolution(settings.Resolution.Width, settings.Resolution.Height);
+            SetResolution(settings.Resolution.Width, settings.Resolution.Height, settings.FullScreen);
 
             // Set full screen (Windows-only) and border-less based on settings, which should be
             // done after setting the first resolution, because it might change the resolution to
             // fit the full screen size
-            SetFullScreen(settings.FullScreen);
+            //SetFullScreen(settings.FullScreen);
             SetBorderless(settings.Borderless);
 
             // Initialize Input class, todo: this isn't updated when resolution changes, although
@@ -183,50 +183,55 @@ namespace HammeredGame
         }
 
         /// <summary>
-        /// Changes the game resolution. Specifically, it changes the GPU's back buffer size, the
-        /// intermediate render target size (the one before copying to the GPU), and any other
-        /// screen-specific things by issuing <see cref="ScreenManager.SetResolution(int, int)"/>.
+        /// Changes the game resolution and full screen status. Specifically, it toggles full screen
+        /// if the argument is specified, changes the GPU's back buffer size, the intermediate
+        /// render target size (the one before copying to the GPU), and any other screen-specific
+        /// things by issuing <see cref="ScreenManager.SetResolution(int, int)"/>.
+        /// <para/>
+        /// The full screen toggle is included in this function because toggling full screen is
+        /// essentially the same as a resolution change (plus some signaling to the OS).
         /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        public void SetResolution(int width, int height)
+        /// <param name="windowWidth">Window resolution width, ignored if fullScreen is true</param>
+        /// <param name="windowHeight">Window resolution height, ignored if fullScreen is true</param>
+        /// <param name="fullScreen">Specify to enter/exit full screen, otherwise will not change</param>
+        public void SetResolution(int windowWidth, int windowHeight, bool? fullScreen = null)
         {
-            // Update the GPU back buffer size, this changes the window size as well unless we're
-            // full-screen. If we are full screen, then the input arguments should equal to the
-            // display resolution (obtained from gpu.DisplayMode), and the result otherwise is
-            // inconsistent and buggy across platforms.
-            graphics.PreferredBackBufferWidth = width;
-            graphics.PreferredBackBufferHeight = height;
+            if (fullScreen != null)
+            {
+                // Our game uses software full screens (set by HardwareModeSwitch being false).
+                // Hardware full screen changes the device resolution to match the game resolution,
+                // which can be buggy on some platforms, whereas software full screen is like
+                // changing the game's window size to fill the screen. Because of this, we need to
+                // do a two-step process of "signal to OS that it's full-screen" followed by
+                // "pretend it's a resolution change and execute the rest of SetResolution".
+                graphics.IsFullScreen = (bool)fullScreen;
+                graphics.ApplyChanges();
+
+                // When entering full screen, our resolution change target is the display size. When
+                // exiting, we will be changing resolutions down to the width and height arguments
+                // to this function.
+                if (fullScreen == true)
+                {
+                    windowWidth = gpu.DisplayMode.Width;
+                    windowHeight = gpu.DisplayMode.Height;
+                }
+            }
+
+            // Update the GPU back buffer size, this changes the window size as well. If we are in
+            // full screen though, the windowWidth and windowHeight should equal the display
+            // resolution (obtained from gpu.DisplayMode), and the result otherwise is buggy and
+            // inconsistent across platforms.
+            graphics.PreferredBackBufferWidth = windowWidth;
+            graphics.PreferredBackBufferHeight = windowHeight;
             graphics.ApplyChanges();
 
             // Set up the render target, which we will render to, which gets copied to the GPU back buffer.
-            mainRenderTarget = new RenderTarget2D(gpu, width, height, false, gpu.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+            mainRenderTarget = new RenderTarget2D(gpu, windowWidth, windowHeight, false, gpu.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
 
             if (manager != null)
             {
                 manager.MainRenderTarget = mainRenderTarget;
-                manager.SetResolution(width, height);
-            }
-        }
-
-        /// <summary>
-        /// Changes the game's full-screen status. This uses a soft full screen (set by <see
-        /// cref="GraphicsDeviceManager.HardwareModeSwitch"/> being false). Hardware full screen
-        /// changes the device resolution to match the game resolution, which can be buggy on some
-        /// platforms), whereas software full screen is like changing the game's window size to fill
-        /// the screen. We need to do a two-step process of "signal to OS that it's full-screen"
-        /// followed by "pretend it's a window size change". As a consequence, this function will
-        /// also call <see cref="SetResolution(int, int)"/> to set the new resolution.
-        /// </summary>
-        /// <param name="fullScreen"></param>
-        public void SetFullScreen(bool fullScreen)
-        {
-            graphics.IsFullScreen = fullScreen;
-            graphics.ApplyChanges();
-
-            if (fullScreen)
-            {
-                SetResolution(gpu.DisplayMode.Width, gpu.DisplayMode.Height);
+                manager.SetResolution(windowWidth, windowHeight);
             }
         }
 
