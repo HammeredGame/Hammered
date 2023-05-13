@@ -167,7 +167,7 @@ namespace HammeredGame.Game.Screens
 
             // Create a horizontal panel that's displayed at the very bottom of the screen for an
             // input prompt saying "Press this for OK"
-            float okPromptHeight = oneLineHeight * 0.4f;
+            float okPromptLineHeight = oneLineHeight * 0.4f;
             okPromptImage = new Image
             {
                 // Default with an image here, but it will be updated on every frame to account for
@@ -175,8 +175,8 @@ namespace HammeredGame.Game.Screens
                 Renderable = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Confirm)[0],
                 // Make sure both Height and Width are set to avoid weird stretching - Myra doesn't
                 // respect an image's original aspect ratio.
-                Height = (int)okPromptHeight,
-                Width = (int)okPromptHeight
+                Height = (int)(okPromptLineHeight * 1.7f),
+                Width = (int)(okPromptLineHeight * 1.7f)
             };
 
             // Set up the footer
@@ -185,24 +185,19 @@ namespace HammeredGame.Game.Screens
                 HorizontalAlignment = HorizontalAlignment.Left,
                 // Align the left edge with the same padding as menu above, and have a not-so-big
                 // padding on the bottom side
-                Margin = new Thickness(100, 0, 0, (int)okPromptHeight * 2),
-                // Any higher than 0.4 feels like it steals too much attention from the menu
-                Opacity = 0.4f,
+                Margin = new Thickness(100, 0, 0, (int)okPromptLineHeight),
+                // Any higher than 0.6 feels like it steals too much attention from the menu
+                Opacity = 0.6f,
                 Widgets =
                 {
                     // The labels use the same font size as the image so that it looks inline
-                    new Label
-                    {
-                        Text = "Press",
-                        TextColor = Color.White,
-                        Font = SkranjiFont.GetFont(okPromptHeight),
-                    },
                     okPromptImage,
                     new Label
                     {
-                        Text = "to confirm",
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Text = "Confirm",
                         TextColor = Color.White,
-                        Font = SkranjiFont.GetFont(okPromptHeight),
+                        Font = SkranjiFont.GetFont(okPromptLineHeight),
                     }
                 }
             };
