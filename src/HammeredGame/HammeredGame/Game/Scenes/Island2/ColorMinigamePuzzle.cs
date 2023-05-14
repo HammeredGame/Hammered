@@ -2,6 +2,7 @@
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Screens;
@@ -14,6 +15,8 @@ namespace HammeredGame.Game.Scenes.Island2
 {
     internal class ColorMinigamePuzzle : Scene
     {
+        private ColorPlateState state = ColorPlateState.ZeroSuccess;
+
         public ColorMinigamePuzzle(GameServices services, GameScreen screen) : base(services, screen)
         { }
         protected override async Task LoadSceneContent(IProgress<int> progress)
@@ -47,7 +50,8 @@ namespace HammeredGame.Game.Scenes.Island2
             MoveLaser();
         }
 
-        private async void MoveLaser() {
+        private async void MoveLaser()
+        {
             Vector3 offsetFromBase = Get<Laser>("moving_laser").Position - Get<Wall>("moving_base").Position;
 
             TweenTimeline tweenTimeline = Tweening.NewTimeline();
@@ -61,6 +65,51 @@ namespace HammeredGame.Game.Scenes.Island2
                 .AddFrame(4000, Get<Laser>("moving_laser").Position + new Vector3(0, 0, -80))
                 .AddFrame(8000, Get<Laser>("moving_laser").Position);
             tweenTimeline.Loop = true;
+        }
+
+        private enum ColorPlateState
+        {
+            ZeroSuccess,
+            OneSuccess,
+            TwoSuccess,
+            ThreeSuccess,
+            FourSuccess
+        }
+
+        public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
+        {
+            base.Update(gameTime, screenHasFocus, isPaused);
+
+            // Handle Pressure Plate logic
+            var maze_pp_A = Get<PressurePlate>("maze_pp_A");
+            var maze_pp_B = Get<PressurePlate>("maze_pp_B");
+            var maze_pp_C = Get<PressurePlate>("maze_pp_C");
+
+            Get<Laser>("maze_laser_A").Visible = !maze_pp_A.IsActivated();
+            Get<Laser>("maze_laser_B").Visible = !maze_pp_B.IsActivated();
+            Get<Laser>("maze_laser_C").Visible = !maze_pp_C.IsActivated();
+
+            //if (Get<PressuerPlate>(""))
+
+            //if (pressureplate_1.IsActivated() && pressureplate_2.IsActivated())
+            //{
+            //    if (!openedGoalDoor)
+            //    {
+            //        openedGoalDoor = true;
+            //        Camera.SetFollowTarget(Get<Door>("door_goal"));
+            //        await Services.GetService<ScriptUtils>().WaitSeconds(1);
+
+            //        Get<Door>("door_goal").OpenDoor();
+
+            //        await Services.GetService<ScriptUtils>().WaitSeconds(1);
+            //        Camera.SetFollowTarget(Get<Player>("player1"));
+            //    }
+            //}
+            //else
+            //{
+            //    openedGoalDoor = false;
+            //    Get<Door>("door_goal").CloseDoor();
+            //}
         }
     }
 }
