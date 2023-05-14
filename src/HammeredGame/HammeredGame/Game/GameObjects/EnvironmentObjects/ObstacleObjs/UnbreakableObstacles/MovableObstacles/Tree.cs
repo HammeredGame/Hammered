@@ -108,7 +108,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private void Events_PairTouching(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
             // Start tree fall (currently falls 90 degrees in the direction of hammer movement)
-            if (other.Tag is Hammer && (!treeFallen || !isFalling))
+            if (other.Tag is Hammer && (!treeFallen && !isFalling))
             {
                 var hammer = other.Tag as Hammer;
 
@@ -135,7 +135,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
             // Start tree fall (currently falls 90 degrees in the direction of hammer movement)
-            if (other.Tag is Hammer && (!treeFallen || !isFalling))
+            if (other.Tag is Hammer && (!treeFallen && !isFalling))
             {
                 var hammer = other.Tag as Hammer;
 
