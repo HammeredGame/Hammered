@@ -1242,7 +1242,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="laser2">
     <model>unit_size_plane_y_up</model>
     <texture>LaserMaterial</texture>
-    <position>230.000 -20.000 -160.000</position>
+    <position>230.000 -17.700 -160.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>3.000</scale>
     <body type="box">
