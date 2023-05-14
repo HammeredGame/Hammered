@@ -152,7 +152,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         }
 
                         player.StandingOn = PlayerOnSurfaceState.OnRock;
-                        player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).HalfHeight, player.Entity.Position.Z);
+                        player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).Height, player.Entity.Position.Z);
                     }
                 }
 
