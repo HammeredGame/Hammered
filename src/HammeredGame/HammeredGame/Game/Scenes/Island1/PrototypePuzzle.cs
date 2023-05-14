@@ -23,7 +23,7 @@ namespace HammeredGame.Game.Scenes.Island1
         private bool openedGoalDoor = false;
         private bool withinDoorInteractTrigger = false;
         private Vector3 newSpawnRockPosition = new Vector3(257.390f, 0.000f, -187.414f);
-        private CollisionGroup laserRockGroup;
+        private CollisionGroup noSolverGroup;
 
         public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen) { }
 
@@ -47,13 +47,30 @@ namespace HammeredGame.Game.Scenes.Island1
             MoveBlock rock1 = Get<MoveBlock>("rock1");
             MoveBlock rock2 = Get<MoveBlock>("rock2");
 
-            laserRockGroup = new CollisionGroup();
-            CollisionGroupPair pair = new CollisionGroupPair(laserRockGroup, laserRockGroup);
+            noSolverGroup = new CollisionGroup();
+            CollisionGroupPair pair = new CollisionGroupPair(noSolverGroup, noSolverGroup);
             CollisionRules.CollisionGroupRules.Add(pair, CollisionRule.NoSolver);
 
-            laser1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
-            rock1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
-            rock2.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+            laser1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+            //rock1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+            //rock2.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+
+            foreach (var gO in GameObjectsList)
+            {
+                // Check for rocks in the scene
+                var rock = gO as MoveBlock;
+                if (rock != null)
+                {
+                    rock.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                }
+
+                // Set water bounds objects to a group such that they do not block rocks
+                var waterBounds = gO as WaterBoundsObject;
+                if (waterBounds != null)
+                {
+                    waterBounds.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                }
+            }
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_key"));
 
@@ -198,7 +215,7 @@ namespace HammeredGame.Game.Scenes.Island1
                         // Apply the same model offset as the original
                         newObj.EntityModelOffset = template_rock.EntityModelOffset;
                         newObj.Visible = false;
-                        newObj.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+                        newObj.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
 
                         if (openedGoalDoor)
                         {

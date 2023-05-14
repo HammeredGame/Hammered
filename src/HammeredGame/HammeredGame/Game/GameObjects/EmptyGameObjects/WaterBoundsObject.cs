@@ -30,7 +30,7 @@ namespace HammeredGame.Game.GameObjects.EmptyGameObjects
         {
             this.Entity.Tag = "BoundsObjectBounds";
             this.Entity.CollisionInformation.Tag = this;
-            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+            this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
 
             this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
             this.Entity.CollisionInformation.Events.CollisionEnded += this.Events_CollisionEnded;
@@ -87,7 +87,7 @@ namespace HammeredGame.Game.GameObjects.EmptyGameObjects
 
                 if (num_collisions == 0)
                 {
-                    this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+                    this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
                 }
             }
         }
@@ -98,9 +98,21 @@ namespace HammeredGame.Game.GameObjects.EmptyGameObjects
             if (otherEntityInformation != null)
             {
                 //We hit an entity!
-                if (other.Tag is MoveBlock || other.Tag is Tree) 
+                //if (other.Tag is MoveBlock || other.Tag is Tree)
+                //{
+                //    this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+                //}
+                if (other.Tag is MoveBlock)
                 {
-                    this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+                    var moveblock = other.Tag as MoveBlock;
+                    if (moveblock.MblockState == MoveBlock.MBState.InWater)
+                        this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+                }
+                if (other.Tag is Tree)
+                {
+                    var tree = other.Tag as Tree;
+                    if (tree.IsTreeFallen())
+                        this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
                 }
             }
         }
