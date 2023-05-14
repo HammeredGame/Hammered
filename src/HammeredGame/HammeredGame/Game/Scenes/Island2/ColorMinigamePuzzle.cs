@@ -41,9 +41,9 @@ namespace HammeredGame.Game.Scenes.Island2
             laser2.SetLaserDefaultScale(4.0f);
             Laser laser3 = Get<Laser>("red_laser2");
             laser3.SetLaserDefaultScale(6.35f);
-            Get<Laser>("maze_laser").SetLaserDefaultScale(13f);
-            Get<Laser>("maze_laser1").SetLaserDefaultScale(13f);
-            Get<Laser>("maze_laser2").SetLaserDefaultScale(11.51f);
+            Get<Laser>("maze_laser_A").SetLaserDefaultScale(11.51f);
+            Get<Laser>("maze_laser_B").SetLaserDefaultScale(13f);
+            Get<Laser>("maze_laser_C").SetLaserDefaultScale(13f);
             Get<Laser>("maze_laser3").SetLaserDefaultScale(13.86f);
             Get<Laser>("moving_laser").SetLaserDefaultScale(8.52f);
 
@@ -61,9 +61,9 @@ namespace HammeredGame.Game.Scenes.Island2
                     Get<Laser>("moving_laser").Position = p;
                     Get<Wall>("moving_base").Position = p - offsetFromBase;
                 })
-                .AddFrame(0, Get<Laser>("moving_laser").Position)
-                .AddFrame(4000, Get<Laser>("moving_laser").Position + new Vector3(0, 0, -80))
-                .AddFrame(8000, Get<Laser>("moving_laser").Position);
+                .AddFrame(0, new Vector3(-151.500f, -14.400f, -249.534f))
+                .AddFrame(4000, new Vector3(-151.500f, -14.400f, -249.534f) + new Vector3(0, 0, -80))
+                .AddFrame(8000, new Vector3(-151.500f, -14.400f, -249.534f));
             tweenTimeline.Loop = true;
         }
 
