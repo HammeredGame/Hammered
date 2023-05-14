@@ -40,7 +40,8 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
 
-            await ParentGameScreen.ShowDialogueAndWait("I must be hallucinating; I think see something shining not too far from here!");
+            await ParentGameScreen.ShowDialogueAndWait("I must be hallucinating...");
+            await ParentGameScreen.ShowDialogueAndWait("I think see something shining not far from here!");
 
             // No further initialization required for the <c>UniformGrid</c> instance.
 

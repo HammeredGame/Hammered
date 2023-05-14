@@ -40,7 +40,7 @@ namespace HammeredGame.Game.Scenes.Island1
 
             await ParentGameScreen.ShowDialogueAndWait("I really need a drink after all this...");
 
-            await ParentGameScreen.ShowDialogueAndWait("A temple with a huge statue of a hammer...\nGee, I wonder which god this is for.");
+            await ParentGameScreen.ShowDialogueAndWait("A temple with a huge statue of a hammer...\n Gee, I wonder which god this is for.");
             await ParentGameScreen.ShowDialogueAndWait("Let's hurry up and drop off the hammer!");
 
 
@@ -60,7 +60,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 //await ParentGameScreen.ShowDialogueAndWait("(You hear Thor sounding happy! He'll send you home!");
                 await ParentGameScreen.ShowDialogueAndWait("Dear friend, ");
                 await ParentGameScreen.ShowDialogueAndWait(
-                    "I consider the bet fulfilled! /nThank you for bringing me the hammer back!");
+                    "Thank you /n for bringing me the hammer back :)");
                 await ParentGameScreen.ShowDialogueAndWait("Same time next week?");
                 await Services.GetService<ScriptUtils>().WaitSeconds(2);
                 await ParentGameScreen.ShowDialogueAndWait("The End! (for now)");

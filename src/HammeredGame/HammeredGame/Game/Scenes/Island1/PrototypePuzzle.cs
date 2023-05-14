@@ -88,8 +88,9 @@ namespace HammeredGame.Game.Scenes.Island1
                 withinDoorInteractTrigger = false;
             };
 
-            await ParentGameScreen.ShowDialogueAndWait("Thor went out of his way just to make it this much harder for me?");
-            await ParentGameScreen.ShowDialogueAndWait("He’s hit /tu rock bottom.");
+            await ParentGameScreen.ShowDialogueAndWait("Thor really went out of his way...");
+            await ParentGameScreen.ShowDialogueAndWait("to make it this much harder for me?");
+            await ParentGameScreen.ShowDialogueAndWait("He’s hit /tu rock bottom!");
 
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
