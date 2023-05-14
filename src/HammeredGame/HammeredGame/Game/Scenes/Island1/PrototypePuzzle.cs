@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
+using HammeredGame.Game.Scenes.Endgame;
+using HammeredGame.Game.Scenes.Island2;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -119,7 +121,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
                     await ParentGameScreen.ShowDialogueAndWait("Phewww, that was tough...!");
-                    ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(ColorMinigamePuzzle).FullName);
                 }
                 else
                 {

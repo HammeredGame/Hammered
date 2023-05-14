@@ -1288,6 +1288,9 @@
 /processorParam:TextureFormat=Compressed
 /build:rock.fbx
 
+#begin SceneDescriptions/Endgame/TempleEndLevel_voxel.xml
+/copy:SceneDescriptions/Endgame/TempleEndLevel_voxel.xml
+
 #begin SceneDescriptions/Island1/ChallengePuzzle.xml
 /copy:SceneDescriptions/Island1/ChallengePuzzle.xml
 
@@ -1305,9 +1308,6 @@
 
 #begin SceneDescriptions/Island1/ShoreWakeup.xml
 /copy:SceneDescriptions/Island1/ShoreWakeup.xml
-
-#begin SceneDescriptions/Island1/TempleEndLevel_voxel.xml
-/copy:SceneDescriptions/Island1/TempleEndLevel_voxel.xml
 
 #begin SceneDescriptions/Island1/TreeTutorial_voxel.xml
 /copy:SceneDescriptions/Island1/TreeTutorial_voxel.xml
