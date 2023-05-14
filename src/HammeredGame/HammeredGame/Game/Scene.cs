@@ -282,8 +282,10 @@ namespace HammeredGame.Game
             //Go through the list of entities in the space and create a graphical representation for them.
             foreach (Entity e in Space.Entities)
             {
-                Box box = e as Box;
-                if (box != null) //This won't create any graphics for an entity that isn't a box since the model being used is a box.
+                // This won't create any graphics for an entity that isn't a box since the model
+                // being used is a box. When any of width/height/length are zero, it causes a visual
+                // glitch so we don't draw in that case.
+                if (e is Box box && (box.Width > 0 && box.Height > 0 && box.Length > 0))
                 {
                     BEPUutilities.Matrix scaling = BEPUutilities.Matrix.CreateScale(box.Width, box.Height, box.Length); //Since the cube model is 1x1x1, it needs to be scaled to match the size of each individual box.
                     EntityDebugDrawer model = new(e, CubeModel, scaling);
