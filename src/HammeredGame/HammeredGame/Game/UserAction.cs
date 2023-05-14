@@ -50,6 +50,94 @@ namespace HammeredGame.Game
                 result.Y = Math.Clamp(result.Y, -1f, 1f);
                 return result;
             }
+
+            /// <summary>
+            /// Returns true on the moment an upward input has been initiated.
+            /// </summary>
+            /// <param name="input"></param>
+            /// <returns></returns>
+            public bool FlickedUp(Input input)
+            {
+                return input.KeyPress(KeyboardContinuousKeys.Item1) ||
+                    input.ButtonPress(GamepadContinuousStickSide == "Left" ? Buttons.LeftThumbstickUp : Buttons.RightThumbstickUp);
+            }
+
+            /// <summary>
+            /// Returns true on the moment a leftward input has been initiated.
+            /// </summary>
+            /// <param name="input"></param>
+            /// <returns></returns>
+            public bool FlickedLeft(Input input)
+            {
+                return input.KeyPress(KeyboardContinuousKeys.Item2) ||
+                    input.ButtonPress(GamepadContinuousStickSide == "Left" ? Buttons.LeftThumbstickLeft : Buttons.RightThumbstickLeft);
+            }
+
+            /// <summary>
+            /// Returns true on the moment a downward input has been initiated.
+            /// </summary>
+            /// <param name="input"></param>
+            /// <returns></returns>
+            public bool FlickedDown(Input input)
+            {
+                return input.KeyPress(KeyboardContinuousKeys.Item3) ||
+                    input.ButtonPress(GamepadContinuousStickSide == "Left" ? Buttons.LeftThumbstickDown : Buttons.RightThumbstickDown);
+            }
+
+            /// <summary>
+            /// Returns true on the moment a rightward input has been initiated.
+            /// </summary>
+            /// <param name="input"></param>
+            /// <returns></returns>
+            public bool FlickedRight(Input input)
+            {
+                return input.KeyPress(KeyboardContinuousKeys.Item4) ||
+                    input.ButtonPress(GamepadContinuousStickSide == "Left" ? Buttons.LeftThumbstickRight : Buttons.RightThumbstickRight);
+            }
+
+            /// <summary>
+            /// Returns true as long as an upward input is given.
+            /// </summary>
+            /// <param name="input"></param>
+            /// <returns></returns>
+            public bool HeldUp(Input input)
+            {
+                return input.KeyDown(KeyboardContinuousKeys.Item1) ||
+                    input.ButtonHeld(GamepadContinuousStickSide == "Left" ? Buttons.LeftThumbstickUp : Buttons.RightThumbstickUp);
+            }
+
+            /// <summary>
+            /// Returns true as long as a leftward input is given.
+            /// </summary>
+            /// <param name="input"></param>
+            /// <returns></returns>
+            public bool HeldLeft(Input input)
+            {
+                return input.KeyDown(KeyboardContinuousKeys.Item2) ||
+                    input.ButtonHeld(GamepadContinuousStickSide == "Left" ? Buttons.LeftThumbstickLeft : Buttons.RightThumbstickLeft);
+            }
+
+            /// <summary>
+            /// Returns true as long as a downward input is given.
+            /// </summary>
+            /// <param name="input"></param>
+            /// <returns></returns>
+            public bool HeldDown(Input input)
+            {
+                return input.KeyDown(KeyboardContinuousKeys.Item3) ||
+                    input.ButtonHeld(GamepadContinuousStickSide == "Left" ? Buttons.LeftThumbstickDown : Buttons.RightThumbstickDown);
+            }
+
+            /// <summary>
+            /// Returns true as long as a rightward input is given.
+            /// </summary>
+            /// <param name="input"></param>
+            /// <returns></returns>
+            public bool HeldRight(Input input)
+            {
+                return input.KeyDown(KeyboardContinuousKeys.Item4) ||
+                    input.ButtonHeld(GamepadContinuousStickSide == "Left" ? Buttons.LeftThumbstickRight : Buttons.RightThumbstickRight);
+            }
         }
 
         /// <summary>
@@ -93,7 +181,9 @@ namespace HammeredGame.Game
         public static readonly DiscreteUserAction Dash = new("Dash", Buttons.LeftTrigger, Keys.LeftShift);
         public static readonly DiscreteUserAction RotateCameraLeft = new("Rotate Camera Left", Buttons.LeftShoulder, Keys.Q);
         public static readonly DiscreteUserAction RotateCameraRight = new("Rotate Camera Right", Buttons.RightShoulder, Keys.E);
-        public static readonly DiscreteUserAction MenuItemUp = new("Move Menu Selection Up", Buttons.LeftThumbstickUp, Keys.W);
-        public static readonly DiscreteUserAction MenuItemDown = new("Move Menu Selection Up", Buttons.LeftThumbstickDown, Keys.S);
+        public static readonly DiscreteUserAction MenuItemUp = new("Move Menu Selection Up", Buttons.DPadUp, Keys.Up);
+        public static readonly DiscreteUserAction MenuItemDown = new("Move Menu Selection Down", Buttons.DPadDown, Keys.Down);
+        public static readonly DiscreteUserAction MenuItemLeft = new("Move Menu Slider Left", Buttons.DPadLeft, Keys.Left);
+        public static readonly DiscreteUserAction MenuItemRight = new("Move Menu Slider Right", Buttons.DPadRight, Keys.Right);
     }
 }

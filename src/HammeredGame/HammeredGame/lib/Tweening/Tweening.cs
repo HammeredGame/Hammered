@@ -68,16 +68,37 @@ namespace Pleasing
         /// <summary>
         /// Creates a new tween and timeline.
         /// </summary>
-        /// <param name="obj">The object to tween.</param>
+        /// <param name="target">The target object to tween.</param>
+        /// <param name="propertyName">The parameter to tween on the target object.</param>
+        /// <param name="value">The value to tween to.</param>
+        /// <param name="duration">The duration in milliseconds for the tween</param>
         /// <param name="easingFunction">The easing function to use. (e.g. Easing.Linear)</param>
-        /// <param name="endTime">The time, in milliseconds when the tween will end.</param>
-        /// <param name="startTime">The time in milliseconds when the tween will begin.</param>
-        /// <returns>A TweenTimeline with a tween attached.</returns>
+        /// <param name="lerpFunction">The interpolation function to use.</param>
+        /// <param name="delay">The delay in milliseconds until starting the tween</param>
         public static void Tween<T>(object target, string propertyName, T value, float duration, EasingFunction easingFunction, LerpFunction<T> lerpFunction, float delay = 0)
         {
             var timeline = new TweenTimeline();
             var property = timeline.AddProperty<T>(target, propertyName, lerpFunction);
             property.AddFrame(duration, value);
+            singleTimelines.Add(timeline);
+        }
+
+        /// <summary>
+        /// Creates a new tween and timeline for a property.
+        /// </summary>
+        /// <param name="setter">The function to use as a setter.</param>
+        /// <param name="fromValue">The value to tween from.</param>
+        /// <param name="toValue">The value to tween to.</param>
+        /// <param name="duration">The duration in milliseconds for the tween</param>
+        /// <param name="easingFunction">The easing function to use. (e.g. Easing.Linear)</param>
+        /// <param name="lerpFunction">The interpolation function to use.</param>
+        /// <param name="delay">The delay in milliseconds until starting the tween</param>
+        public static void Tween<T>(Action<T> setter, T fromValue, T toValue, float duration, EasingFunction easingFunction, LerpFunction<T> lerpFunction, float delay = 0)
+        {
+            var timeline = new TweenTimeline();
+            var property = timeline.AddProperty<T>(fromValue, setter, lerpFunction);
+            property.AddFrame(0, fromValue);
+            property.AddFrame(duration, toValue);
             singleTimelines.Add(timeline);
         }
 

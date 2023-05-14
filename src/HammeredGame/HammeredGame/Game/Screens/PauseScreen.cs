@@ -18,56 +18,64 @@ namespace HammeredGame.Game.Screens
         public Action RestartMethod;
         public Action QuitMethod;
 
-        public override void LoadContent()
+        public override void LoadMenuWidgets()
         {
-            // Set up list of menu items before calling base.LoadContent();
+            base.LoadMenuWidgets();
 
             MenuHeaderText = "PAUSED";
 
-            MenuItem menuItemContinue = new()
+            int oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
+
+            Label menuItemContinue = new()
             {
                 Text = "Continue",
                 Id = "menuItemContinue",
+                Font = BarlowFont.GetFont(oneLineHeight)
             };
             // Keep screen contents loaded since the Pause Screen will be re-added again
-            menuItemContinue.Selected += (s, a) =>
+            menuItemContinue.TouchUp += (s, a) =>
             {
                 ContinueMethod?.Invoke();
                 ExitScreen(alsoUnloadContent: false);
             };
 
-            MenuItem menuItemRestartLevel = new()
+            Label menuItemRestartLevel = new()
             {
                 Text = "Restart Level",
-                Id = "_menuItemRestartLevel"
+                Id = "_menuItemRestartLevel",
+                Font = BarlowFont.GetFont(oneLineHeight)
             };
-            menuItemRestartLevel.Selected += (s, a) =>
+            menuItemRestartLevel.TouchUp += (s, a) =>
             {
                 RestartMethod?.Invoke();
                 // Keep screen contents loaded since the Pause Screen will be re-added again
                 ExitScreen(alsoUnloadContent: false);
             };
 
-            MenuItem menuItemOptions = new()
+            Label menuItemOptions = new()
             {
                 Text = "Options",
                 Id = "_menuItemOptions",
-                Enabled = false
+                Font = BarlowFont.GetFont(oneLineHeight)
+            };
+            menuItemOptions.TouchUp += (s, a) =>
+            {
+                ScreenManager.AddScreen(new OptionsScreen());
             };
 
-            MenuItem menuItemQuitToTitle = new()
+            Label menuItemQuitToTitle = new()
             {
                 Text = "Quit to Title",
                 Id = "menuItemQuitToTitle",
+                Font = BarlowFont.GetFont(oneLineHeight)
             };
-            menuItemQuitToTitle.Selected += (s, a) =>
+            menuItemQuitToTitle.TouchUp += (s, a) =>
             {
                 QuitMethod?.Invoke();
                 ExitScreen(alsoUnloadContent: true);
             };
 
-            MenuItems = new List<MenuItem>() { menuItemContinue, menuItemRestartLevel, menuItemOptions, menuItemQuitToTitle };
-            base.LoadContent();
+            MenuWidgets = new List<Widget>() { menuItemContinue, menuItemRestartLevel, menuItemOptions, menuItemQuitToTitle };
         }
 
         public override void Update(GameTime gameTime)
