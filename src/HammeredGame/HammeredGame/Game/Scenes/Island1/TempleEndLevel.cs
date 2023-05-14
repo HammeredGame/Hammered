@@ -130,6 +130,12 @@ namespace HammeredGame.Game.Scenes.Island1
             wallStart = new(220.0f, this.Grid.originPoint.Y, -140.0f);
             wallFinish = new(220.0f, this.Grid.endPoint.Y, -140.0f);
             this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+
+            // Hammer statue
+            wallStart = new(200.0f, this.Grid.originPoint.Y, -230.0f);
+            wallFinish = new(210.0f, this.Grid.endPoint.Y, -212.0f);
+            this.Grid.MarkRangeAs(wallStart, wallFinish, false);
+
         }
     }
 }
