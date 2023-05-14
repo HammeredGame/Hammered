@@ -46,8 +46,8 @@ namespace HammeredGame.Game.Scenes.Island1
             laser2.Entity.CollisionInformation.CollisionRules.Group= laserRockGroup;
             rock1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
             //rock2.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
-
-            await ParentGameScreen.ShowDialogueAndWait("“I can’t see any trees in the area…I’ve been caught between a rock and a hard place.");
+            
+            await ParentGameScreen.ShowDialogueAndWait("“I can’t see any trees in the area…I’ve been /n caught between a rock and a hard place.");
 
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
@@ -56,7 +56,8 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
-                    await ParentGameScreen.ShowDialogueAndWait("That was surprisingly easy...! I hope the next one\nis also like that.");
+                    await ParentGameScreen.ShowDialogueAndWait("That was surprisingly easy...!");
+                    await ParentGameScreen.ShowDialogueAndWait("I hope the next one is also like that.");
                     ParentGameScreen.InitializeLevel(typeof(PrototypePuzzle).FullName);
                 }
                 else
