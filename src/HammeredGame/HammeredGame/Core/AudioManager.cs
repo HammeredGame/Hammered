@@ -30,6 +30,7 @@ namespace HammeredGame.Core
             // Universal UI/Menu Soundpack (https://ellr.itch.io/universal-ui-soundpack)
             "Audio/UI/selection_confirm",
             "Audio/buzz",
+            "Audio/glow",
         };
 
         //public AudioListener Listener

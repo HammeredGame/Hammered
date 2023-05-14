@@ -82,6 +82,12 @@
 /processorParam:Quality=Best
 /build:Audio/footstep1.wav
 
+#begin Audio/glow.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/glow.wav
+
 #begin Audio/hammer_drop.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
