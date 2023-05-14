@@ -4,6 +4,7 @@ using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using HammeredGame.Game.Scenes.Endgame;
 using HammeredGame.Game.Scenes.Island1;
 using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
