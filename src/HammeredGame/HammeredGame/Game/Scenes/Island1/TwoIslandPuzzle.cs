@@ -1,3 +1,4 @@
+using BEPUphysics.CollisionRuleManagement;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
@@ -15,7 +16,9 @@ namespace HammeredGame.Game.Scenes.Island1
 {
     internal class TwoIslandPuzzle : Scene
     {
+        private bool openedKeyDoor = false;
         private bool withinDoorInteractTrigger = false;
+        private CancellationTokenSource doorInteractTokenSource;// = new();
 
         public TwoIslandPuzzle(GameServices services, GameScreen screen) : base(services, screen)
         { }
@@ -40,6 +43,20 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_goal"));
 
+            CollisionGroup waterboundsGroup = new CollisionGroup();
+            foreach (var gO in GameObjectsList)
+            {
+                // Set water bounds objects to a group (usually used to ensure that it doesn't
+                // block any rocks in the scene, but here there are no rocks in the scene.
+                // If there are no rocks, the water bounds still needs a collision group attached,
+                // so attaching an empty collision group here)
+                var waterBounds = gO as WaterBoundsObject;
+                if (waterBounds != null)
+                {
+                    waterBounds.Entity.CollisionInformation.CollisionRules.Group = waterboundsGroup;
+                }
+            }
+
             // No further initialization required for the <c>UniformGrid</c> instance.
 
             // Make sure the hammer is being carried by the player. If the player does not have the
@@ -60,12 +77,15 @@ namespace HammeredGame.Game.Scenes.Island1
                 }
             };
 
-            CancellationTokenSource doorInteractTokenSource = new();
+            doorInteractTokenSource = new();
             Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
             {
-                doorInteractTokenSource = new();
-                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
-                withinDoorInteractTrigger = true;
+                if (!openedKeyDoor)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinDoorInteractTrigger = true;
+                }
             };
 
             Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += async (_, _) =>
@@ -95,6 +115,8 @@ namespace HammeredGame.Game.Scenes.Island1
                     if (Get<Key>("key").IsPickedUp())
                     {
                         Get<Door>("door_goal").OpenDoor();
+                        openedKeyDoor = true;
+                        doorInteractTokenSource.Cancel();
                     }
                     else
                     {
