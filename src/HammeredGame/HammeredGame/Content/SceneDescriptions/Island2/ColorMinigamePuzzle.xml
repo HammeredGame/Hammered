@@ -2,8 +2,8 @@
   <camera mode="follow">
     <follow_distance>268.000</follow_distance>
     <follow_angle_v>0.450</follow_angle_v>
-    <follow_angle_h>-376.429</follow_angle_h>
-    <target>46.682 -12.839 -12.763</target>
+    <follow_angle_h>-170.377</follow_angle_h>
+    <target>44.702 -12.839 -16.609</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.375</fov>
   </camera>
@@ -93,8 +93,8 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture>Meshes/Character/character_diffuse</texture>
-    <position>46.682 -12.839 -12.763</position>
-    <rotation>0.000 0.927 0.000 0.374</rotation>
+    <position>49.169 -12.839 -12.603</position>
+    <rotation>0.000 0.915 0.000 -0.403</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
@@ -107,8 +107,8 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
-    <position>48.574 -16.433 -11.709</position>
-    <rotation>0.867 -0.331 -0.156 0.339</rotation>
+    <position>50.551 -16.562 -14.543</position>
+    <rotation>0.539 -0.005 -0.680 0.498</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>
@@ -1639,7 +1639,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="hub_door">
     <model>Meshes/Doors/stone_gate</model>
     <texture>Meshes/Doors/stone_gate_tex</texture>
-    <position>180.000 -10.500 -60.000</position>
+    <position>180.000 -10.500 -55.600</position>
     <rotation>0.000 0.700 0.000 0.714</rotation>
     <scale>0.750</scale>
     <body type="box">
@@ -1647,6 +1647,71 @@
       <height>25.000</height>
       <length>30.000</length>
       <shift_graphic>0.000 -9.650 12.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="hub_door_interact_trigger">
+    <model />
+    <position>180.000 -10.500 -60.000</position>
+    <rotation>0.000 0.700 0.000 0.714</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>19.100</width>
+      <height>25.000</height>
+      <length>35.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="hub_door_bounds">
+    <model />
+    <position>162.100 -10.000 -45.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>9.900</width>
+      <height>23.500</height>
+      <length>31.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="hub_door_bounds1">
+    <model />
+    <position>201.000 -10.000 -45.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>9.900</width>
+      <height>23.500</height>
+      <length>31.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="end_trigger">
+    <model />
+    <position>180.000 -10.000 -7.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>28.300</width>
+      <height>53.500</height>
+      <length>50.100</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="bridge_hub_to_end">
+    <model>Meshes/Bridge/bridge</model>
+    <texture>Meshes/Bridge/bridge_wood</texture>
+    <position>181.500 -24.034 -27.100</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>50.000</width>
+      <height>4.900</height>
+      <length>30.000</length>
+      <shift_graphic>-25.000 0.000 0.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="bridge_hub_to_pp">
@@ -1782,7 +1847,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="moving_base">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>-157.300 -15.334 -319.334</position>
+    <position>-157.300 -15.334 -297.666</position>
     <rotation>0.000 1.000 0.000 0.000</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -1795,7 +1860,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="moving_laser">
     <model>unit_size_plane_y_up</model>
     <texture>LaserMaterial</texture>
-    <position>-151.500 -14.400 -319.534</position>
+    <position>-151.500 -14.400 -297.666</position>
     <rotation>0.000 0.707 0.000 0.708</rotation>
     <scale>0.760</scale>
     <body type="box">
@@ -1908,6 +1973,19 @@
       <height>10.000</height>
       <length>65.399</length>
       <shift_graphic>0.000 0.000 7.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="yellow_laser">
+    <model>unit_size_plane_y_up</model>
+    <texture>LaserMaterial</texture>
+    <position>75.000 -10.334 -225.000</position>
+    <rotation>0.000 1.000 0.000 0.000</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>15.000</width>
+      <height>15.000</height>
+      <length>134.422</length>
+      <shift_graphic>0.000 0.000 4.860</shift_graphic>
     </body>
   </object>
 </scene>
