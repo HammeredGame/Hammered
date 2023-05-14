@@ -76,7 +76,19 @@
       <shift_graphic>0.000 4.690 0.000</shift_graphic>
     </body>
   </object>
-
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="bridge_to_next_level">
+    <model>Meshes/Bridge/bridge</model>
+    <texture>Meshes/Bridge/bridge_wood</texture>
+    <position>180.000 0.500 -360.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>50.000</width>
+      <height>4.900</height>
+      <length>30.000</length>
+      <shift_graphic>-25.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject">
     <model />
     <position>47.000 8.000 -190.000</position>
@@ -689,7 +701,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="end_trigger">
     <model />
-    <position>180.000 -5.000 -330.000</position>
+    <position>180.000 -5.000 -340.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <visibility>False</visibility>
