@@ -237,7 +237,10 @@ namespace HammeredGame.Game
 
             System.Numerics.Vector4 rot = Rotation.ToVector4().ToNumerics();
             ImGui.DragFloat4("Rotation", ref rot, 0.01f, -1.0f, 1.0f);
-            Rotation = Quaternion.Normalize(new Quaternion(rot));
+            if (rot.X != 0f || rot.Y != 0f || rot.Z != 0f || rot.W != 0)
+            {
+                Rotation = Quaternion.Normalize(new Quaternion(rot));
+            }
 
             ImGui.DragFloat("Scale", ref Scale, 0.01f);
             ImGui.TextWrapped("* Changing scale only changes the rendering scale and not the collision entity scale.");
@@ -248,7 +251,7 @@ namespace HammeredGame.Game
             if (Entity != null)
             {
                 System.Numerics.Vector3 modelOffset = EntityModelOffset.ToNumerics();
-                ImGui.DragFloat3("Origin offset (between Graphic & Physics)", ref modelOffset, 0.01f);
+                ImGui.DragFloat3("Origin offset (between Graphic & Physics)", ref modelOffset);
                 EntityModelOffset = modelOffset;
 
                 // Setting IgnoreShapeChanges makes sure that editing body properties don't randomly
