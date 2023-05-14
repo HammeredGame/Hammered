@@ -29,6 +29,11 @@ namespace HammeredGame.Game.Scenes.Island1
             // Allow <c>Hammer</c> instance to have access to the grid of the scene for the path planning.
             // THIS IS REQUIRED FOR ALL SCENES!
             Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
+            // Do not allow the hammer to traverse the floor.
+            Microsoft.Xna.Framework.Vector3 floorStart, floorFinish;
+            floorStart = new(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z);
+            floorFinish = new(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
+            this.Grid.MarkRangeAs(floorStart, floorFinish, false);
 
             // Set laser to desired length within level
             Laser laser1 = Get<Laser>("laser1");
