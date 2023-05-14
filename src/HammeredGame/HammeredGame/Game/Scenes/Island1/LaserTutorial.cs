@@ -5,15 +5,19 @@ using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Screens;
+using System;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
     internal class LaserTutorial : Scene
     {
         public LaserTutorial(GameServices services, GameScreen screen) : base(services, screen)
+        { }
+        protected override async Task LoadSceneContent(IProgress<int> progress)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/LaserTutorial_voxel.xml");
-            OnSceneStart();
+            await base.LoadSceneContent(progress);
+            await CreateFromXML($"Content/SceneDescriptions/Island1/LaserTutorial_voxel.xml", progress);
         }
 
         protected override void OnSceneStart()

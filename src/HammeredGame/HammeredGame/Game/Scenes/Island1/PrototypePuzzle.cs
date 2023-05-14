@@ -12,6 +12,8 @@ using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using System;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -23,14 +25,15 @@ namespace HammeredGame.Game.Scenes.Island1
         private Vector3 newSpawnRockPosition = new Vector3(257.390f, 0.000f, -187.414f);
         private CollisionGroup laserRockGroup;
 
-        public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen)
+        public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen) { }
+
+        protected override async Task LoadSceneContent(IProgress<int> progress)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/PrototypePuzzle_voxel.xml");
-            OnSceneStart();
+            await base.LoadSceneContent(progress);
+            await CreateFromXML($"Content/SceneDescriptions/Island1/PrototypePuzzle_voxel.xml", progress);
         }
 
-        protected override async void OnSceneStart()
-        {
+        protected override void OnSceneStart() {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
 

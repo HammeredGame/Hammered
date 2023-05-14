@@ -5,17 +5,22 @@ using HammeredGame.Game.Screens;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using Microsoft.Xna.Framework;
 using Pleasing;
+using System.Threading.Tasks;
+using System;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
     internal class TempleEndLevel : Scene
     {
         private bool ended = false;
-        
+
         public TempleEndLevel(GameServices services, GameScreen screen) : base(services, screen)
+        { }
+
+        protected override async Task LoadSceneContent(IProgress<int> progress)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/TempleEndLevel_voxel.xml");
-            OnSceneStart();
+            await base.LoadSceneContent(progress);
+            await CreateFromXML($"Content/SceneDescriptions/Island1/TempleEndLevel_voxel.xml", progress);
         }
 
         protected override async void OnSceneStart()
@@ -36,8 +41,8 @@ namespace HammeredGame.Game.Scenes.Island1
 
             await ParentGameScreen.ShowDialogueAndWait("A temple with a huge statue of a hammer...\nGee, I wonder which god this is for.");
             await ParentGameScreen.ShowDialogueAndWait("Let's hurry up and drop off the hammer!");
-            
-                
+
+
         }
 
         public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
