@@ -227,6 +227,13 @@ namespace HammeredGame.Core
         public virtual bool UpdateTransitionOut(GameTime gameTime, bool firstCall) { return true; }
 
         /// <summary>
+        /// Called when the game resolution changes.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public virtual void SetResolution(int width, int height) { }
+
+        /// <summary>
         /// Called to draw.
         /// </summary>
         /// <param name="gameTime"></param>

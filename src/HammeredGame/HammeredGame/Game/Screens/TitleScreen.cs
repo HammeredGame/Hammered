@@ -15,65 +15,75 @@ namespace HammeredGame.Game.Screens
         public Action StartNewFunc;
         public Action ToggleDebugUIFunc;
 
-        public override void LoadContent()
+        public override void LoadMenuWidgets()
         {
-            // Set up list of menu items before calling base.LoadContent();
+            base.LoadMenuWidgets();
 
             MenuHeaderText = "HAMMERED";
 
-            MenuItem menuItemContinue = new()
+            int oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
+
+            Label menuItemContinue = new()
             {
                 Text = "Continue",
                 Id = "menuItemContinue",
-                Enabled = false
+                Enabled = false,
+                Font = BarlowFont.GetFont(oneLineHeight)
             };
 
-            if (Continuable) {
+            if (Continuable)
+            {
                 menuItemContinue.Enabled = true;
-                menuItemContinue.Selected += (s, a) =>
+                menuItemContinue.TouchUp += (s, a) =>
                 {
                     ContinueFunc?.Invoke();
                     ExitScreen(alsoUnloadContent: true);
                 };
             }
 
-            MenuItem menuItemStartGame = new()
+            Label menuItemStartGame = new()
             {
                 Text = "Start New",
-                Id = "_menuItemStartNew"
+                Id = "_menuItemStartNew",
+                Font = BarlowFont.GetFont(oneLineHeight)
             };
-            menuItemStartGame.Selected += (s, a) =>
+            menuItemStartGame.TouchUp += (s, a) =>
             {
                 StartNewFunc?.Invoke();
                 ExitScreen(alsoUnloadContent: true);
             };
 
-            MenuItem menuItemOptions = new()
+            Label menuItemOptions = new()
             {
                 Text = "Options",
                 Id = "_menuItemOptions",
-                Enabled = false
+                Font = BarlowFont.GetFont(oneLineHeight)
+            };
+            menuItemOptions.TouchUp += (s, a) =>
+            {
+                ScreenManager.AddScreen(new OptionsScreen());
             };
 
-            MenuItem menuItemToggleDebugUI = new()
+            Label menuItemToggleDebugUI = new()
             {
                 Text = "Toggle Debug UI",
-                Id = "_menuItemToggleDebugUI"
+                Id = "_menuItemToggleDebugUI",
+                Font = BarlowFont.GetFont(oneLineHeight)
             };
-            menuItemToggleDebugUI.Selected += (s, a) =>
+            menuItemToggleDebugUI.TouchUp += (s, a) =>
             {
                 ToggleDebugUIFunc?.Invoke();
             };
 
-            MenuItem menuItemQuitToDesktop = new()
+            Label menuItemQuitToDesktop = new()
             {
                 Text = "Quit to Desktop",
                 Id = "_menuItemQuitToDesktop",
+                Font = BarlowFont.GetFont(oneLineHeight)
             };
-            menuItemQuitToDesktop.Selected += (_, _) => Environment.Exit(0);
+            menuItemQuitToDesktop.TouchUp += (_, _) => Environment.Exit(0);
 
-            MenuItems = new List<MenuItem>() { menuItemContinue, menuItemStartGame, menuItemOptions, menuItemToggleDebugUI, menuItemQuitToDesktop };
-            base.LoadContent();
+            MenuWidgets = new List<Widget>() { menuItemContinue, menuItemStartGame, menuItemOptions, menuItemToggleDebugUI, menuItemQuitToDesktop };
         }
 
         public override void Update(GameTime gameTime)
