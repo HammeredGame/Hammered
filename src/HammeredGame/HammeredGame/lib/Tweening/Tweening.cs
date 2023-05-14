@@ -237,6 +237,7 @@ namespace Pleasing
         public TweenableProperty<T> AddProperty<T>(T initialValue, Action<T> setter, LerpFunction<T> lerpFunction)
         {
             var t = new TweenSetter<T>(initialValue, setter, lerpFunction);
+            tweeningProperties.Add(t);
             return t;
         }
 

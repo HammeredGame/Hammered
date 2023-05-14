@@ -5,15 +5,19 @@ using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Screens;
 using Pleasing;
+using System;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
     internal class TreeTutorial : Scene
     {
         public TreeTutorial(GameServices services, GameScreen screen) : base(services, screen)
+        { }
+        protected override async Task LoadSceneContent(IProgress<int> progress)
         {
-            CreateFromXML($"Content/SceneDescriptions/Island1/TreeTutorial_voxel.xml");
-            OnSceneStart();
+            await base.LoadSceneContent(progress);
+            await CreateFromXML($"Content/SceneDescriptions/Island1/TreeTutorial_voxel.xml", progress);
         }
 
         protected override async void OnSceneStart()

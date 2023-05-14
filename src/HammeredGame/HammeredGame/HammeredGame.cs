@@ -216,6 +216,7 @@ namespace HammeredGame
             // Update any animations that are active (doing this before the ScreenManager update so
             // that new values are used for it)
             Tweening.Update(gameTime);
+            AsyncContentManagerExtension.Update();
 
             // Call update on the various active screens to do their thing
             manager.Update(gameTime);

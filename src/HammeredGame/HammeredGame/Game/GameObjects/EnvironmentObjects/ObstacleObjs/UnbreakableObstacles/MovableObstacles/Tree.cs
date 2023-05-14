@@ -87,11 +87,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
-                //this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
+                this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
                 //this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
                 //this.Entity.CollisionInformation.Events.RemovingPair += Events_RemovingPair;
                 this.AudioEmitter = new AudioEmitter();
-                this.AudioEmitter.Position = this.Position; 
+                this.AudioEmitter.Position = this.Position;
             }
         }
 
@@ -105,21 +105,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         //    }
         //}
 
-        //private void Events_PairTouching(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
-        //{
-        //    if (other.Tag is Player && treeFallen)
-        //    {
-        //        var player = other.Tag as Player;
-        //        this.playerOnTree = true;
-        //        player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, player.Entity.Position.Y + 0.1f, player.Entity.Position.Z);
-        //    }
-        //}
-
-        private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender,
-            BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        private void Events_PairTouching(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
             // Start tree fall (currently falls 90 degrees in the direction of hammer movement)
-            if (other.Tag is Hammer && !treeFallen)
+            if (other.Tag is Hammer && (!treeFallen || !isFalling))
             {
                 var hammer = other.Tag as Hammer;
 
@@ -131,7 +120,34 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     //tree_sfx[3].Play();
                     Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
                 }
-                
+
+            }
+
+            //if (other.Tag is Player && treeFallen)
+            //{
+            //    var player = other.Tag as Player;
+            //    this.playerOnTree = true;
+            //    player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, player.Entity.Position.Y + 0.1f, player.Entity.Position.Z);
+            //}
+        }
+
+        private void Events_InitialCollisionDetected(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender,
+            BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            // Start tree fall (currently falls 90 degrees in the direction of hammer movement)
+            if (other.Tag is Hammer && (!treeFallen || !isFalling))
+            {
+                var hammer = other.Tag as Hammer;
+
+                if (hammer.IsEnroute())
+                {
+                    fallDirection = hammer.Entity.LinearVelocity;
+                    fallDirection.Normalize();
+                    isFalling = true;
+                    //tree_sfx[3].Play();
+                    Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+                }
+
             }
 
             // If tree is fallen, player can walk on top of the tree
