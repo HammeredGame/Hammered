@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace HammeredGame.Game
@@ -454,6 +455,22 @@ namespace HammeredGame.Game
             GameObjects.Insert(destinationIndex, sourceKey, sourceObject);
         }
 
+        /// <summary>
+        /// Rename a game object key. If the destination key already exists, will create a unique
+        /// key by appending numbers to it.
+        /// </summary>
+        /// <param name="sourceKey">The key for the game object that will be renamed</param>
+        /// <param name="destinationKey">The key to rename to</param>
+        private void RenameObject(string sourceKey, string destinationKey)
+        {
+            // Grab the source object and its current index, then delete it
+            GameObject sourceObject = GameObjects[sourceKey];
+            int sourceIndex = GameObjects.IndexOf(sourceKey);
+            GameObjects.Remove(sourceKey);
+
+            GameObjects.Insert(sourceIndex, GenerateUniqueNameWithPrefix(destinationKey), sourceObject);
+        }
+
         // Some things for the object creation popup in the debug UI, to make data persistent across frames.
 
         // The default placeholder to show in the object creation class name drop-down
@@ -544,6 +561,7 @@ namespace HammeredGame.Game
                     // See explanation later on why this boolean is needed
                     bool openDeletionConfirmation = false;
                     bool openXMLCopyingPopup = false;
+                    bool openXMLRenamePopup = false;
 
                     // Show each object key as a selectable item, with its own right click menus for
                     // duplication and deletion. Because we can create and remove items from the
@@ -632,6 +650,14 @@ namespace HammeredGame.Game
                                 // We use a flag to show the popup later. For more info, see the
                                 // comment under the "Delete Object" context menu item.
                                 openXMLCopyingPopup = true;
+                            }
+
+                            // Renaming an individual object ID
+                            if (ImGui.MenuItem("Rename"))
+                            {
+                                // Use a flag to show the popup later. For more info, see the
+                                // comment under the "Delete Object" context menu item.
+                                openXMLRenamePopup = true;
                             }
 
                             // Object duplication (creates a new object with a new name but everything
@@ -749,6 +775,33 @@ namespace HammeredGame.Game
                             // We need some way of exiting, since a popup modal can't be exited in
                             // another way
                             if (ImGui.Button("Done")) { ImGui.CloseCurrentPopup(); }
+                            ImGui.EndPopup();
+                        }
+
+                        // Similar to a deletion popup, we have a popup for renaming. It's shown
+                        // using the same trick of a flag + popup.
+                        if (openXMLRenamePopup)
+                        {
+                            ImGui.OpenPopup($"rename_{key}");
+                            openXMLRenamePopup = false;
+                        }
+
+                        // The actual popup for renaming an object.
+                        ImGui.SetNextWindowPos(ImGui.GetCursorScreenPos(), ImGuiCond.Appearing);
+                        if (ImGui.BeginPopup($"rename_{key}"))
+                        {
+                            string buffer = key;
+                            ImGui.Text("New Id:");
+                            ImGui.SameLine();
+                            ImGui.PushItemWidth(150);
+                            // With EnterReturnsTrue, the InputText function will return true when
+                            // enter is pressed.
+                            if (ImGui.InputText("##rename" + key, ref buffer, 50, ImGuiInputTextFlags.EnterReturnsTrue))
+                            {
+                                RenameObject(key, buffer);
+                                ImGui.CloseCurrentPopup();
+                            }
+                            ImGui.PopItemWidth();
                             ImGui.EndPopup();
                         }
                     }
