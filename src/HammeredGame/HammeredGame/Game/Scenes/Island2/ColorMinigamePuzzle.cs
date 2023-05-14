@@ -28,6 +28,19 @@ namespace HammeredGame.Game.Scenes.Island2
             // Allow <c>Hammer</c> instance to have access to the grid of the scene for the path planning.
             // THIS IS REQUIRED FOR ALL SCENES!
             Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
+
+            // Set laser to desired length within level
+            Laser laser1 = Get<Laser>("red_laser");
+            laser1.SetLaserDefaultScale(4.0f);
+            Laser laser2 = Get<Laser>("red_laser1");
+            laser2.SetLaserDefaultScale(4.0f);
+            Laser laser3 = Get<Laser>("red_laser2");
+            laser3.SetLaserDefaultScale(6.35f);
+            Get<Laser>("maze_laser").SetLaserDefaultScale(13f);
+            Get<Laser>("maze_laser1").SetLaserDefaultScale(13f);
+            Get<Laser>("maze_laser2").SetLaserDefaultScale(11.51f);
+            Get<Laser>("maze_laser3").SetLaserDefaultScale(13.86f);
+            Get<Laser>("moving_laser").SetLaserDefaultScale(8.52f);
         }
     }
 }
