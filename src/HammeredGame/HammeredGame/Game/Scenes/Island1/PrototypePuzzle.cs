@@ -21,7 +21,10 @@ namespace HammeredGame.Game.Scenes.Island1
     {
         private bool spawnedNewRock = false;
         private bool openedGoalDoor = false;
+        private bool openedKeyDoor = false;
         private bool withinDoorInteractTrigger = false;
+        private CancellationTokenSource doorInteractTokenSource;// = new();
+
         private Vector3 newSpawnRockPosition = new Vector3(257.390f, 0.000f, -187.414f);
         private CollisionGroup noSolverGroup;
 
@@ -91,12 +94,15 @@ namespace HammeredGame.Game.Scenes.Island1
             this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
 
 
-            CancellationTokenSource doorInteractTokenSource = new();
+            doorInteractTokenSource = new();
             Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
             {
-                doorInteractTokenSource = new();
-                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
-                withinDoorInteractTrigger = true;
+                if (!openedKeyDoor)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinDoorInteractTrigger = true;
+                }
             };
 
             Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += async (_, _) =>
@@ -256,6 +262,8 @@ namespace HammeredGame.Game.Scenes.Island1
                     if (Get<Key>("key").IsPickedUp())
                     {
                         Get<Door>("door_key").OpenDoor();
+                        openedKeyDoor = true;
+                        doorInteractTokenSource.Cancel();
                     }
                     else
                     {
