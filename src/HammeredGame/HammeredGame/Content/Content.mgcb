@@ -850,7 +850,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/island2/blue_island.fbx
@@ -869,7 +869,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/island2/hub_island.fbx
@@ -888,7 +888,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/island2/laser_maze_island.fbx
@@ -907,7 +907,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/island2/pressure_plate_island.fbx
@@ -926,7 +926,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/island2/red_island.fbx
@@ -945,7 +945,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Meshes/IslandMeshes/island2/yellow_island.fbx
@@ -1335,6 +1335,9 @@
 
 #begin SceneDescriptions/Island1/TwoIslandPuzzle.xml
 /copy:SceneDescriptions/Island1/TwoIslandPuzzle.xml
+
+#begin SceneDescriptions/Island2/ColorMinigamePuzzle.xml
+/copy:SceneDescriptions/Island2/ColorMinigamePuzzle.xml
 
 #begin SceneDescriptions/Test/LaserTest.xml
 /copy:SceneDescriptions/Test/LaserTest.xml
