@@ -89,16 +89,18 @@ namespace HammeredGame.Game.Scenes.Island2
             // Continuously move the moving-laser
             Vector3 offsetFromBase = Get<Laser>("moving_laser").Position - Get<Wall>("moving_base").Position;
 
+            Get<Laser>("moving_laser").Position = new Vector3(-151.500f, -14.400f, -255f);
             TweenTimeline tweenTimeline = Tweening.NewTimeline();
             tweenTimeline
-                .AddVector3(Get<Laser>("moving_laser").Position, p =>
+                .AddFloat(Get<Laser>("moving_laser").Entity.LinearVelocity.Z, f =>
                 {
-                    Get<Laser>("moving_laser").Position = p;
-                    Get<Wall>("moving_base").Position = p - offsetFromBase;
+                    Get<Laser>("moving_laser").Entity.LinearVelocity = new(0, 0, f);
+                    Get<Wall>("moving_base").Position = Get<Laser>("moving_laser").Position - offsetFromBase;
                 })
-                .AddFrame(0, new Vector3(-151.500f, -14.400f, -255f))
-                .AddFrame(3000, new Vector3(-151.500f, -14.400f, -255f) + new Vector3(0, 0, -60))
-                .AddFrame(6000, new Vector3(-151.500f, -14.400f, -255f));
+                .AddFrame(0, -20)
+                .AddFrame(2999, -20)
+                .AddFrame(3000, 20)
+                .AddFrame(5999, 20);
             tweenTimeline.Loop = true;
         }
 
