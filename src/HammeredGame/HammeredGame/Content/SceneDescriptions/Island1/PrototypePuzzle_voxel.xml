@@ -1836,7 +1836,7 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="door_pp">
-    <model>Meshes/Doors/stone_gate_open</model>
+    <model>Meshes/Doors/stone_gate</model>
     <texture>Meshes/Doors/stone_gate_tex</texture>
     <position>365.000 -10.500 -285.000</position>
     <rotation>0.000 0.699 0.000 0.715</rotation>
