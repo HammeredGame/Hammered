@@ -46,7 +46,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         private Door correspondingDoor;
         private bool keyPickedUp = false;
 
-        //private List<SoundEffect> chime;  
+        //private List<SoundEffect> chime;
 
         public Key(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
@@ -64,9 +64,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
                 this.ActiveSpace.Add(this.Entity);
 
                 this.Entity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
-                
+
                 this.AudioEmitter = new AudioEmitter();
-                this.AudioEmitter.Position = this.Position; 
+                this.AudioEmitter.Position = this.Position;
                 //chime = Services.GetService<List<SoundEffect>>();
             }
         }
@@ -88,11 +88,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
 
                 if (other.Tag is Player)
                 {
-                    correspondingDoor.SetKeyFound(true);
+                    correspondingDoor?.SetKeyFound(true);
                     this.Visible = false;
                     this.ActiveSpace.Remove(this.Entity);
                     keyPickedUp = true;
-                    
+
                     Services.GetService<AudioManager>().Play3DSound("Audio/ding", false, this.AudioEmitter, 1);
                     //chime[4].Play();
                 }

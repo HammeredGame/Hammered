@@ -1,14 +1,16 @@
-﻿using BEPUphysics.CollisionRuleManagement;
-using HammeredGame.Core;
+﻿using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
-using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
+using HammeredGame.Game.Scenes.Island1;
 using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
 using Pleasing;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island2
@@ -16,6 +18,7 @@ namespace HammeredGame.Game.Scenes.Island2
     internal class ColorMinigamePuzzle : Scene
     {
         private ColorPlateState state = ColorPlateState.ZeroSuccess;
+        private bool withinDoorInteractTrigger;
 
         public ColorMinigamePuzzle(GameServices services, GameScreen screen) : base(services, screen)
         { }
@@ -46,12 +49,43 @@ namespace HammeredGame.Game.Scenes.Island2
             Get<Laser>("maze_laser_C").SetLaserDefaultScale(13f);
             Get<Laser>("maze_laser3").SetLaserDefaultScale(13.86f);
             Get<Laser>("moving_laser").SetLaserDefaultScale(8.52f);
+            Get<Laser>("yellow_laser").SetLaserDefaultScale(13f);
 
-            MoveLaser();
+            MoveLaserLoop();
+
+            CancellationTokenSource doorInteractTokenSource = new();
+            Get<TriggerObject>("hub_door_interact_trigger").OnTrigger += async (_, _) =>
+            {
+                doorInteractTokenSource = new();
+                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                withinDoorInteractTrigger = true;
+            };
+
+            Get<TriggerObject>("hub_door_interact_trigger").OnTriggerEnd += async (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinDoorInteractTrigger = false;
+            };
+
+            // Make sure the hammer is being carried by the player. If the player does not have the
+            // hammer, they will be blocked and not allowed to continue to the next level.
+            Get<TriggerObject>("end_trigger").Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+            Get<TriggerObject>("end_trigger").OnTrigger += async (_, _) =>
+            {
+                if (Get<Hammer>("hammer").IsWithCharacter())
+                {
+                    ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName);
+                }
+                else
+                {
+                    await ParentGameScreen.ShowDialogueAndWait("temp text. bring hammer with you!");
+                }
+            };
         }
 
-        private async void MoveLaser()
+        private async void MoveLaserLoop()
         {
+            // Continuously move the moving-laser
             Vector3 offsetFromBase = Get<Laser>("moving_laser").Position - Get<Wall>("moving_base").Position;
 
             TweenTimeline tweenTimeline = Tweening.NewTimeline();
@@ -61,10 +95,55 @@ namespace HammeredGame.Game.Scenes.Island2
                     Get<Laser>("moving_laser").Position = p;
                     Get<Wall>("moving_base").Position = p - offsetFromBase;
                 })
-                .AddFrame(0, new Vector3(-151.500f, -14.400f, -249.534f))
-                .AddFrame(4000, new Vector3(-151.500f, -14.400f, -249.534f) + new Vector3(0, 0, -80))
-                .AddFrame(8000, new Vector3(-151.500f, -14.400f, -249.534f));
+                .AddFrame(0, new Vector3(-151.500f, -14.400f, -255f))
+                .AddFrame(3000, new Vector3(-151.500f, -14.400f, -255f) + new Vector3(0, 0, -60))
+                .AddFrame(6000, new Vector3(-151.500f, -14.400f, -255f));
             tweenTimeline.Loop = true;
+        }
+
+        public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
+        {
+            base.Update(gameTime, screenHasFocus, isPaused);
+
+            MazeUpdate();
+            FourPlatesUpdate();
+            DoorHintIfWithinVicinity();
+        }
+
+        private void MazeUpdate()
+        {
+            var maze_pp_A = Get<PressurePlate>("maze_pp_A");
+            var maze_laser_A = Get<Laser>("maze_laser_A");
+            var maze_pp_B = Get<PressurePlate>("maze_pp_B");
+            var maze_laser_B = Get<Laser>("maze_laser_B");
+            var maze_pp_C = Get<PressurePlate>("maze_pp_C");
+            var maze_laser_C = Get<Laser>("maze_laser_C");
+
+            // The three pressure plates in the laser maze bit toggle laser activation
+            if (maze_pp_A.IsActivated())
+            {
+                maze_laser_A.SetLaserScale(0f);
+            }
+            else
+            {
+                maze_laser_A.ReturnToDefaultLength();
+            }
+            if (maze_pp_B.IsActivated())
+            {
+                maze_laser_B.SetLaserScale(0f);
+            }
+            else
+            {
+                maze_laser_B.ReturnToDefaultLength();
+            }
+            if (maze_pp_C.IsActivated())
+            {
+                maze_laser_C.SetLaserScale(0f);
+            }
+            else
+            {
+                maze_laser_C.ReturnToDefaultLength();
+            }
         }
 
         private enum ColorPlateState
@@ -73,43 +152,81 @@ namespace HammeredGame.Game.Scenes.Island2
             OneSuccess,
             TwoSuccess,
             ThreeSuccess,
-            FourSuccess
+            Complete
         }
 
-        public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
+        private void FourPlatesUpdate()
         {
-            base.Update(gameTime, screenHasFocus, isPaused);
+            // The four colored pressure plates are a state machine that you have to press in the
+            // right order. Any bad press will revert the state back to zero. After a successful
+            // completion, the pressure plates won't respond anymore and door will stay open.
+            if (Get<PressurePlate>("pressureplate_R").IsActivated() && state != ColorPlateState.Complete)
+            {
+                if (state == ColorPlateState.ZeroSuccess || state == ColorPlateState.OneSuccess)
+                {
+                    state = ColorPlateState.OneSuccess;
+                }
+                else
+                {
+                    state = ColorPlateState.ZeroSuccess;
+                }
+            }
+            else if (Get<PressurePlate>("pressureplate_G").IsActivated() && state != ColorPlateState.Complete)
+            {
+                if (state == ColorPlateState.OneSuccess || state == ColorPlateState.TwoSuccess)
+                {
+                    state = ColorPlateState.TwoSuccess;
+                }
+                else
+                {
+                    state = ColorPlateState.ZeroSuccess;
+                }
+            }
+            else if (Get<PressurePlate>("pressureplate_B").IsActivated() && state != ColorPlateState.Complete)
+            {
+                if (state == ColorPlateState.TwoSuccess || state == ColorPlateState.ThreeSuccess)
+                {
+                    state = ColorPlateState.ThreeSuccess;
+                }
+                else
+                {
+                    state = ColorPlateState.ZeroSuccess;
+                }
+            }
+            else if (Get<PressurePlate>("pressureplate_Y").IsActivated() && state != ColorPlateState.Complete)
+            {
+                if (state == ColorPlateState.ThreeSuccess)
+                {
+                    state = ColorPlateState.Complete;
+                    Get<Door>("pp_door").OpenDoor();
+                    Get<Door>("pp_door1").OpenDoor();
+                }
+                else
+                {
+                    state = ColorPlateState.ZeroSuccess;
+                }
+            }
+        }
 
-            // Handle Pressure Plate logic
-            var maze_pp_A = Get<PressurePlate>("maze_pp_A");
-            var maze_pp_B = Get<PressurePlate>("maze_pp_B");
-            var maze_pp_C = Get<PressurePlate>("maze_pp_C");
-
-            Get<Laser>("maze_laser_A").Visible = !maze_pp_A.IsActivated();
-            Get<Laser>("maze_laser_B").Visible = !maze_pp_B.IsActivated();
-            Get<Laser>("maze_laser_C").Visible = !maze_pp_C.IsActivated();
-
-            //if (Get<PressuerPlate>(""))
-
-            //if (pressureplate_1.IsActivated() && pressureplate_2.IsActivated())
-            //{
-            //    if (!openedGoalDoor)
-            //    {
-            //        openedGoalDoor = true;
-            //        Camera.SetFollowTarget(Get<Door>("door_goal"));
-            //        await Services.GetService<ScriptUtils>().WaitSeconds(1);
-
-            //        Get<Door>("door_goal").OpenDoor();
-
-            //        await Services.GetService<ScriptUtils>().WaitSeconds(1);
-            //        Camera.SetFollowTarget(Get<Player>("player1"));
-            //    }
-            //}
-            //else
-            //{
-            //    openedGoalDoor = false;
-            //    Get<Door>("door_goal").CloseDoor();
-            //}
+        private async void DoorHintIfWithinVicinity()
+        {
+            if (withinDoorInteractTrigger)
+            {
+                Input inp = this.Services.GetService<Input>();
+                if (UserAction.Interact.Pressed(inp))
+                {
+                    if (Get<Key>("pp_key").IsPickedUp() &&
+                        Get<Key>("maze_key").IsPickedUp() &&
+                        Get<Key>("yellow_key").IsPickedUp())
+                    {
+                        Get<Door>("hub_door").OpenDoor();
+                    }
+                    else
+                    {
+                        await ParentGameScreen.ShowDialogueAndWait("Hmm... This door has three keyholes...");
+                    }
+                }
+            }
         }
     }
 }
