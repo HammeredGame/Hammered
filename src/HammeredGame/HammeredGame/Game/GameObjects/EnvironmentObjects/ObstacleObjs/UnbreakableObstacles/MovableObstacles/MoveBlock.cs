@@ -54,7 +54,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.Entity.Tag = "MovableObstacleBounds";
                 this.Entity.CollisionInformation.Tag = this;
                 this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
-                this.Entity.CollisionInformation.CollisionRules.Personal = CollisionRule.Normal;
+                this.Entity.CollisionInformation.CollisionRules.Personal = CollisionRule.Defer;
                 this.SetStationary();
 
                 // Setting base kinetic friction and higher gravitational force
@@ -70,7 +70,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollisionDetected;
                 this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
-                
+
                 this.AudioEmitter = new AudioEmitter();
                 this.AudioEmitter.Position = this.Position; 
             }
@@ -212,7 +212,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         var otherMoveBlock = other.Tag as MoveBlock;
                         if (otherMoveBlock != null && otherMoveBlock.MblockState == MBState.Stationary)
                         {
-                            otherMoveBlock.SetMoving(initialMovementVelocity);
+                            //otherMoveBlock.SetMoving(initialMovementVelocity);
+                            this.SetStationary();
                         }
 
                     }
