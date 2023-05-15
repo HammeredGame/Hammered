@@ -248,7 +248,7 @@ namespace HammeredGame.Game.Scenes.Island2
                     state = ColorPlateState.ZeroSuccess;
                 }
             }
-            else if (Get<PressurePlate>("pressureplate_G").IsActivated() && state != ColorPlateState.Complete)
+            else if (Get<PressurePlate>("pressureplate_B").IsActivated() && state != ColorPlateState.Complete)
             {
                 if (state == ColorPlateState.OneSuccess || state == ColorPlateState.TwoSuccess)
                 {
@@ -259,7 +259,7 @@ namespace HammeredGame.Game.Scenes.Island2
                     state = ColorPlateState.ZeroSuccess;
                 }
             }
-            else if (Get<PressurePlate>("pressureplate_B").IsActivated() && state != ColorPlateState.Complete)
+            else if (Get<PressurePlate>("pressureplate_Y").IsActivated() && state != ColorPlateState.Complete)
             {
                 if (state == ColorPlateState.TwoSuccess || state == ColorPlateState.ThreeSuccess)
                 {
@@ -270,7 +270,7 @@ namespace HammeredGame.Game.Scenes.Island2
                     state = ColorPlateState.ZeroSuccess;
                 }
             }
-            else if (Get<PressurePlate>("pressureplate_Y").IsActivated() && state != ColorPlateState.Complete)
+            else if (Get<PressurePlate>("pressureplate_G").IsActivated() && state != ColorPlateState.Complete)
             {
                 if (state == ColorPlateState.ThreeSuccess)
                 {
