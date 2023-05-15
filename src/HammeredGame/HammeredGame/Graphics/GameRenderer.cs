@@ -13,6 +13,9 @@ namespace HammeredGame.Graphics
 {
     internal class GameRenderer
     {
+        private int renderWidth;
+        private int renderHeight;
+
         // Targets that the light's shadow depth generation pass will write to
         private readonly RenderTarget2D lightDepthTarget;
 
@@ -43,6 +46,8 @@ namespace HammeredGame.Graphics
         public GameRenderer(GraphicsDevice gpu, ContentManager content) {
             this.gpu = gpu;
             this.spriteBatch = new SpriteBatch(gpu);
+            this.renderWidth = gpu.PresentationParameters.BackBufferWidth;
+            this.renderHeight = gpu.PresentationParameters.BackBufferHeight;
 
             this.colorCorrectionEffect = content.Load<Effect>("Effects/PostProcess/ColorCorrection");
 
@@ -53,19 +58,19 @@ namespace HammeredGame.Graphics
 
             // Set up the main shading pass targets. The diffuse target will be HDR with each color
             // component being [0, Inf], so set it up right.
-            diffuseTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
-            depthTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Single, DepthFormat.Depth24);
+            diffuseTarget = new RenderTarget2D(gpu, renderWidth, renderHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
+            depthTarget = new RenderTarget2D(gpu, renderWidth, renderHeight, false, SurfaceFormat.Single, DepthFormat.Depth24);
 
-            postprocessTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
+            postprocessTarget = new RenderTarget2D(gpu, renderWidth, renderHeight, false, SurfaceFormat.HdrBlendable, DepthFormat.Depth24);
 
             bloomFilter = new BloomFilter();
-            bloomFilter.Load(gpu, content, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, SurfaceFormat.HdrBlendable);
+            bloomFilter.Load(gpu, content, renderWidth, renderHeight, SurfaceFormat.HdrBlendable);
             bloomFilter.BloomPreset = BloomFilter.BloomPresets.Small;
             bloomFilter.BloomThreshold = 1.01f; // arbitrary, but above 1 so plain white isn't bloomed
 
             // The target for the final tone-mapped and post-processed image. Format is Color, i.e.
             // 8 bit RGBA.
-            finalTarget = new RenderTarget2D(gpu, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
+            finalTarget = new RenderTarget2D(gpu, renderWidth, renderHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
         }
 
         /// <summary>
@@ -145,8 +150,8 @@ namespace HammeredGame.Graphics
                 // Temporarily render in WireFrame fill mode to visualise debug entities
                 RasterizerState currentState = gpu.RasterizerState;
                 gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
-                foreach (EntityDebugDrawer item in scene.DebugObjects) {
-                    item.Draw(gameTime, gpu, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix);
+                foreach (BEPUphysics.Entities.Entity ent in scene.DebugObjects) {
+                    scene.EntityDebugDrawer.Draw(scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, ent);
                 }
                 gpu.RasterizerState = currentState;
             }
@@ -171,14 +176,14 @@ namespace HammeredGame.Graphics
         public void PostProcess()
         {
             // Perform HDR Bloom. SurfaceFormat change: HdrBlendable -> HdrBlendable
-            Texture2D bloom = bloomFilter.Draw(diffuseTarget, gpu.PresentationParameters.BackBufferWidth / 2, gpu.PresentationParameters.BackBufferHeight / 2);
+            Texture2D bloom = bloomFilter.Draw(diffuseTarget, renderWidth / 2, renderHeight / 2);
 
             gpu.SetRenderTarget(postprocessTarget);
             gpu.Clear(Color.Black);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-            spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
-            spriteBatch.Draw(bloom, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
+            spriteBatch.Draw(diffuseTarget, new Rectangle(0, 0, renderWidth, renderHeight), Color.White);
+            spriteBatch.Draw(bloom, new Rectangle(0, 0, renderWidth, renderHeight), Color.White);
             spriteBatch.End();
 
             // Perform tonemap and color correction. SurfaceFormat change: HdrBlendable -> Color
@@ -186,7 +191,7 @@ namespace HammeredGame.Graphics
 
             colorCorrectionEffect.Parameters["Exposure"].SetValue(exposure);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, colorCorrectionEffect, null);
-            spriteBatch.Draw(postprocessTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
+            spriteBatch.Draw(postprocessTarget, new Rectangle(0, 0, renderWidth, renderHeight), Color.White);
             spriteBatch.End();
         }
 
@@ -214,7 +219,7 @@ namespace HammeredGame.Graphics
             gpu.SetRenderTarget(target);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
-            spriteBatch.Draw(finalTarget, new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
+            spriteBatch.Draw(finalTarget, new Rectangle(0, 0, renderWidth, renderHeight), Color.White);
             spriteBatch.End();
 
             if (showDebugTargets)

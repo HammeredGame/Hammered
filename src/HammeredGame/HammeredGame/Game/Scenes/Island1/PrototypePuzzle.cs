@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
+using HammeredGame.Game.Scenes.Endgame;
+using HammeredGame.Game.Scenes.Island2;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -21,9 +23,12 @@ namespace HammeredGame.Game.Scenes.Island1
     {
         private bool spawnedNewRock = false;
         private bool openedGoalDoor = false;
+        private bool openedKeyDoor = false;
         private bool withinDoorInteractTrigger = false;
+        private CancellationTokenSource doorInteractTokenSource;// = new();
+
         private Vector3 newSpawnRockPosition = new Vector3(257.390f, 0.000f, -187.414f);
-        private CollisionGroup laserRockGroup;
+        private CollisionGroup noSolverGroup;
 
         public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen) { }
 
@@ -47,13 +52,30 @@ namespace HammeredGame.Game.Scenes.Island1
             MoveBlock rock1 = Get<MoveBlock>("rock1");
             MoveBlock rock2 = Get<MoveBlock>("rock2");
 
-            laserRockGroup = new CollisionGroup();
-            CollisionGroupPair pair = new CollisionGroupPair(laserRockGroup, laserRockGroup);
+            noSolverGroup = new CollisionGroup();
+            CollisionGroupPair pair = new CollisionGroupPair(noSolverGroup, noSolverGroup);
             CollisionRules.CollisionGroupRules.Add(pair, CollisionRule.NoSolver);
 
-            laser1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
-            rock1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
-            rock2.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+            laser1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+            //rock1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+            //rock2.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+
+            foreach (var gO in GameObjectsList)
+            {
+                // Check for rocks in the scene
+                var rock = gO as MoveBlock;
+                if (rock != null)
+                {
+                    rock.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                }
+
+                // Set water bounds objects to a group such that they do not block rocks
+                var waterBounds = gO as WaterBoundsObject;
+                if (waterBounds != null)
+                {
+                    waterBounds.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                }
+            }
 
             Get<Key>("key").SetCorrespondingDoor(Get<Door>("door_key"));
 
@@ -74,12 +96,15 @@ namespace HammeredGame.Game.Scenes.Island1
             this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
             
 
-            CancellationTokenSource doorInteractTokenSource = new();
+            doorInteractTokenSource = new();
             Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
             {
-                doorInteractTokenSource = new();
-                ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
-                withinDoorInteractTrigger = true;
+                if (!openedKeyDoor)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinDoorInteractTrigger = true;
+                }
             };
 
             Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += async (_, _) =>
@@ -101,7 +126,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
                     await ParentGameScreen.ShowDialogueAndWait("Phewww, that was tough...!");
-                    ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(ColorMinigamePuzzle).FullName);
                 }
                 else
                 {
@@ -203,7 +228,7 @@ namespace HammeredGame.Game.Scenes.Island1
                         // Apply the same model offset as the original
                         newObj.EntityModelOffset = template_rock.EntityModelOffset;
                         newObj.Visible = false;
-                        newObj.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+                        newObj.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
 
                         if (openedGoalDoor)
                         {
@@ -244,6 +269,8 @@ namespace HammeredGame.Game.Scenes.Island1
                     if (Get<Key>("key").IsPickedUp())
                     {
                         Get<Door>("door_key").OpenDoor();
+                        openedKeyDoor = true;
+                        doorInteractTokenSource.Cancel();
                     }
                     else
                     {

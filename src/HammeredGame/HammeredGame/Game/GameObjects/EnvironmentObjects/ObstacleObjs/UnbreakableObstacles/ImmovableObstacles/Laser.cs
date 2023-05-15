@@ -115,12 +115,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
             this.AudioEmitter = new AudioEmitter();
             this.AudioEmitter.Position = this.Position;
-            
-            
+
+
             //Services.GetService<AudioManager>().Play3DSound("Audio/new_laser", true, this.AudioEmitter, laserScale/10);
-            
+
         }
-        
+
         public override void Update(GameTime gameTime, bool screenHasFocus)
         {
             double time = gameTime.TotalGameTime.TotalSeconds;
@@ -132,8 +132,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 //Services.GetService<AudioManager>().Play3DSound("Audio/retro", false, this.AudioEmitter, laserScale/laserDefaultScale);
                 //timeDelay += TimeSpan.FromSeconds(2f);
             }
-            
-            
+
+
         }
 
         private void Events_PairRemoved(EntityCollidable sender, BroadPhaseEntry other)
@@ -219,12 +219,21 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             this.laserDefaultLength = (this.Entity as Box).Length;
         }
 
+        // For setting the scale by collision
         private void SetLaserDynamicScale(float scale)
         {
             this.laserScale = scale;
         }
 
-        private void ReturnToDefaultLength()
+        // For overriding the dynamic scale regardless of collision
+        public void SetLaserScale(float scale)
+        {
+            SetLaserDynamicScale(scale);
+            (this.Entity as Box).Length *= this.laserScale / this.laserDefaultScale;
+            this.Entity.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, 0, (this.Entity as Box).HalfLength);
+        }
+
+        public void ReturnToDefaultLength()
         {
             this.laserScale = this.laserDefaultScale;
             (this.Entity as Box).Length = this.laserDefaultLength;
@@ -372,6 +381,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             ImGui.Separator();
             ImGui.DragFloat("Laser Length", ref laserScale, 0.01f);
             ImGui.DragFloat("Laser Default Length", ref laserDefaultLength, 0.01f);
+            ImGui.DragFloat("Laser Default Scale", ref laserDefaultScale, 0.01f);
             ImGui.Checkbox("Toggle billboard effect", ref orientToCamera);
             ImGui.DragFloat("Laser Intensity", ref laserIntensity, 0.1f, 0f);
             System.Numerics.Vector2 copy = laserSpeed.ToNumerics();

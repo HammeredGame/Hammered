@@ -1,4 +1,5 @@
 ﻿using BEPUphysics.CollisionRuleManagement;
+using BEPUphysics.Constraints.SolverGroups;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
@@ -28,24 +29,54 @@ namespace HammeredGame.Game.Scenes.Island1
             // Allow <c>Hammer</c> instance to have access to the grid of the scene for the path planning.
             // THIS IS REQUIRED FOR ALL SCENES!
             Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
+            // Do not allow the hammer to traverse the floor.
+            Microsoft.Xna.Framework.Vector3 floorStart, floorFinish;
+            floorStart = new(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z);
+            floorFinish = new(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
+            this.Grid.MarkRangeAs(floorStart, floorFinish, false);
 
             // Set laser to desired length within level
             Laser laser1 = Get<Laser>("laser1");
-            laser1.SetLaserDefaultScale(15.0f);
+            laser1.SetLaserDefaultScale(10.0f);
             Laser laser2 = Get<Laser>("laser2");
-            laser2.SetLaserDefaultScale(15.0f);
+            laser2.SetLaserDefaultScale(12.0f);
 
             MoveBlock rock1 = Get<MoveBlock>("rock1");
             //MoveBlock rock2 = Get<MoveBlock>("rock2");
 
-            var laserRockGroup = new CollisionGroup();
-            CollisionGroupPair pair = new CollisionGroupPair(laserRockGroup, laserRockGroup);
+            var noSolverGroup = new CollisionGroup();
+            CollisionGroupPair pair = new CollisionGroupPair(noSolverGroup, noSolverGroup);
             CollisionRules.CollisionGroupRules.Add(pair, CollisionRule.NoSolver);
 
-            laser1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
-            laser2.Entity.CollisionInformation.CollisionRules.Group= laserRockGroup;
-            rock1.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+            laser1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+            laser2.Entity.CollisionInformation.CollisionRules.Group= noSolverGroup;
+            rock1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
             //rock2.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+
+            foreach (var gO in GameObjectsList)
+            {
+                // Check for rocks in the scene
+                var rock = gO as MoveBlock;
+                if (rock != null)
+                {
+                    rock.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                }
+
+                // Set water bounds objects to a group such that they do not block rocks
+                var waterBounds = gO as WaterBoundsObject;
+                if (waterBounds != null)
+                {
+                    waterBounds.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                }
+
+                // Check for walls in the scene
+                var wall = gO as Wall;
+                if (wall != null)
+                {
+                    this.UpdateSceneGrid(wall, false, 0.9);
+                }
+            }
+
             
             await ParentGameScreen.ShowDialogueAndWait("“I can’t see any trees in the area…I’ve been /n caught between a rock and a hard place.");
 

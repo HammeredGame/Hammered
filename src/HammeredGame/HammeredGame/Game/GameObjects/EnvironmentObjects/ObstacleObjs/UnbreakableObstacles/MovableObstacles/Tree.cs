@@ -61,6 +61,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private List<SoundEffect> tree_sfx;
 
         private Model fallenLog;
+        private Texture2D logTexture;
         private bool isFalling = false;
         private BEPUutilities.Vector3 fallDirection;
         private int fallingAngle = 0;
@@ -72,7 +73,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 tree_sfx = Services.GetService<List<SoundEffect>>();
 
-                fallenLog = services.GetService<ContentManager>().Load<Model>("Meshes/Trees/trunk");
+                fallenLog = services.GetService<ContentManager>().Load<Model>("Meshes/Trees/trunk"); 
+                logTexture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Trees/trunk_texture");
 
                 if (this.Entity is not Box)
                 {
@@ -184,7 +186,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
             // Swap models
             this.Model = fallenLog;
-            //(fallenLog, this.Model) = (this.Model, fallenLog);
+            this.Texture = logTexture;
         }
 
         public bool IsTreeFallen()

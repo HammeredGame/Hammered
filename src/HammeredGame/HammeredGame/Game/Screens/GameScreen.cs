@@ -51,6 +51,21 @@ namespace HammeredGame.Game.Screens
         }
 
         /// <summary>
+        /// Called when the game resolution changes. We re-create the game renderer.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public override void SetResolution(int width, int height)
+        {
+            base.SetResolution(width, height);
+
+            // Re-create the game renderer since many of its internal render targets need to use the
+            // correct resolution
+            ContentManager Content = GameServices.GetService<ContentManager>();
+            gameRenderer = new GameRenderer(GameServices.GetService<GraphicsDevice>(), Content);
+        }
+
+        /// <summary>
         /// Called once when loading the game. Load all assets here since it is expensive to load
         /// them on demand when we need it in e.g. Update() or Draw().
         /// </summary>
@@ -82,7 +97,6 @@ namespace HammeredGame.Game.Screens
             InitializeLevel(currentSceneName);
 
             MediaPlayer.IsRepeating = true;
-            MediaPlayer.Volume = 0.1f;
             MediaPlayer.Play(bgMusic);
 
             // Preload the pause screen, so that adding the pause screen to the screen stack doesn't
@@ -92,21 +106,16 @@ namespace HammeredGame.Game.Screens
             {
                 QuitMethod = () =>
                 {
-                    #region TEMPORARY SOLUTION TO CONTINUE/NEW GAME BEFORE SETTINGS AND PERSISTENT DATA IS IMPLEMENTED
-                    try
-                    {
-                        File.WriteAllText("save.txt", currentSceneName);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex);
-                    }
-                    #endregion
-
-                    // Specify the callback function when Quit To Title is called. We also need to
+                    // Specifies the callback function when Quit To Title is called. We also need to
                     // specify the Restart Level callback, but this is done just before each time the
                     // screen is added to the manager, since we need the name of the currently active level.
+
+                    // Save the last scene
+                    GameServices.GetService<UserSettings>().LastSaveScene = currentSceneName;
+                    GameServices.GetService<UserSettings>().Save();
+
                     ExitScreen(true);
+
                     // Ask the main game class to recreate the title screen, since it needs to
                     // assign handlers that we don't have access to
                     GameServices.GetService<HammeredGame>().InitTitleScreen();
@@ -160,7 +169,15 @@ namespace HammeredGame.Game.Screens
             temporaryScene
                 // Pass a progress reporting function to retrieve the asynchronous progress
                 .LoadContentAsync(progress: loadingScreen.ReportProgress)
-                .ContinueWith(async _ => {
+                .ContinueWith(async t => {
+                    if (t.Exception != null)
+                    {
+                        t.Exception.Handle(e =>
+                        {
+                            System.Diagnostics.Debug.WriteLine(e);
+                            return true;
+                        });
+                    }
                     // Make sure we run in the next update synchronously since we will be
                     // overwriting currentScene and also removing the loading screen (which we don't
                     // want to do in a Draw). This is necessary because .ContinueWith can run in an
@@ -228,7 +245,7 @@ namespace HammeredGame.Game.Screens
         {
             base.Draw(gameTime);
 
-            if (currentScene == null) return;
+            if (currentScene == null || !currentScene.IsLoaded) return;
 
             gameRenderer.DrawScene(gameTime, currentScene);
             gameRenderer.PostProcess();
