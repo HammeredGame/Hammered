@@ -2123,34 +2123,6 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass">
-    <model>grass</model>
-    <texture>grass_texture</texture>
-    <position>280.786 -21.000 -117.189</position>
-    <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.000</scale>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass-small">
-    <model>grass-small</model>
-    <texture>grass-small_texture</texture>
-    <position>285.786 -21.000 -116.189</position>
-    <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.000</scale>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flower">
-    <model>flower</model>
-    <texture>flower_texture</texture>
-    <position>285.786 -21.000 -117.189</position>
-    <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.000</scale>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flowers">
-    <model>flowers</model>
-    <texture>flowers_texture</texture>
-    <position>282.786 -21.000 -118.189</position>
-    <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.000</scale>
-  </object>
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
