@@ -60,11 +60,14 @@ namespace HammeredGame.Game.Scenes.Island1
             // Hence, the hammer will always follow a straight path route, without ever "escaping" to A*.
             // Keep the above as an example for other scenes/levels.
 
-            await ParentGameScreen.ShowDialogueAndWait("Woah! Magical teleportation!?");
-            await ParentGameScreen.ShowDialogueAndWait("This hammer must be mythical or something!");
-            await utils.WaitSeconds(1);
-            await ParentGameScreen.ShowDialogueAndWait("...Hold on, mythical?");
-            await ParentGameScreen.ShowDialogueAndWait("I vaguely recall that I met some people\nwho called themselves \"Gods\" yesterday...");
+            //await ParentGameScreen.ShowDialogueAndWait("Woah! Magical teleportation!?");
+            //await ParentGameScreen.ShowDialogueAndWait("This hammer must be mythical or something!");
+            //await utils.WaitSeconds(1);
+            //await ParentGameScreen.ShowDialogueAndWait("...Hold on, mythical?");
+            //await ParentGameScreen.ShowDialogueAndWait("I vaguely recall that I met some people\nwho called themselves \"Gods\" yesterday...");
+
+            await ParentGameScreen.ShowDialogueAndWait("Thor, you bloody liar!");
+            await ParentGameScreen.ShowDialogueAndWait("This hammer is so heavy it could topple a tree!");
 
             // Zoom in on the player while crossing the first bridge to emphasise the log
             float originalCameraFollowDistance = Camera.FollowDistance;
@@ -85,8 +88,8 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
-                    await ParentGameScreen.ShowDialogueAndWait("(Huh, you found some traffic cones)");
-                    await ParentGameScreen.ShowDialogueAndWait("(Did you bring them here yesterday?)");
+                    //await ParentGameScreen.ShowDialogueAndWait("(Huh, you found some traffic cones)");
+                    //await ParentGameScreen.ShowDialogueAndWait("(Did you bring them here yesterday?)");
                     ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName);
                 }
                 else

@@ -28,7 +28,7 @@ namespace HammeredGame.Game.Scenes.Island1
             await CreateFromXML($"Content/SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml", progress);
         }
 
-        protected override void OnSceneStart()
+        protected override async void OnSceneStart()
         {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
@@ -57,6 +57,9 @@ namespace HammeredGame.Game.Scenes.Island1
                 }
             }
 
+            await ParentGameScreen.ShowDialogueAndWait("I must be hallucinating...");
+            await ParentGameScreen.ShowDialogueAndWait("I think see something shining not far from here!");
+
             // No further initialization required for the <c>UniformGrid</c> instance.
 
             // Make sure the hammer is being carried by the player. If the player does not have the
@@ -66,9 +69,9 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
-                    await ParentGameScreen.ShowDialogueAndWait("(You found polaroid photos of yourself together with\na handsome god-like man)");
-                    await ParentGameScreen.ShowDialogueAndWait("(The man is holding a hammer that looks just like\nthe one in your hand)");
-                    await ParentGameScreen.ShowDialogueAndWait("Is that... Thor? And this... his hammer?\nI need to give it back to him!");
+                    //await ParentGameScreen.ShowDialogueAndWait("(You found polaroid photos of yourself together with\na handsome god-like man)");
+                    //await ParentGameScreen.ShowDialogueAndWait("(The man is holding a hammer that looks just like\nthe one in your hand)");
+                    //await ParentGameScreen.ShowDialogueAndWait("Is that... Thor? And this... his hammer?\nI need to give it back to him!");
                     ParentGameScreen.InitializeLevel(typeof(LaserTutorial).FullName);
                 }
                 else

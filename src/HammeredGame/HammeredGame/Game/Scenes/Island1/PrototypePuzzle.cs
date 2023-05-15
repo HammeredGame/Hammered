@@ -38,7 +38,7 @@ namespace HammeredGame.Game.Scenes.Island1
             await CreateFromXML($"Content/SceneDescriptions/Island1/PrototypePuzzle_voxel.xml", progress);
         }
 
-        protected override void OnSceneStart() {
+        protected override async void OnSceneStart() {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
 
@@ -94,7 +94,7 @@ namespace HammeredGame.Game.Scenes.Island1
             Vector3 floorDisableStart = new Vector3(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z);
             Vector3 floorDisableFinish = new Vector3(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
             this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
-
+            
 
             doorInteractTokenSource = new();
             Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
@@ -112,6 +112,11 @@ namespace HammeredGame.Game.Scenes.Island1
                 doorInteractTokenSource.Cancel();
                 withinDoorInteractTrigger = false;
             };
+
+            //await ParentGameScreen.ShowDialogueAndWait("Thor really went out of his way...");
+            //await ParentGameScreen.ShowDialogueAndWait("to make it this much harder for me?");
+            await ParentGameScreen.ShowDialogueAndWait("Oh boy this looks tricky...");
+            await ParentGameScreen.ShowDialogueAndWait("Hopefully I'm not going to hit rock bottom on this!");
 
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
