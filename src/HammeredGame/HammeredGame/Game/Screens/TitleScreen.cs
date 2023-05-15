@@ -16,7 +16,6 @@ namespace HammeredGame.Game.Screens
         public bool Continuable;
         public Action ContinueFunc;
         public Action StartNewFunc;
-        public Action ToggleDebugUIFunc;
 
         private Texture2D hammerImage;
         protected float HammerImageOpacity = 0f;
@@ -72,15 +71,12 @@ namespace HammeredGame.Game.Screens
                 ScreenManager.AddScreen(new OptionsScreen());
             };
 
-            Label menuItemToggleDebugUI = new()
+            Label menuItemCredits = new()
             {
-                Text = "Toggle Debug UI",
-                Id = "_menuItemToggleDebugUI",
-                Font = BarlowFont.GetFont(oneLineHeight)
-            };
-            menuItemToggleDebugUI.TouchUp += (s, a) =>
-            {
-                ToggleDebugUIFunc?.Invoke();
+                Text = "Credits",
+                Id = "_menuItemCredits",
+                Font = BarlowFont.GetFont(oneLineHeight),
+                Enabled = false
             };
 
             Label menuItemQuitToDesktop = new()
@@ -91,7 +87,7 @@ namespace HammeredGame.Game.Screens
             };
             menuItemQuitToDesktop.TouchUp += (_, _) => Environment.Exit(0);
 
-            MenuWidgets = new List<Widget>() { menuItemContinue, menuItemStartGame, menuItemOptions, menuItemToggleDebugUI, menuItemQuitToDesktop };
+            MenuWidgets = new List<Widget>() { menuItemContinue, menuItemStartGame, menuItemOptions, menuItemCredits, menuItemQuitToDesktop };
         }
 
         public override void Update(GameTime gameTime)
