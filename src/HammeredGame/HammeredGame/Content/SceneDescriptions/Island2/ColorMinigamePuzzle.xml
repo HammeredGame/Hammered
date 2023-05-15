@@ -1063,7 +1063,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="yellow_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>137.923 -16.612 -307.959</position>
+    <position>137.923 -16.608 -307.959</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -1077,7 +1077,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="yellow_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>66.793 -16.608 -323.592</position>
+    <position>66.794 -16.612 -323.592</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.300</scale>
     <body type="box">
@@ -1143,7 +1143,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="pp_wall">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>173.300 -10.500 -235.000</position>
+    <position>173.300 -10.500 -255.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>0.750</scale>
     <body type="box">
@@ -1156,7 +1156,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="pp_wall4">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>219.500 -10.500 -222.700</position>
+    <position>219.500 -10.500 -242.700</position>
     <rotation>0.000 0.707 0.000 0.708</rotation>
     <scale>0.750</scale>
     <body type="box">
@@ -1169,7 +1169,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="pp_wall5">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>189.500 -10.500 -248.200</position>
+    <position>189.500 -10.500 -268.200</position>
     <rotation>0.000 0.707 0.000 0.708</rotation>
     <scale>0.750</scale>
     <body type="box">
@@ -1182,7 +1182,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="pp_wall3">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>235.400 -10.500 -235.000</position>
+    <position>235.400 -10.500 -255.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>0.750</scale>
     <body type="box">
@@ -1195,7 +1195,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="pp_door">
     <model>Meshes/Doors/stone_gate</model>
     <texture>Meshes/Doors/stone_gate_tex</texture>
-    <position>188.900 -10.500 -222.700</position>
+    <position>188.900 -10.500 -242.700</position>
     <rotation>0.000 0.707 0.000 0.708</rotation>
     <scale>0.750</scale>
     <body type="box">
@@ -1208,7 +1208,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="pp_door1">
     <model>Meshes/Doors/stone_gate</model>
     <texture>Meshes/Doors/stone_gate_tex</texture>
-    <position>218.300 -10.500 -248.100</position>
+    <position>218.300 -10.500 -268.100</position>
     <rotation>0.000 0.707 0.000 0.708</rotation>
     <scale>0.750</scale>
     <body type="box">
@@ -1221,7 +1221,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables.Key" id="pp_key">
     <model>key</model>
     <texture>key_texture</texture>
-    <position>210.000 -10.000 -235.000</position>
+    <position>210.000 -10.000 -255.000</position>
     <rotation>0.000 -0.291 0.000 0.957</rotation>
     <scale>2.500</scale>
     <body type="box">
@@ -1352,7 +1352,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="maze_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>386.336 -16.608 -201.053</position>
+    <position>386.336 -16.611 -201.053</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -1771,7 +1771,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="moving_base">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>-157.300 -15.334 -259.000</position>
+    <position>-157.300 -15.334 -264.333</position>
     <rotation>0.000 1.000 0.000 0.000</rotation>
     <scale>1.000</scale>
     <body type="box">
