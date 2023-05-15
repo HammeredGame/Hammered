@@ -90,7 +90,7 @@ namespace HammeredGame.Game.Scenes.Island1
             await ParentGameScreen.ShowDialogueAndWait("Hey friend,");
             await ParentGameScreen.ShowDialogueAndWait("Hope you’re not too hungover from the party last night!");
             await ParentGameScreen.ShowDialogueAndWait("So… I think I accidentally left my hammer behind,");
-            await ParentGameScreen.ShowDialogueAndWait("would you mind bringing it?");
+            await ParentGameScreen.ShowDialogueAndWait("would you mind bringing it back to my temple?");
             //await ParentGameScreen.ShowDialogueAndWait("Hope you’re not so hungover to forget our little bet from the part last night :) /n I’ll be waiting for you and my hammer at my temple, have fun!");
             //await ParentGameScreen.ShowDialogueAndWait("You might be wondering how you ended up stranded on/n a beach accompanied by my pet hammer, Mjölnir.");
             //await ParentGameScreen.ShowDialogueAndWait("As per last night’s honorable drinking duel, which I /n double handedly –one hand per glass- won, you have/n to make it all the way back to my summer temple.");
