@@ -39,11 +39,11 @@ namespace HammeredGame.Game.Scenes.Island2
             Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
 
             // Set laser to desired length within level
-            Laser laser1 = Get<Laser>("red_laser");
+            Laser laser1 = Get<Laser>("purple_laser");
             laser1.SetLaserDefaultScale(4.0f);
-            Laser laser2 = Get<Laser>("red_laser1");
+            Laser laser2 = Get<Laser>("purple_laser1");
             laser2.SetLaserDefaultScale(4.0f);
-            Laser laser3 = Get<Laser>("red_laser2");
+            Laser laser3 = Get<Laser>("purple_laser2");
             laser3.SetLaserDefaultScale(6.35f);
             Get<Laser>("maze_laser_A").SetLaserDefaultScale(11.51f);
             Get<Laser>("maze_laser_B").SetLaserDefaultScale(13f);
@@ -163,7 +163,7 @@ namespace HammeredGame.Game.Scenes.Island2
             // The four colored pressure plates are a state machine that you have to press in the
             // right order. Any bad press will revert the state back to zero. After a successful
             // completion, the pressure plates won't respond anymore and door will stay open.
-            if (Get<PressurePlate>("pressureplate_R").IsActivated() && state != ColorPlateState.Complete)
+            if (Get<PressurePlate>("pressureplate_P").IsActivated() && state != ColorPlateState.Complete)
             {
                 if (state == ColorPlateState.ZeroSuccess || state == ColorPlateState.OneSuccess)
                 {

@@ -1177,7 +1177,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate" id="pressureplate_R">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate" id="pressureplate_P">
     <model>Meshes/PressurePlates/pressure_plate</model>
     <texture>Meshes/PressurePlates/pressure_plate_albedo</texture>
     <position>187.000 -21.000 -305.000</position>
@@ -1491,7 +1491,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="red_stone_brick">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="purple_stone_brick">
     <model>Meshes/Walls/stone_brick</model>
     <texture>Meshes/Walls/stone</texture>
     <position>-140.000 -15.900 -140.100</position>
@@ -1504,7 +1504,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="red_stone_brick1">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="purple_stone_brick1">
     <model>Meshes/Walls/stone_brick</model>
     <texture>Meshes/Walls/stone</texture>
     <position>-152.700 -17.000 -156.600</position>
@@ -1517,7 +1517,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="red_stone_brick2">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="purple_stone_brick2">
     <model>Meshes/Walls/stone_brick</model>
     <texture>Meshes/Walls/stone</texture>
     <position>-55.800 -15.900 -117.500</position>
@@ -1530,7 +1530,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="red_stone_brick3">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="purple_stone_brick3">
     <model>Meshes/Walls/stone_brick</model>
     <texture>Meshes/Walls/stone</texture>
     <position>-135.000 -15.900 -87.500</position>
@@ -1543,7 +1543,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="red_stone_brick4">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="purple_stone_brick4">
     <model>Meshes/Walls/stone_brick</model>
     <texture>Meshes/Walls/stone</texture>
     <position>-108.400 -15.900 -87.500</position>
@@ -1556,7 +1556,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="red_stone_brick5">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="purple_stone_brick5">
     <model>Meshes/Walls/stone_brick</model>
     <texture>Meshes/Walls/stone</texture>
     <position>-81.200 -15.900 -87.500</position>
@@ -1569,7 +1569,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="red_laserbase1">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="purple_laserbase1">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
     <position>-52.400 -15.334 -163.100</position>
@@ -1582,7 +1582,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="red_laserbase2">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="purple_laserbase2">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
     <position>-72.400 -15.334 -163.100</position>
@@ -1595,7 +1595,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="red_laserbase3">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="purple_laserbase3">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
     <position>-92.400 -15.334 -163.100</position>
@@ -1608,7 +1608,7 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="red_rock">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="purple_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
     <position>-139.687 -15.097 -119.444</position>
@@ -1622,7 +1622,7 @@
       <shift_graphic>0.000 -7.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="red_rock1">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="purple_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
     <position>-140.672 -15.372 -101.320</position>
@@ -1740,7 +1740,7 @@
       <shift_graphic>-25.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="bridge_hub_to_red">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="bridge_hub_to_purple">
     <model>Meshes/Bridge/bridge</model>
     <texture>Meshes/Bridge/bridge_wood</texture>
     <position>-13.600 -24.034 -96.000</position>
@@ -1753,7 +1753,7 @@
       <shift_graphic>-25.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="bridge_red_to_blue">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="bridge_purple_to_blue">
     <model>Meshes/Bridge/bridge</model>
     <texture>Meshes/Bridge/bridge_wood</texture>
     <position>-115.000 -24.034 -188.900</position>
@@ -1936,7 +1936,7 @@
       <shift_graphic>0.000 0.000 4.860</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="red_laser">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="purple_laser">
     <model>unit_size_plane_y_up</model>
     <texture>LaserMaterial</texture>
     <position>-51.900 -16.200 -159.600</position>
@@ -1949,7 +1949,7 @@
       <shift_graphic>0.000 0.000 7.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="red_laser1">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="purple_laser1">
     <model>unit_size_plane_y_up</model>
     <texture>LaserMaterial</texture>
     <position>-71.900 -16.200 -159.600</position>
@@ -1962,7 +1962,7 @@
       <shift_graphic>0.000 0.000 7.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="red_laser2">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="purple_laser2">
     <model>unit_size_plane_y_up</model>
     <texture>LaserMaterial</texture>
     <position>-92.900 -16.200 -159.600</position>
