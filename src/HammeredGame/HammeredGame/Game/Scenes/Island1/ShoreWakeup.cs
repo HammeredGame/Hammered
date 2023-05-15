@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Media; 
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -20,6 +21,7 @@ namespace HammeredGame.Game.Scenes.Island1
         {
             await base.LoadSceneContent(progress);
             await CreateFromXML($"Content/SceneDescriptions/Island1/ShoreWakeup_voxel.xml", progress);
+
         }
 
         protected override async void OnSceneStart()

@@ -78,7 +78,7 @@ namespace HammeredGame.Game.Scenes.Island1
             }
 
             
-            await ParentGameScreen.ShowDialogueAndWait("“I can’t see any trees in the area…I’ve been /n caught between a rock and a hard place.");
+            await ParentGameScreen.ShowDialogueAndWait("Hmm, this seems a bit tricky…I’ve been /n caught between a rock and a hard place.");
 
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
