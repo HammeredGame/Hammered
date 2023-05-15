@@ -2,8 +2,8 @@
   <camera mode="follow">
     <follow_distance>275.000</follow_distance>
     <follow_angle_v>0.371</follow_angle_v>
-    <follow_angle_h>-132.666</follow_angle_h>
-    <target>76.434 -12.855 -166.491</target>
+    <follow_angle_h>-158.662</follow_angle_h>
+    <target>365.179 -12.853 -238.326</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.425</fov>
   </camera>
@@ -14,18 +14,18 @@
   </uniform_grid>
   <lights>
     <sun>
-      <color>1.000 0.973 0.875</color>
+      <color>1.000 0.800 0.698</color>
       <direction>-0.172 0.916 -0.363</direction>
-      <intensity>1.110</intensity>
+      <intensity>1.000</intensity>
     </sun>
     <directional>
-      <color>1.000 1.000 1.000</color>
+      <color>1.000 0.698 0.600</color>
       <direction>0.200 0.970 0.000</direction>
-      <intensity>0.050</intensity>
+      <intensity>0.400</intensity>
     </directional>
     <ambient>
-      <color>1.000 1.000 1.000</color>
-      <intensity>0.010</intensity>
+      <color>1.000 0.800 0.698</color>
+      <intensity>0.100</intensity>
     </ambient>
   </lights>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
@@ -51,8 +51,8 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture>Meshes/Character/character_diffuse</texture>
-    <position>76.434 -12.855 -166.491</position>
-    <rotation>0.000 0.746 0.000 0.666</rotation>
+    <position>365.179 -12.853 -238.326</position>
+    <rotation>0.000 -0.219 0.000 0.976</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
@@ -1118,8 +1118,8 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
-    <position>77.343 -16.591 -164.184</position>
-    <rotation>0.856 -0.449 0.112 0.230</rotation>
+    <position>362.715 -16.308 -238.755</position>
+    <rotation>0.392 -0.337 0.811 -0.275</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>
@@ -1132,7 +1132,7 @@
     <model>Meshes/Bridge/bridge</model>
     <texture>Meshes/Bridge/bridge_wood</texture>
     <position>515.000 -25.000 -155.000</position>
-    <rotation>0.000 0.0 0.000 1.0</rotation>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>50.000</width>
@@ -1206,6 +1206,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="decorobject9">
     <model>foliage_colored</model>
+    <texture>foliage_texture</texture>
     <position>400.000 -21.500 -250.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1224,9 +1225,9 @@
     <rotation>0.000 0.000 -0.700 0.714</rotation>
     <scale>1.000</scale>
     <body type="box">
-      <width>14.400</width>
+      <width>20.736</width>
       <height>35.000</height>
-      <length>14.400</length>
+      <length>20.736</length>
       <shift_graphic>0.000 2.955 0.000</shift_graphic>
     </body>
   </object>
@@ -1755,6 +1756,131 @@
     <texture>foliage_texture</texture>
     <position>350.000 -21.500 -75.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>70.000 -21.000 -180.000</position>
+    <rotation>0.000 -0.395 0.000 0.919</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass1">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>270.000 -21.000 -180.000</position>
+    <rotation>0.000 -0.395 0.000 0.919</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass3">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>420.000 -21.000 -180.000</position>
+    <rotation>0.000 0.471 0.000 0.882</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass4">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>450.000 -21.000 -210.000</position>
+    <rotation>0.000 0.919 0.000 0.393</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass2">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>230.000 -21.000 -90.000</position>
+    <rotation>0.000 0.773 0.000 0.634</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass-small">
+    <model>grass-small</model>
+    <texture>grass-small_texture</texture>
+    <position>75.000 -21.000 -182.000</position>
+    <rotation>0.000 -0.842 0.000 0.540</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass-small2">
+    <model>grass-small</model>
+    <texture>grass-small_texture</texture>
+    <position>255.000 -21.000 -182.000</position>
+    <rotation>0.000 -0.842 0.000 0.540</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass-small3">
+    <model>grass-small</model>
+    <texture>grass-small_texture</texture>
+    <position>455.000 -21.000 -122.000</position>
+    <rotation>0.000 -0.737 0.000 0.676</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass-small1">
+    <model>grass-small</model>
+    <position>55.000 -21.000 -250.000</position>
+    <rotation>0.000 -0.475 0.000 0.880</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flower">
+    <model>flower</model>
+    <texture>flower_texture</texture>
+    <position>90.000 -21.000 -220.000</position>
+    <rotation>0.000 0.366 0.000 0.931</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flower2">
+    <model>flower</model>
+    <texture>flower_texture</texture>
+    <position>300.000 -21.000 -220.000</position>
+    <rotation>0.000 0.366 0.000 0.931</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flower4">
+    <model>flower</model>
+    <texture>flower_texture</texture>
+    <position>300.000 -21.000 -120.000</position>
+    <rotation>0.000 -0.575 0.000 0.818</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flower3">
+    <model>flower</model>
+    <texture>flower_texture</texture>
+    <position>340.000 -21.000 -250.000</position>
+    <rotation>0.000 0.888 0.000 0.460</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flower1">
+    <model>flower</model>
+    <texture>flower_texture</texture>
+    <position>50.000 -21.000 -120.000</position>
+    <rotation>0.000 0.876 0.000 0.483</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flowers">
+    <model>flowers</model>
+    <texture>flowers_texture</texture>
+    <position>50.000 -21.000 -240.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flowers2">
+    <model>flowers</model>
+    <texture>flowers_texture</texture>
+    <position>420.000 -21.000 -240.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flowers3">
+    <model>flowers</model>
+    <texture>flowers_texture</texture>
+    <position>400.000 -21.000 -120.000</position>
+    <rotation>0.000 0.728 0.000 0.686</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flowers1">
+    <model>flowers</model>
+    <texture>flowers_texture</texture>
+    <position>59.000 -21.000 -245.000</position>
+    <rotation>0.000 0.639 0.000 0.770</rotation>
     <scale>1.000</scale>
   </object>
 </scene>
