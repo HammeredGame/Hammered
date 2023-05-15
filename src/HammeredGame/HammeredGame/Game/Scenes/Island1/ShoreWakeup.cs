@@ -99,7 +99,8 @@ namespace HammeredGame.Game.Scenes.Island1
             //Get<Hammer>("hammer").InputEnabled = false;
             //await ParentGameScreen.ShowDialogueAndWait("Sweet! A hammer I can summon!?");
             //await ParentGameScreen.ShowDialogueAndWait("I've got no memory of why I'm here but hey,\nI have a... hammer!");
-            await ParentGameScreen.ShowDialogueAndWait("Hey friend,");
+            await ParentGameScreen.ShowDialogueAndWait("Oh, a sticky note!");
+            await ParentGameScreen.ShowDialogueAndWait("\"Hey friend,");
             await ParentGameScreen.ShowDialogueAndWait("Hope you’re not too hungover from the party last night!");
             await ParentGameScreen.ShowDialogueAndWait("So… I think I accidentally left my hammer behind,");
             await ParentGameScreen.ShowDialogueAndWait("would you mind bringing it back to my temple?");
@@ -107,9 +108,9 @@ namespace HammeredGame.Game.Scenes.Island1
             //await ParentGameScreen.ShowDialogueAndWait("You might be wondering how you ended up stranded on/n a beach accompanied by my pet hammer, Mjölnir.");
             //await ParentGameScreen.ShowDialogueAndWait("As per last night’s honorable drinking duel, which I /n double handedly –one hand per glass- won, you have/n to make it all the way back to my summer temple.");
             //await ParentGameScreen.ShowDialogueAndWait("(Me and the boys are currently having a /n meeting about a “Rag a rock” or something.)");
-            await ParentGameScreen.ShowDialogueAndWait("See you soon! XOXO Thor");
-            await ParentGameScreen.ShowDialogueAndWait("P.S. Don’t worry, the hammer isn’t that heavy!");
-            await ParentGameScreen.ShowDialogueAndWait("it weighs less than what you drank last night ;)");
+            await ParentGameScreen.ShowDialogueAndWait("See you soon! XOXO Thor\"");
+            await ParentGameScreen.ShowDialogueAndWait("\"P.S. Don’t worry, the hammer isn’t that heavy!");
+            await ParentGameScreen.ShowDialogueAndWait("it weighs less than what you drank last night ;)\"");
 
             //Get<Hammer>("hammer").InputEnabled = true;
 
