@@ -185,7 +185,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     if (hammer.IsEnroute())
                     {
                         Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
-                        this.SetMoving(hammer.Entity.LinearVelocity);
+                        var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.hammerSpeed;
+                        this.SetMoving(temp);
                     }
                 }
                 else if (this.MblockState == MBState.Moving)
