@@ -8,13 +8,20 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
     internal class ShoreWakeup : Scene
     {
         public ShoreWakeup(GameServices services, GameScreen screen) : base(services, screen)
-        { }
+        {
+            Song bgMusic;
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/BGM_V2_4x");
+            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.Play(bgMusic);
+        }
 
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {

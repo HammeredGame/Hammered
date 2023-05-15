@@ -571,16 +571,22 @@ namespace HammeredGame.Game
                             // details pane to show its details.
                             objectListCurrentSelection = key;
 
-                            // Also highlight the item on screen by changing its texture to red for
-                            // 500 milliseconds
-                            var currentTexture = gameObject.Texture;
-                            var redRectangle = new Texture2D(Services.GetService<GraphicsDevice>(), 1, 1);
-                            redRectangle.SetData(new[] { Color.Red });
-                            gameObject.Texture = redRectangle;
-
-                            Services.GetService<ScriptUtils>()
-                                .WaitMilliseconds(500)
-                                .ContinueWith((_) => gameObject.Texture = currentTexture);
+                            // Also highlight the item on screen by blinking (but only if it's visible)
+                            if (gameObject.Visible)
+                            {
+                                gameObject.Visible = false;
+                                Task.Run(async () =>
+                                {
+                                    for (var i = 0; i < 2; i++)
+                                    {
+                                        await Services.GetService<ScriptUtils>().WaitMilliseconds(100);
+                                        gameObject.Visible = true;
+                                        await Services.GetService<ScriptUtils>().WaitMilliseconds(100);
+                                        gameObject.Visible = false;
+                                    }
+                                    gameObject.Visible = true;
+                                });
+                            }
                         }
 
                         // Mark the previous item (the Selectable) as a draggable source. We want to

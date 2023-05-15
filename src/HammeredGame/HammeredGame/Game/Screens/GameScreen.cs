@@ -80,7 +80,7 @@ namespace HammeredGame.Game.Screens
             // Load sound effects before initialising the first scene, since the scene setup
             // script might already use some of the sound effects.
             //List<SoundEffect> sfx = GameServices.GetService<List<SoundEffect>>();
-            bgMusic = Content.Load<Song>("Audio/BGM_V2_4x");
+            //bgMusic = Content.Load<Song>("Audio/BGM_V2_4x");
 
             //List<SoundEffect> sfx = GameServices.GetService<List<SoundEffect>>();
             //sfx.Add(Content.Load<SoundEffect>("Audio/step"));
@@ -96,8 +96,8 @@ namespace HammeredGame.Game.Screens
 
             InitializeLevel(currentSceneName);
 
-            MediaPlayer.IsRepeating = true;
-            MediaPlayer.Play(bgMusic);
+            //MediaPlayer.IsRepeating = true;
+            //MediaPlayer.Play(bgMusic);
 
             // Preload the pause screen, so that adding the pause screen to the screen stack doesn't
             // call LoadContent every time (which lags because it has to loads fonts and create the

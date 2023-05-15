@@ -98,6 +98,16 @@ namespace HammeredGame.Game.Screens
                     GameServices.GetService<HammeredGame>().SetResolution(settings.Resolution.Width, settings.Resolution.Height, i);
                 });
 
+            Label disclaimerFullScreen = new()
+            {
+                Text = "* Full screen support is experimental",
+                Id = "disclaimerFullScreen",
+                Font = BarlowFont.GetFont(oneLineHeight * 0.5f),
+                // White by default
+                TextColor = new Color(255, 255, 255, 198),
+                Enabled = false
+            };
+
             // Borderless toggle
             HorizontalStackPanel optionsBorderless = CreateToggleOption(
                 oneLineHeight,
@@ -129,6 +139,7 @@ namespace HammeredGame.Game.Screens
                 optionsMusicVolume,
                 optionsSFXVolume,
                 optionsFullScreen,
+                disclaimerFullScreen,
                 optionsResolution,
                 optionsBorderless,
                 menuItemBack

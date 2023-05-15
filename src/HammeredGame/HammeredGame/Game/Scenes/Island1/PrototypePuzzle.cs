@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using System;
 using HammeredGame.Game.Scenes.Endgame;
 using HammeredGame.Game.Scenes.Island2;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media; 
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -28,9 +30,15 @@ namespace HammeredGame.Game.Scenes.Island1
         private CancellationTokenSource doorInteractTokenSource;// = new();
 
         private Vector3 newSpawnRockPosition = new Vector3(257.390f, 0.000f, -187.414f);
-        private CollisionGroup noSolverGroup;
+        private CollisionGroup rockGroup;
 
-        public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen) { }
+        public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen)
+        {
+            Song bgMusic;
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/BGM_V2_4x");
+            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.Play(bgMusic);
+        }
 
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
@@ -52,28 +60,51 @@ namespace HammeredGame.Game.Scenes.Island1
             MoveBlock rock1 = Get<MoveBlock>("rock1");
             MoveBlock rock2 = Get<MoveBlock>("rock2");
 
-            noSolverGroup = new CollisionGroup();
-            CollisionGroupPair pair = new CollisionGroupPair(noSolverGroup, noSolverGroup);
-            CollisionRules.CollisionGroupRules.Add(pair, CollisionRule.NoSolver);
+            //noSolverGroup = new CollisionGroup();
+            //CollisionGroupPair pair = new CollisionGroupPair(noSolverGroup, noSolverGroup);
+            //CollisionRules.CollisionGroupRules.Add(pair, CollisionRule.NoSolver);
 
-            laser1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+            //laser1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
             //rock1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
             //rock2.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
 
+            CollisionGroup laserGroup = new CollisionGroup();
+            rockGroup = new CollisionGroup();
+            CollisionGroup waterBoundsGroup = new CollisionGroup();
+
+            // Set collision rule for laser rock interaction
+            CollisionGroupPair laserRockpair = new CollisionGroupPair(laserGroup, rockGroup);
+            CollisionRules.CollisionGroupRules.Add(laserRockpair, CollisionRule.NoSolver);
+
+            // Set collision rule for rock water interaction
+            CollisionGroupPair RockWaterpair = new CollisionGroupPair(rockGroup, waterBoundsGroup);
+            CollisionRules.CollisionGroupRules.Add(RockWaterpair, CollisionRule.NoSolver);
+
+            // Set collision rule for rock rock interaction
+            CollisionGroupPair RockRockPair = new CollisionGroupPair(rockGroup, rockGroup);
+            CollisionRules.CollisionGroupRules.Add(RockRockPair, CollisionRule.Normal);
+
             foreach (var gO in GameObjectsList)
             {
-                // Check for rocks in the scene
+                // Update lasers in the scene
+                var laser = gO as Laser;
+                if (laser != null)
+                {
+                    laser.Entity.CollisionInformation.CollisionRules.Group = laserGroup;
+                }
+
+                // Update rocks in the scene
                 var rock = gO as MoveBlock;
                 if (rock != null)
                 {
-                    rock.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                    rock.Entity.CollisionInformation.CollisionRules.Group = rockGroup;
                 }
 
                 // Set water bounds objects to a group such that they do not block rocks
                 var waterBounds = gO as WaterBoundsObject;
                 if (waterBounds != null)
                 {
-                    waterBounds.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                    waterBounds.Entity.CollisionInformation.CollisionRules.Group = waterBoundsGroup;
                 }
             }
 
@@ -228,7 +259,7 @@ namespace HammeredGame.Game.Scenes.Island1
                         // Apply the same model offset as the original
                         newObj.EntityModelOffset = template_rock.EntityModelOffset;
                         newObj.Visible = false;
-                        newObj.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                        newObj.Entity.CollisionInformation.CollisionRules.Group = rockGroup;
 
                         if (openedGoalDoor)
                         {
