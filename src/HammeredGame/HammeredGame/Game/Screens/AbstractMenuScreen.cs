@@ -503,7 +503,7 @@ namespace HammeredGame.Game.Screens
             base.Draw(gameTime);
 
             // Draw a dark overlay for the whole screen covering the background
-            GameServices.GetService<SpriteBatch>().Begin();
+            GameServices.GetService<SpriteBatch>().Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
             GameServices.GetService<SpriteBatch>().Draw(
                 whiteRectangle,
                 new Rectangle(0, 0, ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height),
