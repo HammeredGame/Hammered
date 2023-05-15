@@ -70,11 +70,23 @@
 /processorParam:Quality=Best
 /build:Audio/door_close.wav
 
+#begin Audio/door_close1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/door_close1.wav
+
 #begin Audio/door_open.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/door_open.wav
+
+#begin Audio/door_open1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/door_open1.wav
 
 #begin Audio/footstep1.wav
 /importer:WavImporter
