@@ -44,29 +44,43 @@ namespace HammeredGame.Game.Scenes.Island1
             MoveBlock rock1 = Get<MoveBlock>("rock1");
             //MoveBlock rock2 = Get<MoveBlock>("rock2");
 
-            var noSolverGroup = new CollisionGroup();
-            CollisionGroupPair pair = new CollisionGroupPair(noSolverGroup, noSolverGroup);
-            CollisionRules.CollisionGroupRules.Add(pair, CollisionRule.NoSolver);
+            CollisionGroup laserGroup = new CollisionGroup();
+            CollisionGroup rockGroup = new CollisionGroup();
+            CollisionGroup waterBoundsGroup = new CollisionGroup();
 
-            laser1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
-            laser2.Entity.CollisionInformation.CollisionRules.Group= noSolverGroup;
-            rock1.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
-            //rock2.Entity.CollisionInformation.CollisionRules.Group = laserRockGroup;
+            // Set collision rule for laser rock interaction
+            CollisionGroupPair laserRockpair = new CollisionGroupPair(laserGroup, rockGroup);
+            CollisionRules.CollisionGroupRules.Add(laserRockpair, CollisionRule.NoSolver);
+
+            // Set collision rule for rock water interaction
+            CollisionGroupPair RockWaterpair = new CollisionGroupPair(rockGroup, waterBoundsGroup);
+            CollisionRules.CollisionGroupRules.Add(RockWaterpair, CollisionRule.NoSolver);
+
+            // Set collision rule for rock rock interaction
+            CollisionGroupPair RockRockPair = new CollisionGroupPair(rockGroup, rockGroup);
+            CollisionRules.CollisionGroupRules.Add(RockRockPair, CollisionRule.Normal);
 
             foreach (var gO in GameObjectsList)
             {
-                // Check for rocks in the scene
+                // Update lasers in the scene
+                var laser = gO as Laser;
+                if (laser != null)
+                {
+                    laser.Entity.CollisionInformation.CollisionRules.Group = laserGroup;
+                }
+
+                // Update rocks in the scene
                 var rock = gO as MoveBlock;
                 if (rock != null)
                 {
-                    rock.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                    rock.Entity.CollisionInformation.CollisionRules.Group = rockGroup;
                 }
 
                 // Set water bounds objects to a group such that they do not block rocks
                 var waterBounds = gO as WaterBoundsObject;
                 if (waterBounds != null)
                 {
-                    waterBounds.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                    waterBounds.Entity.CollisionInformation.CollisionRules.Group = waterBoundsGroup;
                 }
 
                 // Check for walls in the scene
@@ -77,7 +91,6 @@ namespace HammeredGame.Game.Scenes.Island1
                 }
             }
 
-            
             await ParentGameScreen.ShowDialogueAndWait("“I can’t see any trees in the area…I’ve been /n caught between a rock and a hard place.");
 
             // Make sure the hammer is being carried by the player. If the player does not have the
