@@ -56,7 +56,9 @@ namespace HammeredGame.Game
         /// <summary>
         /// Any debug objects shown as representations of bounding boxes. This list is updated in this.UpdateDebugObjects().
         /// </summary>
-        public List<EntityDebugDrawer> DebugObjects = new();
+        public List<Entity> DebugObjects = new();
+
+        public EntityDebugDrawer EntityDebugDrawer;
 
         public bool DrawDebugObjects = false;
 
@@ -103,6 +105,9 @@ namespace HammeredGame.Game
             // Before loading XMLs or creating assets, initialize the physics Space since they might
             // need it
             InitNewSpace();
+
+            EntityDebugDrawer = new EntityDebugDrawer(Services.GetService<GraphicsDevice>(), Services.GetService<ContentManager>());
+
             await LoadSceneContent(progress);
 
             // Perform one time-step update of the physics space here since the very first call to
@@ -278,21 +283,8 @@ namespace HammeredGame.Game
         public void UpdateDebugObjects()
         {
             DebugObjects.Clear();
-            var CubeModel = Services.GetService<ContentManager>().Load<Model>("cube");
-            //Go through the list of entities in the space and create a graphical representation for them.
-            foreach (Entity e in Space.Entities)
-            {
-                // This won't create any graphics for an entity that isn't a box since the model
-                // being used is a box. When any of width/height/length are zero, it causes a visual
-                // glitch so we don't draw in that case.
-                if (e is Box box && (box.Width > 0 && box.Height > 0 && box.Length > 0))
-                {
-                    BEPUutilities.Matrix scaling = BEPUutilities.Matrix.CreateScale(box.Width, box.Height, box.Length); //Since the cube model is 1x1x1, it needs to be scaled to match the size of each individual box.
-                    EntityDebugDrawer model = new(e, CubeModel, scaling);
-                    //Add the drawable game component for this entity to the game.
-                    DebugObjects.Add(model);
-                }
-            }
+
+            DebugObjects.AddRange(Space.Entities);
         }
 
         /// <summary>

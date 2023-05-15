@@ -150,8 +150,8 @@ namespace HammeredGame.Graphics
                 // Temporarily render in WireFrame fill mode to visualise debug entities
                 RasterizerState currentState = gpu.RasterizerState;
                 gpu.RasterizerState = new RasterizerState { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
-                foreach (EntityDebugDrawer item in scene.DebugObjects) {
-                    item.Draw(gameTime, gpu, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix);
+                foreach (BEPUphysics.Entities.Entity ent in scene.DebugObjects) {
+                    scene.EntityDebugDrawer.Draw(scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, ent);
                 }
                 gpu.RasterizerState = currentState;
             }
