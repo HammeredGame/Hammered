@@ -60,7 +60,7 @@
       <height>17.500</height>
       <length>5.000</length>
       <mass>50.000</mass>
-      <shift_graphic>0.000 -9.260 0.000</shift_graphic>
+      <shift_graphic>0.000 -8.900 0.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject">
