@@ -175,7 +175,7 @@ namespace HammeredGame.Game.Scenes.Island1
             Get<Player>("player1").TriggerWakeUp();
 
             // Wait until player is up to start prompts
-            await Services.GetService<ScriptUtils>().WaitMilliseconds((int)Get<Player>("player1").Animations.CurrentClip.Duration.TotalMilliseconds);
+            await Services.GetService<ScriptUtils>().WaitMilliseconds((int)Get<Player>("player1").Animations.CurrentClip.Duration.TotalMilliseconds - 200);
             Camera.FollowDistance = originalDistance;
         }
     }
