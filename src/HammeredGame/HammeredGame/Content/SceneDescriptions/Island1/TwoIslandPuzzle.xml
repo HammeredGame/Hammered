@@ -597,8 +597,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables.Key" id="key">
-    <model>temp_key</model>
-    <texture type="texture2d">awesome_key_texture</texture>
+    <model>key</model>
+    <texture type="texture2d">key_texture</texture>
     <position>-180.000 -10.000 -15.000</position>
     <rotation>0.000 -0.291 0.000 0.957</rotation>
     <scale>2.500</scale>

@@ -1,10 +1,10 @@
 <scene>
   <camera mode="follow">
-    <follow_distance>225.000</follow_distance>
-    <follow_angle>0.341</follow_angle>
-    <target>111.070 9.246 -68.158</target>
+    <follow_distance>275.000</follow_distance>
+    <follow_angle_v>0.341</follow_angle_v>
+    <follow_angle_h>-93.533</follow_angle_h>
+    <target>118.473 9.243 -62.906</target>
     <up>0.000 1.000 0.000</up>
-    <dir_index>3</dir_index>
     <fov>0.455</fov>
   </camera>
   <uniform_grid>
@@ -74,6 +74,227 @@
       <length>3.000</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 4.690 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="bridge_to_next_level">
+    <model>Meshes/Bridge/bridge</model>
+    <texture>Meshes/Bridge/bridge_wood</texture>
+    <position>180.000 0.500 -360.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>50.000</width>
+      <height>4.900</height>
+      <length>30.000</length>
+      <shift_graphic>-25.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject">
+    <model />
+    <position>47.000 8.000 -190.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>200.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject1">
+    <model />
+    <position>330.000 8.000 -190.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>200.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject2">
+    <model />
+    <position>190.000 8.000 -45.000</position>
+    <rotation>0.000 0.700 0.000 0.714</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>200.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject3">
+    <model />
+    <position>190.000 8.000 -325.000</position>
+    <rotation>0.000 0.700 0.000 0.714</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>200.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject4">
+    <model />
+    <position>60.000 8.000 -85.000</position>
+    <rotation>0.000 0.700 0.000 0.714</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject5">
+    <model />
+    <position>87.500 8.000 -60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject6">
+    <model />
+    <position>80.000 8.000 -80.000</position>
+    <rotation>0.000 0.390 0.000 0.921</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject7">
+    <model />
+    <position>320.000 8.000 -85.000</position>
+    <rotation>0.000 0.700 0.000 0.714</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject8">
+    <model />
+    <position>290.000 8.000 -60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject9">
+    <model />
+    <position>295.000 8.000 -80.000</position>
+    <rotation>0.000 -0.455 0.000 0.891</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject10">
+    <model />
+    <position>320.000 8.000 -290.000</position>
+    <rotation>0.000 0.700 0.000 0.714</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject11">
+    <model />
+    <position>290.000 8.000 -320.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject12">
+    <model />
+    <position>300.000 8.000 -300.000</position>
+    <rotation>0.000 0.390 0.000 0.921</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject13">
+    <model />
+    <position>60.000 8.000 -295.000</position>
+    <rotation>0.000 0.700 0.000 0.714</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject14">
+    <model />
+    <position>90.000 8.000 -315.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>4.800</width>
+      <height>20.000</height>
+      <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject15">
+    <model />
+    <position>85.000 8.000 -300.000</position>
+    <rotation>0.000 -0.386 0.000 0.922</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>11.300</width>
+      <height>20.000</height>
+      <length>25.900</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree">
@@ -480,7 +701,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="end_trigger">
     <model />
-    <position>180.000 -5.000 -330.000</position>
+    <position>180.000 -5.000 -340.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <visibility>False</visibility>

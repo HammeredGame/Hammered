@@ -31,12 +31,24 @@ namespace HammeredGame.Game.Scenes.Island1
             // set active camera to determine which way is forward
             Get<Player>("player1").SetActiveCamera(Camera);
 
+            // Disable player input until after the wake up animation has played
+            Get<Player>("player1").InputEnabled = false;
+
+            // Trigger player´s wake up animation
+            Get<Player>("player1").TriggerWakeUp();
+
             // drop hammer here to set state as Dropped, so when we set the owner player later it
             // won't fly back
             Get<Hammer>("hammer").DropHammer();
 
+            // Wait until player is up to start prompts
+            await Services.GetService<ScriptUtils>().WaitSeconds(7);
+
             // Show a small dialogue
             await ParentGameScreen.ShowDialogueAndWait("...Where am I?");
+
+            // Enable player input now that the wake up animation has finished playing
+            Get<Player>("player1").InputEnabled = true;
 
             // Show movement prompt 1 second after launch
             await Services.GetService<ScriptUtils>().WaitSeconds(1);

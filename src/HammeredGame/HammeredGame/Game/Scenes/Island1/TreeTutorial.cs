@@ -1,4 +1,6 @@
-﻿using BEPUutilities;
+﻿using BEPUphysics.CollisionRuleManagement;
+using BEPUphysics.Constraints.SolverGroups;
+using BEPUutilities;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
@@ -30,6 +32,20 @@ namespace HammeredGame.Game.Scenes.Island1
             Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
 
             Get<Tree>("tree").SetTreeFallen(true);
+
+            CollisionGroup waterboundsGroup = new CollisionGroup();
+            foreach (var gO in GameObjectsList)
+            {
+                // Set water bounds objects to a group (usually used to ensure that it doesn't
+                // block any rocks in the scene, but here there are no rocks in the scene.
+                // If there are no rocks, the water bounds still needs a collision group attached,
+                // so attaching an empty collision group here)
+                var waterBounds = gO as WaterBoundsObject;
+                if (waterBounds != null)
+                {
+                    waterBounds.Entity.CollisionInformation.CollisionRules.Group = waterboundsGroup;
+                }
+            }
 
             //// Set a layer of grid cells which the hammer will not be able to traverse.
             //// This is done to ensure that the hammer will not attempt to find a path consisting of points from that layer onwards.

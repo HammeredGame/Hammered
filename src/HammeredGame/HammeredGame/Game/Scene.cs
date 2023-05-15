@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace HammeredGame.Game
@@ -55,7 +56,9 @@ namespace HammeredGame.Game
         /// <summary>
         /// Any debug objects shown as representations of bounding boxes. This list is updated in this.UpdateDebugObjects().
         /// </summary>
-        public List<EntityDebugDrawer> DebugObjects = new();
+        public List<Entity> DebugObjects = new();
+
+        public EntityDebugDrawer EntityDebugDrawer;
 
         public bool DrawDebugObjects = false;
 
@@ -102,6 +105,9 @@ namespace HammeredGame.Game
             // Before loading XMLs or creating assets, initialize the physics Space since they might
             // need it
             InitNewSpace();
+
+            EntityDebugDrawer = new EntityDebugDrawer(Services.GetService<GraphicsDevice>(), Services.GetService<ContentManager>());
+
             await LoadSceneContent(progress);
 
             // Perform one time-step update of the physics space here since the very first call to
@@ -277,19 +283,8 @@ namespace HammeredGame.Game
         public void UpdateDebugObjects()
         {
             DebugObjects.Clear();
-            var CubeModel = Services.GetService<ContentManager>().Load<Model>("cube");
-            //Go through the list of entities in the space and create a graphical representation for them.
-            foreach (Entity e in Space.Entities)
-            {
-                Box box = e as Box;
-                if (box != null) //This won't create any graphics for an entity that isn't a box since the model being used is a box.
-                {
-                    BEPUutilities.Matrix scaling = BEPUutilities.Matrix.CreateScale(box.Width, box.Height, box.Length); //Since the cube model is 1x1x1, it needs to be scaled to match the size of each individual box.
-                    EntityDebugDrawer model = new(e, CubeModel, scaling);
-                    //Add the drawable game component for this entity to the game.
-                    DebugObjects.Add(model);
-                }
-            }
+
+            DebugObjects.AddRange(Space.Entities);
         }
 
         /// <summary>
@@ -454,6 +449,22 @@ namespace HammeredGame.Game
             GameObjects.Insert(destinationIndex, sourceKey, sourceObject);
         }
 
+        /// <summary>
+        /// Rename a game object key. If the destination key already exists, will create a unique
+        /// key by appending numbers to it.
+        /// </summary>
+        /// <param name="sourceKey">The key for the game object that will be renamed</param>
+        /// <param name="destinationKey">The key to rename to</param>
+        private void RenameObject(string sourceKey, string destinationKey)
+        {
+            // Grab the source object and its current index, then delete it
+            GameObject sourceObject = GameObjects[sourceKey];
+            int sourceIndex = GameObjects.IndexOf(sourceKey);
+            GameObjects.Remove(sourceKey);
+
+            GameObjects.Insert(sourceIndex, GenerateUniqueNameWithPrefix(destinationKey), sourceObject);
+        }
+
         // Some things for the object creation popup in the debug UI, to make data persistent across frames.
 
         // The default placeholder to show in the object creation class name drop-down
@@ -544,6 +555,7 @@ namespace HammeredGame.Game
                     // See explanation later on why this boolean is needed
                     bool openDeletionConfirmation = false;
                     bool openXMLCopyingPopup = false;
+                    bool openXMLRenamePopup = false;
 
                     // Show each object key as a selectable item, with its own right click menus for
                     // duplication and deletion. Because we can create and remove items from the
@@ -634,12 +646,20 @@ namespace HammeredGame.Game
                                 openXMLCopyingPopup = true;
                             }
 
+                            // Renaming an individual object ID
+                            if (ImGui.MenuItem("Rename"))
+                            {
+                                // Use a flag to show the popup later. For more info, see the
+                                // comment under the "Delete Object" context menu item.
+                                openXMLRenamePopup = true;
+                            }
+
                             // Object duplication (creates a new object with a new name but everything
                             // else the same)
                             if (ImGui.MenuItem("Duplicate Object"))
                             {
                                 // Generate a new name for the object
-                                string name = GenerateUniqueNameWithPrefix(gameObject.GetType().Name.ToLower());
+                                string name = GenerateUniqueNameWithPrefix(key.TrimEnd(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }));
 
                                 // Copy the entity
                                 Entity entity = null;
@@ -749,6 +769,33 @@ namespace HammeredGame.Game
                             // We need some way of exiting, since a popup modal can't be exited in
                             // another way
                             if (ImGui.Button("Done")) { ImGui.CloseCurrentPopup(); }
+                            ImGui.EndPopup();
+                        }
+
+                        // Similar to a deletion popup, we have a popup for renaming. It's shown
+                        // using the same trick of a flag + popup.
+                        if (openXMLRenamePopup)
+                        {
+                            ImGui.OpenPopup($"rename_{key}");
+                            openXMLRenamePopup = false;
+                        }
+
+                        // The actual popup for renaming an object.
+                        ImGui.SetNextWindowPos(ImGui.GetCursorScreenPos(), ImGuiCond.Appearing);
+                        if (ImGui.BeginPopup($"rename_{key}"))
+                        {
+                            string buffer = key;
+                            ImGui.Text("New Id:");
+                            ImGui.SameLine();
+                            ImGui.PushItemWidth(150);
+                            // With EnterReturnsTrue, the InputText function will return true when
+                            // enter is pressed.
+                            if (ImGui.InputText("##rename" + key, ref buffer, 50, ImGuiInputTextFlags.EnterReturnsTrue))
+                            {
+                                RenameObject(key, buffer);
+                                ImGui.CloseCurrentPopup();
+                            }
+                            ImGui.PopItemWidth();
                             ImGui.EndPopup();
                         }
                     }

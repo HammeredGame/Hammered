@@ -1,0 +1,50 @@
+<scene>
+  <camera mode="follow">
+    <follow_distance>28.000</follow_distance>
+    <follow_angle_v>0.110</follow_angle_v>
+    <follow_angle_h>-167.178</follow_angle_h>
+    <target>185.328 -8.233 -4.328</target>
+    <up>0.000 1.000 0.000</up>
+    <fov>0.375</fov>
+  </camera>
+  <uniform_grid>
+    <bottom_left_close>-300.000 -30.000 -300.000</bottom_left_close>
+    <top_right_away>400.000 60.000 250.000</top_right_away>
+    <side_length>10.000</side_length>
+  </uniform_grid>
+  <lights>
+    <sun>
+      <color>1.000 0.863 0.863</color>
+      <direction>0.255 0.951 -0.173</direction>
+      <intensity>1.890</intensity>
+    </sun>
+    <directional>
+      <color>1.000 1.000 1.000</color>
+      <direction>0.200 0.970 0.000</direction>
+      <intensity>0.050</intensity>
+    </directional>
+    <ambient>
+      <color>1.000 1.000 1.000</color>
+      <intensity>0.010</intensity>
+    </ambient>
+  </lights>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
+    <model>cube</model>
+    <position>0.000 0.000 0.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
+    <model>Meshes/Hammer/hammer</model>
+    <texture>Meshes/Hammer/hammer_Texture</texture>
+    <position>185.327 -8.233 -4.329</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>2.200</width>
+      <height>1.300</height>
+      <length>1.000</length>
+      <shift_graphic>0.000 1.631 0.000</shift_graphic>
+    </body>
+  </object>
+</scene>

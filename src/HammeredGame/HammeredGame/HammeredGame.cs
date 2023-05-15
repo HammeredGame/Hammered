@@ -11,6 +11,7 @@ using Myra;
 using System;
 using Pleasing;
 using System.IO;
+using Microsoft.Xna.Framework.Media;
 
 namespace HammeredGame
 {
@@ -24,20 +25,15 @@ namespace HammeredGame
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private GraphicsDevice gpu;
-        public int ScreenW, ScreenH;
 
         public static ParallelLooper ParallelLooper;
 
         // INPUT and other related stuff
         private Input input;
 
-        // RENDER TARGET
+        // The render target, which may have a different resolution to the actual number of pixels
+        // displayed on the screen
         private RenderTarget2D mainRenderTarget;
-
-        // RECTANGLES (need to modify to allow modifiable resolutions, etc.)
-        private Rectangle desktopRect;
-
-        private Rectangle screenRect;
 
         private readonly GameServices gameServices = new();
 
@@ -55,15 +51,16 @@ namespace HammeredGame
         public HammeredGame()
         {
             // Get width and height of desktop and set the graphics device settings
-            int desktop_width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 10;
-            int desktop_height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 10;
+            int desktop_width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            int desktop_height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferWidth = desktop_width,
                 PreferredBackBufferHeight = desktop_height,
                 IsFullScreen = false,
                 PreferredDepthStencilFormat = DepthFormat.None,
-                GraphicsProfile = GraphicsProfile.HiDef
+                GraphicsProfile = GraphicsProfile.HiDef,
+                HardwareModeSwitch = false
             };
 
             Window.Title = "HAMMERED";
@@ -78,21 +75,33 @@ namespace HammeredGame
             PresentationParameters pp = gpu.PresentationParameters;
             spriteBatch = new SpriteBatch(gpu);
 
-            // Set Render Target to SCREENWIDTH x SCREENHEIGHT
-            mainRenderTarget = new RenderTarget2D(gpu, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, DepthFormat.Depth24);
-            ScreenW = mainRenderTarget.Width;
-            ScreenH = mainRenderTarget.Height;
-            desktopRect = new Rectangle(0, 0, pp.BackBufferWidth, pp.BackBufferHeight);
-            screenRect = new Rectangle(0, 0, ScreenW, ScreenH);
+            // Load user settings
+            UserSettings settings = UserSettings.CreateFromFile("settings.txt");
 
-            // Initialize Input class
+            // Update render resolution and set up mainRenderTarget
+            SetResolution(settings.Resolution.Width, settings.Resolution.Height, settings.FullScreen);
+
+            // Set full screen (Windows-only) and border-less based on settings, which should be
+            // done after setting the first resolution, because it might change the resolution to
+            // fit the full screen size
+            //SetFullScreen(settings.FullScreen);
+            SetBorderless(settings.Borderless);
+
+            // Initialize Input class, todo: this isn't updated when resolution changes, although
+            // it's currently not a serious issue since we don't use mouse position (Myra UI and
+            // ImGui have their own handling code)
             input = new Input(pp, mainRenderTarget);
+
+            //initialize audio manager and set initial volumes
+            audioManager = new AudioManager(this);
+            SetMediaVolume(settings.MediaVolume);
+            SetSfxVolume(settings.SfxVolume);
 
             // Set up the parallelization pool for the physics engine based on the amount of cores
             // we have.
             if (ParallelLooper == null)
             {
-                // Initialize paraller looper to tell the physics engine that it can use
+                // Initialize parallel looper to tell the physics engine that it can use
                 // multithreading, if possible
                 ParallelLooper = new ParallelLooper();
                 if (Environment.ProcessorCount > 1)
@@ -104,12 +113,8 @@ namespace HammeredGame
                 }
             }
 
+            // Set up the UI library (Myra)'s access to the game context
             MyraEnvironment.Game = this;
-
-            //initialize audio manager
-            audioManager = new AudioManager(this);
-
-            SoundEffect.MasterVolume = 0.2f;
 
             // Initialize ImGui's internal renderer and build its font atlas
             imGuiRenderer = new ImGuiRenderer(this);
@@ -118,11 +123,12 @@ namespace HammeredGame
             // Add useful game services that might want to be accessed globally
             gameServices.AddService<HammeredGame>(this);
             gameServices.AddService<GraphicsDevice>(gpu);
+            gameServices.AddService<GraphicsDeviceManager>(graphics);
             gameServices.AddService<SpriteBatch>(spriteBatch);
             gameServices.AddService<Input>(input);
+            gameServices.AddService<UserSettings>(settings);
             gameServices.AddService<ContentManager>(Content);
             gameServices.AddService<ScriptUtils>(new ScriptUtils());
-            //gameServices.AddService<List<SoundEffect>>(sfx);
             gameServices.AddService<AudioManager>(audioManager);
 
             manager = new ScreenManager(gameServices, gpu, mainRenderTarget);
@@ -141,33 +147,16 @@ namespace HammeredGame
         /// </summary>
         public void InitTitleScreen()
         {
-            #region TEMPORARY SOLUTION TO LEVEL SAVE/LOAD UNTIL PERSISTENT DATA IS PROPERLY IMPLEMENTED
-            bool continuable;
-            string savedSceneName = "";
-            try
-            {
-                savedSceneName = File.ReadAllText("save.txt");
-                if (Type.GetType(savedSceneName) == null)
-                {
-                    continuable = false;
-                }
-                else
-                {
-                    continuable = true;
-                }
-            } catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex);
-                continuable = false;
-            }
-            #endregion
+            // We allow continuation if we a last saved scene exists and is a valid scene
+            string lastSaveName = gameServices.GetService<UserSettings>().LastSaveScene;
+            bool continuable = lastSaveName != null && Type.GetType(lastSaveName) != null;
 
             manager.AddScreen(new Game.Screens.TitleScreen()
             {
                 Continuable = continuable,
                 ContinueFunc = () =>
                 {
-                    manager.AddScreen(new Game.Screens.GameScreen(savedSceneName));
+                    manager.AddScreen(new Game.Screens.GameScreen(lastSaveName));
                 },
                 StartNewFunc = () =>
                 {
@@ -191,6 +180,97 @@ namespace HammeredGame
 
             // Load assets related to shown screens
             manager.LoadContent();
+        }
+
+        /// <summary>
+        /// Changes the game resolution and full screen status. Specifically, it toggles full screen
+        /// if the argument is specified, changes the GPU's back buffer size, the intermediate
+        /// render target size (the one before copying to the GPU), and any other screen-specific
+        /// things by issuing <see cref="ScreenManager.SetResolution(int, int)"/>.
+        /// <para/>
+        /// The full screen toggle is included in this function because toggling full screen is
+        /// essentially the same as a resolution change (plus some signaling to the OS).
+        /// </summary>
+        /// <param name="windowWidth">Window resolution width, ignored if fullScreen is true</param>
+        /// <param name="windowHeight">Window resolution height, ignored if fullScreen is true</param>
+        /// <param name="fullScreen">Specify to enter/exit full screen, otherwise will not change</param>
+        public void SetResolution(int windowWidth, int windowHeight, bool? fullScreen = null)
+        {
+            if (fullScreen != null)
+            {
+                // Our game uses software full screens (set by HardwareModeSwitch being false).
+                // Hardware full screen changes the device resolution to match the game resolution,
+                // which can be buggy on some platforms, whereas software full screen is like
+                // changing the game's window size to fill the screen. Because of this, we need to
+                // do a two-step process of "signal to OS that it's full-screen" followed by
+                // "pretend it's a resolution change and execute the rest of SetResolution".
+                graphics.IsFullScreen = (bool)fullScreen;
+                graphics.ApplyChanges();
+
+                // When entering full screen, our resolution change target is the display size. When
+                // exiting, we will be changing resolutions down to the width and height arguments
+                // to this function.
+                if (fullScreen == true)
+                {
+                    windowWidth = gpu.DisplayMode.Width;
+                    windowHeight = gpu.DisplayMode.Height;
+                }
+            }
+
+            // Update the GPU back buffer size, this changes the window size as well. If we are in
+            // full screen though, the windowWidth and windowHeight should equal the display
+            // resolution (obtained from gpu.DisplayMode), and the result otherwise is buggy and
+            // inconsistent across platforms.
+            graphics.PreferredBackBufferWidth = windowWidth;
+            graphics.PreferredBackBufferHeight = windowHeight;
+            graphics.ApplyChanges();
+
+            // Set up the render target, which we will render to, which gets copied to the GPU back buffer.
+            mainRenderTarget = new RenderTarget2D(gpu, gpu.Viewport.Width, gpu.Viewport.Height, false, gpu.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+
+            if (manager != null)
+            {
+                manager.MainRenderTarget = mainRenderTarget;
+                manager.SetResolution(gpu.Viewport.Width, gpu.Viewport.Height);
+            }
+        }
+
+        /// <summary>
+        /// Toggles the game's OS border/chrome.
+        /// </summary>
+        /// <param name="borderless"></param>
+        public void SetBorderless(bool borderless)
+        {
+            Window.IsBorderless = borderless;
+            graphics.ApplyChanges();
+        }
+
+        /// <summary>
+        /// Set the music volume, taking a linear input from [0,1] and scaling exponentially and
+        /// shifted to the [0,1] range to fit the natural human hearing curve. Since the exponential
+        /// function doesn't reach 0 at x = 0, we switch to a linear function near that point.
+        /// <para/>
+        /// Explanation here: https://www.dr-lex.be/info-stuff/volumecontrols.html
+        /// </summary>
+        /// <param name="mediaVolume"></param>
+        public void SetMediaVolume(float mediaVolume)
+        {
+            // The value 0.296 is the intersection between the exp(5x - 5) graph and the 0.1x graph,
+            // and is the point where we switch from exponential to linear falloff as x nears 0
+            MediaPlayer.Volume = mediaVolume > 0.296f ? MathF.Exp(5f * mediaVolume - 5f) : mediaVolume * 0.1f;
+        }
+
+        /// <summary>
+        /// Set the sound effect volume, taking a linear input from [0,1] and scaling exponentially
+        /// and shifted to the [0,1] range to fit the natural human hearing curve. Since the
+        /// exponential function doesn't reach 0 at x = 0, we switch to a linear function near that point.
+        /// <para/>
+        /// Explanation here: https://www.dr-lex.be/info-stuff/volumecontrols.html
+        /// </summary>
+        /// <param name="sfxVolume"></param>
+        public void SetSfxVolume(float sfxVolume)
+        {
+            SoundEffect.MasterVolume = sfxVolume > 0.296f ? MathF.Exp(5f * sfxVolume - 5f) : sfxVolume * 0.1f;
         }
 
         /// <summary>
@@ -249,13 +329,7 @@ namespace HammeredGame
             gpu.SetRenderTarget(null);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone);
-            spriteBatch.Draw(mainRenderTarget, desktopRect, Color.White);
-
-            // FOR THE PURPOSES OF THE DEMO, we indicate whether the puzzle is solved here
-            //if (player.ReachedGoal)
-            //{
-            //    spriteBatch.DrawString(tempFont, "PUZZLE SOLVED!! \nPress R on keyboard or Y on controller to reload level", new Microsoft.Xna.Framework.Vector2(100, 100), Color.Red);
-            //}
+            spriteBatch.Draw(mainRenderTarget,  new Rectangle(0, 0, gpu.PresentationParameters.BackBufferWidth, gpu.PresentationParameters.BackBufferHeight), Color.White);
 
             // Commit all the data to the back buffer
             spriteBatch.End();
