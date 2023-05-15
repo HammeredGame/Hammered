@@ -54,7 +54,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.Entity.Tag = "MovableObstacleBounds";
                 this.Entity.CollisionInformation.Tag = this;
                 this.Entity.PositionUpdateMode = PositionUpdateMode.Continuous;
-                this.Entity.CollisionInformation.CollisionRules.Personal = CollisionRule.Defer;
+                this.Entity.CollisionInformation.CollisionRules.Personal = CollisionRule.Normal;
                 this.SetStationary();
 
                 // Setting base kinetic friction and higher gravitational force
