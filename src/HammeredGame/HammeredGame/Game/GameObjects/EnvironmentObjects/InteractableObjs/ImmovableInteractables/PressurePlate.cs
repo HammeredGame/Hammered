@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using Pleasing;
+using System;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
 {
@@ -33,6 +34,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         private EnvironmentObject triggerObject;
         private bool playerOn = false, hammerOn = false;
         private bool pressureActivated = false;
+
+        public event EventHandler OnTrigger;
+        public event EventHandler OnTriggerEnd;
 
         //private List<SoundEffect> pressSfx = new List<SoundEffect>();
 
@@ -73,6 +77,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                 //}
                 if (other.Tag is EmptyGameObject) return;
                 this.SetActivated(true);
+                OnTrigger?.Invoke(this, null);
             }
         }
 
@@ -138,7 +143,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                     }
                 }
 
-                if (num_collisions == 0) this.SetActivated(false);
+                if (num_collisions == 0)
+                {
+                    this.SetActivated(false);
+                    OnTriggerEnd?.Invoke(this, null);
+                }
                 //if (sender.Pairs.Count <= 1)
                 //{
                 //    this.SetActivated(false);
