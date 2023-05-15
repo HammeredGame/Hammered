@@ -44,7 +44,17 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             Moving,
             InWater
         }
+
+        public enum MBGroundState
+        {
+            Ground, 
+            Water, 
+            Tree,
+            MoveBlock
+        }
+
         public MBState MblockState { get; private set; }
+        public MBGroundState MgroundState { get; set; }
         private BEPUutilities.Vector3 initialMovementVelocity = BEPUutilities.Vector3.Zero;
 
         public MoveBlock(GameServices services, Model model, Texture2D t, Microsoft.Xna.Framework.Vector3 pos, Microsoft.Xna.Framework.Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
@@ -127,6 +137,23 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                             var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.hammerSpeed;
                             this.SetMoving(temp);
                         }
+                    }
+                }
+            }
+            else
+            {
+                if (other.Tag is Ground)
+                {
+                    if (this.MgroundState != MBGroundState.Ground)
+                    {
+                        this.MgroundState = MBGroundState.Ground;
+                    }
+                }
+                if (other.Tag is Water) 
+                {
+                    if (this.MgroundState != MBGroundState.Water)
+                    {
+                        this.MgroundState = MBGroundState.Water;
                     }
                 }
             }
