@@ -1147,6 +1147,54 @@
 /processorParam:TextureFormat=Compressed
 /build:Meshes/Laser/laserbase.fbx
 
+#begin Meshes/PressurePlates/pressure_plate_albedo_blue.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Meshes/PressurePlates/pressure_plate_albedo_blue.png
+
+#begin Meshes/PressurePlates/pressure_plate_albedo_green.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Meshes/PressurePlates/pressure_plate_albedo_green.png
+
+#begin Meshes/PressurePlates/pressure_plate_albedo_purple.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Meshes/PressurePlates/pressure_plate_albedo_purple.png
+
+#begin Meshes/PressurePlates/pressure_plate_albedo_yellow.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Meshes/PressurePlates/pressure_plate_albedo_yellow.png
+
 #begin Meshes/PressurePlates/pressure_plate_albedo.png
 /importer:TextureImporter
 /processor:TextureProcessor

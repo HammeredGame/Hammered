@@ -1090,8 +1090,8 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate" id="pressureplate_G">
     <model>Meshes/PressurePlates/pressure_plate</model>
-    <texture>Meshes/PressurePlates/pressure_plate_albedo</texture>
-    <position>187.000 -21.000 -275.000</position>
+    <texture>Meshes/PressurePlates/pressure_plate_albedo_green</texture>
+    <position>207.000 -21.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -1103,8 +1103,8 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate" id="pressureplate_P">
     <model>Meshes/PressurePlates/pressure_plate</model>
-    <texture>Meshes/PressurePlates/pressure_plate_albedo</texture>
-    <position>187.000 -21.000 -305.000</position>
+    <texture>Meshes/PressurePlates/pressure_plate_albedo_purple</texture>
+    <position>182.000 -21.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -1116,8 +1116,8 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate" id="pressureplate_B">
     <model>Meshes/PressurePlates/pressure_plate</model>
-    <texture>Meshes/PressurePlates/pressure_plate_albedo</texture>
-    <position>217.000 -21.000 -305.000</position>
+    <texture>Meshes/PressurePlates/pressure_plate_albedo_blue</texture>
+    <position>231.600 -21.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -1129,8 +1129,8 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate" id="pressureplate_Y">
     <model>Meshes/PressurePlates/pressure_plate</model>
-    <texture>Meshes/PressurePlates/pressure_plate_albedo</texture>
-    <position>247.000 -21.000 -305.000</position>
+    <texture>Meshes/PressurePlates/pressure_plate_albedo_yellow</texture>
+    <position>256.000 -21.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <body type="box">
