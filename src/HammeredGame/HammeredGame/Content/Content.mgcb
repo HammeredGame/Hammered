@@ -40,6 +40,12 @@
 /processorParam:Quality=Best
 /build:Audio/bgm4_4x.mp3
 
+#begin Audio/blip.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/blip.wav
+
 #begin Audio/buzz.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -135,6 +141,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/new_step.wav
+
+#begin Audio/retro.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/retro.wav
 
 #begin Audio/rock_water.wav
 /importer:WavImporter

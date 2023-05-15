@@ -31,6 +31,8 @@ namespace HammeredGame.Core
             "Audio/UI/selection_confirm",
             "Audio/buzz",
             "Audio/glow",
+            "Audio/blip",
+            "Audio/retro",
         };
 
         //public AudioListener Listener
