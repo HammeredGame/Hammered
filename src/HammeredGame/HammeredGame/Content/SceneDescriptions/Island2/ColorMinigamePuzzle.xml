@@ -19,13 +19,13 @@
       <intensity>1.000</intensity>
     </sun>
     <directional>
-      <color>1.000 1.000 1.000</color>
+      <color>1.000 0.700 0.600</color>
       <direction>0.200 0.970 0.000</direction>
-      <intensity>0.050</intensity>
+      <intensity>0.400</intensity>
     </directional>
     <ambient>
-      <color>1.000 1.000 1.000</color>
-      <intensity>0.010</intensity>
+      <color>1.000 0.800 0.700</color>
+      <intensity>0.10</intensity>
     </ambient>
   </lights>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
