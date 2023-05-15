@@ -116,11 +116,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 if (hammer.IsEnroute())
                 {
-                    fallDirection = hammer.Entity.LinearVelocity;
-                    fallDirection.Normalize();
-                    isFalling = true;
-                    //tree_sfx[3].Play();
-                    Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+                    if (hammer.Entity.LinearVelocity.Length() > hammer.hammerSpeed - 1f &&
+                            hammer.Entity.LinearVelocity.Length() < hammer.hammerSpeed + 1f)
+                    {
+                        fallDirection = hammer.Entity.LinearVelocity;
+                        fallDirection.Normalize();
+                        isFalling = true;
+                        //tree_sfx[3].Play();
+                        Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+                    }
                 }
 
             }
@@ -143,11 +147,15 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 if (hammer.IsEnroute())
                 {
-                    fallDirection = hammer.Entity.LinearVelocity;
-                    fallDirection.Normalize();
-                    isFalling = true;
-                    //tree_sfx[3].Play();
-                    Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+                    if (hammer.Entity.LinearVelocity.Length() > hammer.hammerSpeed - 1f &&
+                            hammer.Entity.LinearVelocity.Length() < hammer.hammerSpeed + 1f)
+                    {
+                        fallDirection = hammer.Entity.LinearVelocity;
+                        fallDirection.Normalize();
+                        isFalling = true;
+                        //tree_sfx[3].Play();
+                        Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+                    }
                 }
 
             }
