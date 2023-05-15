@@ -188,10 +188,7 @@ namespace HammeredGame.Game
                 // horizontal input between [-1, 1]
                 float horizontalInput = UserAction.CameraMovement.GetValue(services.GetService<Input>()).X;
 
-                // We want to use the sign-flipped version of the input, because intuitively, moving
-                // the joystick right means we want to view more of the right, which means we have
-                // the move the camera rotation left.
-                FollowAngleHorizontal -= 0.04f * horizontalInput;
+                FollowAngleHorizontal += 0.04f * horizontalInput;
 
                 if (horizontalInput > 0)
                 {
