@@ -144,6 +144,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 if (other.Tag is ObstacleObject)
                 {
+                    if (other.Tag is Laser) return;
                     // find all valid contact pairs between obstacles
                     // if there are no more such valid pairs, then reset the laser to default length
 
@@ -177,6 +178,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 if (other.Tag is ObstacleObject)
                 {
+                    if (other.Tag is Laser) return;
                     // Go through the pair contact points to find the closest contact point
                     // from the start of the laser - to calculate the re-scaling factor
                     // of the laser
