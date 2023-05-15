@@ -11,14 +11,15 @@ namespace HammeredGame.Core
 
         readonly string[] soundNames =
         {
+            //combination of self-recored foley and sounds from zapsplat.com 
             "Audio/stereo_step",
             "Audio/hammer_drop",
             "Audio/lohi_whoosh",
             "Audio/tree_fall",
             "Audio/ding",
-            "Audio/door_close",
-            "Audio/door_open",
-            "Audio/new_laser",
+            "Audio/door_close1",
+            "Audio/door_open1",
+            //"Audio/new_laser",
             "Audio/rock_water",
             "Audio/short_roll",
             // no idea where I should be noting this down but credits & licenses:
@@ -27,7 +28,11 @@ namespace HammeredGame.Core
             "Audio/UI/selection_change",
             // selection_confirm: CC BY 4.0 (attribution required, modification indication required)
             // Universal UI/Menu Soundpack (https://ellr.itch.io/universal-ui-soundpack)
-            "Audio/UI/selection_confirm"
+            "Audio/UI/selection_confirm",
+            "Audio/buzz",
+            "Audio/glow",
+            "Audio/blip",
+            "Audio/retro",
         };
 
         //public AudioListener Listener

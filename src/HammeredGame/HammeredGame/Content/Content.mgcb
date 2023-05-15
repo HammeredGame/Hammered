@@ -34,6 +34,24 @@
 /processorParam:Quality=Best
 /build:Audio/BGM_V2_4x.mp3
 
+#begin Audio/bgm4_4x.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/bgm4_4x.mp3
+
+#begin Audio/blip.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/blip.wav
+
+#begin Audio/buzz.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/buzz.wav
+
 #begin Audio/const_water.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -58,17 +76,35 @@
 /processorParam:Quality=Best
 /build:Audio/door_close.wav
 
+#begin Audio/door_close1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/door_close1.wav
+
 #begin Audio/door_open.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/door_open.wav
 
+#begin Audio/door_open1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/door_open1.wav
+
 #begin Audio/footstep1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/footstep1.wav
+
+#begin Audio/glow.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/glow.wav
 
 #begin Audio/hammer_drop.wav
 /importer:WavImporter
@@ -105,6 +141,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/new_step.wav
+
+#begin Audio/retro.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/retro.wav
 
 #begin Audio/rock_water.wav
 /importer:WavImporter

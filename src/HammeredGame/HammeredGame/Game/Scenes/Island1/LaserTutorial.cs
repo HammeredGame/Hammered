@@ -21,7 +21,7 @@ namespace HammeredGame.Game.Scenes.Island1
             await CreateFromXML($"Content/SceneDescriptions/Island1/LaserTutorial_voxel.xml", progress);
         }
 
-        protected override void OnSceneStart()
+        protected override async void OnSceneStart()
         {
             Camera.SetFollowTarget(Get<Player>("player1"));
             Get<Player>("player1").SetActiveCamera(Camera);
@@ -77,6 +77,9 @@ namespace HammeredGame.Game.Scenes.Island1
                 }
             }
 
+            
+            await ParentGameScreen.ShowDialogueAndWait("“I can’t see any trees in the area…I’ve been /n caught between a rock and a hard place.");
+
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
             Get<TriggerObject>("end_trigger").Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
@@ -84,7 +87,8 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
-                    await ParentGameScreen.ShowDialogueAndWait("That was surprisingly easy...! I hope the next one\nis also like that.");
+                    await ParentGameScreen.ShowDialogueAndWait("That was surprisingly easy...!");
+                    await ParentGameScreen.ShowDialogueAndWait("I hope the next one is also like that.");
                     ParentGameScreen.InitializeLevel(typeof(PrototypePuzzle).FullName);
                 }
                 else
