@@ -528,6 +528,18 @@
 /processorParam:TextureFormat=Compressed
 /build:grass.fbx
 
+#begin HammerImage.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:HammerImage.png
+
 #begin island_colored.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
@@ -1326,6 +1338,9 @@
 
 #begin SceneDescriptions/Island2/ColorMinigamePuzzle.xml
 /copy:SceneDescriptions/Island2/ColorMinigamePuzzle.xml
+
+#begin SceneDescriptions/Test/JustHammer.xml
+/copy:SceneDescriptions/Test/JustHammer.xml
 
 #begin SceneDescriptions/Test/LaserTest.xml
 /copy:SceneDescriptions/Test/LaserTest.xml
