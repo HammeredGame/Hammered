@@ -121,8 +121,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     if (hammer.IsEnroute())
                     {
                         Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
-                        var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.hammerSpeed;
-                        this.SetMoving(temp);
+                        if (hammer.Entity.LinearVelocity.Length() > hammer.hammerSpeed - 1f &&
+                            hammer.Entity.LinearVelocity.Length() < hammer.hammerSpeed + 1f)
+                        {
+                            var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.hammerSpeed;
+                            this.SetMoving(temp);
+                        }
                     }
                 }
             }
@@ -185,8 +189,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     if (hammer.IsEnroute())
                     {
                         Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
-                        var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.hammerSpeed;
-                        this.SetMoving(temp);
+                        if (hammer.Entity.LinearVelocity.Length() > hammer.hammerSpeed - 1f &&
+                            hammer.Entity.LinearVelocity.Length() < hammer.hammerSpeed + 1f)
+                        {
+                            var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.hammerSpeed;
+                            this.SetMoving(temp);
+                        }
                     }
                 }
                 else if (this.MblockState == MBState.Moving)
