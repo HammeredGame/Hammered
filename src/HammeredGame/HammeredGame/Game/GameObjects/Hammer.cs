@@ -86,7 +86,7 @@ namespace HammeredGame.Game.GameObjects
 
         // When held by the player, we have a very specific rotation we want to keep (in addition to
         // the rotations of the player).
-        private Quaternion rotationWhenHeldByPlayer = new Quaternion(-0.038f, 0.308f, 0.614f, 0.726f);
+        private Quaternion rotationWhenHeldByPlayer = new Quaternion(0.050f, 0.250f, 0.576f, 0.777f);
 
         public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
             : base(services, model, t, pos, rotation, scale, entity)
