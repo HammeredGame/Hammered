@@ -43,21 +43,21 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground" id="ground2">
     <model>Meshes/IslandMeshes/island2/blue_island</model>
-    <texture>Meshes/IslandMeshes/grassuv</texture>
+    <texture>Meshes/IslandMeshes/blue-grassuv</texture>
     <position>20.000 -26.600 -10.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground" id="ground3">
     <model>Meshes/IslandMeshes/island2/red_island</model>
-    <texture>Meshes/IslandMeshes/grassuv</texture>
+    <texture>Meshes/IslandMeshes/purple-grassuv</texture>
     <position>20.000 -26.600 -10.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground" id="ground4">
     <model>Meshes/IslandMeshes/island2/yellow_island</model>
-    <texture>Meshes/IslandMeshes/grassuv</texture>
+    <texture>Meshes/IslandMeshes/orange-grassuv</texture>
     <position>20.000 -26.600 -10.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1101,7 +1101,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="yellow_tree">
     <model>Meshes/Trees/tree</model>
-    <texture>Meshes/Trees/tree_albedo</texture>
+    <texture>Meshes/Trees/orange-tree_albedo</texture>
     <position>77.200 -23.900 -285.000</position>
     <rotation>0.000 -0.271 0.000 0.963</rotation>
     <scale>1.000</scale>
@@ -1114,7 +1114,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="yellow_tree1">
     <model>Meshes/Trees/tree_alt</model>
-    <texture>Meshes/Trees/tree_alt_albedo</texture>
+    <texture>Meshes/Trees/orange-tree_alt_albedo</texture>
     <position>115.000 -25.000 -310.000</position>
     <rotation>0.000 0.237 0.000 0.972</rotation>
     <scale>1.000</scale>
@@ -1127,7 +1127,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="yellow_tree2">
     <model>Meshes/Trees/tree_alt</model>
-    <texture>Meshes/Trees/tree_alt_albedo</texture>
+    <texture>Meshes/Trees/orange-tree_alt_albedo</texture>
     <position>113.600 -25.400 -340.000</position>
     <rotation>0.000 0.237 0.000 0.972</rotation>
     <scale>1.000</scale>
