@@ -121,6 +121,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     {
                         fallDirection = hammer.Entity.LinearVelocity;
                         fallDirection.Normalize();
+                        this.Entity.Position += 10 * fallDirection;
                         isFalling = true;
                         //tree_sfx[3].Play();
                         Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
@@ -152,6 +153,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     {
                         fallDirection = hammer.Entity.LinearVelocity;
                         fallDirection.Normalize();
+                        this.Entity.Position += 10 * fallDirection;
                         isFalling = true;
                         //tree_sfx[3].Play();
                         Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
