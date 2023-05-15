@@ -106,7 +106,8 @@ namespace HammeredGame.Game.Screens
             if (firstFrame && !transitionState)
             {
                 // Add a title-screen specific tween for fading in the hammer image from white
-                TransitionAnimationTimeline.AddFloat(this, nameof(HammerImageOpacity))
+                var fadeTimeline = Tweening.NewTimeline();
+                fadeTimeline.AddFloat(this, nameof(HammerImageOpacity))
                     .AddFrame(1200, 1f, Easing.Exponential.Out);
             }
             return transitionState;
