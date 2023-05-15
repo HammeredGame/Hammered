@@ -2,8 +2,8 @@
   <camera mode="follow">
     <follow_distance>275.000</follow_distance>
     <follow_angle_v>0.460</follow_angle_v>
-    <follow_angle_h>-5.491</follow_angle_h>
-    <target>263.612 -12.855 -112.019</target>
+    <follow_angle_h>-5.451</follow_angle_h>
+    <target>255.462 -12.855 -110.185</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.495</fov>
   </camera>
@@ -28,6 +28,12 @@
       <intensity>0.10</intensity>
     </ambient>
   </lights>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
+    <model>cube</model>
+    <position>0.000 0.000 0.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Ground" id="ground">
     <model>Meshes/IslandMeshes/two_island_puzzle</model>
     <texture>Meshes/IslandMeshes/grassuv</texture>
@@ -38,22 +44,22 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water">
     <model>temp_water_big</model>
     <texture>sea_texture</texture>
-    <position>79.500 -27.500 -220.000</position>
+    <position>-0.500 -27.500 -220.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>40.000</scale>
+    <scale>52.450</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="water1">
     <model>temp_water_big</model>
     <texture>sea_texture</texture>
-    <position>487.500 -27.500 -220.000</position>
+    <position>505.200 -27.500 -220.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>40.000</scale>
+    <scale>46.680</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture>Meshes/Character/character_diffuse</texture>
-    <position>263.612 -12.855 -112.019</position>
-    <rotation>0.000 0.967 0.000 -0.254</rotation>
+    <position>255.462 -12.855 -110.185</position>
+    <rotation>0.000 -0.599 0.000 -0.801</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
@@ -1079,7 +1085,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject100">
     <model />
-    <texture />
     <position>170.000 -23.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1119,7 +1124,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject103">
     <model />
-    <texture />
     <position>200.000 -23.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1133,7 +1137,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject104">
     <model />
-    <texture />
     <position>210.000 -23.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1147,7 +1150,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject105">
     <model />
-    <texture />
     <position>220.000 -23.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1174,7 +1176,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject107">
     <model />
-    <texture />
     <position>240.000 -23.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1188,7 +1189,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject108">
     <model />
-    <texture />
     <position>250.000 -23.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1202,7 +1202,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject109">
     <model />
-    <texture />
     <position>260.000 -23.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1216,7 +1215,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject110">
     <model />
-    <texture />
     <position>270.000 -23.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1230,7 +1228,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject111">
     <model />
-    <texture />
     <position>280.000 -23.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1309,7 +1306,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject117">
     <model />
-    <texture />
     <position>340.000 -23.000 -305.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1336,7 +1332,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject119">
     <model />
-    <texture />
     <position>350.000 -23.000 -310.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1584,7 +1579,6 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="waterboundsobject138">
     <model />
-    <texture />
     <position>330.000 -23.000 -435.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -2132,36 +2126,36 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass">
     <model>grass</model>
     <texture>grass_texture</texture>
-    <position>280.786 -21 -117.189</position>
+    <position>280.786 -21.000 -117.189</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="grass-small">
     <model>grass-small</model>
     <texture>grass-small_texture</texture>
-    <position>285.786 -21 -116.189</position>
+    <position>285.786 -21.000 -116.189</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flower">
     <model>flower</model>
     <texture>flower_texture</texture>
-    <position>285.786 -21 -117.189</position>
+    <position>285.786 -21.000 -117.189</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="flowers">
     <model>flowers</model>
     <texture>flowers_texture</texture>
-    <position>282.786 -21 -118.189</position>
+    <position>282.786 -21.000 -118.189</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
-    <position>265.838 -16.501 -113.841</position>
-    <rotation>0.508 -0.151 -0.629 0.569</rotation>
+    <position>255.401 -16.089 -108.020</position>
+    <rotation>-0.871 0.428 -0.238 -0.043</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>
@@ -2174,7 +2168,7 @@
     <model>Meshes/Bridge/bridge</model>
     <texture>Meshes/Bridge/bridge_wood</texture>
     <position>510.000 -25.000 -250.000</position>
-    <rotation>0.000 0.0 0.000 1</rotation>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>50.000</width>
