@@ -1,9 +1,12 @@
-﻿using HammeredGame.Core;
+﻿using BEPUphysics.CollisionRuleManagement;
+using BEPUphysics.Constraints.SolverGroups;
+using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
+using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Scenes.Endgame;
 using HammeredGame.Game.Scenes.Island1;
 using HammeredGame.Game.Screens;
@@ -51,6 +54,35 @@ namespace HammeredGame.Game.Scenes.Island2
             Get<Laser>("maze_laser3").SetLaserDefaultScale(13.86f);
             Get<Laser>("moving_laser").SetLaserDefaultScale(8.52f);
             Get<Laser>("yellow_laser").SetLaserDefaultScale(13f);
+
+
+            CollisionGroup noSolverGroup = new CollisionGroup();
+            CollisionGroupPair pair = new CollisionGroupPair(noSolverGroup, noSolverGroup);
+            CollisionRules.CollisionGroupRules.Add(pair, CollisionRule.NoSolver);
+
+            foreach (var gO in GameObjectsList)
+            {
+                // Update lasers in the scene
+                var laser = gO as Laser;
+                if (laser != null)
+                {
+                    laser.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                }
+
+                // Update rocks in the scene
+                var rock = gO as MoveBlock;
+                if (rock != null)
+                {
+                    rock.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                }
+
+                // Set water bounds objects to a group such that they do not block rocks
+                var waterBounds = gO as WaterBoundsObject;
+                if (waterBounds != null)
+                {
+                    waterBounds.Entity.CollisionInformation.CollisionRules.Group = noSolverGroup;
+                }
+            }
 
             MoveLaserLoop();
 
