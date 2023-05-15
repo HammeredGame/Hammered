@@ -82,8 +82,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         // Laser configuration which hopefully won't need to change after release, but can be
         // changed during debug through the UI to find better values
-        private float laserIntensity = 4f;
-        private Vector2 laserSpeed = new(-2f, 0f);
+        private float laserIntensity = 15f;
+        private Vector2 laserSpeed = new(-4f, 0f);
 
         public Laser(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
