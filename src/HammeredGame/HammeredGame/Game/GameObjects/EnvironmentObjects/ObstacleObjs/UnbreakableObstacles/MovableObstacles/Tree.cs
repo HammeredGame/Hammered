@@ -182,6 +182,27 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).HalfWidth, player.Entity.Position.Z);
                 }
             }
+
+            // If tree is fallen, move block can slide on top of the tree
+            // Currently designed as: move block's Y = maxY + bbox width
+            // maxY calculated as the max of either move block's current Y or
+            // the contact position's Y
+            if (other.Tag is MoveBlock && treeFallen)
+            {
+                var moveblock = other.Tag as MoveBlock;
+                if (moveblock.MgroundState != MoveBlock.MBGroundState.Tree)
+                {
+                    float maxY = moveblock.Entity.Position.Y;
+                    foreach (var contact in pair.Contacts)
+                    {
+                        BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
+                        maxY = Math.Max(maxY, pointOfContact.Y);
+                    }
+
+                    moveblock.MgroundState = MoveBlock.MBGroundState.Tree;
+                    moveblock.Entity.Position = new BEPUutilities.Vector3(moveblock.Entity.Position.X, maxY + (this.Entity as Box).HalfWidth, moveblock.Entity.Position.Z);
+                }
+            }
         }
 
         public void SetTreeFallen(bool treeFallen)
