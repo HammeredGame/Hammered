@@ -86,6 +86,42 @@ namespace HammeredGame.Game.Scenes.Island2
 
             MoveLaserLoop();
 
+            Get<PressurePlate>("maze_pp_A").OnTrigger += async (_, _) =>
+            {
+                var maze_laser_A = Get<Laser>("maze_laser_A");
+                maze_laser_A.SetLaserScale(0f);
+            };
+
+            Get<PressurePlate>("maze_pp_A").OnTriggerEnd += async (_, _) =>
+            {
+                var maze_laser_A = Get<Laser>("maze_laser_A");
+                maze_laser_A.ReturnToDefaultLength();
+            };
+
+            Get<PressurePlate>("maze_pp_B").OnTrigger += async (_, _) =>
+            {
+                var maze_laser_A = Get<Laser>("maze_laser_B");
+                maze_laser_A.SetLaserScale(0f);
+            };
+
+            Get<PressurePlate>("maze_pp_B").OnTriggerEnd += async (_, _) =>
+            {
+                var maze_laser_A = Get<Laser>("maze_laser_B");
+                maze_laser_A.ReturnToDefaultLength();
+            };
+
+            Get<PressurePlate>("maze_pp_C").OnTrigger += async (_, _) =>
+            {
+                var maze_laser_A = Get<Laser>("maze_laser_C");
+                maze_laser_A.SetLaserScale(0f);
+            };
+
+            Get<PressurePlate>("maze_pp_C").OnTriggerEnd += async (_, _) =>
+            {
+                var maze_laser_A = Get<Laser>("maze_laser_C");
+                maze_laser_A.ReturnToDefaultLength();
+            };
+
             CancellationTokenSource doorInteractTokenSource = new();
             Get<TriggerObject>("hub_door_interact_trigger").OnTrigger += async (_, _) =>
             {
@@ -140,7 +176,7 @@ namespace HammeredGame.Game.Scenes.Island2
         {
             base.Update(gameTime, screenHasFocus, isPaused);
 
-            MazeUpdate();
+            //MazeUpdate();
             FourPlatesUpdate();
             DoorHintIfWithinVicinity();
         }
@@ -155,14 +191,14 @@ namespace HammeredGame.Game.Scenes.Island2
             var maze_laser_C = Get<Laser>("maze_laser_C");
 
             // The three pressure plates in the laser maze bit toggle laser activation
-            if (maze_pp_A.IsActivated())
-            {
-                maze_laser_A.SetLaserScale(0f);
-            }
-            else
-            {
-                maze_laser_A.ReturnToDefaultLength();
-            }
+            //if (maze_pp_A.IsActivated())
+            //{
+            //    maze_laser_A.SetLaserScale(0f);
+            //}
+            //else
+            //{
+            //    maze_laser_A.ReturnToDefaultLength();
+            //}
             if (maze_pp_B.IsActivated())
             {
                 maze_laser_B.SetLaserScale(0f);
