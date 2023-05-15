@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media; 
 
 namespace HammeredGame.Game.Scenes.Island2
 {
@@ -25,7 +27,12 @@ namespace HammeredGame.Game.Scenes.Island2
         private bool withinDoorInteractTrigger;
 
         public ColorMinigamePuzzle(GameServices services, GameScreen screen) : base(services, screen)
-        { }
+        {
+            Song bgMusic;
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/bgm4_4x");
+            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.Play(bgMusic);
+        }
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
             await base.LoadSceneContent(progress);
