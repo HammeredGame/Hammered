@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -11,7 +12,7 @@ namespace HammeredGame.Core
 
         readonly string[] soundNames =
         {
-            //combination of self-recored foley and sounds from zapsplat.com 
+            //combination of self-recored foley and sounds from zapsplat.com
             "Audio/stereo_step",
             "Audio/hammer_drop",
             "Audio/lohi_whoosh",
@@ -130,7 +131,7 @@ namespace HammeredGame.Core
 
             Apply3D(active);
 
-            active.Instance.Volume = volume;
+            active.Instance.Volume = Math.Clamp(volume, 0.0f, 1.0f);
             active.Instance.Play();
 
             ActiveSounds.Add(active);
