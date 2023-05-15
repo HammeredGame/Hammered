@@ -65,6 +65,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             PlayerBlocking
         }
 
+        public bool Deactivated = false;
+
         // Default variables (should ideally only be modified at level/scene setup)
         private float laserDefaultLength;
         private float laserDefaultScale;
@@ -146,6 +148,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 if (other.Tag is ObstacleObject)
                 {
+                    if (this.Deactivated) return;
                     if (other.Tag is Laser) return;
                     // find all valid contact pairs between obstacles
                     // if there are no more such valid pairs, then reset the laser to default length

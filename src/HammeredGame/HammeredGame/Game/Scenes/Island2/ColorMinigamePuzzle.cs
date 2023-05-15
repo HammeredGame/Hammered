@@ -90,36 +90,42 @@ namespace HammeredGame.Game.Scenes.Island2
             {
                 var maze_laser_A = Get<Laser>("maze_laser_A");
                 maze_laser_A.SetLaserScale(0f);
+                maze_laser_A.Deactivated = true;
             };
 
             Get<PressurePlate>("maze_pp_A").OnTriggerEnd += async (_, _) =>
             {
                 var maze_laser_A = Get<Laser>("maze_laser_A");
                 maze_laser_A.ReturnToDefaultLength();
+                maze_laser_A.Deactivated = false;
             };
 
             Get<PressurePlate>("maze_pp_B").OnTrigger += async (_, _) =>
             {
-                var maze_laser_A = Get<Laser>("maze_laser_B");
-                maze_laser_A.SetLaserScale(0f);
+                var maze_laser_B = Get<Laser>("maze_laser_B");
+                maze_laser_B.SetLaserScale(0f);
+                maze_laser_B.Deactivated = true;
             };
 
             Get<PressurePlate>("maze_pp_B").OnTriggerEnd += async (_, _) =>
             {
-                var maze_laser_A = Get<Laser>("maze_laser_B");
-                maze_laser_A.ReturnToDefaultLength();
+                var maze_laser_B = Get<Laser>("maze_laser_B");
+                maze_laser_B.ReturnToDefaultLength();
+                maze_laser_B.Deactivated = false;
             };
 
             Get<PressurePlate>("maze_pp_C").OnTrigger += async (_, _) =>
             {
-                var maze_laser_A = Get<Laser>("maze_laser_C");
-                maze_laser_A.SetLaserScale(0f);
+                var maze_laser_C = Get<Laser>("maze_laser_C");
+                maze_laser_C.SetLaserScale(0f);
+                maze_laser_C.Deactivated = true;
             };
 
             Get<PressurePlate>("maze_pp_C").OnTriggerEnd += async (_, _) =>
             {
-                var maze_laser_A = Get<Laser>("maze_laser_C");
-                maze_laser_A.ReturnToDefaultLength();
+                var maze_laser_C = Get<Laser>("maze_laser_C");
+                maze_laser_C.ReturnToDefaultLength();
+                maze_laser_C.Deactivated = false;
             };
 
             CancellationTokenSource doorInteractTokenSource = new();
@@ -181,41 +187,41 @@ namespace HammeredGame.Game.Scenes.Island2
             DoorHintIfWithinVicinity();
         }
 
-        private void MazeUpdate()
-        {
-            var maze_pp_A = Get<PressurePlate>("maze_pp_A");
-            var maze_laser_A = Get<Laser>("maze_laser_A");
-            var maze_pp_B = Get<PressurePlate>("maze_pp_B");
-            var maze_laser_B = Get<Laser>("maze_laser_B");
-            var maze_pp_C = Get<PressurePlate>("maze_pp_C");
-            var maze_laser_C = Get<Laser>("maze_laser_C");
+        //private void MazeUpdate()
+        //{
+        //    var maze_pp_A = Get<PressurePlate>("maze_pp_A");
+        //    var maze_laser_A = Get<Laser>("maze_laser_A");
+        //    var maze_pp_B = Get<PressurePlate>("maze_pp_B");
+        //    var maze_laser_B = Get<Laser>("maze_laser_B");
+        //    var maze_pp_C = Get<PressurePlate>("maze_pp_C");
+        //    var maze_laser_C = Get<Laser>("maze_laser_C");
 
-            // The three pressure plates in the laser maze bit toggle laser activation
-            //if (maze_pp_A.IsActivated())
-            //{
-            //    maze_laser_A.SetLaserScale(0f);
-            //}
-            //else
-            //{
-            //    maze_laser_A.ReturnToDefaultLength();
-            //}
-            if (maze_pp_B.IsActivated())
-            {
-                maze_laser_B.SetLaserScale(0f);
-            }
-            else
-            {
-                maze_laser_B.ReturnToDefaultLength();
-            }
-            if (maze_pp_C.IsActivated())
-            {
-                maze_laser_C.SetLaserScale(0f);
-            }
-            else
-            {
-                maze_laser_C.ReturnToDefaultLength();
-            }
-        }
+        //    // The three pressure plates in the laser maze bit toggle laser activation
+        //    //if (maze_pp_A.IsActivated())
+        //    //{
+        //    //    maze_laser_A.SetLaserScale(0f);
+        //    //}
+        //    //else
+        //    //{
+        //    //    maze_laser_A.ReturnToDefaultLength();
+        //    //}
+        //    if (maze_pp_B.IsActivated())
+        //    {
+        //        maze_laser_B.SetLaserScale(0f);
+        //    }
+        //    else
+        //    {
+        //        maze_laser_B.ReturnToDefaultLength();
+        //    }
+        //    if (maze_pp_C.IsActivated())
+        //    {
+        //        maze_laser_C.SetLaserScale(0f);
+        //    }
+        //    else
+        //    {
+        //        maze_laser_C.ReturnToDefaultLength();
+        //    }
+        //}
 
         private enum ColorPlateState
         {
