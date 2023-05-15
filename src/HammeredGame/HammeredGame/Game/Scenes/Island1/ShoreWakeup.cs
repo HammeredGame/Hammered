@@ -31,18 +31,13 @@ namespace HammeredGame.Game.Scenes.Island1
             // set active camera to determine which way is forward
             Get<Player>("player1").SetActiveCamera(Camera);
 
-            // Disable player input until after the wake up animation has played
-            Get<Player>("player1").InputEnabled = false;
-
-            // Trigger player´s wake up animation
-            Get<Player>("player1").TriggerWakeUp();
-
             // drop hammer here to set state as Dropped, so when we set the owner player later it
             // won't fly back
             Get<Hammer>("hammer").DropHammer();
 
-            // Wait until player is up to start prompts
-            await Services.GetService<ScriptUtils>().WaitSeconds(7);
+            // Disable player input until after the wake up animation has played
+            Get<Player>("player1").InputEnabled = false;
+            await WakeupCutScene();
 
             // Show a small dialogue
             await ParentGameScreen.ShowDialogueAndWait("...Where am I?");
@@ -170,6 +165,18 @@ namespace HammeredGame.Game.Scenes.Island1
             await Services.GetService<ScriptUtils>().WaitEvent(Get<Player>("player1"), "OnHammerRetrieved");
             Space.TimeStepSettings.TimeStepDuration = normalPhysicsTimeDuration;
             Camera.FollowDistance = normalCameraDistance;
+        }
+
+        private async Task WakeupCutScene()
+        {
+            float originalDistance = Camera.FollowDistance;
+            Camera.FollowDistance = 60f;
+            // Trigger player´s wake up animation
+            Get<Player>("player1").TriggerWakeUp();
+
+            // Wait until player is up to start prompts
+            await Services.GetService<ScriptUtils>().WaitMilliseconds((int)Get<Player>("player1").Animations.CurrentClip.Duration.TotalMilliseconds);
+            Camera.FollowDistance = originalDistance;
         }
     }
 }
