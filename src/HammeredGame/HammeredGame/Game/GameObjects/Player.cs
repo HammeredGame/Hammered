@@ -236,7 +236,7 @@ namespace HammeredGame.Game.GameObjects
         public void TriggerWakeUp()
         {
             waking_up = true;
-            var clip_wakeup = Animations.Clips["Armature|wakeup"];            
+            var clip_wakeup = Animations.Clips[key: "Armature|wakeup"];            
             Animations.SetClip(clip_wakeup);
         }
 
