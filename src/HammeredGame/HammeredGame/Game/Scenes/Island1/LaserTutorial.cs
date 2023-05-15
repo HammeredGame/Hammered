@@ -8,13 +8,20 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableO
 using HammeredGame.Game.Screens;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media; 
 
 namespace HammeredGame.Game.Scenes.Island1
 {
     internal class LaserTutorial : Scene
     {
         public LaserTutorial(GameServices services, GameScreen screen) : base(services, screen)
-        { }
+        {
+            Song bgMusic;
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/BGM_V2_4x");
+            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.Play(bgMusic);
+        }
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
             await base.LoadSceneContent(progress);

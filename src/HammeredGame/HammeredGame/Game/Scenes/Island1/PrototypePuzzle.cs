@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using System;
 using HammeredGame.Game.Scenes.Endgame;
 using HammeredGame.Game.Scenes.Island2;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media; 
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -30,7 +32,13 @@ namespace HammeredGame.Game.Scenes.Island1
         private Vector3 newSpawnRockPosition = new Vector3(257.390f, 0.000f, -187.414f);
         private CollisionGroup rockGroup;
 
-        public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen) { }
+        public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen)
+        {
+            Song bgMusic;
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/BGM_V2_4x");
+            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.Play(bgMusic);
+        }
 
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
