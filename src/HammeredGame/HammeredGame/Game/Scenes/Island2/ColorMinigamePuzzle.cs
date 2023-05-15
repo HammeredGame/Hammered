@@ -153,7 +153,7 @@ namespace HammeredGame.Game.Scenes.Island2
                 }
                 else
                 {
-                    await ParentGameScreen.ShowDialogueAndWait("temp text. bring hammer with you!");
+                    await ParentGameScreen.ShowDialogueAndWait("Don't forget to bring the hammer with you!");
                 }
             };
         }
