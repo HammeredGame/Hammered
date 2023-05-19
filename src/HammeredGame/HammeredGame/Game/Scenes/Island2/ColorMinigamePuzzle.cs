@@ -29,7 +29,7 @@ namespace HammeredGame.Game.Scenes.Island2
         public ColorMinigamePuzzle(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/bgm4_4x");
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm4_4x_b");
             MediaPlayer.IsRepeating = true; 
             MediaPlayer.Play(bgMusic);
         }
