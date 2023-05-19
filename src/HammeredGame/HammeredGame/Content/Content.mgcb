@@ -40,6 +40,18 @@
 /processorParam:Quality=Best
 /build:Audio/balanced/buzz_b.wav
 
+#begin Audio/balanced/catch_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/catch_b.wav
+
+#begin Audio/balanced/fast_whoosh_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/fast_whoosh_b.wav
+
 #begin Audio/balanced/hammer_drop_b.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
