@@ -22,6 +22,48 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Audio/balanced/bgm2_4x_b.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/bgm2_4x_b.mp3
+
+#begin Audio/balanced/bgm4_4x_b.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/bgm4_4x_b.mp3
+
+#begin Audio/balanced/buzz_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/buzz_b.wav
+
+#begin Audio/balanced/hammer_drop_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/hammer_drop_b.wav
+
+#begin Audio/balanced/launch_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/launch_b.wav
+
+#begin Audio/balanced/new_launch_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/new_launch_b.wav
+
+#begin Audio/balanced/tree_crash .wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/tree_crash .wav
+
 #begin Audio/BGM_V1.mp3
 /importer:Mp3Importer
 /processor:SongProcessor

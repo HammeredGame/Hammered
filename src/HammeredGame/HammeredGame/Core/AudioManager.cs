@@ -35,6 +35,10 @@ namespace HammeredGame.Core
             "Audio/glow",
             "Audio/blip",
             "Audio/retro",
+            "Audio/balanced/buzz_b",
+            "Audio/balanced/hammer_drop_b",
+            "Audio/balanced/new_launch_b",
+            "Audio/balanced/tree_crash ",
         };
 
         //public AudioListener Listener
