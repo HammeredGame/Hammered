@@ -323,6 +323,8 @@ namespace HammeredGame.Game.GameObjects
             {
                 hammerState = HammerState.Enroute;
                 OnSummon?.Invoke(this, null);
+                Services.GetService<AudioManager>().Play3DSound("Audio/balanced/new_launch_b", false, this.AudioEmitter, 1);
+
 
                 // The hammer, when called back, will follow the shortest path from the point where it was dropped towards
                 // the point the player called it FROM (it does not follow the player).
@@ -369,13 +371,14 @@ namespace HammeredGame.Game.GameObjects
 
         public bool IsEnroute()
         {
+            
             //sound effect instance to try and manipulate the pitch, but not working
             if (hammerState == HammerState.Enroute)
             {
                 //SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
                 //whoosh.Play();
 
-                Services.GetService<AudioManager>().Play3DSound("Audio/balanced/new_launch_b", false, this.AudioEmitter, 1);
+                Services.GetService<AudioManager>().Play3DSound("Audio/balanced/catch_b", false, this.AudioEmitter, 1);
 
             }
             return hammerState == HammerState.Enroute;
