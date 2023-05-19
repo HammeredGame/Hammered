@@ -323,7 +323,7 @@ namespace HammeredGame.Game.GameObjects
             {
                 hammerState = HammerState.Enroute;
                 OnSummon?.Invoke(this, null);
-                Services.GetService<AudioManager>().Play3DSound("Audio/balanced/new_launch_b", false, this.AudioEmitter, 1);
+                Services.GetService<AudioManager>().Play3DSound("Audio/balanced/loud_fly", false, this.AudioEmitter, 1);
 
 
                 // The hammer, when called back, will follow the shortest path from the point where it was dropped towards

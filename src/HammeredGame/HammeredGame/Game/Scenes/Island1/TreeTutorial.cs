@@ -9,13 +9,21 @@ using HammeredGame.Game.Screens;
 using Pleasing;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media; 
+
 
 namespace HammeredGame.Game.Scenes.Island1
 {
     internal class TreeTutorial : Scene
     {
         public TreeTutorial(GameServices services, GameScreen screen) : base(services, screen)
-        { }
+        {
+            Song bgMusic;
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_4x_b");
+            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.Play(bgMusic);
+        }
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
             await base.LoadSceneContent(progress);

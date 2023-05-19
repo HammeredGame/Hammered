@@ -58,11 +58,23 @@
 /processorParam:Quality=Best
 /build:Audio/balanced/hammer_drop_b.wav
 
+#begin Audio/balanced/hammer_fly_m.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/hammer_fly_m.wav
+
 #begin Audio/balanced/launch_b.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/balanced/launch_b.wav
+
+#begin Audio/balanced/loud_fly.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/loud_fly.wav
 
 #begin Audio/balanced/new_launch_b.wav
 /importer:WavImporter
@@ -70,11 +82,29 @@
 /processorParam:Quality=Best
 /build:Audio/balanced/new_launch_b.wav
 
+#begin Audio/balanced/pied_bm.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/pied_bm.wav
+
+#begin Audio/balanced/quiet_foot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/quiet_foot.wav
+
 #begin Audio/balanced/tree_crash .wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/balanced/tree_crash .wav
+
+#begin Audio/balanced/tree_crash_bm.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/tree_crash_bm.wav
 
 #begin Audio/BGM_V1.mp3
 /importer:Mp3Importer

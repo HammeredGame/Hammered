@@ -299,8 +299,8 @@ namespace HammeredGame.Game.GameObjects
                 timeDelay -= gameTime.ElapsedGameTime;
                 if (timeDelay < TimeSpan.Zero)
                 {
-                    Services.GetService<AudioManager>().Play3DSound("Audio/stereo_step", false, this.AudioEmitter, 1);
-                    timeDelay += TimeSpan.FromSeconds(0.2f);
+                    Services.GetService<AudioManager>().Play3DSound("Audio/balanced/quiet_foot", false, this.AudioEmitter, 1);
+                    timeDelay += TimeSpan.FromSeconds(0.21f);
                 }
 
                 if(!previously_moving)
