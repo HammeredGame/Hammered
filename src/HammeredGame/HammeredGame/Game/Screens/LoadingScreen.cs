@@ -60,7 +60,7 @@ namespace HammeredGame.Game.Screens
 
             int fontSize = ScreenManager.GraphicsDevice.Viewport.Height / 10;
 
-            byte[] skranjiTtfData = System.IO.File.ReadAllBytes("Content/Barlow-Medium.ttf");
+            byte[] skranjiTtfData = System.IO.File.ReadAllBytes("Content/Fonts/Barlow-Medium.ttf");
             FontSystem skranjiFontSystem = new FontSystem();
             skranjiFontSystem.AddFont(skranjiTtfData);
 
