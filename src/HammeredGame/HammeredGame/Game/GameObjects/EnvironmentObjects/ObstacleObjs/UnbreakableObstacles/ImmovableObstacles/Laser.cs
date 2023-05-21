@@ -112,8 +112,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             // We use a custom shader for the Laser which uses a 2D plane mesh and rolling textures
             // and color intensities above 1 to simulate the laser.
             this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/Laser");
-            this.laserTexture = services.GetService<ContentManager>().Load<Texture2D>("LaserTexture");
-            this.laserMaskTexture = services.GetService<ContentManager>().Load<Texture2D>("LaserMask");
+            this.laserTexture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Laser/LaserTexture");
+            this.laserMaskTexture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Laser/LaserMask");
 
             this.AudioEmitter = new AudioEmitter();
             this.AudioEmitter.Position = this.Position;

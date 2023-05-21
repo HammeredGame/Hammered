@@ -70,7 +70,7 @@ namespace HammeredGame.Game.Screens
             int tenthPercentageHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
 
             // Load font
-            byte[] barlowTtfData = System.IO.File.ReadAllBytes("Content/Barlow-Medium.ttf");
+            byte[] barlowTtfData = System.IO.File.ReadAllBytes("Content/Fonts/Barlow-Medium.ttf");
             barlowFontSystem = new FontSystem();
             barlowFontSystem.AddFont(barlowTtfData);
 
