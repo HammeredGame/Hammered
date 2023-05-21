@@ -30,7 +30,7 @@
     </ambient>
   </lights>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
-    <model>cube</model>
+    <model>Meshes/Primitives/unit_cube</model>
     <position>0.000 0.000 0.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
