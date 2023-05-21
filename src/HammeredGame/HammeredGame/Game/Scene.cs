@@ -284,7 +284,7 @@ namespace HammeredGame.Game
         public void UpdateDebugGrid()
         {
             DebugGridCells.Clear();
-            var CubeModel = Services.GetService<ContentManager>().Load<Model>("cube");
+            var CubeModel = Services.GetService<ContentManager>().Load<Model>("Meshes/Primitives/unit_cube");
             //Go through the list of entities in the space and create a graphical representation for them.
             float sideLength = Grid.sideLength;
             Matrix scaling = Matrix.CreateScale(sideLength);
