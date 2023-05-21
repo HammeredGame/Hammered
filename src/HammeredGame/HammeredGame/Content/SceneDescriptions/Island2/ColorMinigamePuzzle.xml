@@ -1296,6 +1296,19 @@
       <shift_graphic>0.000 -9.730 11.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="boat">
+    <model>boat</model>
+    <texture>boat_texture</texture>
+    <position>180 -18 25</position>
+    <rotation>0.000 1 0.000 0</rotation>
+    <scale>1</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>25.000</height>
+      <length>30.000</length>
+      <shift_graphic>0.000 -9.650 12.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Door" id="pp_door">
     <model>Meshes/Doors/stone_gate</model>
     <texture>Meshes/Doors/stone_gate_tex</texture>
