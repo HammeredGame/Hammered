@@ -16,6 +16,9 @@ namespace HammeredGame.Core.Particles
     /// even better if all particles were rendered with one call to Draw with instances geometry),
     /// but understanding vertex/index buffer complications (especially with Models) was too
     /// difficult, and also we can reuse bepuphysics if we're on the CPU to do updates and collisions.
+    /// <para/>
+    /// A lot of the code is based on the Particle3D sample from the Monogame-Samples repository
+    /// originally created by Microsoft and now maintained by CartBlanche (https://github.com/CartBlanche/MonoGame-Samples/tree/master/Particle3DSample).
     /// </summary>
     public class ParticleSystem
     {
@@ -70,7 +73,6 @@ namespace HammeredGame.Core.Particles
             if (firstActiveParticle == firstInactiveParticle)
                 currentTime = 0;
         }
-
 
         /// <summary>
         /// Removes old particles from the physics space and updates the pointer indices so that the
