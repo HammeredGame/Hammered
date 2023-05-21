@@ -29,7 +29,7 @@
     </ambient>
   </lights>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
-    <model>cube</model>
+    <model>Meshes/Primitives/unit_cube</model>
     <position>0.000 0.000 0.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -1124,14 +1124,14 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="decorobject6">
     <model>Meshes/Rock/rock</model>
-    <texture>Meshes\Rock\rock_albedo_0</texture>
+    <texture>Meshes\Rock\rock_albedo</texture>
     <position>210.000 -29.000 -206.000</position>
     <rotation>0.000 0.000 -0.227 0.974</rotation>
     <scale>1.070</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="decorobject7">
     <model>Meshes/Rock/rock</model>
-    <texture>Meshes\Rock\rock_albedo_0</texture>
+    <texture>Meshes\Rock\rock_albedo</texture>
     <position>202.600 -29.000 -206.000</position>
     <rotation>0.000 -0.696 -0.163 0.699</rotation>
     <scale>0.540</scale>
@@ -1823,8 +1823,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="laser1">
-    <model>unit_size_plane_y_up</model>
-    <texture>LaserMaterial</texture>
+    <model>Meshes/Primitives/unit_size_plane_y_up</model>
+    <texture>Meshes/Laser/LaserMaterial</texture>
     <position>240.000 -12.034 -255.000</position>
     <rotation>0.000 0.705 0.000 0.709</rotation>
     <scale>0.180</scale>

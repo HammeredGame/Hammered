@@ -92,10 +92,10 @@ namespace HammeredGame.Game.Screens
             whiteRectangle = new Texture2D(ScreenManager.GraphicsDevice, 1, 1);
             whiteRectangle.SetData(new[] { Color.White });
 
-            byte[] skranjiTtfData = System.IO.File.ReadAllBytes("Content/Skranji-Regular.ttf");
+            byte[] skranjiTtfData = System.IO.File.ReadAllBytes("Content/Fonts/Skranji-Regular.ttf");
             SkranjiFont.AddFont(skranjiTtfData);
 
-            byte[] barlowTtfData = System.IO.File.ReadAllBytes("Content/Barlow-Medium.ttf");
+            byte[] barlowTtfData = System.IO.File.ReadAllBytes("Content/Fonts/Barlow-Medium.ttf");
             BarlowFont.AddFont(barlowTtfData);
 
             LoadMenuWidgets();

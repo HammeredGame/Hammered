@@ -18,7 +18,8 @@ namespace HammeredGame.Game
     public class EntityDebugDrawer
     {
         private readonly BasicEffect basicEffect;
-        private readonly Model model;
+        private readonly Model cubeModel;
+        private readonly Model sphereModel;
 
         /// <summary>
         /// Creates a new EntityModel.
@@ -29,7 +30,8 @@ namespace HammeredGame.Game
         /// <param name="game">Game to which this component will belong.</param>
         public EntityDebugDrawer(GraphicsDevice gpu, ContentManager Content)
         {
-            model = Content.Load<Model>("cube");
+            cubeModel = Content.Load<Model>("Meshes/Primitives/unit_cube");
+            sphereModel = Content.Load<Model>("Meshes/Primitives/unit_sphere");
 
             basicEffect = new BasicEffect(gpu);
             basicEffect.EnableDefaultLighting();
@@ -53,6 +55,7 @@ namespace HammeredGame.Game
         public void Draw(Matrix view, Matrix proj, Entity entity)
         {
             BEPUutilities.Matrix scaling;
+            Model model;
 
             // This won't create any graphics for an entity that isn't a box since the model
             // being used is a box. When any of width/height/length are zero, it causes a visual
@@ -60,6 +63,12 @@ namespace HammeredGame.Game
             if (entity is Box box && (box.Width > 0 && box.Height > 0 && box.Length > 0))
             {
                 scaling = BEPUutilities.Matrix.CreateScale(box.Width, box.Height, box.Length);
+                model = cubeModel;
+            }
+            else if (entity is Sphere sphere && sphere.Radius > 0)
+            {
+                scaling = BEPUutilities.Matrix.CreateScale(sphere.Radius, sphere.Radius, sphere.Radius);
+                model = sphereModel;
             }
             else
             {
