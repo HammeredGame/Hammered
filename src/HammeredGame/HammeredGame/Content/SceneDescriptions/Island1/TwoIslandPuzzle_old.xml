@@ -269,7 +269,7 @@
     <scale>1.000</scale>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects.Water" id="sea">
-    <model>unit_size_plane_y_up</model>
+    <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture type="texture2d">sea_texture</texture>
     <position>0.000 -29.000 0.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
