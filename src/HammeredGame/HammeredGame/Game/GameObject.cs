@@ -52,7 +52,6 @@ namespace HammeredGame.Game
 
         protected Scene CurrentScene { get; private set; }
 
-
         public AudioEmitter AudioEmitter;
 
         // Use the private position vector only if we don't have a physics entity attached.
@@ -100,8 +99,6 @@ namespace HammeredGame.Game
         ///  If its value is true, then the instance will be drawn on the screen (utilizing the <code>DrawModel()</code> function)
         /// </summary>
         public bool Visible = true;
-
-        private List<(int, float[])> allVertexData;
 
         protected GameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
         {
