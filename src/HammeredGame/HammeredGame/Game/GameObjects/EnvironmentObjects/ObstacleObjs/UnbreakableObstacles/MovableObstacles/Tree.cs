@@ -18,6 +18,8 @@ using BEPUphysics.Entities;
 using Microsoft.Xna.Framework.Content;
 using HammeredGame.Core.Particles;
 using HammeredGame.Graphics;
+using Pleasing;
+using System.Reflection.Metadata;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles
 {
@@ -60,21 +62,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private bool treeFallen = false;
         private bool playerOnTree;
 
-        private List<SoundEffect> tree_sfx;
-
         private Model fallenLog;
         private Texture2D logTexture;
         private bool isFalling = false;
         private BEPUutilities.Vector3 fallDirection;
-        private int fallingAngle = 0;
+        private float fallingAngle = 0;
 
-        private ParticleSystem fallDustParticles;
+        private readonly ParticleSystem fallDustParticles;
 
         public Tree(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
-            // Sound effects
-            tree_sfx = Services.GetService<List<SoundEffect>>();
-
             fallenLog = services.GetService<ContentManager>().Load<Model>("Meshes/Trees/trunk");
             logTexture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Trees/trunk_texture");
             this.AudioEmitter = new AudioEmitter();
@@ -86,20 +83,25 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 // Icospheres (spheres with less vertices) are cheap to render and fit the low-poly
                 // vibe, so we use them for the particles
                 Model = services.GetService<ContentManager>().Load<Model>("Meshes/Primitives/unit_icosphere"),
+
                 // The texture can be anything, but white generally looks best for dust cloud. This
                 // is also affected by the environment lighting since particles render using the
                 // same shader as everything else.
                 Texture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Primitives/1x1_white"),
                 Duration = TimeSpan.FromSeconds(4),
+
                 // The start size will be random from very small to a meter large
                 MinStartSize = 0.1f,
                 MaxStartSize = 10,
+
                 // But they will shrink to nothing over the course of their lifetime
                 MinEndSize = 0f,
                 MaxEndSize = 0f,
+
                 // Particles should spawn with some X/Z velocity to spread out the cloud and show impact
                 MinHorizontalVelocity = -10f,
                 MaxHorizontalVelocity = 10f,
+
                 // It shouldn't have a lot of vertical velocity, but a nudge is nice to make it look
                 // like it is rising because of the tree's impact. They will get affected by gravity anyway.
                 MinVerticalVelocity = 0f,
@@ -123,20 +125,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
                 this.Entity.CollisionInformation.Events.PairTouching += Events_PairTouching;
-                //this.Entity.CollisionInformation.Events.CollisionEnded += Events_CollisionEnded;
-                //this.Entity.CollisionInformation.Events.RemovingPair += Events_RemovingPair;
             }
         }
-
-        //private void Events_RemovingPair(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.BroadPhaseEntry other)
-        //{
-        //    if (other.Tag is Player && treeFallen)
-        //    {
-        //        var player = other.Tag as Player;
-        //        this.playerOnTree = false;
-        //        player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, 0.0f, player.Entity.Position.Z);
-        //    }
-        //}
 
         private void Events_PairTouching(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
         {
@@ -147,14 +137,22 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 if (hammer.IsEnroute())
                 {
+                    // TODO: de-duplicate the same exact code in Events_PairTouching and Events_InitialCollisionDetected
                     if (hammer.Entity.LinearVelocity.Length() > hammer.hammerSpeed - 1f &&
                             hammer.Entity.LinearVelocity.Length() < hammer.hammerSpeed + 1f)
                     {
                         fallDirection = hammer.Entity.LinearVelocity;
                         fallDirection.Normalize();
-                        this.Entity.Position += 10 * fallDirection;
+
+                        // Interpolate the rotation of the tree to fall over with an elastic tween
+                        Tweening.Tween(angle =>
+                        {
+                            fallingAngle = angle;
+                            Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection), BEPUutilities.MathHelper.ToRadians(fallingAngle));
+                        }, 0f, 90f, 600, Easing.Elastic.In, LerpFunctions.Float);
+
+                        Entity.Position += 10f * fallDirection;
                         isFalling = true;
-                        //tree_sfx[3].Play();
                         Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
                     }
                 }
@@ -182,11 +180,19 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     if (hammer.Entity.LinearVelocity.Length() > hammer.hammerSpeed - 1f &&
                             hammer.Entity.LinearVelocity.Length() < hammer.hammerSpeed + 1f)
                     {
+                        // Determine the direction of the fall as the hammer's direction
                         fallDirection = hammer.Entity.LinearVelocity;
                         fallDirection.Normalize();
-                        this.Entity.Position += 10 * fallDirection;
+
+                        // Interpolate the rotation of the tree to fall over with an elastic tween
+                        Tweening.Tween(angle =>
+                        {
+                            fallingAngle = angle;
+                            Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection), BEPUutilities.MathHelper.ToRadians(fallingAngle));
+                        }, 0f, 90f, 600, Easing.Elastic.In, LerpFunctions.Float);
+
+                        Entity.Position += 10f * fallDirection;
                         isFalling = true;
-                        //tree_sfx[3].Play();
                         Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
                     }
                 }
@@ -272,40 +278,17 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         public override void Update(GameTime gameTime, bool screenHasFocus)
         {
-            if(isFalling && fallingAngle < 90)
+            // When the tree falls, it starts a tweened animation to rotate 90 degrees. We check for
+            // when it's done here and set the tree to fallen.
+            if (isFalling && fallingAngle >= 90f)
             {
-                // Update falling position until complete 90 degrees rotation
-                fallingAngle += (int)(0.3 * gameTime.ElapsedGameTime.Milliseconds);
-
-                if (fallingAngle > 90) fallingAngle = 90;
-
-                this.Entity.Orientation = BEPUutilities.Quaternion.Identity *
-                    BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Cross(BEPUutilities.Vector3.Up, fallDirection),
-                    BEPUutilities.MathHelper.ToRadians(fallingAngle));
-
-                if (fallingAngle >= 90)
-                {
-                    SetTreeFallen(true);
-                    isFalling = false;
-                }
+                SetTreeFallen(true);
+                isFalling = false;
             }
 
             // Update the particles
             fallDustParticles.Update(gameTime);
         }
-
-        //public override void TouchingHammer(Hammer hammer)
-        //{
-        //    if (!treeFallen)
-        //    {
-        //        SetTreeFallen(true);
-        //        Vector3 fallDirection = hammer.Position - hammer.OldPosition;
-        //        fallDirection.Normalize();
-        //        this.Rotation *= Quaternion.CreateFromAxisAngle(Vector3.Cross(Vector3.Up, fallDirection), MathHelper.ToRadians(90));
-        //        //this.position += new Vector3(0.0f, 20.0f, 0.0f);
-        //        //System.Diagnostics.Debug.WriteLine(Vector3.UnitZ);
-        //    }
-        //}
 
         public bool IsPlayerOn()
         {
