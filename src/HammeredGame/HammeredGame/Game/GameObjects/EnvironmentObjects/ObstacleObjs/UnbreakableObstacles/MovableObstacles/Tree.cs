@@ -106,7 +106,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 // like it is rising because of the tree's impact. They will get affected by gravity anyway.
                 MinVerticalVelocity = 0f,
                 MaxVerticalVelocity = 3f
-            }, services.GetService<ContentManager>(), ActiveSpace);
+            }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);
 
             // Set up physics stuff
             if (this.Entity != null)
