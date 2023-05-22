@@ -103,7 +103,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 MaxHorizontalVelocity = 10f,
 
                 // It shouldn't have a lot of vertical velocity, but a nudge is nice to make it look
-                // like it is rising because of the tree's impact. They will get affected by gravity anyway.
+                // like it is rising because of the tree's impact. Gravity won't affect them so
+                // it'll be a nice smoke-like look.
                 MinVerticalVelocity = 0f,
                 MaxVerticalVelocity = 3f
             }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);

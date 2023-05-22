@@ -106,13 +106,17 @@ namespace HammeredGame.Game.GameObjects
                 Model = Services.GetService<ContentManager>().Load<Model>("Meshes/Primitives/unit_icosphere"),
                 Texture = Services.GetService<ContentManager>().Load<Texture2D>("Meshes/Primitives/1x1_white"),
                 Duration = TimeSpan.FromMilliseconds(1000),
+                // We spawn many small ones to make it look sorta continuous
                 MaxParticles = 500,
                 MinStartSize = 0.5f,
                 MaxStartSize = 0.5f,
                 MinEndSize = 0.1f,
                 MaxEndSize = 0.1f,
-                EmitterVelocitySensitivity = 0.3f,
-                MaxVerticalVelocity = 0
+                // The particles get affected by the hammer velocity by a little bit
+                EmitterVelocitySensitivity = 0.4f,
+                MaxVerticalVelocity = 0,
+                // Air particles shouldn't bounce off walls/ground, they should just go through them
+                IgnoreCollisionResponses = true
             }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);
 
             if (this.Entity != null)

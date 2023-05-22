@@ -280,14 +280,30 @@ namespace HammeredGame.Core.Particles
                     (float)random.NextDouble());
 
             // Set up a small sphere as the physics entity (it could've been anything), and give it
-            // the position and velocity as specified.
-            particles[firstInactiveParticle].Entity = new Sphere(MathConverter.Convert(position), 0.1f)
+            // the position and velocity as specified. We give it a very small but explicit mass to
+            // make it a dynamic object (so it doesn't push around things like having infinite mass).
+            particles[firstInactiveParticle].Entity = new Sphere(MathConverter.Convert(position), 0.1f, 0.01f)
             {
                 Position = MathConverter.Convert(position),
                 LinearVelocity = MathConverter.Convert(velocity),
                 Tag = "Particle"
             };
+
+            // Pass the particle to the collision information so we can pattern match and ignore
+            // particle collisions from certain objects.
             particles[firstInactiveParticle].Entity.CollisionInformation.Tag = particles[firstInactiveParticle];
+
+            // If we should ignore physics collision responses, set the solver to NoSolver. This
+            // will still trigger collision events, it just won't solve constraints to e.g. bounce back.
+            if (settings.IgnoreCollisionResponses)
+            {
+                particles[firstInactiveParticle].Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+            }
+
+            // Set the gravity of the particles
+            particles[firstInactiveParticle].Entity.Gravity = settings.Gravity;
+
+            // Add the physics entity to the physics space
             activeSpace.Add(particles[firstInactiveParticle].Entity);
 
             particles[firstInactiveParticle].Time = currentTime;

@@ -61,5 +61,11 @@ namespace HammeredGame.Core.Particles
         // individual particles are randomly chosen from somewhere between these limits.
         public float MinEndSize = 100;
         public float MaxEndSize = 100;
+
+        // Whether to ignore collision responses for particles when interacting with the surrounding environment.
+        public bool IgnoreCollisionResponses = false;
+
+        // Gravity to apply to the particles.
+        public BEPUutilities.Vector3 Gravity = BEPUutilities.Vector3.Zero;
     }
 }
