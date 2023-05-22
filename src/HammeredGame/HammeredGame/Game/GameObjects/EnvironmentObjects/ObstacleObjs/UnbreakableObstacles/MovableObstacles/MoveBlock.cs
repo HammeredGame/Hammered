@@ -72,7 +72,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 // when moving, while still moving as desired along the hammer's direction
                 // TODO: these settings may need tweaking
                 this.Entity.Material.KineticFriction = 0.5f;
-                float downwardForceY = (this.Scale / 2.0f) * (-1000f);
+                float downwardForceY = (this.Scale / 2.0f) * (-3000f);
                 this.Entity.Gravity = new BEPUutilities.Vector3(0f, downwardForceY, 0f);
                 //this.Entity.LinearDamping = 0f;
 
@@ -125,7 +125,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 }
 
                 // If colliding with a moving hammer, set the move block to move in the same direction
-                if (!hittingPlayer && other.Tag is Hammer)
+                if (!hittingPlayer && other.Tag is Hammer && this.MgroundState == MBGroundState.Ground)
                 {
                     var hammer = other.Tag as Hammer;
                     if (hammer.IsEnroute())
@@ -135,7 +135,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         if (hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
                             hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                         {
-                            var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.currentHammerSpeed;
+                            // 1.1 if a "magical" number which allows the <c>MoveBlock</c> to keep up with the hammer.
+                            // This need, however, seems counter-intuitive.
+                            // Why? Because at each frame, the velocity of the <c>MoveBlock</c> at each frame would be identical
+                            // to that of the hammer.
+                            // Since this is the case, also their acceleration should be identical and their relative velocity 0.
+                            // However, if "1.1" is not inserted, the hammer can pass through the hammer, leaving the MoveBlock behind.
+                            var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= 1.1f*hammer.currentHammerSpeed;
                             this.SetMoving(temp);
                         }
                     }
