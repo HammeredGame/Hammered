@@ -224,6 +224,9 @@ namespace HammeredGame.Game.Screens
             if (HasFocus && UserAction.Pause.Pressed(input))
             {
                 isPaused = true;
+
+                // Stop all sound effects and remove them on the next update.
+                GameServices.GetService<AudioManager>().StopAll();
                 pauseScreen.RestartMethod = () =>
                 {
                     isPaused = false;

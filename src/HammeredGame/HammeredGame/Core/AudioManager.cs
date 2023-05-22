@@ -165,6 +165,30 @@ namespace HammeredGame.Core
             activeSound.Instance.Apply3D(listener, emitter);
         }
 
+        /// <summary>
+        /// Pause all active sound effects.
+        /// </summary>
+        public void PauseAll() {
+            ActiveSounds.ForEach(s => s.Instance.Pause());
+        }
+
+        /// <summary>
+        /// Resume all active paused sound effects.
+        /// </summary>
+        public void ResumeAll()
+        {
+            ActiveSounds.ForEach(s => s.Instance.Resume());
+        }
+
+        /// <summary>
+        /// Stop all active sound effects. This will cause the next call to <see
+        /// cref="Update(GameTime)"/> to remove those sound effects.
+        /// </summary>
+        public void StopAll()
+        {
+            ActiveSounds.ForEach(s => s.Instance.Stop());
+        }
+
         public class ActiveSound
         {
             public SoundEffectInstance Instance;
