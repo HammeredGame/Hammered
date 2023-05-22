@@ -1528,14 +1528,8 @@
 #begin SceneDescriptions/Endgame/TempleEndLevel_voxel.xml
 /copy:SceneDescriptions/Endgame/TempleEndLevel_voxel.xml
 
-#begin SceneDescriptions/Island1/ChallengePuzzle.xml
-/copy:SceneDescriptions/Island1/ChallengePuzzle.xml
-
 #begin SceneDescriptions/Island1/LaserTutorial_voxel.xml
 /copy:SceneDescriptions/Island1/LaserTutorial_voxel.xml
-
-#begin SceneDescriptions/Island1/LaserTutorial.xml
-/copy:SceneDescriptions/Island1/LaserTutorial.xml
 
 #begin SceneDescriptions/Island1/PrototypePuzzle_voxel.xml
 /copy:SceneDescriptions/Island1/PrototypePuzzle_voxel.xml
@@ -1543,32 +1537,17 @@
 #begin SceneDescriptions/Island1/ShoreWakeup_voxel.xml
 /copy:SceneDescriptions/Island1/ShoreWakeup_voxel.xml
 
-#begin SceneDescriptions/Island1/ShoreWakeup.xml
-/copy:SceneDescriptions/Island1/ShoreWakeup.xml
-
 #begin SceneDescriptions/Island1/TreeTutorial_voxel.xml
 /copy:SceneDescriptions/Island1/TreeTutorial_voxel.xml
 
-#begin SceneDescriptions/Island1/TreeTutorial.xml
-/copy:SceneDescriptions/Island1/TreeTutorial.xml
-
-#begin SceneDescriptions/Island1/TwoIslandPuzzle_old.xml
-/copy:SceneDescriptions/Island1/TwoIslandPuzzle_old.xml
-
 #begin SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml
 /copy:SceneDescriptions/Island1/TwoIslandPuzzle_voxel.xml
-
-#begin SceneDescriptions/Island1/TwoIslandPuzzle.xml
-/copy:SceneDescriptions/Island1/TwoIslandPuzzle.xml
 
 #begin SceneDescriptions/Island2/ColorMinigamePuzzle.xml
 /copy:SceneDescriptions/Island2/ColorMinigamePuzzle.xml
 
 #begin SceneDescriptions/Test/JustHammer.xml
 /copy:SceneDescriptions/Test/JustHammer.xml
-
-#begin SceneDescriptions/Test/LaserTest.xml
-/copy:SceneDescriptions/Test/LaserTest.xml
 
 #begin sea_texture.png
 /importer:TextureImporter
