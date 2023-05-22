@@ -39,13 +39,26 @@ namespace HammeredGame.Core.Particles
 
         // The physics space
         private readonly Space activeSpace;
+        private readonly GraphicsDevice gpu;
 
         // Shared random number generator.
         static readonly Random random = new();
 
-        public ParticleSystem(ParticleSettings settings, ContentManager content, Space space)
+        // We'll use hardware instancing to render the particles efficiently using one Draw call for
+        // all particles combined. For this, we need to pass an extra vertex buffer containing
+        // world-space transformation matrices for each particle. We declare the format for that
+        // buffer here since it's constant. It is four Vector4s, representing a 4x4 matrix. In the
+        // shader side, this can be accessed as a BLENDWEIGHT input to the vertex shader.
+        private readonly VertexDeclaration instanceTransformVertexDeclarations = new(
+            new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 0),
+            new VertexElement(16, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 1),
+            new VertexElement(32, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 2),
+            new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 3));
+
+        public ParticleSystem(ParticleSettings settings, GraphicsDevice gpu, ContentManager content, Space space)
         {
             this.settings = settings;
+            this.gpu = gpu;
             this.activeSpace = space;
 
             // Allocate an array of structs to hold the particles.
@@ -134,58 +147,96 @@ namespace HammeredGame.Core.Particles
             Matrix[] meshTransforms = new Matrix[settings.Model.Bones.Count];
             settings.Model.CopyAbsoluteBoneTransformsTo(meshTransforms);
 
-            // Select the main shading technique, since we won't render shadows for particles
-            Effect.CurrentTechnique = Effect.Techniques["MainShading"];
+            // Find the number of active particles, accounting for any wrap-around
+            int numberParticles = (firstInactiveParticle + settings.MaxParticles - firstActiveParticle) % settings.MaxParticles;
 
+            // Create an array of instance world-space transform matrices that we'll send to the GPU
+            // for instancing with a single mesh. The size of this changes whenever a new particle
+            // is added or retired, so it's recreated on each Draw call.
+            Matrix[] instanceTransforms = new Matrix[numberParticles];
+
+            // Go through the active particles and populate the instance transform array
+            int instanceTransformIndex = 0;
             for (int i = firstActiveParticle; i != firstInactiveParticle;)
             {
-                // Create a world matrix with particles' individual sizes and world-space positions
-                Matrix world = Matrix.CreateScale(particles[i].Size) * Matrix.CreateTranslation(MathConverter.Convert(particles[i].Entity.Position));
-
-                foreach (ModelMesh mesh in settings.Model.Meshes)
-                {
-                    foreach (ModelMeshPart part in mesh.MeshParts)
-                    {
-                        // Load in the shader and set its parameters
-                        part.Effect = this.Effect;
-
-                        part.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform * world);
-                        part.Effect.Parameters["View"]?.SetValue(view);
-                        part.Effect.Parameters["Projection"]?.SetValue(projection);
-                        part.Effect.Parameters["CameraPosition"]?.SetValue(cameraPosition);
-
-                        // Pre-compute the inverse transpose of the world matrix to use in shader
-                        Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
-
-                        part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
-
-                        // Set light parameters
-                        part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());
-                        part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
-                        part.Effect.Parameters["DirectionalLightDirections"]?.SetValue(lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray());
-                        part.Effect.Parameters["SunLightIndex"]?.SetValue(lights.Directionals.Count);
-
-                        part.Effect.Parameters["AmbientLightColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
-                        part.Effect.Parameters["AmbientLightIntensity"]?.SetValue(lights.Ambient.Intensity);
-
-                        // Set tints for the diffuse color, ambient color, and specular color. These are
-                        // multiplied in the shader by the light color and intensity, as well as each
-                        // component's weight.
-                        part.Effect.Parameters["MaterialDiffuseColor"]?.SetValue(Color.White.ToVector4());
-                        part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
-                        part.Effect.Parameters["MaterialHasSpecular"].SetValue(false);
-                        // Uncomment if specular; will use Blinn-Phong.
-                        // part.Effect.Parameters["MaterialSpecularColor"]?.SetValue(Color.White.ToVector4());
-                        // part.Effect.Parameters["MaterialShininess"]?.SetValue(20f);
-
-                        part.Effect.Parameters["ModelTexture"]?.SetValue(settings.Texture);
-                        // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
-                        part.Effect.Parameters["ModelTextureGammaCorrection"]?.SetValue(true);
-                    }
-                    mesh.Draw();
-                }
+                // We create the world matrix using the scale and world-space translation
+                instanceTransforms[instanceTransformIndex] = Matrix.CreateScale(particles[i].Size) * Matrix.CreateTranslation(MathConverter.Convert(particles[i].Entity.Position));
 
                 i = (i + 1) % settings.MaxParticles;
+                instanceTransformIndex++;
+            }
+
+            // If there is nothing to render, stop here to avoid sending zero-buffers to the GPU and
+            // causing errors.s
+            if (instanceTransforms.Length == 0)
+                return;
+
+            // Create a vertex buffer for instance transform matrices, and fill it with the above data.
+            var instanceVertexBuffer = new DynamicVertexBuffer(gpu, instanceTransformVertexDeclarations, numberParticles, BufferUsage.WriteOnly);
+            instanceVertexBuffer.SetData(instanceTransforms, 0, numberParticles, SetDataOptions.Discard);
+
+            foreach (ModelMesh mesh in settings.Model.Meshes)
+            {
+                foreach (ModelMeshPart part in mesh.MeshParts)
+                {
+                    // We usually don't worry about the vertex/index buffers when using
+                    // ModelMesh.Draw(), but in this case we want to pass the instance transform
+                    // vertex buffer as well, so we explicitly tell the GPU to read from both the
+                    // model vertex buffer plus our instanceVertexBuffer.
+                    gpu.SetVertexBuffers(
+                        new VertexBufferBinding(part.VertexBuffer, part.VertexOffset, 0),
+                        new VertexBufferBinding(instanceVertexBuffer, 0, 1));
+
+                    // And also tell it to read from the model index buffer.
+                    gpu.Indices = part.IndexBuffer;
+
+                    // Proactively select the main shading technique instead of letting GameRenderer
+                    // choose it like for GameObjects, since we won't render shadows for particles
+                    // plus we want to use instancing
+                    Effect.CurrentTechnique = Effect.Techniques["MainShadingInstanced"];
+
+                    // Load in the shader and set its parameters
+                    part.Effect = this.Effect;
+
+                    part.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform);
+                    part.Effect.Parameters["View"]?.SetValue(view);
+                    part.Effect.Parameters["Projection"]?.SetValue(projection);
+                    part.Effect.Parameters["CameraPosition"]?.SetValue(cameraPosition);
+
+                    // Pre-compute the inverse transpose of the world matrix to use in shader
+                    Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
+
+                    part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
+
+                    // Set light parameters
+                    part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());
+                    part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
+                    part.Effect.Parameters["DirectionalLightDirections"]?.SetValue(lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray());
+                    part.Effect.Parameters["SunLightIndex"]?.SetValue(lights.Directionals.Count);
+
+                    part.Effect.Parameters["AmbientLightColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
+                    part.Effect.Parameters["AmbientLightIntensity"]?.SetValue(lights.Ambient.Intensity);
+
+                    // Set tints for the diffuse color, ambient color, and specular color. These are
+                    // multiplied in the shader by the light color and intensity, as well as each
+                    // component's weight.
+                    part.Effect.Parameters["MaterialDiffuseColor"]?.SetValue(Color.White.ToVector4());
+                    part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
+                    part.Effect.Parameters["MaterialHasSpecular"].SetValue(false);
+                    // Uncomment if specular; will use Blinn-Phong.
+                    // part.Effect.Parameters["MaterialSpecularColor"]?.SetValue(Color.White.ToVector4());
+                    // part.Effect.Parameters["MaterialShininess"]?.SetValue(20f);
+
+                    part.Effect.Parameters["ModelTexture"]?.SetValue(settings.Texture);
+                    // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
+                    part.Effect.Parameters["ModelTextureGammaCorrection"]?.SetValue(true);
+
+                    foreach (EffectPass pass in part.Effect.CurrentTechnique.Passes)
+                    {
+                        pass.Apply();
+                        gpu.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, part.StartIndex, part.PrimitiveCount, numberParticles);
+                    }
+                }
             }
         }
 
