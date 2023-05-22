@@ -89,6 +89,10 @@ namespace HammeredGame.Game.GameObjects.EmptyGameObjects
                 {
                     this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
                 }
+                else
+                {
+                    this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
+                }
             }
         }
 
