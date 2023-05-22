@@ -108,7 +108,7 @@ namespace HammeredGame.Game.GameObjects
             {
                 Model = Services.GetService<ContentManager>().Load<Model>("Meshes/Primitives/unit_icosphere"),
                 Texture = Services.GetService<ContentManager>().Load<Texture2D>("Meshes/Primitives/1x1_white"),
-                Duration = TimeSpan.FromMilliseconds(500),
+                Duration = TimeSpan.FromMilliseconds(300),
                 // We spawn many small ones to make it look sorta continuous
                 MaxParticles = 500,
                 MinStartSize = 0.5f,
