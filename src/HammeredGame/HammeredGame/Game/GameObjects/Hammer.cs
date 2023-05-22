@@ -306,6 +306,7 @@ namespace HammeredGame.Game.GameObjects
                     {
                         // Find the direction of travel, and a perpendicular vector to it
                         Vector3 towardTravel = Vector3.Normalize(MathConverter.Convert(Entity.LinearVelocity));
+                        // Why is it named "tangent", even though it's perpendicular?
                         Vector3 tangent = Vector3.Cross(towardTravel, Vector3.Up);
                         if (tangent == Vector3.Zero)
                         {
@@ -319,9 +320,7 @@ namespace HammeredGame.Game.GameObjects
                         // to construct a Quaternion directly from the forward and up direction
                         // (Unity can do that) but XNA doesn't seem to have that, so we have to do
                         // it the long way.
-                        Matrix transform = Matrix.Identity;
-                        transform.Up = towardTravel;
-                        transform.Forward = tangent;
+                        Matrix transform = Matrix.CreateFromAxisAngle(tangent, (float)(Math.PI + Math.Acos((float)Vector3.Dot(towardTravel, tangent))));
 
                         Rotation = Quaternion.Slerp(Rotation, Quaternion.CreateFromRotationMatrix(transform), 0.25f);
                     }
