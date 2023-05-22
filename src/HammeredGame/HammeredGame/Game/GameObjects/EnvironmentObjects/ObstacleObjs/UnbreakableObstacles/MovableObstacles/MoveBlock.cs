@@ -131,10 +131,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     if (hammer.IsEnroute())
                     {
                         Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
-                        if (hammer.Entity.LinearVelocity.Length() > hammer.hammerSpeed - 1f &&
-                            hammer.Entity.LinearVelocity.Length() < hammer.hammerSpeed + 1f)
+                        if (hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
+                            hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                         {
-                            var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.hammerSpeed;
+                            var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.currentHammerSpeed;
                             this.SetMoving(temp);
                         }
                     }
@@ -216,10 +216,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     if (hammer.IsEnroute())
                     {
                         Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
-                        if (hammer.Entity.LinearVelocity.Length() > hammer.hammerSpeed - 1f &&
-                            hammer.Entity.LinearVelocity.Length() < hammer.hammerSpeed + 1f)
+                        if (hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
+                            hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                         {
-                            var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.hammerSpeed;
+                            var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.currentHammerSpeed;
                             this.SetMoving(temp);
                         }
                     }
