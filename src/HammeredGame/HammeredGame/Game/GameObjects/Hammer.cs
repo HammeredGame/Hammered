@@ -297,16 +297,39 @@ namespace HammeredGame.Game.GameObjects
 
                     AddParticles(gameTime);
 
-                    // Make the hammer face the direction of travel
-                    if (Entity.LinearVelocity != BEPUutilities.Vector3.Zero)
+                    // If we are getting close to the player, we want to smoothly rotate the hammer
+                    // to the holding orientation.
+                    if ((Position - player.Position).Length() < 20f)
                     {
+                        // Get the player's bone index for the right hand
+                        int boneIndexForRightHand = player.Model.Bones["mixamorig:RightHand"].Index;
+
+                        // For specific explanation on the position and rotation calculation, see
+                        // the code when the hammer is being held by the player, since it's nearly
+                        // identical. The difference here is that we use a Lerp and Slerp to
+                        // smoothly transition between whatever the current values are to what we want.
+                        //Position = Vector3.Lerp(Position, (player.Animations.WorldTransforms[boneIndexForRightHand] * GetWorld), 0.3f);
+
+                        Rotation = Quaternion.Slerp(Rotation, player.Rotation * Quaternion.CreateFromRotationMatrix(player.Animations.WorldTransforms[boneIndexForRightHand]) * rotationWhenHeldByPlayer, 0.1f);
+                    }
+                    // Otherwise, make the hammer face the direction of travel
+                    else if (Entity.LinearVelocity != BEPUutilities.Vector3.Zero)
+                    {
+                        // Find the direction of travel, and a perpendicular vector to it
                         Vector3 towardTravel = Vector3.Normalize(MathConverter.Convert(Entity.LinearVelocity));
                         Vector3 tangent = Vector3.Cross(towardTravel, Vector3.Up);
                         if (tangent == Vector3.Zero)
                         {
+                            // The first attempt at a tangent failed since we were going straight
+                            // up, try a different vector -- we can't fail both since they're not parallel.
                             tangent = Vector3.Cross(towardTravel, Vector3.Right);
                         }
 
+                        // Construct a transformation to rotate the hammer's up direction (the side
+                        // with the heavy magic bit) towards the travelling direction. It'd be nice
+                        // to construct a Quaternion directly from the forward and up direction
+                        // (Unity can do that) but XNA doesn't seem to have that, so we have to do
+                        // it the long way.
                         Matrix transform = Matrix.Identity;
                         transform.Up = towardTravel;
                         transform.Forward = tangent;
