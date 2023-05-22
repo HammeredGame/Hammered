@@ -59,8 +59,8 @@ namespace HammeredGame.Game
         // never use our own private value.
         public Vector3 Position
         {
-            get { if (Entity != null) { return MathConverter.Convert(Entity.Position); } else { return position; } }
-            set { if (Entity != null) { Entity.Position = MathConverter.Convert(value); } position = value; }
+            get { if (Entity != null) { return Entity.Position.ToXNA(); } else { return position; } }
+            set { if (Entity != null) { Entity.Position = value.ToBepu(); } position = value; }
         }
 
         private Quaternion rotation;
@@ -70,8 +70,8 @@ namespace HammeredGame.Game
         // never use our own private value.
         public Quaternion Rotation
         {
-            get { if (Entity != null) { return MathConverter.Convert(Entity.Orientation); } else { return rotation; } }
-            set { if (Entity != null) { Entity.Orientation = MathConverter.Convert(value); } rotation = value; }
+            get { if (Entity != null) { return Entity.Orientation.ToXNA(); } else { return rotation; } }
+            set { if (Entity != null) { Entity.Orientation = value.ToBepu(); } rotation = value; }
         }
 
         public float Scale;

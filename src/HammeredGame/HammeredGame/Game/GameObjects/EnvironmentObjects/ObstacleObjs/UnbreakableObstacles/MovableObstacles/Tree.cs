@@ -254,12 +254,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     float offsetAlongTree = MathHelper.Lerp(0, box.Height + 5, (float)Random.Shared.NextDouble());
                     float offsetPerpTree = MathHelper.Lerp(-box.HalfWidth, box.HalfWidth, (float)Random.Shared.NextDouble());
 
-                    Vector3 alongTree = MathConverter.Convert(fallDirection) * offsetAlongTree;
-                    Vector3 alongPerpendicular = Vector3.Cross(Vector3.Up, MathConverter.Convert(fallDirection)) * offsetPerpTree;
+                    Vector3 alongTree = fallDirection.ToXNA() * offsetAlongTree;
+                    Vector3 alongPerpendicular = Vector3.Cross(Vector3.Up, fallDirection.ToXNA()) * offsetPerpTree;
 
                     // Spawn a particle, passing in the tree's velocity as the parent influencing
                     // velocity. It should be zero so it doesn't really matter.
-                    fallDustParticles.AddParticle(Position + alongTree + alongPerpendicular, MathConverter.Convert(Entity.LinearVelocity));
+                    fallDustParticles.AddParticle(Position + alongTree + alongPerpendicular, Entity.LinearVelocity.ToXNA());
                 }
 
                 box.Width *= 1.2f;

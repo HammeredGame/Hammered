@@ -351,11 +351,11 @@ namespace HammeredGame.Game
                     {
                         for (int k = -zRepetitions; k <= zRepetitions; ++k)
                         {
-                            Vector3 localOrigin = MathConverter.Convert(goBox.Position);
+                            Vector3 localOrigin = goBox.Position.ToXNA();
                             Vector3 sampledPoint = localOrigin + sideLength * (i * e1 + j * e2 + k * e3);
                             //sampledPoint = Vector3.Transform(sampledPointInStandardBasis, MathConverter.Convert(goBox.OrientationMatrix)); // Bug! Ask Sid!
                             sampledPoint = Vector3.Transform(sampledPoint, Matrix.CreateTranslation(-localOrigin)); // Translate to origin.
-                            sampledPoint = Vector3.Transform(sampledPoint, MathConverter.Convert(goBox.OrientationMatrix)); // Apply rotation
+                            sampledPoint = Vector3.Transform(sampledPoint, goBox.OrientationMatrix.ToXNA()); // Apply rotation
                             sampledPoint = Vector3.Transform(sampledPoint, Matrix.CreateTranslation(localOrigin)); // Return to global coordinates
                             this.Grid.MarkCellAs(sampledPoint, availability);
                         }
@@ -920,7 +920,7 @@ namespace HammeredGame.Game
                     // Set up the physics body if we said we desired one
                     if (objectCreationEntity != null)
                     {
-                        objectCreationEntity.Position = MathConverter.Convert(objectCreationPosition);
+                        objectCreationEntity.Position = MathConverter.ToBepu(objectCreationPosition);
                     }
 
                     // Invoke this.Create with arguments for the game object type constructor. Since

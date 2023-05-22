@@ -191,7 +191,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     foreach (var contact in pair.Contacts)
                     {
                         BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
-                        float dist = (pointOfContact - MathConverter.Convert(this.Position)).Length();
+                        float dist = (pointOfContact - this.Position.ToBepu()).Length();
                         float scale = (this.laserDefaultScale * dist) / this.laserDefaultLength;
                         minScale = Math.Min(minScale, scale);
                     }

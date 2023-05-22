@@ -290,7 +290,7 @@ namespace HammeredGame.Game.GameObjects
                     if (Entity.LinearVelocity != BEPUutilities.Vector3.Zero)
                     {
                         // Find the direction of travel, and a perpendicular vector to it
-                        Vector3 towardTravel = Vector3.Normalize(MathConverter.Convert(Entity.LinearVelocity));
+                        Vector3 towardTravel = Vector3.Normalize(Entity.LinearVelocity.ToXNA());
                         // Why is it named "tangent", even though it's perpendicular?
                         Vector3 tangent = Vector3.Cross(towardTravel, Vector3.Up);
 
@@ -442,7 +442,7 @@ namespace HammeredGame.Game.GameObjects
             // Calculate the normal, tangent, and bitangent for a plane that has its normal pointing
             // towards the hammer's velocity. This will be used to spawn particles in a plane
             // perpendicular to the hammer's movement.
-            Vector3 normal = Vector3.Normalize(MathConverter.Convert(Entity.LinearVelocity));
+            Vector3 normal = Vector3.Normalize(Entity.LinearVelocity.ToXNA());
             Vector3 tangent = Vector3.Cross(normal, new Vector3(-normal.Z, normal.X, normal.Y));
             Vector3 bitangent = Vector3.Cross(tangent, normal);
 
@@ -465,12 +465,12 @@ namespace HammeredGame.Game.GameObjects
 
                 // The position is the hammer's position plus the random unit vector multiplied by the
                 // starting radius.
-                Vector3 particlePosition = MathConverter.Convert(Entity.Position) + offset + (startRadius * ((y * tangent) + (x * bitangent)));
+                Vector3 particlePosition = Entity.Position.ToXNA() + offset + (startRadius * ((y * tangent) + (x * bitangent)));
 
                 // The velocity is the opposite of the hammer's velocity (in a action-reaction kind
                 // of effect) plus horizontal dispersion along the perpendicular plane so it spreads
                 // out as time passes.
-                Vector3 particleInfluenceVelocity = -MathConverter.Convert(Entity.LinearVelocity) + dispersion * ((y * tangent) + (x * bitangent));
+                Vector3 particleInfluenceVelocity = -Entity.LinearVelocity.ToXNA() + dispersion * ((y * tangent) + (x * bitangent));
                 windParticles.AddParticle(particlePosition, particleInfluenceVelocity);
             }
         }
@@ -525,7 +525,7 @@ namespace HammeredGame.Game.GameObjects
             // As an additional benefit, this greatly reduces the "wiggly" motion of the hammer in the naive turn smoothing.
             straightLineRoute = this.grid.RoughShortestPathSmoothing(straightLineRoute);
             // Casting the trajectory into the appropriate (physics engine) type.
-            for (int i = 0; i < straightLineRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(straightLineRoute[i])); }
+            for (int i = 0; i < straightLineRoute.Length; i++) { this.route.Enqueue(straightLineRoute[i].ToBepu()); }
             // Initialize the first position in 3D space to visit.
             this.nextRoutePosition = this.route.Peek(); this.route.Dequeue();
 
@@ -540,7 +540,7 @@ namespace HammeredGame.Game.GameObjects
                 aStarPathComputationTask = Task.Run(() =>
                 {
                     Vector3[] aStarRoute = this.grid.FindShortestPathAStar(straightLineRoute.Last(), this.player.Position);
-                    for (int i = 0; i < aStarRoute.Length; i++) { this.route.Enqueue(MathConverter.Convert(aStarRoute[i])); }
+                    for (int i = 0; i < aStarRoute.Length; i++) { this.route.Enqueue(aStarRoute[i].ToBepu()); }
                 });
             }
             /// <remarks>

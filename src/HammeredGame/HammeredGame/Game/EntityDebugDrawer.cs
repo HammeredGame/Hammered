@@ -80,7 +80,7 @@ namespace HammeredGame.Game
             //and translation of the entity combined.
             //There are a variety of properties available in the entity, try looking around
             //in the list to familiarize yourself with it.
-            Matrix worldMatrix = MathConverter.Convert(scaling * entity.CollisionInformation.WorldTransform.Matrix);
+            Matrix worldMatrix = (scaling * entity.CollisionInformation.WorldTransform.Matrix).ToXNA();
 
             //Collect any bone transformations in the model itself.
             //The default cube model doesn't have any, but this allows the EntityModel to work with more complicated shapes.

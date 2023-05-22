@@ -17,7 +17,7 @@ using System;
 using HammeredGame.Game.Scenes.Endgame;
 using HammeredGame.Game.Scenes.Island2;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media; 
+using Microsoft.Xna.Framework.Media;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -36,7 +36,7 @@ namespace HammeredGame.Game.Scenes.Island1
         {
             Song bgMusic;
             bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/BGM_V2_4x");
-            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
 
@@ -125,7 +125,7 @@ namespace HammeredGame.Game.Scenes.Island1
             Vector3 floorDisableStart = new Vector3(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z);
             Vector3 floorDisableFinish = new Vector3(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
             this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
-            
+
 
             doorInteractTokenSource = new();
             Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
@@ -230,11 +230,11 @@ namespace HammeredGame.Game.Scenes.Island1
                         Entity entity = null;
                         if (template_rock.Entity is Box box)
                         {
-                            entity = new Box(MathConverter.Convert(newSpawnRockPosition), box.Width, box.Height, box.Length, box.Mass);
+                            entity = new Box(newSpawnRockPosition.ToBepu(), box.Width, box.Height, box.Length, box.Mass);
                         }
                         else if (template_rock.Entity is Sphere sph)
                         {
-                            entity = new Sphere(MathConverter.Convert(newSpawnRockPosition), sph.Radius, sph.Mass);
+                            entity = new Sphere(newSpawnRockPosition.ToBepu(), sph.Radius, sph.Mass);
                         }
                         // We want to call Create<T>() with T being the type of gameObject.
                         // However, we can't use variables for generic type parameters, so

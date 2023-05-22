@@ -442,11 +442,11 @@ namespace HammeredGame.Game
                     if (massElem != null)
                     {
                         float mass = Parse<float>(massElem.Value);
-                        body = new Box(MathConverter.Convert(modelPosition), width, height, length, mass);
+                        body = new Box(modelPosition.ToBepu(), width, height, length, mass);
                     }
                     else
                     {
-                        body = new Box(MathConverter.Convert(modelPosition), width, height, length);
+                        body = new Box(modelPosition.ToBepu(), width, height, length);
                     }
                     break;
 
@@ -456,11 +456,11 @@ namespace HammeredGame.Game
                     if (massElem != null)
                     {
                         float mass = Parse<float>(massElem.Value);
-                        body = new Sphere(MathConverter.Convert(modelPosition), radius, mass);
+                        body = new Sphere(modelPosition.ToBepu(), radius, mass);
                     }
                     else
                     {
-                        body = new Sphere(MathConverter.Convert(modelPosition), radius);
+                        body = new Sphere(modelPosition.ToBepu(), radius);
                     }
                     break;
 

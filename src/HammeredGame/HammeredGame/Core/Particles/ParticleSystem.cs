@@ -155,7 +155,7 @@ namespace HammeredGame.Core.Particles
             for (int i = firstActiveParticle; i != firstInactiveParticle;)
             {
                 // We create the world matrix using the scale and world-space translation
-                instanceTransforms[instanceTransformIndex] = Matrix.CreateScale(particles[i].Size) * Matrix.CreateTranslation(MathConverter.Convert(particles[i].Entity.Position));
+                instanceTransforms[instanceTransformIndex] = Matrix.CreateScale(particles[i].Size) * Matrix.CreateTranslation(particles[i].Entity.Position.ToXNA());
 
                 i = (i + 1) % settings.MaxParticles;
                 instanceTransformIndex++;
@@ -279,10 +279,10 @@ namespace HammeredGame.Core.Particles
             // Set up a small sphere as the physics entity (it could've been anything), and give it
             // the position and velocity as specified. We give it a very small but explicit mass to
             // make it a dynamic object (so it doesn't push around things like having infinite mass).
-            particles[firstInactiveParticle].Entity = new Sphere(MathConverter.Convert(position), 0.1f, 0.01f)
+            particles[firstInactiveParticle].Entity = new Sphere(position.ToBepu(), 0.1f, 0.01f)
             {
-                Position = MathConverter.Convert(position),
-                LinearVelocity = MathConverter.Convert(velocity),
+                Position = position.ToBepu(),
+                LinearVelocity = velocity.ToBepu(),
                 Tag = "Particle"
             };
 
