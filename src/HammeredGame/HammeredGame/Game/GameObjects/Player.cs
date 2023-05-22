@@ -282,7 +282,7 @@ namespace HammeredGame.Game.GameObjects
                 player_vel.Normalize();
                 player_vel *= baseSpeed * PlayerSpeedModifier;
 
-                this.Entity.LinearVelocity = MathConverter.Convert(new Vector3(player_vel.X, this.Entity.LinearVelocity.Y, player_vel.Z));
+                this.Entity.LinearVelocity = new Vector3(player_vel.X, this.Entity.LinearVelocity.Y, player_vel.Z).ToBepu();
 
                 // At this point, also rotate the player to the direction of movement
 
