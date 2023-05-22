@@ -125,12 +125,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 }
 
                 // If colliding with a moving hammer, set the move block to move in the same direction
-                if (!hittingPlayer && other.Tag is Hammer && this.MblockState != MBState.Moving)
+                if (!hittingPlayer && other.Tag is Hammer)
                 {
                     var hammer = other.Tag as Hammer;
                     if (hammer.IsEnroute())
                     {
-                        Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
+                        // Include the following line of code if you wish for the sound to be reproduced at every call.
+                        //Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
                         if (hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
                             hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                         {
