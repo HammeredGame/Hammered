@@ -20,6 +20,9 @@ using ImMonoGame.Thing;
 using BEPUphysics.Entities.Prefabs;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using BEPUphysics.CollisionRuleManagement;
+using HammeredGame.Core.Particles;
+using Microsoft.Xna.Framework.Content;
+using HammeredGame.Graphics;
 
 namespace HammeredGame.Game.GameObjects
 {
@@ -88,11 +91,29 @@ namespace HammeredGame.Game.GameObjects
         // the rotations of the player).
         private Quaternion rotationWhenHeldByPlayer = new Quaternion(0.050f, 0.250f, 0.576f, 0.777f);
 
+        // Wind cutting trails
+        private ParticleSystem windParticles;
+
+        private TimeSpan lastVibrationTimestamp;
+
         public Hammer(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
             : base(services, model, t, pos, rotation, scale, entity)
         {
             hammerState = HammerState.WithCharacter;
-            //hammer_sfx = Services.GetService<List<SoundEffect>>();
+
+            windParticles = new(new ParticleSettings()
+            {
+                Model = Services.GetService<ContentManager>().Load<Model>("Meshes/Primitives/unit_icosphere"),
+                Texture = Services.GetService<ContentManager>().Load<Texture2D>("Meshes/Primitives/1x1_white"),
+                Duration = TimeSpan.FromMilliseconds(1000),
+                MaxParticles = 500,
+                MinStartSize = 0.5f,
+                MaxStartSize = 0.5f,
+                MinEndSize = 0.1f,
+                MaxEndSize = 0.1f,
+                EmitterVelocitySensitivity = 0.3f,
+                MaxVerticalVelocity = 0
+            }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);
 
             if (this.Entity != null)
             {
@@ -153,14 +174,14 @@ namespace HammeredGame.Game.GameObjects
 
                 OnCollision?.Invoke(this, null);
 
-                Input input = Services.GetService<Input>();
-                if (input.GamePadState.IsConnected)
-                {
-                    input.VibrateController(0.75f, 0.75f);
-                    // TODO: Add asynchronous wait here? (to have the vibration last a little longer?)
-                    // DONE!
-                    Services.GetService<ScriptUtils>().WaitMilliseconds(50).ContinueWith((_) => input.StopControllerVibration());
-                }
+                //Input input = Services.GetService<Input>();
+                //if (input.GamePadState.IsConnected)
+                //{
+                //    input.VibrateController(0.75f, 0.75f);
+                //    // TODO: Add asynchronous wait here? (to have the vibration last a little longer?)
+                //    // DONE!
+                //    Services.GetService<ScriptUtils>().WaitMilliseconds(50).ContinueWith((_) => input.StopControllerVibration());
+                //}
             }
         }
 
@@ -205,6 +226,7 @@ namespace HammeredGame.Game.GameObjects
                 Rotation = player.Rotation * Quaternion.CreateFromRotationMatrix(player.Animations.WorldTransforms[boneIndexForRightHand]) * rotationWhenHeldByPlayer;
 
                 player.PlayerSpeedModifier = 1.0f;
+                Services.GetService<Input>().StopControllerVibration();
             }
 
             // Get the input via keyboard or gamepad
@@ -273,31 +295,46 @@ namespace HammeredGame.Game.GameObjects
 
                     //this.ComputeBounds();
 
+                    AddParticles(gameTime);
+
+                    // Make the hammer face the direction of travel
+                    if (Entity.LinearVelocity != BEPUutilities.Vector3.Zero)
+                    {
+                        Vector3 towardTravel = Vector3.Normalize(MathConverter.Convert(Entity.LinearVelocity));
+                        Vector3 tangent = Vector3.Cross(towardTravel, Vector3.Up);
+                        if (tangent == Vector3.Zero)
+                        {
+                            tangent = Vector3.Cross(towardTravel, Vector3.Right);
+                        }
+
+                        Matrix transform = Matrix.Identity;
+                        transform.Up = towardTravel;
+                        transform.Forward = tangent;
+
+                        Rotation = Quaternion.Slerp(Rotation, Quaternion.CreateFromRotationMatrix(transform), 0.25f);
+                    }
+
+                    // Slight shake on the camera depending on the distance to the player
+                    player.ActiveCamera.Shake(5f / Math.Max((Position - player.Position).Length(), 5), 0.2f);
+
+                    // We also want to shake the controller a little bit like the camera, but
+                    // calling VibtrateController on every frame is quite expensive -- so we'll use
+                    // a timer and only call it every 0.5 seconds to update the shake value based on
+                    // the distance to the player.
+                    if (gameTime.TotalGameTime > lastVibrationTimestamp + TimeSpan.FromSeconds(0.5f))
+                    {
+                        // Maximum 0.6 shake, scaled by the distance to the player
+                        Services.GetService<Input>().VibrateController(0.6f / Math.Max((Position - player.Position).Length(), 0.6f), 0.6f / Math.Max((Position - player.Position).Length(), 0.6f));
+                        lastVibrationTimestamp = gameTime.TotalGameTime;
+                    }
+
+                    // Slow down the player
                     player.PlayerSpeedModifier = 0.5f;
                 }
-
-                //// Check for any collisions along the way
-                ////BoundingBox hammerbbox = this.GetBounds();
-                //foreach(EnvironmentObject gO in HammeredGame.ActiveLevelObstacles)
-                //{
-                //    if (gO != null && gO.IsVisible())
-                //    {
-                //        //BoundingBox objectbbox = gO.GetBounds();
-                //        if (this.BoundingBox.Intersects(gO.BoundingBox) && hammerState != HammerState.WithCharacter)
-                //        {
-                //            gO.TouchingHammer(this);
-                //        }
-                //        else
-                //        {
-                //            gO.NotTouchingHammer(this);
-                //        }
-                //    }
-                //}
-
             }
 
             this.AudioEmitter.Position = Position;
-
+            this.windParticles.Update(gameTime);
         }
 
         public void HandleInput()
@@ -308,8 +345,8 @@ namespace HammeredGame.Game.GameObjects
             if (hammerState == HammerState.WithCharacter && UserAction.DropHammer.Pressed(input))
             {
                 //hammerState = HammerState.Dropped;
-                // Make it flat in the direction opposite of the player, assuming the hammer model is upright
-                Rotation = player.Rotation * Quaternion.CreateFromYawPitchRoll(0, -MathHelper.PiOver2, 0);
+                // Make it rotate so it's up-side down, with the heavy magic part on the bottom
+                Rotation = player.Rotation * Quaternion.CreateFromYawPitchRoll(0, MathHelper.Pi, 0);
                 DropHammer();
                 //this.ComputeBounds();
             }
@@ -391,6 +428,47 @@ namespace HammeredGame.Game.GameObjects
             hammerState = newState;
         }
 
+        /// <summary>
+        /// Add wind particles based on the hammer outline.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        private void AddParticles(GameTime gameTime)
+        {
+            // Don't spawn particles if the hammer has no velocity since we can't determine which
+            // direction to spawn particles in
+            if (this.Entity.LinearVelocity == BEPUutilities.Vector3.Zero)
+                return;
+
+            // Calculate the normal, tangent, and bitangent for a plane that has its normal pointing
+            // towards the hammer's velocity. This will be used to spawn particles in a plane
+            // perpendicular to the hammer's movement.
+            Vector3 normal = Vector3.Normalize(MathConverter.Convert(Entity.LinearVelocity));
+            Vector3 tangent = Vector3.Cross(normal, new Vector3(-normal.Z, normal.X, normal.Y));
+            Vector3 bitangent = Vector3.Cross(tangent, normal);
+
+            // Spawn a variable number of particles based on its speed
+            int numberParticles = (int)(Entity.LinearVelocity.Length() / 10f);
+
+            for (int i = 0; i < numberParticles; i++)
+            {
+                float startRadius = 2f;
+                float dispersion = 80f;
+
+                // Determine a random angle along the circumference of a circle
+                float randomAngle = Random.Shared.NextSingle() * MathHelper.TwoPi;
+                (float y, float x) = MathF.SinCos(randomAngle);
+
+                // The position is the hammer's position plus the random unit vector multiplied by the
+                // starting radius.
+                Vector3 particlePosition = MathConverter.Convert(Entity.Position) + (startRadius * ((y * tangent) + (x * bitangent)));
+
+                // The velocity is the opposite of the hammer's velocity (in a action-reaction kind
+                // of effect) plus horizontal dispersion along the perpendicular plane so it spreads
+                // out as time passes.
+                Vector3 particleInfluenceVelocity = -MathConverter.Convert(Entity.LinearVelocity) + dispersion * ((y * tangent) + (x * bitangent));
+                windParticles.AddParticle(particlePosition, particleInfluenceVelocity);
+            }
+        }
 
         private bool StraightLinePath(out Vector3[] route)
         {
@@ -540,6 +618,12 @@ namespace HammeredGame.Game.GameObjects
             }
 
             this.Entity.LinearVelocity = BezierQuadraticSpline.QuadraticBezierVelocity(p0, p1, p2, t);
+        }
+
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
+        {
+            base.Draw(gameTime, view, projection, cameraPosition, lights);
+            windParticles.Draw(gameTime, view, projection, cameraPosition, lights);
         }
 
         public new void UI()
