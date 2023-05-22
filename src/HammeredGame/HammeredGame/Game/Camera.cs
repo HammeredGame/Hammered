@@ -42,6 +42,23 @@ namespace HammeredGame.Game
 
         public float FieldOfView = MathHelper.PiOver4;
 
+        // Camera shake properties, with a lot of help from https://github.com/SimonDarksideJ/XNAGameStudio/tree/archive/Samples/CameraShake_4_0
+
+        // Whether the camera is currently shaking and the shake offset should be recalculated
+        private bool isShaking = false;
+
+        // The time since the camera started shaking, used to compare against shakeDuration, which
+        // is the time in seconds that the camera should shake for
+        private float shakeTimer;
+        private float shakeDuration;
+
+        // The maximum magnitude of the camera shake. Camera shakes gradually decrease as time goes on.
+        private float shakeMagnitude;
+
+        // The current offset of the camera due to shaking, which should be added to the position
+        // and target when calculating matrices. This is zero when there is no shake going on.
+        private Vector3 shakeOffset = Vector3.Zero;
+
         public enum CameraMode
         {
             FourPointStatic,
@@ -109,13 +126,31 @@ namespace HammeredGame.Game
         }
 
         /// <summary>
+        /// Shakes the camera with a specific magnitude and duration.
+        /// </summary>
+        /// <param name="magnitude">The largest magnitude to apply to the shake.</param>
+        /// <param name="duration">The length of time (in seconds) for which the shake should occur.</param>
+        public void Shake(float magnitude, float duration)
+        {
+            // We're now shaking
+            isShaking = true;
+
+            // Store our magnitude and duration
+            shakeMagnitude = magnitude;
+            shakeDuration = duration;
+
+            // Reset our timer
+            shakeTimer = 0f;
+        }
+
+        /// <summary>
         /// Move camera to a new location, smoothly
         /// </summary>
         /// <param name="newPosition"></param>
         public void UpdatePosition(Vector3 newPosition)
         {
             Position = (newPosition - this.Position) / 10.0f + this.Position;
-            ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
+            ViewMatrix = Matrix.CreateLookAt(Position + shakeOffset, Target + shakeOffset, Up);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
             Frustum.Matrix = ViewProjMatrix;
         }
@@ -127,7 +162,7 @@ namespace HammeredGame.Game
         public void UpdateTarget(Vector3 newTarget)
         {
             Target = (newTarget - this.Target) / 10.0f + this.Target;
-            ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
+            ViewMatrix = Matrix.CreateLookAt(Position + shakeOffset, Target + shakeOffset, Up);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
             Frustum.Matrix = ViewProjMatrix;
         }
@@ -143,7 +178,7 @@ namespace HammeredGame.Game
         {
             Position = lerp ? Vector3.Lerp(this.Position, newPosition, 0.1f) : newPosition;
             Target = lerp ? ((newTarget - this.Target) / 10.0f + this.Target) : newTarget;
-            ViewMatrix = Matrix.CreateLookAt(Position, Target, Up);
+            ViewMatrix = Matrix.CreateLookAt(Position + shakeOffset, Target + shakeOffset, Up);
             ViewProjMatrix = ViewMatrix * ProjMatrix;
             Frustum.Matrix = ViewProjMatrix;
         }
@@ -178,8 +213,50 @@ namespace HammeredGame.Game
             UpdatePositionTarget(newPosition, followTarget.Position);
         }
 
-        public void UpdateCamera(bool isPaused)
+        /// <summary>
+        /// Update the shake timer and recalculate the shake offset for this frame based on a
+        /// gradually decreasing magnitude calculation. Implementation heavily borrowed from the XNA
+        /// Sample: https://github.com/SimonDarksideJ/XNAGameStudio/tree/archive/Samples/CameraShake_4_0
+        /// </summary>
+        /// <param name="gameTime"></param>
+        private void UpdateShake(GameTime gameTime)
         {
+            // If we're shaking...
+            if (isShaking)
+            {
+                // Move our timer ahead based on the elapsed time
+                shakeTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                // If we're at the max duration, we're not going to be shaking anymore
+                if (shakeTimer >= shakeDuration)
+                {
+                    isShaking = false;
+                    shakeTimer = shakeDuration;
+                }
+
+                // Compute our progress in a [0, 1] range
+                float progress = shakeTimer / shakeDuration;
+
+                // Compute our magnitude based on our maximum value and our progress. This causes
+                // the shake to reduce in magnitude as time moves on, giving us a smooth transition
+                // back to being stationary. We use progress * progress to have a non-linear fall
+                // off of our magnitude. We could switch that with just progress if we want a linear
+                // fall off.
+                float magnitude = shakeMagnitude * (1f - (progress * progress));
+
+                // Generate a new offset vector with three random values and our magnitude
+                shakeOffset = new Vector3(Random.Shared.NextSingle(), Random.Shared.NextSingle(), Random.Shared.NextSingle()) * magnitude;
+            }
+            else
+            {
+                shakeOffset = Vector3.Zero;
+            }
+        }
+
+        public void UpdateCamera(GameTime gameTime, bool isPaused)
+        {
+            UpdateShake(gameTime);
+
             if ((Mode == CameraMode.Follow) && followTarget != null && !isPaused)
             {
                 // In follow mode, users can use the directional inputs to rotate the camera along a
