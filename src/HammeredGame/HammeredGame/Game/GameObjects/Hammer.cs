@@ -119,7 +119,8 @@ namespace HammeredGame.Game.GameObjects
                 EmitterVelocitySensitivity = 0.4f,
                 MaxVerticalVelocity = 0,
                 // Air particles shouldn't bounce off walls/ground, they should just go through them
-                IgnoreCollisionResponses = true
+                IgnoreCollisionResponses = true,
+                AffectedByLight = false
             }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);
 
             if (this.Entity != null)
