@@ -301,23 +301,8 @@ namespace HammeredGame.Game.GameObjects
 
                     AddParticles(gameTime);
 
-                    // If we are getting close to the player, we want to smoothly rotate the hammer
-                    // to the holding orientation.
-                    if ((Position - player.Position).Length() < 20f)
-                    {
-                        // Get the player's bone index for the right hand
-                        int boneIndexForRightHand = player.Model.Bones["mixamorig:RightHand"].Index;
-
-                        // For specific explanation on the rotation calculation, see the code when
-                        // the hammer is being held by the player, since it's nearly identical. The
-                        // difference here is that we use a Slerp to smoothly transition between
-                        // whatever the current values are to what we want.
-                        Rotation = Quaternion.Slerp(Rotation, player.Rotation * Quaternion.CreateFromRotationMatrix(player.Animations.WorldTransforms[boneIndexForRightHand]) * rotationWhenHeldByPlayer, 0.1f);
-                    }
-
-                    // Otherwise, make the hammer face the direction of travel (todo: this doesn't
-                    // seem to work consistently?)
-                    else if (Entity.LinearVelocity != BEPUutilities.Vector3.Zero)
+                    // Make the hammer face the direction of travel (todo: this doesn't seem to work consistently?)
+                    if (Entity.LinearVelocity != BEPUutilities.Vector3.Zero)
                     {
                         // Find the direction of travel, and a perpendicular vector to it
                         Vector3 towardTravel = Vector3.Normalize(MathConverter.Convert(Entity.LinearVelocity));
