@@ -88,7 +88,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 // is also affected by the environment lighting since particles render using the
                 // same shader as everything else.
                 Texture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Primitives/1x1_white"),
-                Duration = TimeSpan.FromSeconds(2),
+                Duration = TimeSpan.FromSeconds(1),
 
                 // The start size will be random from very small to a meter large
                 MinStartSize = 0.1f,
