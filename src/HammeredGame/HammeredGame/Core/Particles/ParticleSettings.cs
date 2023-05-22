@@ -67,5 +67,9 @@ namespace HammeredGame.Core.Particles
 
         // Gravity to apply to the particles.
         public BEPUutilities.Vector3 Gravity = BEPUutilities.Vector3.Zero;
+
+        // Whether particles are affected by light. If this is false, all lights will be ignored and
+        // objects will be rendered flat.
+        public bool AffectedByLight = true;
     }
 }

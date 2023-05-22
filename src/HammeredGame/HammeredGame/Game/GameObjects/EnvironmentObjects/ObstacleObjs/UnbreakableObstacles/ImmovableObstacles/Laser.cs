@@ -280,6 +280,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                     part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
 
+                    part.Effect.Parameters["Lit"]?.SetValue(false);
+
                     // Set light parameters
                     part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());
                     part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
