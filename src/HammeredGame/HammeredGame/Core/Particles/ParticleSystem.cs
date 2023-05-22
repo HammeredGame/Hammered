@@ -284,8 +284,10 @@ namespace HammeredGame.Core.Particles
             particles[firstInactiveParticle].Entity = new Sphere(MathConverter.Convert(position), 0.1f)
             {
                 Position = MathConverter.Convert(position),
-                LinearVelocity = MathConverter.Convert(velocity)
+                LinearVelocity = MathConverter.Convert(velocity),
+                Tag = "Particle"
             };
+            particles[firstInactiveParticle].Entity.CollisionInformation.Tag = particles[firstInactiveParticle];
             activeSpace.Add(particles[firstInactiveParticle].Entity);
 
             particles[firstInactiveParticle].Time = currentTime;
