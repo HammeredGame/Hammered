@@ -274,7 +274,7 @@ namespace HammeredGame.Game.GameObjects
             {
                 //hammerState = HammerState.Dropped;
                 // Make it flat in the direction opposite of the player, assuming the hammer model is upright
-                Rotation = player.Rotation * Quaternion.CreateFromYawPitchRoll(0, -MathHelper.PiOver2, 0);
+                Rotation = player.Rotation * Quaternion.CreateFromYawPitchRoll(0, -MathHelper.Pi, 0);
                 DropHammer();
                 //this.ComputeBounds();
             }
@@ -324,6 +324,7 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.BecomeDynamic(10000);
                 this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
 
+                this.Entity.Position += new BEPUutilities.Vector3(0f, (this.Entity as Box).Height, 0f);
                 // Only gravitational force being applied to the entity, velocity in the other
                 // directions are zeroed out --> hammer is dropped, so it shouldn't move
                 this.Entity.LinearVelocity = new BEPUutilities.Vector3(0, -98.1f, 0);
