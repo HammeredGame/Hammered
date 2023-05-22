@@ -283,16 +283,6 @@ namespace HammeredGame.Game.GameObjects
                             this.UpdateQuadraticBezierCurve();
                     }
 
-                    //// Update position
-                    //Position += hammerSpeed * (player.GetPosition() - Position);
-
-                    //// If position is close enough to player, end its traversal
-                    //if ((Position - player.GetPosition()).Length() < 0.5f)
-                    //{
-                    //    hammerState = HammerState.WithCharacter;
-                    //}
-
-                    //this.ComputeBounds();
 
                     AddParticles(gameTime);
 
@@ -303,6 +293,7 @@ namespace HammeredGame.Game.GameObjects
                         Vector3 towardTravel = Vector3.Normalize(MathConverter.Convert(Entity.LinearVelocity));
                         // Why is it named "tangent", even though it's perpendicular?
                         Vector3 tangent = Vector3.Cross(towardTravel, Vector3.Up);
+
                         if (tangent == Vector3.Zero)
                         {
                             // The first attempt at a tangent failed since we were going straight
@@ -315,7 +306,7 @@ namespace HammeredGame.Game.GameObjects
                         // to construct a Quaternion directly from the forward and up direction
                         // (Unity can do that) but XNA doesn't seem to have that, so we have to do
                         // it the long way.
-                        Matrix transform = Matrix.CreateFromAxisAngle(tangent, (float)(Math.PI + Math.Acos((float)Vector3.Dot(towardTravel, tangent))));
+                        Matrix transform = Matrix.CreateFromAxisAngle(tangent, (float)(Math.PI + Math.Acos((float)Vector3.Dot(towardTravel, Vector3.Up))));
 
                         Rotation = Quaternion.Slerp(Rotation, Quaternion.CreateFromRotationMatrix(transform), 0.25f);
                     }
