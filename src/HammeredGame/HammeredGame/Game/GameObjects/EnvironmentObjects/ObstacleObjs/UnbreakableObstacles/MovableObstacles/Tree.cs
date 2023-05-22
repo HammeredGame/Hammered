@@ -139,8 +139,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 if (hammer.IsEnroute())
                 {
                     // TODO: de-duplicate the same exact code in Events_PairTouching and Events_InitialCollisionDetected
-                    if (hammer.Entity.LinearVelocity.Length() > hammer.hammerSpeed - 1f &&
-                            hammer.Entity.LinearVelocity.Length() < hammer.hammerSpeed + 1f)
+                    if (hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
+                            hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                     {
                         fallDirection = hammer.Entity.LinearVelocity;
                         fallDirection.Normalize();
@@ -178,8 +178,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 if (hammer.IsEnroute())
                 {
-                    if (hammer.Entity.LinearVelocity.Length() > hammer.hammerSpeed - 1f &&
-                            hammer.Entity.LinearVelocity.Length() < hammer.hammerSpeed + 1f)
+                    if (hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
+                            hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                     {
                         // Determine the direction of the fall as the hammer's direction
                         fallDirection = hammer.Entity.LinearVelocity;
