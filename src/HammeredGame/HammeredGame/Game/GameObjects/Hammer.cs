@@ -61,7 +61,10 @@ namespace HammeredGame.Game.GameObjects
         // Hammer specific variables
         public bool InputEnabled = true;
 
-        public float hammerSpeed { get; private set; } = 70f;
+        private float maximumHammerSpeed = 150f;
+        public float currentHammerSpeed { get; private set; } = 0.0f;
+        private float hammerSpeedEscalationStep = 2f;
+
         private HammerState hammerState;
 
         public Vector3 OldPosition { get; private set; }
@@ -254,28 +257,19 @@ namespace HammeredGame.Game.GameObjects
                     // If the two points are too far apart
                     if (distanceBetweenCurrentAndNext > 1.5) // Hard to find the "magic value" to achieve both natural turn smoothing and stability...
                     {
-                        // Follow the path in line segments. Stable, but no curvature.
-                        //this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition;
-
-                        //// VERY unstable natural curves!
-                        //// The problem is that if the player does not stand still to catch the hammer,
-                        //// it will take a significant amount of time to converge towards the final point!!!
-                        //var temp = this.Entity.LinearVelocity;
-                        //temp.Normalize(); temp += 0.2f * currentToNextPosition; temp.Normalize();
-                        //temp *= hammerSpeed;
-                        //this.Entity.LinearVelocity = temp;
                         if (route.Count() > 0)
                         {
                             this.UpdateQuadraticBezierPosition();
                         }
-                        //this.UpdateQuadraticBezierVelocity();
                         else
                         {
                             //this.Entity.LinearVelocity = hammerSpeed * currentToNextPosition; // Hammer shaking in constant spot.
 
                             // Hammer following the player after the (initial) shortest path has been followed.
                             BEPUutilities.Vector3 VectorToCharacter = this.player.Entity.Position - this.Entity.Position; VectorToCharacter.Normalize();
-                            this.Entity.LinearVelocity = hammerSpeed * VectorToCharacter;
+                            currentHammerSpeed = Math.Min(currentHammerSpeed + hammerSpeedEscalationStep, maximumHammerSpeed);
+
+                            this.Entity.LinearVelocity = currentHammerSpeed * VectorToCharacter;
                         }
 
 
@@ -284,7 +278,7 @@ namespace HammeredGame.Game.GameObjects
                     else if (route.Count() > 0)
                     {
                         this.nextRoutePosition = route.Peek(); route.Dequeue();
-                        if (route.Count() > 1)
+                        if (route.Count() > 1) // There are more obstacles to avoid before achieving a straight path.
                             this.UpdateQuadraticBezierCurve();
                     }
 
@@ -372,6 +366,8 @@ namespace HammeredGame.Game.GameObjects
                 hammerState = HammerState.Enroute;
                 OnSummon?.Invoke(this, null);
 
+                this.currentHammerSpeed = 0f;
+
                 // The hammer, when called back, will follow the shortest path from the point where it was dropped towards
                 // the point the player called it FROM (it does not follow the player).
                 ComputeShortestPath();
@@ -405,6 +401,7 @@ namespace HammeredGame.Game.GameObjects
                 this.Entity.BecomeDynamic(10000);
                 this.Entity.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3();
 
+                this.Entity.Position += new BEPUutilities.Vector3(0f, (this.Entity as Box).Height, 0f);
                 // Only gravitational force being applied to the entity, velocity in the other
                 // directions are zeroed out --> hammer is dropped, so it shouldn't move
                 this.Entity.LinearVelocity = new BEPUutilities.Vector3(0, -98.1f, 0);
@@ -610,7 +607,7 @@ namespace HammeredGame.Game.GameObjects
             t += 0.012f;
             var previousPosition = this.Entity.Position;
             this.Entity.Position = BezierQuadraticSpline.QuadraticBezierPosition(p0, p1, p2, t);
-            var temp = this.Entity.Position - previousPosition; temp.Normalize(); temp *= hammerSpeed;
+            var temp = this.Entity.Position - previousPosition; temp.Normalize(); temp *= currentHammerSpeed;
             this.Entity.LinearVelocity = this.Entity.Position - previousPosition; // Approximating velocity with (forward) discrete differences.
             //this.Entity.LinearVelocity = temp;
         }
