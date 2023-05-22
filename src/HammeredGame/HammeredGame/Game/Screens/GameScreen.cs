@@ -159,11 +159,15 @@ namespace HammeredGame.Game.Screens
             promptsScreen?.ClearAllPrompts();
             dialoguesScreen?.ClearAllDialogues();
 
+            // Stop all sound effects and remove them on the next update.
+            GameServices.GetService<AudioManager>().StopAll();
+
             currentSceneName = sceneToLoad;
 
             // Reset the progress so that there isn't a flash of 100 from the previous use
             loadingScreen.ResetProgress();
             ScreenManager.AddScreen(loadingScreen);
+
             Scene temporaryScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
 
             temporaryScene
