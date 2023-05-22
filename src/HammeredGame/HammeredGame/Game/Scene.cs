@@ -251,7 +251,7 @@ namespace HammeredGame.Game
             // For the camera, we use the paused flag instead of whether the screen has focus, since
             // the camera only has a different behaviour when the game is paused. If there is
             // dialogue for example, the camera will be the same as regular gameplay.
-            this.Camera.UpdateCamera(isPaused);
+            this.Camera.UpdateCamera(gameTime, isPaused);
 
             //Steps the simulation forward one time step.
             // TODO: perhaps this shouldn't update if it's paused (i.e. check for HasFocus)?
