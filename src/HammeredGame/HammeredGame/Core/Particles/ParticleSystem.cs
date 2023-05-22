@@ -128,13 +128,8 @@ namespace HammeredGame.Core.Particles
             {
                 float particleAge = currentTime - particles[i].Time;
 
-                // Select a random end size for the particle. (This will select a different end size
-                // on each frame for the same particle, which isn't ideal since it's wasted
-                // computation but is unnoticeable)
-                float randomEndSize = MathHelper.Lerp(settings.MinEndSize, settings.MaxEndSize, (float)random.NextDouble());
-
-                // Interpolate towards it
-                particles[i].Size = MathHelper.Lerp(particles[i].Size, randomEndSize, particleAge / particleDuration);
+                // Interpolate a size between start and end sizes
+                particles[i].Size = MathHelper.Lerp(particles[i].StartSize, particles[i].EndSize, particleAge / particleDuration);
                 i = (i + 1) % settings.MaxParticles;
             }
         }
@@ -309,7 +304,9 @@ namespace HammeredGame.Core.Particles
             particles[firstInactiveParticle].Time = currentTime;
 
             // Select a random starting size
-            particles[firstInactiveParticle].Size = MathHelper.Lerp(settings.MinStartSize, settings.MaxStartSize, (float)random.NextDouble());
+            particles[firstInactiveParticle].StartSize = MathHelper.Lerp(settings.MinStartSize, settings.MaxStartSize, (float)random.NextDouble());
+            particles[firstInactiveParticle].EndSize = MathHelper.Lerp(settings.MinEndSize, settings.MaxEndSize, (float)random.NextDouble());
+            particles[firstInactiveParticle].Size = particles[firstInactiveParticle].StartSize;
 
             firstInactiveParticle = nextFreeParticle;
         }

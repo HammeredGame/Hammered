@@ -105,7 +105,7 @@ namespace HammeredGame.Game.GameObjects
             {
                 Model = Services.GetService<ContentManager>().Load<Model>("Meshes/Primitives/unit_icosphere"),
                 Texture = Services.GetService<ContentManager>().Load<Texture2D>("Meshes/Primitives/1x1_white"),
-                Duration = TimeSpan.FromMilliseconds(1000),
+                Duration = TimeSpan.FromMilliseconds(500),
                 // We spawn many small ones to make it look sorta continuous
                 MaxParticles = 500,
                 MinStartSize = 0.5f,
@@ -308,15 +308,15 @@ namespace HammeredGame.Game.GameObjects
                         // Get the player's bone index for the right hand
                         int boneIndexForRightHand = player.Model.Bones["mixamorig:RightHand"].Index;
 
-                        // For specific explanation on the position and rotation calculation, see
-                        // the code when the hammer is being held by the player, since it's nearly
-                        // identical. The difference here is that we use a Lerp and Slerp to
-                        // smoothly transition between whatever the current values are to what we want.
-                        //Position = Vector3.Lerp(Position, (player.Animations.WorldTransforms[boneIndexForRightHand] * GetWorld), 0.3f);
-
+                        // For specific explanation on the rotation calculation, see the code when
+                        // the hammer is being held by the player, since it's nearly identical. The
+                        // difference here is that we use a Slerp to smoothly transition between
+                        // whatever the current values are to what we want.
                         Rotation = Quaternion.Slerp(Rotation, player.Rotation * Quaternion.CreateFromRotationMatrix(player.Animations.WorldTransforms[boneIndexForRightHand]) * rotationWhenHeldByPlayer, 0.1f);
                     }
-                    // Otherwise, make the hammer face the direction of travel
+
+                    // Otherwise, make the hammer face the direction of travel (todo: this doesn't
+                    // seem to work consistently?)
                     else if (Entity.LinearVelocity != BEPUutilities.Vector3.Zero)
                     {
                         // Find the direction of travel, and a perpendicular vector to it
@@ -479,15 +479,20 @@ namespace HammeredGame.Game.GameObjects
             for (int i = 0; i < numberParticles; i++)
             {
                 float startRadius = 2f;
-                float dispersion = 80f;
+                float dispersion = 40f;
 
                 // Determine a random angle along the circumference of a circle
                 float randomAngle = Random.Shared.NextSingle() * MathHelper.TwoPi;
                 (float y, float x) = MathF.SinCos(randomAngle);
 
+                // Since the position property of the hammer is located at the bottom of the handle,
+                // but we're moving the hammer head-first in the direction of travel, we should
+                // offset the air particles by the whole height.
+                Vector3 offset = (Entity as Box).Height * normal;
+
                 // The position is the hammer's position plus the random unit vector multiplied by the
                 // starting radius.
-                Vector3 particlePosition = MathConverter.Convert(Entity.Position) + (startRadius * ((y * tangent) + (x * bitangent)));
+                Vector3 particlePosition = MathConverter.Convert(Entity.Position) + offset + (startRadius * ((y * tangent) + (x * bitangent)));
 
                 // The velocity is the opposite of the hammer's velocity (in a action-reaction kind
                 // of effect) plus horizontal dispersion along the perpendicular plane so it spreads
