@@ -34,7 +34,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
             int[] indices;
             ModelDataExtractor.GetVerticesAndIndicesFromModel(this.Model, out vertices, out indices);
             //Give the mesh information to a new StaticMesh.
-            var mesh = new StaticMesh(vertices, indices, new BEPUutilities.AffineTransform(new BEPUutilities.Vector3(scale, scale, scale), MathConverter.Convert(this.Rotation), MathConverter.Convert(this.Position)));
+            var mesh = new StaticMesh(vertices, indices, new BEPUutilities.AffineTransform(new BEPUutilities.Vector3(scale, scale, scale), this.Rotation.ToBepu(), this.Position.ToBepu()));
             mesh.Tag = this;
             this.ActiveSpace.Add(mesh);
 
@@ -79,6 +79,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
                     Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
 
                     part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
+
+                    part.Effect.Parameters["Lit"]?.SetValue(true);
 
                     // Set light parameters
                     part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());

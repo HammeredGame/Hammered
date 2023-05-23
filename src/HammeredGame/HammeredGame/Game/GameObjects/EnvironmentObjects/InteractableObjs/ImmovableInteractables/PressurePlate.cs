@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Audio;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using Pleasing;
 using System;
+using HammeredGame.Core.Particles;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables
 {
@@ -76,6 +77,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                 //    System.Diagnostics.Debug.WriteLine("pressureplate and player pair touching");
                 //}
                 if (other.Tag is EmptyGameObject) return;
+                if (other.Tag is Particle) return;
                 this.SetActivated(true);
                 OnTrigger?.Invoke(this, null);
             }
@@ -91,6 +93,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             {
                 //We hit an entity!
                 if (other.Tag is EmptyGameObject) return;
+                if (other.Tag is Particle) return;
                 this.SetActivated(true);
             }
         }

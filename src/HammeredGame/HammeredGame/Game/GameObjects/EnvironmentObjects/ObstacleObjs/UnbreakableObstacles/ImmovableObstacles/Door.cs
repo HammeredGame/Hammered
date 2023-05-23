@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 using BEPUphysics.Entities;
-using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using Microsoft.Xna.Framework.Content;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles
@@ -55,7 +54,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         }
 
         private DoorState doorState;
-        
+
         private bool keyFound = false;
         private bool isGoal = false; // TEMPORARY
 
@@ -84,12 +83,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.ActiveSpace.Add(this.Entity);
 
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += Events_InitialCollisionDetected;
-                
+
                 this.AudioEmitter = new AudioEmitter();
-                this.AudioEmitter.Position = this.Position; 
+                this.AudioEmitter.Position = this.Position;
             }
 
-            
+
         }
 
         public void SetIsGoal(bool isGoal)

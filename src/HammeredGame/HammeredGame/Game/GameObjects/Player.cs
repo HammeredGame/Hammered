@@ -70,7 +70,7 @@ namespace HammeredGame.Game.GameObjects
         // TEMPORARY (FOR TESTING)
         public bool ReachedGoal = false;
 
-        private Camera activeCamera;
+        public Camera ActiveCamera;
 
         public Animations Animations;
 
@@ -230,13 +230,13 @@ namespace HammeredGame.Game.GameObjects
         /// <param name="camera"></param>
         public void SetActiveCamera(Camera camera)
         {
-            activeCamera = camera;
+            ActiveCamera = camera;
         }
 
         public void TriggerWakeUp()
         {
             waking_up = true;
-            var clip_wakeup = Animations.Clips[key: "Armature|wakeup"];            
+            var clip_wakeup = Animations.Clips[key: "Armature|wakeup"];
             Animations.SetClip(clip_wakeup);
         }
 
@@ -257,11 +257,11 @@ namespace HammeredGame.Game.GameObjects
             player_vel = Vector3.Zero;
 
             Vector3 forwardDirection = Vector3.Zero;
-            if (InputEnabled && activeCamera != null && screenHasFocus) {
+            if (InputEnabled && ActiveCamera != null && screenHasFocus) {
                 // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
                 // "forward" from the current camera perspective. Calculated by projecting the vector of
                 // the current camera position to the player position, onto the ground, and normalising it.
-                forwardDirection = Vector3.Normalize(Vector3.Multiply(activeCamera.Target - activeCamera.Position, new Vector3(1, 0, 1)));
+                forwardDirection = Vector3.Normalize(Vector3.Multiply(ActiveCamera.Target - ActiveCamera.Position, new Vector3(1, 0, 1)));
             }
 
             // Handling input from keyboard.
@@ -282,7 +282,7 @@ namespace HammeredGame.Game.GameObjects
                 player_vel.Normalize();
                 player_vel *= baseSpeed * PlayerSpeedModifier;
 
-                this.Entity.LinearVelocity = MathConverter.Convert(new Vector3(player_vel.X, this.Entity.LinearVelocity.Y, player_vel.Z));
+                this.Entity.LinearVelocity = new Vector3(player_vel.X, this.Entity.LinearVelocity.Y, player_vel.Z).ToBepu();
 
                 // At this point, also rotate the player to the direction of movement
 
@@ -354,7 +354,7 @@ namespace HammeredGame.Game.GameObjects
                     var clip_idle = Animations.Clips["Armature|idle"];
                     Animations.SetClip(clip_idle);
                 }
-                
+
             } else
             {
                 Animations.Update(gameTime.ElapsedGameTime * 1.2f, true, Matrix.Identity);
