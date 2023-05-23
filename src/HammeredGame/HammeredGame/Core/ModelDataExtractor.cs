@@ -11,7 +11,7 @@ namespace HammeredGame.Core
     /// <summary>
     /// This is a helper function pulled from the bepuphysics v1 repository to help
     /// with importing meshes into the BEPUphysics workflow.
-    /// 
+    ///
     /// Contains helper methods for extracting vertices and indices from XNA models.
     /// </summary>
     public static class ModelDataExtractor
@@ -26,7 +26,7 @@ namespace HammeredGame.Core
         {
             Vector3[] tempVertices;
             GetVerticesAndIndicesFromModel(collisionModel, out tempVertices, out indices);
-            vertices = MathConverter.Convert(tempVertices);
+            vertices = tempVertices.ToBepu();
         }
 
         /// <summary>

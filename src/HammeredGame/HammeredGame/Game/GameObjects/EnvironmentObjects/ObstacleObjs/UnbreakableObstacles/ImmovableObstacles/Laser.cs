@@ -112,8 +112,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             // We use a custom shader for the Laser which uses a 2D plane mesh and rolling textures
             // and color intensities above 1 to simulate the laser.
             this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/Laser");
-            this.laserTexture = services.GetService<ContentManager>().Load<Texture2D>("LaserTexture");
-            this.laserMaskTexture = services.GetService<ContentManager>().Load<Texture2D>("LaserMask");
+            this.laserTexture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Laser/LaserTexture");
+            this.laserMaskTexture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Laser/LaserMask");
 
             this.AudioEmitter = new AudioEmitter();
             this.AudioEmitter.Position = this.Position;
@@ -191,7 +191,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     foreach (var contact in pair.Contacts)
                     {
                         BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
-                        float dist = (pointOfContact - MathConverter.Convert(this.Position)).Length();
+                        float dist = (pointOfContact - this.Position.ToBepu()).Length();
                         float scale = (this.laserDefaultScale * dist) / this.laserDefaultLength;
                         minScale = Math.Min(minScale, scale);
                     }
@@ -279,6 +279,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
 
                     part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
+
+                    part.Effect.Parameters["Lit"]?.SetValue(false);
 
                     // Set light parameters
                     part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());

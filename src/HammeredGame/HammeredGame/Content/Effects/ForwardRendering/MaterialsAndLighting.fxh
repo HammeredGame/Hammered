@@ -8,6 +8,9 @@
 // the world matrix.
 float3x3 WorldInverseTranspose;
 
+// Whether to enable lighting contributions or to render flat if false.
+bool Lit;
+
 // Allow up to 5 directional lights to be passed in. This includes the sun.
 // These should be passed as a C# array. Arrays with less than 5 are permitted,
 // in which case the other elements will use default values. The defaults are
@@ -137,6 +140,11 @@ float PCFShadow(float3 normal, float3 toLight, float4 pixelSunProjPosition, floa
 // result of this should be multiplied by the texture color.
 float4 CalculateLightingContributions(float3 normal, float4 pixelSunSpacePosition, float4 pixelWorldSpacePosition, float4 cameraWorldSpacePosition)
 {
+    if (Lit == false)
+    {
+        return float4(1.0, 1.0, 1.0, 1.0);
+    }
+
     float4 output = float4(0, 0, 0, 0);
     for (int i = 0; i < MAX_DIRECTIONAL_LIGHTS; i++)
     {

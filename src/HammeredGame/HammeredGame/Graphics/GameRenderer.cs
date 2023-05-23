@@ -113,7 +113,6 @@ namespace HammeredGame.Graphics
             {
                 gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques["RenderLightDepthMap"];
                 gameObject.Draw(gameTime, sunView, sunProj, sunPos, scene.Lights);
-                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques["MainShading"];
             }
 
             // Perform a main forward render pass but also store depth information
@@ -123,6 +122,8 @@ namespace HammeredGame.Graphics
             // Render all the scene objects
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
+                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques["MainShading"];
+
                 // Ideally, the skybox needs to be rendered last (otherwise it'll draw so many
                 // useless pixels across the screen, that would be overwritten by other closer
                 // objects). But in practice, we need it rendered ASAP because the world fog is

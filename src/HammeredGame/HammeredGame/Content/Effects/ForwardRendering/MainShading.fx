@@ -9,7 +9,8 @@
 // This shader defines techniques for the main rendering pass.
 // Specifically, there is one technique for rendering the shadow map from a
 // light's perspective, and a second technique for fully rendering the pixel
-// using the shadow map, the textures, lights, and a Phong model.
+// using the shadow map, the textures, lights, and a Phong model. The second
+// technique has a vertex shader variant for instanced rendering too.
 
 // Reference: https://learnopengl.com/Lighting/Materials
 // Reference: https://learnopengl.com/Lighting/Basic-Lighting
@@ -84,11 +85,32 @@ float4 CameraPosition;
 // The material texture
 DECLARE_TEXTURE(ModelTexture, textureSampler, Clamp, Clamp)
 
+
+struct MainShadingCommonVSInput
+{
+    float4 Position : POSITION0;
+    float4 Normal : NORMAL0;
+    float2 TextureCoordinate : TEXCOORD0;
+    float4x4 WorldMatrix : BLENDWEIGHT0;
+    float3x3 WorldInverseTranspose : BLENDWEIGHT1;
+};
+
+// Normal vertex shader inputs
 struct MainShadingVSInput
 {
     float4 Position : POSITION0;
     float4 Normal : NORMAL0;
     float2 TextureCoordinate : TEXCOORD0;
+};
+
+// When the hardware instancing technique is used, the vertex shader receives
+// transformation matrices for that instance as additional inputs.
+struct MainShadingInstancedVSInput
+{
+    float4 Position : POSITION0;
+    float4 Normal : NORMAL0;
+    float2 TextureCoordinate : TEXCOORD0;
+    float4x4 InstanceTransform : BLENDWEIGHT;
 };
 
 struct MainShadingVSOutput
@@ -102,12 +124,16 @@ struct MainShadingVSOutput
     float4 SunSpacePosition : TEXCOORD4;
 };
 
-MainShadingVSOutput MainShadingVS(MainShadingVSInput input)
+// A common vertex shader for both instanced and non-instanced rendering.
+// Since the two methods have different world matrices (one is multiplied by
+// the instance transform, the other is not), we receive the world matrix as
+// an input parameter.
+MainShadingVSOutput MainShadingCommonVS(MainShadingCommonVSInput input)
 {
     MainShadingVSOutput output;
 
     // Transform vertex coordinates into screen-space
-    float4 worldPosition = mul(input.Position, World);
+    float4 worldPosition = mul(input.Position, input.WorldMatrix);
     float4 viewPosition = mul(worldPosition, View);
     output.Position = mul(viewPosition, Projection);
 
@@ -120,7 +146,7 @@ MainShadingVSOutput MainShadingVS(MainShadingVSInput input)
     // transform accounts for non-uniform scaling that wouldn't be accounted
     // by a simple multiplication by the world matrix. As long as the scaling
     // is uniform, the operations are identical.
-    float3 normal = normalize(mul(input.Normal.xyz, WorldInverseTranspose));
+    float3 normal = normalize(mul(input.Normal.xyz, input.WorldInverseTranspose));
 
     // Push normal and [0,1] UV texture coordinates to fragment shader
     output.Normal = normal;
@@ -149,6 +175,32 @@ MainShadingVSOutput MainShadingVS(MainShadingVSInput input)
     float4 sunViewPosition = mul(offsetPosition, SunView);
     output.SunSpacePosition = mul(sunViewPosition, SunProj);
     return output;
+}
+
+// The vertex shader for the non-instanced case
+MainShadingVSOutput MainShadingVS(MainShadingVSInput input)
+{
+    MainShadingCommonVSInput newInput;
+    newInput.Position = input.Position;
+    newInput.Normal = input.Normal;
+    newInput.TextureCoordinate = input.TextureCoordinate;
+    newInput.WorldMatrix = World;
+    newInput.WorldInverseTranspose = WorldInverseTranspose;
+    return MainShadingCommonVS(newInput);
+}
+
+// A copy of the vertex shader for the instanced case
+MainShadingVSOutput MainShadingInstancedVS(MainShadingInstancedVSInput input)
+{
+    MainShadingCommonVSInput newInput;
+    newInput.Position = input.Position;
+    newInput.Normal = input.Normal;
+    newInput.TextureCoordinate = input.TextureCoordinate;
+
+    // Make sure to multiply the world matrix by a transpose of the instance transform
+    newInput.WorldMatrix = mul(World, transpose(input.InstanceTransform));
+    newInput.WorldInverseTranspose = mul(World, transpose(input.InstanceTransform));
+    return MainShadingCommonVS(newInput);
 }
 
 // The pixel shader of the main shading pass outputs both color and depth.
@@ -195,6 +247,15 @@ technique MainShading
     pass Pass1
     {
         VertexShader = compile VS_SHADERMODEL MainShadingVS();
+        PixelShader = compile PS_SHADERMODEL MainShadingPS();
+    }
+}
+
+technique MainShadingInstanced
+{
+    pass Pass1
+    {
+        VertexShader = compile VS_SHADERMODEL MainShadingInstancedVS();
         PixelShader = compile PS_SHADERMODEL MainShadingPS();
     }
 }

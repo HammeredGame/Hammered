@@ -251,7 +251,7 @@ namespace HammeredGame.Game
             // For the camera, we use the paused flag instead of whether the screen has focus, since
             // the camera only has a different behaviour when the game is paused. If there is
             // dialogue for example, the camera will be the same as regular gameplay.
-            this.Camera.UpdateCamera(isPaused);
+            this.Camera.UpdateCamera(gameTime, isPaused);
 
             //Steps the simulation forward one time step.
             // TODO: perhaps this shouldn't update if it's paused (i.e. check for HasFocus)?
@@ -284,7 +284,7 @@ namespace HammeredGame.Game
         public void UpdateDebugGrid()
         {
             DebugGridCells.Clear();
-            var CubeModel = Services.GetService<ContentManager>().Load<Model>("cube");
+            var CubeModel = Services.GetService<ContentManager>().Load<Model>("Meshes/Primitives/unit_cube");
             //Go through the list of entities in the space and create a graphical representation for them.
             float sideLength = Grid.sideLength;
             Matrix scaling = Matrix.CreateScale(sideLength);
@@ -351,11 +351,11 @@ namespace HammeredGame.Game
                     {
                         for (int k = -zRepetitions; k <= zRepetitions; ++k)
                         {
-                            Vector3 localOrigin = MathConverter.Convert(goBox.Position);
+                            Vector3 localOrigin = goBox.Position.ToXNA();
                             Vector3 sampledPoint = localOrigin + sideLength * (i * e1 + j * e2 + k * e3);
                             //sampledPoint = Vector3.Transform(sampledPointInStandardBasis, MathConverter.Convert(goBox.OrientationMatrix)); // Bug! Ask Sid!
                             sampledPoint = Vector3.Transform(sampledPoint, Matrix.CreateTranslation(-localOrigin)); // Translate to origin.
-                            sampledPoint = Vector3.Transform(sampledPoint, MathConverter.Convert(goBox.OrientationMatrix)); // Apply rotation
+                            sampledPoint = Vector3.Transform(sampledPoint, goBox.OrientationMatrix.ToXNA()); // Apply rotation
                             sampledPoint = Vector3.Transform(sampledPoint, Matrix.CreateTranslation(localOrigin)); // Return to global coordinates
                             this.Grid.MarkCellAs(sampledPoint, availability);
                         }
@@ -920,7 +920,7 @@ namespace HammeredGame.Game
                     // Set up the physics body if we said we desired one
                     if (objectCreationEntity != null)
                     {
-                        objectCreationEntity.Position = MathConverter.Convert(objectCreationPosition);
+                        objectCreationEntity.Position = MathConverter.ToBepu(objectCreationPosition);
                     }
 
                     // Invoke this.Create with arguments for the game object type constructor. Since

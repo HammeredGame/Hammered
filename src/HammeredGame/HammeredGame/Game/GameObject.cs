@@ -52,7 +52,6 @@ namespace HammeredGame.Game
 
         protected Scene CurrentScene { get; private set; }
 
-
         public AudioEmitter AudioEmitter;
 
         // Use the private position vector only if we don't have a physics entity attached.
@@ -60,8 +59,8 @@ namespace HammeredGame.Game
         // never use our own private value.
         public Vector3 Position
         {
-            get { if (Entity != null) { return MathConverter.Convert(Entity.Position); } else { return position; } }
-            set { if (Entity != null) { Entity.Position = MathConverter.Convert(value); } position = value; }
+            get { if (Entity != null) { return Entity.Position.ToXNA(); } else { return position; } }
+            set { if (Entity != null) { Entity.Position = value.ToBepu(); } position = value; }
         }
 
         private Quaternion rotation;
@@ -71,8 +70,8 @@ namespace HammeredGame.Game
         // never use our own private value.
         public Quaternion Rotation
         {
-            get { if (Entity != null) { return MathConverter.Convert(Entity.Orientation); } else { return rotation; } }
-            set { if (Entity != null) { Entity.Orientation = MathConverter.Convert(value); } rotation = value; }
+            get { if (Entity != null) { return Entity.Orientation.ToXNA(); } else { return rotation; } }
+            set { if (Entity != null) { Entity.Orientation = value.ToBepu(); } rotation = value; }
         }
 
         public float Scale;
@@ -100,8 +99,6 @@ namespace HammeredGame.Game
         ///  If its value is true, then the instance will be drawn on the screen (utilizing the <code>DrawModel()</code> function)
         /// </summary>
         public bool Visible = true;
-
-        private List<(int, float[])> allVertexData;
 
         protected GameObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity)
         {
@@ -166,6 +163,8 @@ namespace HammeredGame.Game
                     Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
 
                     part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
+
+                    part.Effect.Parameters["Lit"]?.SetValue(true);
 
                     // Set light parameters
                     part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());

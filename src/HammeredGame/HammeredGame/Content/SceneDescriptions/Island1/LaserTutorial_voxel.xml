@@ -29,7 +29,7 @@
     </ambient>
   </lights>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
-    <model>cube</model>
+    <model>Meshes/Primitives/unit_cube</model>
     <position>0.000 0.000 0.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
@@ -2839,8 +2839,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="laser2">
-    <model>unit_size_plane_y_up</model>
-    <texture>LaserMaterial</texture>
+    <model>Meshes/Primitives/unit_size_plane_y_up</model>
+    <texture>Meshes/Laser/LaserMaterial</texture>
     <position>230.000 -17.000 -160.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>0.130</scale>
@@ -2852,8 +2852,8 @@
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="laser1">
-    <model>unit_size_plane_y_up</model>
-    <texture>LaserMaterial</texture>
+    <model>Meshes/Primitives/unit_size_plane_y_up</model>
+    <texture>Meshes/Laser/LaserMaterial</texture>
     <position>60.000 -17.634 -155.000</position>
     <rotation>0.000 0.705 0.000 0.709</rotation>
     <scale>0.250</scale>
