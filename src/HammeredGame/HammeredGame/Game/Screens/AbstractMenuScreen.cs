@@ -317,6 +317,19 @@ namespace HammeredGame.Game.Screens
                 TransitionAnimationTimeline.AddFloat(this, nameof(MenuOverlayOpacityCurrent))
                     .AddFrame(200, BackgroundOverlayOpacity, Easing.Exponential.Out);
 
+                // Subtle, but we'll also tween the individual widgets to fade in and scale down.
+                // This makes the menu feel more alive and less static.
+                for (int i = 0; i < MenuWidgets.Count; i++) {
+                    TransitionAnimationTimeline.AddFloat(MenuWidgets[i], nameof(Widget.Opacity))
+                        .AddFrame(0, 0)
+                        .AddFrame(50 + i * 20, 0)
+                        .AddFrame(150 + i * 20, MenuWidgets[i].Opacity, Easing.Linear);
+                    TransitionAnimationTimeline.AddVector2(MenuWidgets[i], nameof(Widget.Scale))
+                        .AddFrame(0, new Vector2(1.1f))
+                        .AddFrame(50 + i * 20, new Vector2(1.1f))
+                        .AddFrame(150 + i * 20, MenuWidgets[i].Scale, Easing.Circular.Out);
+                }
+
                 PlaySFX("Audio/lohi_whoosh", 1f);
                 return false;
             }
