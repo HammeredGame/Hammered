@@ -46,6 +46,18 @@
 /processorParam:Quality=Best
 /build:Audio/balanced/catch_b.wav
 
+#begin Audio/balanced/door_close.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/door_close.wav
+
+#begin Audio/balanced/door_open.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/door_open.wav
+
 #begin Audio/balanced/fast_whoosh_b.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -93,6 +105,18 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/balanced/quiet_foot.wav
+
+#begin Audio/balanced/soft_step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/soft_step.wav
+
+#begin Audio/balanced/soft_step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/soft_step.wav
 
 #begin Audio/balanced/tree_crash .wav
 /importer:WavImporter

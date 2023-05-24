@@ -45,7 +45,10 @@ namespace HammeredGame.Core
             "Audio/balanced/tree_crash_bm",
             "Audio/balanced/hammer_fly_m",
             "Audio/balanced/loud_fly",
-            "Audio/balanced/quiet_foot"
+            "Audio/balanced/quiet_foot",
+            "Audio/balanced/soft_step",
+            "Audio/balanced/door_close",
+            "Audio/balanced/door_open"
         };
 
         //public AudioListener Listener
