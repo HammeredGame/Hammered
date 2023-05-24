@@ -7,6 +7,12 @@ float4x4 World;
 float4x4 View;
 float4x4 Projection;
 
+// Receive the world matrix's inverse transform, so that we can convert the
+// object-space normal to world space taking into account any non-uniform
+// scaling. If the model scaling is uniform in XYZ, then this is identical to
+// the world matrix.
+float3x3 WorldInverseTranspose;
+
 float4 ObjectToProjection(float4 position)
 {
     // Transform vertex coordinates into light projection-space [-1, 1]

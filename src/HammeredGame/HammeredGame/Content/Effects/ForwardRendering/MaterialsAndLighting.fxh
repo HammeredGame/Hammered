@@ -2,12 +2,6 @@
 
 #include "Macros.fxh"
 
-// Receive the world matrix's inverse transform, so that we can convert the
-// object-space normal to world space taking into account any non-uniform
-// scaling. If the model scaling is uniform in XYZ, then this is identical to
-// the world matrix.
-float3x3 WorldInverseTranspose;
-
 // Whether to enable lighting contributions or to render flat if false.
 bool Lit;
 

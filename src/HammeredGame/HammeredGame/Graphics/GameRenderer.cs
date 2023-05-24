@@ -1,6 +1,7 @@
 ﻿using BEPUphysics.OtherSpaceStages;
 using HammeredGame.Game;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
+using HammeredGame.Graphics.ForwardRendering;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
@@ -111,7 +112,7 @@ namespace HammeredGame.Graphics
             (Matrix sunView, Matrix sunProj, Vector3 sunPos) = scene.Lights.Sun.CreateSunViewProjPosition(scene.Camera.Frustum);
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
-                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques["RenderLightDepthMap"];
+                gameObject.Effect.CurrentPass = AbstractForwardRenderingEffect.Pass.ShadowMapGeneration;
                 gameObject.Draw(gameTime, sunView, sunProj, sunPos, scene.Lights);
             }
 
@@ -122,7 +123,7 @@ namespace HammeredGame.Graphics
             // Render all the scene objects
             foreach (GameObject gameObject in scene.GameObjectsList)
             {
-                gameObject.Effect.CurrentTechnique = gameObject.Effect.Techniques["MainShading"];
+                gameObject.Effect.CurrentPass = AbstractForwardRenderingEffect.Pass.MainShading;
 
                 // Ideally, the skybox needs to be rendered last (otherwise it'll draw so many
                 // useless pixels across the screen, that would be overwritten by other closer
@@ -135,14 +136,16 @@ namespace HammeredGame.Graphics
                     gpu.RasterizerState = new RasterizerState { CullMode = CullMode.CullClockwiseFace };
                     gameObject.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
                     gpu.RasterizerState = new RasterizerState { CullMode = CullMode.CullCounterClockwiseFace };
+                    continue;
                 }
 
                 // TODO: move these parameter-setting into GameObject's Draw() so everything is in one place
-                gameObject.Effect.Parameters["SunDepthTexture"]?.SetValue(lightDepthTarget);
-                gameObject.Effect.Parameters["SunView"]?.SetValue(sunView);
-                gameObject.Effect.Parameters["SunProj"]?.SetValue(sunProj);
-                gameObject.Effect.Parameters["ShadowMapDepthBias"]?.SetValue(shadowMapDepthBias);
-                gameObject.Effect.Parameters["ShadowMapNormalOffset"]?.SetValue(shadowMapNormalOffset);
+                gameObject.Effect.SunDepthTexture = lightDepthTarget;
+                gameObject.Effect.SunView = sunView;
+                gameObject.Effect.SunProjection = sunProj;
+                gameObject.Effect.ShadowMapDepthBias = shadowMapDepthBias;
+                gameObject.Effect.ShadowMapNormalOffset = shadowMapNormalOffset;
+
                 gameObject.Draw(gameTime, scene.Camera.ViewMatrix, scene.Camera.ProjMatrix, scene.Camera.Position, scene.Lights);
             }
 

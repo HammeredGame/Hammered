@@ -183,12 +183,25 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
     float4 laserTextureColor = ScrollingLaserTexture(input.TextureCoordinate);
     float4 materialColor = SAMPLE_TEXTURE(materialTextureSampler, input.TextureCoordinate, LaserMaterialGammaCorrection);
 
+    // Initialize the default color that we'll add to
+    output.Color = float4(0, 0, 0, 0);
+
+    // The specular and diffuse components are added for every directional light
+    float3 normal = normalize(input.Normal);
+    output.Color = CalculateLightingContributions(normal, input.SunSpacePosition, input.WorldSpacePosition, CameraPosition);
+
+    // Add the ambient component at the end. We want to add this and not
+    // multiply because even the darkest blacks should become lightened up.
+    float4 ambient = MaterialAmbientColor * AmbientLightColor * AmbientLightIntensity;
+    output.Color += ambient;
+
+
     // Sample the mask for the laser to fade out the edges
     float4 maskColor = SAMPLE_TEXTURE(laserMaskSampler, input.TextureCoordinate, LaserMaskGammaCorrection);
 
     // Multiply all the lighting so far by the texture color. If there is no
     // texture, this will result in a multiplication by zero, thus black.
-    output.Color = materialColor;
+    output.Color *= materialColor;
 
     // Multiply the laser texture and its mask
     output.Color *= laserTextureColor * maskColor;
