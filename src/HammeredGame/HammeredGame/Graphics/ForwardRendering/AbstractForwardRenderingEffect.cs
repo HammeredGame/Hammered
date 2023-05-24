@@ -119,9 +119,13 @@ namespace HammeredGame.Graphics.ForwardRendering
 
         protected abstract string EffectName { get; }
 
-        public AbstractForwardRenderingEffect(ContentManager content)
+        protected AbstractForwardRenderingEffect(ContentManager content)
         {
-            ShadingEffect = content.Load<Effect>(EffectName);
+            // Make sure we clone the effect so we don't reuse the same instance, causing properties
+            // set on a previous object to be retained. We want to have separate instances for each
+            // object so that we can set some material properties once and keep them throughout all
+            // of its Draw calls.
+            ShadingEffect = content.Load<Effect>(EffectName).Clone();
 
             CacheEffectParameters();
             ShadowMapGenerationTechnique = ShadingEffect.Techniques["RenderLightDepthMap"];
@@ -129,7 +133,7 @@ namespace HammeredGame.Graphics.ForwardRendering
             MainShadingInstancedTechnique = ShadingEffect.Techniques["MainShadingInstanced"];
         }
 
-        public AbstractForwardRenderingEffect(AbstractForwardRenderingEffect clone)
+        protected AbstractForwardRenderingEffect(AbstractForwardRenderingEffect clone)
         {
             ShadingEffect = clone.ShadingEffect.Clone();
 
