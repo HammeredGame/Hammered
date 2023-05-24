@@ -43,10 +43,12 @@ namespace HammeredGame.Game
         // Common variables for any object in the game
         public Model Model;
 
-        // Load in shader
-        private readonly DefaultShadingEffect defaultShadingEffect;
-
-        public virtual AbstractForwardRenderingEffect Effect => defaultShadingEffect;
+        // The shader effect to use for rendering this object, and a getter that returns the
+        // abstract base class. This makes it possible for child classes of GameObject to use
+        // different local shaders that all derive from the same base class, by just exposing an
+        // override of the Effect property.
+        protected readonly DefaultShadingEffect DefaultShadingEffect;
+        public virtual AbstractForwardRenderingEffect Effect => DefaultShadingEffect;
 
         protected GraphicsDevice GPU;
 
@@ -117,7 +119,21 @@ namespace HammeredGame.Game
             this.GPU = services.GetService<GraphicsDevice>();
 
             // Load in Shader
-            this.defaultShadingEffect = new DefaultShadingEffect(services.GetService<ContentManager>());
+            DefaultShadingEffect = new DefaultShadingEffect(services.GetService<ContentManager>());
+
+            // Set up default material colors that are unchanged throughout all Draw calls.
+            DefaultShadingEffect.Lit = true;
+
+            // Set tints for the diffuse color, ambient color, and specular color. These are
+            // multiplied in the shader by the light color and intensity, as well as each
+            // component's weight.
+            DefaultShadingEffect.MaterialDiffuseColor = Color.White.ToVector4();
+            DefaultShadingEffect.MaterialAmbientColor = Color.White.ToVector4();
+            DefaultShadingEffect.MaterialHasSpecular = false;
+            // Uncomment if specular; will use Blinn-Phong.
+            // Effect.MaterialSpecularColor = Color.White.ToVector4();
+            // Effect.MaterialShininess = 20f;
+
         }
 
         public void SetCurrentScene(Scene currentScene)
@@ -152,43 +168,32 @@ namespace HammeredGame.Game
 
             foreach (ModelMesh mesh in model.Meshes)
             {
-                defaultShadingEffect.World = meshTransforms[mesh.ParentBone.Index] * world;
-                defaultShadingEffect.View = view;
-                defaultShadingEffect.Projection = projection;
-                defaultShadingEffect.CameraPosition = cameraPosition;
+                DefaultShadingEffect.World = meshTransforms[mesh.ParentBone.Index] * world;
+                DefaultShadingEffect.View = view;
+                DefaultShadingEffect.Projection = projection;
+                DefaultShadingEffect.CameraPosition = cameraPosition;
 
                 // Pre-compute the inverse transpose of the world matrix to use in shader
                 Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
 
-                defaultShadingEffect.WorldInverseTranspose = worldInverseTranspose;
-                defaultShadingEffect.Lit = true;
+                DefaultShadingEffect.WorldInverseTranspose = worldInverseTranspose;
 
                 // Set light parameters
-                defaultShadingEffect.DirectionalLightColors = lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray();
-                defaultShadingEffect.DirectionalLightIntensities = lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray();
-                defaultShadingEffect.DirectionalLightDirections = lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray();
-                defaultShadingEffect.SunLightIndex = lights.Directionals.Count;
+                DefaultShadingEffect.DirectionalLightColors = lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray();
+                DefaultShadingEffect.DirectionalLightIntensities = lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray();
+                DefaultShadingEffect.DirectionalLightDirections = lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray();
+                DefaultShadingEffect.SunLightIndex = lights.Directionals.Count;
 
-                defaultShadingEffect.AmbientLightColor = lights.Ambient.LightColor.ToVector4();
-                defaultShadingEffect.AmbientLightIntensity = lights.Ambient.Intensity;
+                DefaultShadingEffect.AmbientLightColor = lights.Ambient.LightColor.ToVector4();
+                DefaultShadingEffect.AmbientLightIntensity = lights.Ambient.Intensity;
 
-                // Set tints for the diffuse color, ambient color, and specular color. These are
-                // multiplied in the shader by the light color and intensity, as well as each
-                // component's weight.
-                defaultShadingEffect.MaterialDiffuseColor = Color.White.ToVector4();
-                defaultShadingEffect.MaterialAmbientColor = Color.White.ToVector4();
-                defaultShadingEffect.MaterialHasSpecular = false;
-                // Uncomment if specular; will use Blinn-Phong.
-                // Effect.MaterialSpecularColor = Color.White.ToVector4();
-                // Effect.MaterialShininess = 20f;
-
-                defaultShadingEffect.ModelTexture = tex;
+                DefaultShadingEffect.ModelTexture = tex;
                 // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
-                defaultShadingEffect.ModelTextureGammaCorrection = true;
+                DefaultShadingEffect.ModelTextureGammaCorrection = true;
 
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    part.Effect = defaultShadingEffect.GetEffect();
+                    part.Effect = DefaultShadingEffect.GetEffect();
                 }
 
                 mesh.Draw();
