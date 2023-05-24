@@ -10,6 +10,7 @@ using HammeredGame.Core;
 using BEPUphysics.Entities;
 using Microsoft.Xna.Framework.Content;
 using HammeredGame.Graphics;
+using HammeredGame.Graphics.ForwardRendering;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 {
@@ -26,12 +27,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
     class SkyboxObject : EnvironmentObject
     {
         private TextureCube cubemap;
+
+        private readonly SkyboxEffect skyboxEffect;
+        public override AbstractForwardRenderingEffect Effect => skyboxEffect;
+
         public SkyboxObject(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             // Although we're accepting any model and texture here, technically only a unit cube and
             // a DDS cube-map texture is supported. Behaviour with other models and textures are undefined.
             // We need a TextureCube and not a Texture2D, so we can't use the XML :(
-            Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/Skybox");
+            skyboxEffect = new SkyboxEffect(services.GetService<ContentManager>());
             cubemap = services.GetService<ContentManager>().Load<TextureCube>("Skybox/kloofendal_48d_partly_cloudy_puresky_4k");
         }
 
@@ -46,30 +51,31 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects
 
             foreach (ModelMesh mesh in model.Meshes)
             {
+                skyboxEffect.World = mesh.ParentBone.Transform * world;
+                // Remove the translation part of the view matrix (so that it appears infinitely
+                // far away) by setting the last row and column to the identities.
+                Matrix viewNoTranslation = view;
+                viewNoTranslation.M41 = viewNoTranslation.M42 = viewNoTranslation.M43 = 0f;
+                viewNoTranslation.M14 = viewNoTranslation.M24 = viewNoTranslation.M34 = 0f;
+                viewNoTranslation.M44 = 1f;
+                skyboxEffect.View = viewNoTranslation;
+                skyboxEffect.Projection = projection;
+
+                // Add sunlight color and direction
+                skyboxEffect.SunLightColor = lights.Sun.LightColor.ToVector4();
+                skyboxEffect.SunLightIntensity = lights.Sun.Intensity;
+                skyboxEffect.SunLightDirection = lights.Sun.Direction;
+
+                // The skybox texture is an sRGB cube map
+                skyboxEffect.SkyboxTexture = cubemap;
+                skyboxEffect.SkyboxTextureGammaCorrection = true;
+
+
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    // Load in the shader and set its parameters
-                    part.Effect = this.Effect;
-
-                    part.Effect.Parameters["World"].SetValue(mesh.ParentBone.Transform * world);
-                    // Remove the translation part of the view matrix (so that it appears infinitely
-                    // far away) by setting the last row and column to the identities.
-                    Matrix viewNoTranslation = view;
-                    viewNoTranslation.M41 = viewNoTranslation.M42 = viewNoTranslation.M43 = 0f;
-                    viewNoTranslation.M14 = viewNoTranslation.M24 = viewNoTranslation.M34 = 0f;
-                    viewNoTranslation.M44 = 1f;
-                    part.Effect.Parameters["View"].SetValue(viewNoTranslation);
-                    part.Effect.Parameters["Projection"].SetValue(projection);
-
-                    // Add sunlight color and direction
-                    part.Effect.Parameters["SunLightColor"]?.SetValue(lights.Sun.LightColor.ToVector4());
-                    part.Effect.Parameters["SunLightIntensity"]?.SetValue(lights.Sun.Intensity);
-                    part.Effect.Parameters["SunLightDirection"]?.SetValue(lights.Sun.Direction);
-
-                    // The skybox texture is an sRGB cube map
-                    part.Effect.Parameters["SkyboxTexture"].SetValue(cubemap);
-                    part.Effect.Parameters["SkyboxTextureGammaCorrection"].SetValue(true);
+                    part.Effect = skyboxEffect.GetEffect();
                 }
+
                 mesh.Draw();
             }
         }

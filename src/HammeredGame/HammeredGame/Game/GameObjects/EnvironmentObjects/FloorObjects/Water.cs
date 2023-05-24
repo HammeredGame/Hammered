@@ -9,6 +9,7 @@ using HammeredGame.Graphics;
 using ImMonoGame.Thing;
 using ImGuiNET;
 using System.Threading.Tasks;
+using HammeredGame.Graphics.ForwardRendering;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 {
@@ -28,6 +29,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
         private float opacity = 0.6f;
         private bool useBumpMaps = false;
 
+        private readonly WaterEffect waterEffect;
+        public override AbstractForwardRenderingEffect Effect => waterEffect;
+
         public Water(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             BEPUutilities.Vector3[] vertices;
@@ -38,7 +42,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
             mesh.Tag = this;
             this.ActiveSpace.Add(mesh);
 
-            this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/Water");
+            this.waterEffect = new WaterEffect(services.GetService<ContentManager>());
         }
 
         public override void Update(GameTime gameTime, bool screenHasFocus)
@@ -65,49 +69,50 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects
 
             foreach (ModelMesh mesh in model.Meshes)
             {
+                // Load in the shader and set its parameters
+                waterEffect.World = mesh.ParentBone.Transform * world;
+                waterEffect.View = view;
+                waterEffect.Projection = projection;
+                waterEffect.CameraPosition = cameraPosition;
+
+                // Pre-compute the inverse transpose of the world matrix to use in shader
+                Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
+
+                waterEffect.WorldInverseTranspose = worldInverseTranspose;
+
+                waterEffect.Lit = true;
+
+                // Set light parameters
+                waterEffect.DirectionalLightColors = lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray();
+                waterEffect.DirectionalLightIntensities = lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray();
+                waterEffect.DirectionalLightDirections = lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray();
+                waterEffect.SunLightIndex = lights.Directionals.Count;
+
+                waterEffect.AmbientLightColor = lights.Ambient.LightColor.ToVector4();
+                waterEffect.AmbientLightIntensity = lights.Ambient.Intensity;
+
+                // Set tints for the diffuse color, ambient color, and specular color. These are
+                // multiplied in the shader by the light color and intensity, as well as each
+                // component's weight.
+                waterEffect.MaterialDiffuseColor = Color.White.ToVector4();
+                waterEffect.MaterialAmbientColor = Color.White.ToVector4();
+                waterEffect.MaterialHasSpecular = true;
+                waterEffect.MaterialSpecularColor = Color.White.ToVector4();
+                waterEffect.MaterialShininess = 10f;
+
+                waterEffect.ModelTexture = tex;
+                // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
+                waterEffect.ModelTextureGammaCorrection = true;
+
+                waterEffect.GameTimeSeconds = (float)gameTime.TotalGameTime.TotalSeconds;
+                waterEffect.UseBumpMap = useBumpMaps;
+                waterEffect.WaterOpacity = opacity;
+
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    // Load in the shader and set its parameters
-                    part.Effect = this.Effect;
-
-                    part.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform * world);
-                    part.Effect.Parameters["View"]?.SetValue(view);
-                    part.Effect.Parameters["Projection"]?.SetValue(projection);
-                    part.Effect.Parameters["CameraPosition"]?.SetValue(cameraPosition);
-
-                    // Pre-compute the inverse transpose of the world matrix to use in shader
-                    Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
-
-                    part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
-
-                    part.Effect.Parameters["Lit"]?.SetValue(true);
-
-                    // Set light parameters
-                    part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());
-                    part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
-                    part.Effect.Parameters["DirectionalLightDirections"]?.SetValue(lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray());
-                    part.Effect.Parameters["SunLightIndex"]?.SetValue(lights.Directionals.Count);
-
-                    part.Effect.Parameters["AmbientLightColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
-                    part.Effect.Parameters["AmbientLightIntensity"]?.SetValue(lights.Ambient.Intensity);
-
-                    // Set tints for the diffuse color, ambient color, and specular color. These are
-                    // multiplied in the shader by the light color and intensity, as well as each
-                    // component's weight.
-                    part.Effect.Parameters["MaterialDiffuseColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["MaterialHasSpecular"]?.SetValue(true);
-                    part.Effect.Parameters["MaterialSpecularColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["MaterialShininess"]?.SetValue(10f);
-
-                    part.Effect.Parameters["ModelTexture"]?.SetValue(tex);
-                    // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
-                    part.Effect.Parameters["ModelTextureGammaCorrection"]?.SetValue(true);
-
-                    part.Effect.Parameters["GameTimeSeconds"].SetValue((float)gameTime.TotalGameTime.TotalSeconds);
-                    part.Effect.Parameters["UseBumpMap"].SetValue(useBumpMaps);
-                    part.Effect.Parameters["WaterOpacity"].SetValue(opacity);
+                    part.Effect = waterEffect.GetEffect();
                 }
+
                 mesh.Draw();
             }
         }
