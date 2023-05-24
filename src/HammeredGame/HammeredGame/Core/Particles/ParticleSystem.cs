@@ -36,7 +36,7 @@ namespace HammeredGame.Core.Particles
         private float currentTime;
 
         // The main shading effect
-        private DefaultShadingEffect effect;
+        private readonly DefaultShadingEffect effect;
 
         // The physics space
         private readonly Space activeSpace;
@@ -133,6 +133,23 @@ namespace HammeredGame.Core.Particles
                 particles[i].Size = MathHelper.Lerp(particles[i].StartSize, particles[i].EndSize, particleAge / particleDuration);
                 i = (i + 1) % settings.MaxParticles;
             }
+        }
+
+        /// <summary>
+        /// Copy any shadow map related parameters from the parent object to the particles, since
+        /// they get only assigned to the object's main effect and not to any particle systems (in
+        /// GameRenderer). The parameters set by this function are ignored anyway if we're still in
+        /// the shadow map generation pass or if the particles are set to "unlit", so it is safe to
+        /// call this function on every Draw() call.
+        /// </summary>
+        /// <param name="parentObjectEffect"></param>
+        public void CopyShadowMapParametersFrom(AbstractForwardRenderingEffect parentObjectEffect)
+        {
+            effect.SunDepthTexture = parentObjectEffect.SunDepthTexture;
+            effect.SunView = parentObjectEffect.SunView;
+            effect.SunProjection = parentObjectEffect.SunProjection;
+            effect.ShadowMapDepthBias = parentObjectEffect.ShadowMapDepthBias;
+            effect.ShadowMapNormalOffset = parentObjectEffect.ShadowMapNormalOffset;
         }
 
         /// <summary>

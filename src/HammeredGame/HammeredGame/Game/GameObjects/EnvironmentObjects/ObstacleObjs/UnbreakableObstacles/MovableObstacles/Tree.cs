@@ -307,6 +307,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
         {
             base.Draw(gameTime, view, projection, cameraPosition, lights);
+
+            fallDustParticles.CopyShadowMapParametersFrom(Effect);
             fallDustParticles.Draw(gameTime, view, projection, cameraPosition, lights);
         }
     }
