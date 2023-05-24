@@ -628,6 +628,8 @@ namespace HammeredGame.Game.GameObjects
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
         {
             base.Draw(gameTime, view, projection, cameraPosition, lights);
+
+            windParticles.CopyShadowMapParametersFrom(Effect);
             windParticles.Draw(gameTime, view, projection, cameraPosition, lights);
         }
 
