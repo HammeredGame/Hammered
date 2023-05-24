@@ -757,6 +757,25 @@
 /processorParam:TextureFormat=Color
 /build:Meshes/IslandMeshes/blue-grassuv.png
 
+#begin Meshes/IslandMeshes/finalIsland.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=0.1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:Meshes/IslandMeshes/finalIsland.fbx
+
 #begin Meshes/IslandMeshes/grassuv.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1545,6 +1564,9 @@
 
 #begin SceneDescriptions/Island2/ColorMinigamePuzzle.xml
 /copy:SceneDescriptions/Island2/ColorMinigamePuzzle.xml
+
+#begin SceneDescriptions/Island3/FinalIslandPuzzle.xml
+/copy:SceneDescriptions/Island3/FinalIslandPuzzle.xml
 
 #begin SceneDescriptions/Test/JustHammer.xml
 /copy:SceneDescriptions/Test/JustHammer.xml
