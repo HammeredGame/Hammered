@@ -17,6 +17,7 @@ using HammeredGame.Graphics;
 using Microsoft.Xna.Framework.Content;
 using ImGuiNET;
 using ImMonoGame.Thing;
+using HammeredGame.Graphics.ForwardRendering;
 
 namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles
 {
@@ -87,6 +88,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         private float laserIntensity = 15f;
         private Vector2 laserSpeed = new(-4f, 0f);
 
+        private readonly LaserEffect laserEffect;
+
+        public override AbstractForwardRenderingEffect Effect => laserEffect;
+
         public Laser(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
             if (this.Entity != null)
@@ -111,7 +116,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
             // We use a custom shader for the Laser which uses a 2D plane mesh and rolling textures
             // and color intensities above 1 to simulate the laser.
-            this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/Laser");
+            this.laserEffect = new LaserEffect(services.GetService<ContentManager>());
             this.laserTexture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Laser/LaserTexture");
             this.laserMaskTexture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Laser/LaserMask");
 
@@ -264,56 +269,56 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
             foreach (ModelMesh mesh in model.Meshes)
             {
+                // We're using a Laser-specific shader here. Editing these parameters should go
+                // side-in-side with the shader file, since they're very tightly coupled.
+                laserEffect.World = mesh.ParentBone.Transform * world;
+                laserEffect.View = view;
+                laserEffect.Projection = projection;
+                laserEffect.CameraPosition = cameraPosition;
+
+                // Pre-compute the inverse transpose of the world matrix to use in shader
+                Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
+
+                laserEffect.WorldInverseTranspose = worldInverseTranspose;
+
+                laserEffect.Lit = false;
+
+                // Set light parameters
+                laserEffect.DirectionalLightColors = lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray();
+                laserEffect.DirectionalLightIntensities = lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray();
+                laserEffect.DirectionalLightDirections = lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray();
+                laserEffect.SunLightIndex = lights.Directionals.Count;
+
+                laserEffect.AmbientLightColor = lights.Ambient.LightColor.ToVector4();
+                laserEffect.AmbientLightIntensity = lights.Ambient.Intensity;
+
+                // Set tints for the diffuse color, ambient color, and specular color. These are
+                // multiplied in the shader by the light color and intensity, as well as each
+                // component's weight.
+                laserEffect.MaterialDiffuseColor = Color.White.ToVector4();
+                laserEffect.MaterialAmbientColor = Color.White.ToVector4();
+                laserEffect.MaterialHasSpecular = false;
+
+                laserEffect.LaserMaterial = tex;
+                // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
+                laserEffect.LaserMaterialGammaCorrection = true;
+
+                // Use inverse-gamma-correction for the alpha masks too, since the fade to
+                // transparency is done in sRGB, and if incorrectly treated as linear, the edges
+                // will jump from fully transparent to immediately very visible.
+                laserEffect.LaserTexture = laserTexture;
+                laserEffect.LaserTextureGammaCorrection = true;
+
+                laserEffect.LaserMask = laserMaskTexture;
+                laserEffect.LaserMaskGammaCorrection = true;
+
+                laserEffect.GameTimeSeconds = (float)gameTime.TotalGameTime.TotalSeconds;
+                laserEffect.LaserIntensity = laserIntensity;
+                laserEffect.LaserSpeed = laserSpeed;
+
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    // We're using a Laser-specific shader here. Editing these parameters should go
-                    // side-in-side with the shader file, since they're very tightly coupled.
-                    part.Effect = this.Effect;
-
-                    part.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform * world);
-                    part.Effect.Parameters["View"]?.SetValue(view);
-                    part.Effect.Parameters["Projection"]?.SetValue(projection);
-                    part.Effect.Parameters["CameraPosition"]?.SetValue(cameraPosition);
-
-                    // Pre-compute the inverse transpose of the world matrix to use in shader
-                    Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
-
-                    part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
-
-                    part.Effect.Parameters["Lit"]?.SetValue(false);
-
-                    // Set light parameters
-                    part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());
-                    part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
-                    part.Effect.Parameters["DirectionalLightDirections"]?.SetValue(lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray());
-                    part.Effect.Parameters["SunLightIndex"]?.SetValue(lights.Directionals.Count);
-
-                    part.Effect.Parameters["AmbientLightColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
-                    part.Effect.Parameters["AmbientLightIntensity"]?.SetValue(lights.Ambient.Intensity);
-
-                    // Set tints for the diffuse color, ambient color, and specular color. These are
-                    // multiplied in the shader by the light color and intensity, as well as each
-                    // component's weight.
-                    part.Effect.Parameters["MaterialDiffuseColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["MaterialHasSpecular"]?.SetValue(false);
-
-                    part.Effect.Parameters["LaserMaterial"].SetValue(tex);
-                    // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
-                    part.Effect.Parameters["LaserMaterialGammaCorrection"].SetValue(true);
-
-                    // Use inverse-gamma-correction for the alpha masks too, since the fade to
-                    // transparency is done in sRGB, and if incorrectly treated as linear, the edges
-                    // will jump from fully transparent to immediately very visible.
-                    part.Effect.Parameters["LaserTexture"]?.SetValue(laserTexture);
-                    part.Effect.Parameters["LaserTextureGammaCorrection"]?.SetValue(true);
-
-                    part.Effect.Parameters["LaserMask"].SetValue(laserMaskTexture);
-                    part.Effect.Parameters["LaserMaskGammaCorrection"]?.SetValue(true);
-
-                    part.Effect.Parameters["GameTimeSeconds"]?.SetValue((float)gameTime.TotalGameTime.TotalSeconds);
-                    part.Effect.Parameters["LaserIntensity"]?.SetValue(laserIntensity);
-                    part.Effect.Parameters["LaserSpeed"]?.SetValue(laserSpeed);
+                    part.Effect = laserEffect.GetEffect();
                 }
                 mesh.Draw();
             }

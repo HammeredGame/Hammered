@@ -3,6 +3,7 @@ using System.Linq;
 using BEPUphysics;
 using BEPUphysics.Entities.Prefabs;
 using HammeredGame.Graphics;
+using HammeredGame.Graphics.ForwardRendering;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -35,7 +36,7 @@ namespace HammeredGame.Core.Particles
         private float currentTime;
 
         // The main shading effect
-        public Effect Effect;
+        private DefaultShadingEffect effect;
 
         // The physics space
         private readonly Space activeSpace;
@@ -64,7 +65,7 @@ namespace HammeredGame.Core.Particles
             // Allocate an array of structs to hold the particles.
             particles = new Particle[settings.MaxParticles];
 
-            this.Effect = content.Load<Effect>("Effects/ForwardRendering/MainShading");
+            this.effect = new DefaultShadingEffect(content);
         }
 
         /// <summary>
@@ -172,6 +173,47 @@ namespace HammeredGame.Core.Particles
 
             foreach (ModelMesh mesh in settings.Model.Meshes)
             {
+                // Proactively select the main shading technique instead of letting GameRenderer
+                // choose it like for GameObjects, since we won't render shadows for particles
+                // plus we want to use instancing
+                effect.CurrentPass = AbstractForwardRenderingEffect.Pass.MainShadingInstanced;
+
+                // Load in the shader and set its parameters
+                effect.World = mesh.ParentBone.Transform;
+                effect.View = view;
+                effect.Projection = projection;
+                effect.CameraPosition = cameraPosition;
+
+                // Pre-compute the inverse transpose of the world matrix to use in shader
+                Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
+
+                effect.WorldInverseTranspose = worldInverseTranspose;
+
+                effect.Lit = settings.AffectedByLight;
+
+                // Set light parameters
+                effect.DirectionalLightColors = lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray();
+                effect.DirectionalLightIntensities = lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray();
+                effect.DirectionalLightDirections = lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray();
+                effect.SunLightIndex = lights.Directionals.Count;
+
+                effect.AmbientLightColor = lights.Ambient.LightColor.ToVector4();
+                effect.AmbientLightIntensity = lights.Ambient.Intensity;
+
+                // Set tints for the diffuse color, ambient color, and specular color. These are
+                // multiplied in the shader by the light color and intensity, as well as each
+                // component's weight.
+                effect.MaterialDiffuseColor = Color.White.ToVector4();
+                effect.MaterialAmbientColor = Color.White.ToVector4();
+                effect.MaterialHasSpecular = false;
+                // Uncomment if specular; will use Blinn-Phong.
+                // effect.MaterialSpecularColor = Color.White.ToVector4();
+                // effect.MaterialShininess = 20f;
+
+                effect.ModelTexture = settings.Texture;
+                // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
+                effect.ModelTextureGammaCorrection = true;
+
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
                     // We usually don't worry about the vertex/index buffers when using
@@ -185,54 +227,8 @@ namespace HammeredGame.Core.Particles
                     // And also tell it to read from the model index buffer.
                     gpu.Indices = part.IndexBuffer;
 
-                    // Proactively select the main shading technique instead of letting GameRenderer
-                    // choose it like for GameObjects, since we won't render shadows for particles
-                    // plus we want to use instancing
-                    Effect.CurrentTechnique = Effect.Techniques["MainShadingInstanced"];
-
-                    // Load in the shader and set its parameters
-                    part.Effect = this.Effect;
-
-                    part.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform);
-                    part.Effect.Parameters["View"]?.SetValue(view);
-                    part.Effect.Parameters["Projection"]?.SetValue(projection);
-                    part.Effect.Parameters["CameraPosition"]?.SetValue(cameraPosition);
-
-                    // Pre-compute the inverse transpose of the world matrix to use in shader
-                    Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
-
-                    part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
-
-                    part.Effect.Parameters["Lit"]?.SetValue(settings.AffectedByLight);
-
-                    // Set light parameters
-                    part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());
-                    part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
-                    part.Effect.Parameters["DirectionalLightDirections"]?.SetValue(lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray());
-                    part.Effect.Parameters["SunLightIndex"]?.SetValue(lights.Directionals.Count);
-
-                    part.Effect.Parameters["AmbientLightColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
-                    part.Effect.Parameters["AmbientLightIntensity"]?.SetValue(lights.Ambient.Intensity);
-
-                    // Set tints for the diffuse color, ambient color, and specular color. These are
-                    // multiplied in the shader by the light color and intensity, as well as each
-                    // component's weight.
-                    part.Effect.Parameters["MaterialDiffuseColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["MaterialHasSpecular"].SetValue(false);
-                    // Uncomment if specular; will use Blinn-Phong.
-                    // part.Effect.Parameters["MaterialSpecularColor"]?.SetValue(Color.White.ToVector4());
-                    // part.Effect.Parameters["MaterialShininess"]?.SetValue(20f);
-
-                    part.Effect.Parameters["ModelTexture"]?.SetValue(settings.Texture);
-                    // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
-                    part.Effect.Parameters["ModelTextureGammaCorrection"]?.SetValue(true);
-
-                    foreach (EffectPass pass in part.Effect.CurrentTechnique.Passes)
-                    {
-                        pass.Apply();
-                        gpu.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, part.StartIndex, part.PrimitiveCount, numberParticles);
-                    }
+                    effect.Apply();
+                    gpu.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, part.StartIndex, part.PrimitiveCount, numberParticles);
                 }
             }
         }
