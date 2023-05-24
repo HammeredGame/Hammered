@@ -50,6 +50,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
 
         public Key(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
+            // Make key material slightly shiny
+            DefaultShadingEffect.MaterialHasSpecular = true;
+            DefaultShadingEffect.MaterialShininess = 40f;
+            DefaultShadingEffect.MaterialSpecularColor = Color.White.ToVector4();
+
             if (this.Entity != null)
             {
                 this.Entity.Tag = "CollectibleBounds";

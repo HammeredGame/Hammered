@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Audio;
+using HammeredGame.Graphics.ForwardRendering;
 
 namespace HammeredGame.Game
 {
@@ -42,8 +43,12 @@ namespace HammeredGame.Game
         // Common variables for any object in the game
         public Model Model;
 
-        // Load in shader
-        public Effect Effect;
+        // The shader effect to use for rendering this object, and a getter that returns the
+        // abstract base class. This makes it possible for child classes of GameObject to use
+        // different local shaders that all derive from the same base class, by just exposing an
+        // override of the Effect property.
+        protected readonly DefaultShadingEffect DefaultShadingEffect;
+        public virtual AbstractForwardRenderingEffect Effect => DefaultShadingEffect;
 
         protected GraphicsDevice GPU;
 
@@ -114,7 +119,21 @@ namespace HammeredGame.Game
             this.GPU = services.GetService<GraphicsDevice>();
 
             // Load in Shader
-            this.Effect = services.GetService<ContentManager>().Load<Effect>("Effects/ForwardRendering/MainShading");
+            DefaultShadingEffect = new DefaultShadingEffect(services.GetService<ContentManager>());
+
+            // Set up default material colors that are unchanged throughout all Draw calls.
+            DefaultShadingEffect.Lit = true;
+
+            // Set tints for the diffuse color, ambient color, and specular color. These are
+            // multiplied in the shader by the light color and intensity, as well as each
+            // component's weight.
+            DefaultShadingEffect.MaterialDiffuseColor = Color.White.ToVector4();
+            DefaultShadingEffect.MaterialAmbientColor = Color.White.ToVector4();
+            DefaultShadingEffect.MaterialHasSpecular = false;
+            // Uncomment if specular; will use Blinn-Phong.
+            // Effect.MaterialSpecularColor = Color.White.ToVector4();
+            // Effect.MaterialShininess = 20f;
+
         }
 
         public void SetCurrentScene(Scene currentScene)
@@ -149,46 +168,34 @@ namespace HammeredGame.Game
 
             foreach (ModelMesh mesh in model.Meshes)
             {
+                DefaultShadingEffect.World = meshTransforms[mesh.ParentBone.Index] * world;
+                DefaultShadingEffect.View = view;
+                DefaultShadingEffect.Projection = projection;
+                DefaultShadingEffect.CameraPosition = cameraPosition;
+
+                // Pre-compute the inverse transpose of the world matrix to use in shader
+                Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
+
+                DefaultShadingEffect.WorldInverseTranspose = worldInverseTranspose;
+
+                // Set light parameters
+                DefaultShadingEffect.DirectionalLightColors = lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray();
+                DefaultShadingEffect.DirectionalLightIntensities = lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray();
+                DefaultShadingEffect.DirectionalLightDirections = lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray();
+                DefaultShadingEffect.SunLightIndex = lights.Directionals.Count;
+
+                DefaultShadingEffect.AmbientLightColor = lights.Ambient.LightColor.ToVector4();
+                DefaultShadingEffect.AmbientLightIntensity = lights.Ambient.Intensity;
+
+                DefaultShadingEffect.ModelTexture = tex;
+                // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
+                DefaultShadingEffect.ModelTextureGammaCorrection = true;
+
                 foreach (ModelMeshPart part in mesh.MeshParts)
                 {
-                    // Load in the shader and set its parameters
-                    part.Effect = this.Effect;
-
-                    part.Effect.Parameters["World"]?.SetValue(mesh.ParentBone.Transform * world);
-                    part.Effect.Parameters["View"]?.SetValue(view);
-                    part.Effect.Parameters["Projection"]?.SetValue(projection);
-                    part.Effect.Parameters["CameraPosition"]?.SetValue(cameraPosition);
-
-                    // Pre-compute the inverse transpose of the world matrix to use in shader
-                    Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
-
-                    part.Effect.Parameters["WorldInverseTranspose"]?.SetValue(worldInverseTranspose);
-
-                    part.Effect.Parameters["Lit"]?.SetValue(true);
-
-                    // Set light parameters
-                    part.Effect.Parameters["DirectionalLightColors"]?.SetValue(lights.Directionals.Select(l => l.LightColor.ToVector4()).Append(lights.Sun.LightColor.ToVector4()).ToArray());
-                    part.Effect.Parameters["DirectionalLightIntensities"]?.SetValue(lights.Directionals.Select(l => l.Intensity).Append(lights.Sun.Intensity).ToArray());
-                    part.Effect.Parameters["DirectionalLightDirections"]?.SetValue(lights.Directionals.Select(l => l.Direction).Append(lights.Sun.Direction).ToArray());
-                    part.Effect.Parameters["SunLightIndex"]?.SetValue(lights.Directionals.Count);
-
-                    part.Effect.Parameters["AmbientLightColor"]?.SetValue(lights.Ambient.LightColor.ToVector4());
-                    part.Effect.Parameters["AmbientLightIntensity"]?.SetValue(lights.Ambient.Intensity);
-
-                    // Set tints for the diffuse color, ambient color, and specular color. These are
-                    // multiplied in the shader by the light color and intensity, as well as each
-                    // component's weight.
-                    part.Effect.Parameters["MaterialDiffuseColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["MaterialAmbientColor"]?.SetValue(Color.White.ToVector4());
-                    part.Effect.Parameters["MaterialHasSpecular"].SetValue(false);
-                    // Uncomment if specular; will use Blinn-Phong.
-                    // part.Effect.Parameters["MaterialSpecularColor"]?.SetValue(Color.White.ToVector4());
-                    // part.Effect.Parameters["MaterialShininess"]?.SetValue(20f);
-
-                    part.Effect.Parameters["ModelTexture"]?.SetValue(tex);
-                    // invert the gamma correction, assuming the texture is srgb and not linear (usually it is)
-                    part.Effect.Parameters["ModelTextureGammaCorrection"]?.SetValue(true);
+                    part.Effect = DefaultShadingEffect.GetEffect();
                 }
+
                 mesh.Draw();
             }
         }
