@@ -11,6 +11,7 @@ using Myra.Graphics2D.UI;
 using Pleasing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Screens
@@ -142,28 +143,54 @@ namespace HammeredGame.Game.Screens
             {
                 PassesFocusThrough = false;
 
-                // Dequeue the top item if the confirmation action is performed, and call into any
-                // callbacks it had
+                // If the confirmation action is performed, either show the whole dialogue if it
+                // hasn't been shown yet, or dequeue the top item and call into any callbacks it had
                 if (UserAction.Confirm.Pressed(GameServices.GetService<Input>()))
                 {
-                    (_, TaskCompletionSource taskCompletionSource) = dialogueQueue.Dequeue();
-                    taskCompletionSource.SetResult();
+                    // The currently shown dialogue matches the top of the queue, so dequeue it
+                    if (dialogueLabel.Text == dialogueQueue.Peek().Item1)
+                    {
+                        (_, TaskCompletionSource taskCompletionSource) = dialogueQueue.Dequeue();
+                        taskCompletionSource.SetResult();
+                    }
+                    // Otherwise, show the whole dialogue and make the user press confirm again to
+                    // move on
+                    else
+                    {
+                        dialogueLabel.Text = dialogueQueue.Peek().Item1;
+                    }
                 }
                 else
                 {
+                    // If the dialogue box is empty, it means there was no dialogue shown in the
+                    // previous frame - we animate the opacity and position slightly.
                     if (dialogueLabel.Text == "")
                     {
                         Tweening.Tween(dialoguesPanel, nameof(dialoguesPanel.Opacity), 1f, 100, Easing.Linear, LerpFunctions.Float);
                         Tweening.Tween((f) => dialoguesPanel.Top = (int)f, 10f, 0f, 100, Easing.Quadratic.Out, LerpFunctions.Float);
                     }
-                    // Otherwise show the top dialogue in the queue without dequeuing it
-                    dialogueLabel.Text = dialogueQueue.Peek().Item1;
 
-                    // And update the prompt image just in case the input type changed
-                    // Input.Prompts.GetImagesForAction() performs a lookup into its internal asset
-                    // store, but will never cause an expensive IO operation (it will default to
-                    // keyboard if atlas not found) so we're fine to perform this in Update().
-                    // Updating the Myra UI is probably the more expensive bottleneck if at all.
+                    // Show one character at a time from the top dialogue in the queue without
+                    // dequeuing it, unless all text is already shown, in which case we don't update
+                    // the text.
+                    if (dialogueLabel.Text != dialogueQueue.Peek().Item1)
+                    {
+                        // Number of matching characters from last frame
+                        int matchingCharacters = dialogueLabel.Text.TakeWhile((c, i) =>i < dialogueQueue.Peek().Item1.Length && dialogueQueue.Peek().Item1[i] == c).Count();
+
+                        // Show one more character. This will never be out of bounds because if
+                        // matchingCharacters + 1 is out of bounds, then matchingCharacters ==
+                        // dialogueQueue.Peek().Item1.Length, which means the whole dialogue is
+                        // already shown.
+                        dialogueLabel.Text = dialogueQueue.Peek().Item1.Substring(0, matchingCharacters + 1);
+                    }
+
+                    // In any case, if a dialogue is shown, update the prompt image just in case the
+                    // input type changed Input.Prompts.GetImagesForAction() performs a lookup into
+                    // its internal asset store, but will never cause an expensive IO operation (it
+                    // will default to keyboard if atlas not found) so we're fine to perform this in
+                    // Update(). Updating the Myra UI is probably the more expensive bottleneck if
+                    // at all.
                     List<TextureRegion> confirmButton = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Confirm);
                     dialoguePromptImage.Renderable = confirmButton[0];
                 }
@@ -172,11 +199,15 @@ namespace HammeredGame.Game.Screens
             }
             else
             {
+                // There was a dialogue in the previous frame - we animate the opacity and position
+                // to fade out.
                 if (dialogueLabel.Text != "")
                 {
                     Tweening.Tween(dialoguesPanel, nameof(dialoguesPanel.Opacity), 0f, 100, Easing.Linear, LerpFunctions.Float);
                     Tweening.Tween((f) => dialoguesPanel.Top = (int)f, 0f, 10f, 100, Easing.Quadratic.Out, LerpFunctions.Float);
                 }
+
+                // Reset the dialogue label to empty text and give back focus to the underlying game.
                 dialogueLabel.Text = "";
                 PassesFocusThrough = true;
             }
