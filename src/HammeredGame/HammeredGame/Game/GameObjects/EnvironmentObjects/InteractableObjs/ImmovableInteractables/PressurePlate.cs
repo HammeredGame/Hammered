@@ -79,7 +79,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                 if (other.Tag is EmptyGameObject) return;
                 if (other.Tag is Particle) return;
                 this.SetActivated(true);
-                OnTrigger?.Invoke(this, null);
             }
         }
 
@@ -149,7 +148,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
                 if (num_collisions == 0)
                 {
                     this.SetActivated(false);
-                    OnTriggerEnd?.Invoke(this, null);
                 }
                 //if (sender.Pairs.Count <= 1)
                 //{
@@ -169,6 +167,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
 
         public void SetActivated(bool activate)
         {
+            // Check if this is changing the state or not
+            if (activate == pressureActivated) return;
+
+            if (activate) OnTrigger?.Invoke(this, null);
+            if (!activate) OnTriggerEnd?.Invoke(this, null);
+
             // animate visually down by 10cm when activated, while retaining same hitbox
             Tweening.Tween(
                 this,
