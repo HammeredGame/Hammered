@@ -60,7 +60,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     {
         // Any Unbreakable Obstacle specific variables go here
         private bool treeFallen = false;
-        private bool playerOnTree;
 
         private Model fallenLog;
         private Texture2D logTexture;
@@ -200,27 +199,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
             }
 
-            // If tree is fallen, player can walk on top of the tree
-            // Currently designed as: player's Y = maxY + bbox width
-            // maxY calculated as the max of either player's current Y or
-            // the contact position's Y
-            if (other.Tag is Player && treeFallen)
-            {
-                var player = other.Tag as Player;
-                if (player.StandingOn != PlayerOnSurfaceState.OnTree)
-                {
-                    float maxY = player.Entity.Position.Y;
-                    foreach (var contact in pair.Contacts)
-                    {
-                        BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
-                        maxY = Math.Max(maxY, pointOfContact.Y);
-                    }
-
-                    player.StandingOn = PlayerOnSurfaceState.OnTree;
-                    player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).HalfWidth, player.Entity.Position.Z);
-                }
-            }
-
             // If tree is fallen, move block can slide on top of the tree
             // Currently designed as: move block's Y = maxY + bbox width
             // maxY calculated as the max of either move block's current Y or
@@ -289,11 +267,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
             // Update the particles
             fallDustParticles.Update(gameTime);
-        }
-
-        public bool IsPlayerOn()
-        {
-            return this.playerOnTree;
         }
 
         /// <summary>

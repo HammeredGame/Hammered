@@ -1,6 +1,7 @@
 ﻿using Aether.Animation;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using BEPUphysics.Entities;
+using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
@@ -45,6 +46,36 @@ namespace HammeredGame.Game.GameObjects
 
         public float PlayerSpeedModifier = 1f;
         private float baseSpeed = 50f;
+
+        // The following variables control the stepping behaviour of the player: the ankle height is
+        // where a first raycast is performed from, for checking if there is an object in front of
+        // the player; the knee height is where the second raycast is performed from, to check if
+        // there is no object at that height. When both conditions meet, the player moves upwards.
+        private float steppingAnkleHeight = 0.1f;
+        private float steppingKneeHeight = 5f;
+
+        // The following variables control the maximum length of the raycasts performed for the
+        // stepping. Higher values mean that the player detects a step from further away, which may
+        // lead to the player floating in the air. Lower values mean that the player needs to be
+        // really close to step up, which can lead to a pause in movement.
+        //
+        // The knee raycast is longer, so the player can step up on a slope.
+        private float steppingAnkleRaycastLength = 4f;
+        private float steppingKneeRaycastLength = 6f;
+
+        // If we just cast a single ray in the forward direction (of movement), then we won't be
+        // able to climb up steps/slopes when we are at an angle. So we cast it in two more
+        // directions, and if any of them meet the condition, we move up.
+        private float[] steppingCheckAdditionalAngles = new float[]
+        {
+            MathHelper.ToRadians(-45),
+            MathHelper.ToRadians(45)
+        };
+
+        // How much in world units to move the player up when the obstacle in front is step-able.
+        // Too small values will make the movement slow, while too high and the player will
+        // seemingly jump up and drop down, which is jarring.
+        private float steppingSingleUpdateHeight = 1f;
 
         private float baseControllerSpeed = 0.5f;
         private Vector3 player_vel;
@@ -243,46 +274,51 @@ namespace HammeredGame.Game.GameObjects
         // Update (called every tick)
         public override void Update(GameTime gameTime, bool screenHasFocus)
         {
-            ///<value>
-            /// The variable <c>moveDirty</c> indicates whether there has been any input from the player
-            /// with the intent to move the character.
-            /// <para />
-            /// <remarks> Generally, "dirty flags" are used to indicate that some data has changed </remarks>
-            ///</value>
-            bool moveDirty = false;
-
-
             // Zero out the player velocity vector (to remove the possibility of
             // previous computations accumulating/carrying over)
             player_vel = Vector3.Zero;
 
+            // moveDirty indicates whether there has been any input from the player with the intent
+            // to move the character.
+            bool moveDirty = false;
             Vector3 forwardDirection = Vector3.Zero;
-            if (InputEnabled && ActiveCamera != null && screenHasFocus) {
+            if (InputEnabled && ActiveCamera != null && screenHasFocus)
+            {
                 // Get the unit vector (parallel to the y=0 ground plane) in the direction deemed
                 // "forward" from the current camera perspective. Calculated by projecting the vector of
                 // the current camera position to the player position, onto the ground, and normalising it.
                 forwardDirection = Vector3.Normalize(Vector3.Multiply(ActiveCamera.Target - ActiveCamera.Position, new Vector3(1, 0, 1)));
+
+                // Handling input from keyboard.
+                moveDirty = this.HandleInput(forwardDirection);
             }
 
-            // Handling input from keyboard.
-            moveDirty = this.HandleInput(forwardDirection);
-
-            // Animate player
-
-
-            // If there was movement, normalize speed and edit rotation of character model
+            // If there was movement input, normalize speed and edit rotation of character model
             // Also account for collisions
             if (moveDirty && this.Entity != null && player_vel != Vector3.Zero)
             {
-                BEPUutilities.Vector3 Pos = this.Entity.Position;
-
-
-                // Normalize to length 1 regardless of direction, so that diagonals aren't faster than straight
-                // Do this only within moveDirty, since otherwise player_vel can be 0 or uninitialised and its unit vector is NaN
+                // Normalize to length 1 regardless of direction, so that diagonals aren't faster
+                // than straight. We do this only within moveDirty, since otherwise player_vel can
+                // be 0 or uninitialised and its unit vector is NaN
                 player_vel.Normalize();
+
+                // Check if there is an obstacle in front of us that should be stepped over. We use
+                // the unit forward velocity here.
+                bool shouldStepUp = CheckIfShouldStepUp(player_vel);
+
+                // Apply player speed modifier
                 player_vel *= baseSpeed * PlayerSpeedModifier;
 
                 this.Entity.LinearVelocity = new Vector3(player_vel.X, this.Entity.LinearVelocity.Y, player_vel.Z).ToBepu();
+
+                // If there was an obstacle in front of us, modify the Position of the player to go
+                // up by a slight amount every frame until the condition is no longer true.
+                // Modifying position is better than velocity, since the latter can make the player
+                // shoot up into the air for unknown reasons.
+                if (shouldStepUp)
+                {
+                    this.Entity.Position += Vector3.Up.ToBepu() * steppingSingleUpdateHeight;
+                }
 
                 // At this point, also rotate the player to the direction of movement
 
@@ -295,7 +331,6 @@ namespace HammeredGame.Game.GameObjects
                 float angle = (float)Math.Atan2(player_vel.X, player_vel.Z);
                 this.Entity.Orientation = BEPUutilities.Quaternion.Slerp(this.Entity.Orientation, BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.UnitY, angle), 0.25f);
 
-                double time = gameTime.TotalGameTime.TotalSeconds;
                 timeDelay -= gameTime.ElapsedGameTime;
                 if (timeDelay < TimeSpan.Zero)
                 {
@@ -312,10 +347,7 @@ namespace HammeredGame.Game.GameObjects
                     //SoundEffectInstance step = player_sfx[0].CreateInstance();
                     //step.IsLooped = true;
                     //step.Play();
-
-
                 }
-
             }
             else
             {
@@ -363,10 +395,7 @@ namespace HammeredGame.Game.GameObjects
             Services.GetService<AudioManager>().listener.Position = this.Position;
             Services.GetService<AudioManager>().listener.Forward = forwardDirection;
 
-
-
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
-
             #region TEMPORARY_MOUSE_BASED_ROTATION
 
             //MouseState mouseState = Mouse.GetState();
@@ -415,6 +444,73 @@ namespace HammeredGame.Game.GameObjects
 
             #endregion TEMPORARY_MOUSE_BASED_ROTATION
 
+        }
+
+        /// <summary>
+        /// Returns whether the player should move slightly upwards because the object in front of
+        /// them is a step-able thing and it's also not very high. We use two ray-casts, one from
+        /// the ankle and one from the knee. If the ankle ray hits something but the knee ray
+        /// doesn't, then we can step up. This implementation is courtesy of a Unity tutorial on
+        /// stepping: https://www.youtube.com/watch?v=DrFk5Q_IwG0
+        /// </summary>
+        private bool CheckIfShouldStepUp(Vector3 movementDirection)
+        {
+            // We want to ignore ray-cast hits (i.e. climbing up) on some entities. Ignoring the
+            // player and the hammer is ultra-important, since otherwise the ray-casts will always
+            // return the player, or maybe the hammer if it's being held by the player, and not any
+            // of the actual obstacles to step over.
+            static bool rayHitFilter(BEPUphysics.BroadPhaseEntries.BroadPhaseEntry entry)
+            {
+                return
+                    // Ignore empty game objects like bounds or triggers
+                    entry.Tag is not EmptyGameObject &&
+                    // Ignore objects that don't have a solver like decoration objects
+                    entry.CollisionRules.Personal != BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver &&
+                    // Ignore the player itself and the hammer
+                    entry.Tag is not Player &&
+                    entry.Tag is not Hammer;
+            }
+
+            // Assuming that the player's position origin is at the center of the box, we need to
+            // move it down by half the height to get the foot position.
+            Vector3 playerFootPosition = Position + Vector3.Down * (Entity as Box).HalfHeight;
+
+            BEPUutilities.Ray rayAnkle;
+            BEPUutilities.Ray rayKnee;
+
+            rayAnkle = new BEPUutilities.Ray((playerFootPosition + Vector3.Up * steppingAnkleHeight).ToBepu(), movementDirection.ToBepu());
+            rayKnee = new BEPUutilities.Ray((playerFootPosition + Vector3.Up * steppingKneeHeight).ToBepu(), movementDirection.ToBepu());
+
+            // Cast a ray from the ankle to see if there's an obstacle
+            if (ActiveSpace.RayCast(rayAnkle, steppingAnkleRaycastLength, rayHitFilter, out _))
+            {
+                // Cast a ray from the knee to see if the obstacle is not there (we can climb!)
+                if (!ActiveSpace.RayCast(rayKnee, steppingKneeRaycastLength, rayHitFilter, out _))
+                {
+                     return true;
+                }
+            }
+
+            // Additionally, check any other angles that are not the forward direction so that we
+            // can climb when facing the obstacle from an angle.
+            foreach (float angle in steppingCheckAdditionalAngles)
+            {
+                rayAnkle.Direction = Vector3.Transform(movementDirection, Matrix.CreateRotationY(angle)).ToBepu();
+                rayKnee.Direction = Vector3.Transform(movementDirection, Matrix.CreateRotationY(angle)).ToBepu();
+
+                // Cast a ray from the ankle to see if there's an obstacle
+                if (ActiveSpace.RayCast(rayAnkle, steppingAnkleRaycastLength, rayHitFilter, out _))
+                {
+                    // Cast a ray from the knee to see if the obstacle is not there (we can climb!)
+                    if (!ActiveSpace.RayCast(rayKnee, steppingKneeRaycastLength, rayHitFilter, out _))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            // No conditions met, we can't climb
+            return false;
         }
 
         private bool HandleInput(Vector3 forwardDirectionFromCamera)
