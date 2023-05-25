@@ -95,7 +95,10 @@ namespace HammeredGame.Game.GameObjects
         private Quaternion rotationWhenHeldByPlayer = new Quaternion(0.050f, 0.250f, 0.576f, 0.777f);
 
         // Wind cutting trails
-        private ParticleSystem windParticles;
+        private readonly ParticleSystem windParticles;
+
+        // Dust particles when the hammer is dropped
+        private readonly ParticleSystem dustParticles;
 
         private TimeSpan lastVibrationTimestamp;
 
@@ -111,8 +114,8 @@ namespace HammeredGame.Game.GameObjects
                 Duration = TimeSpan.FromMilliseconds(300),
                 // We spawn many small ones to make it look sorta continuous
                 MaxParticles = 500,
-                MinStartSize = 0.2f,
-                MaxStartSize = 0.2f,
+                MinStartSize = 0.3f,
+                MaxStartSize = 0.3f,
                 MinEndSize = 0.1f,
                 MaxEndSize = 0.1f,
                 // The particles get affected by the hammer velocity by a little bit
@@ -121,6 +124,27 @@ namespace HammeredGame.Game.GameObjects
                 // Air particles shouldn't bounce off walls/ground, they should just go through them
                 IgnoreCollisionResponses = true,
                 AffectedByLight = false
+            }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);
+
+
+            dustParticles = new(new ParticleSettings()
+            {
+                Model = Services.GetService<ContentManager>().Load<Model>("Meshes/Primitives/unit_icosphere"),
+                Texture = Services.GetService<ContentManager>().Load<Texture2D>("Meshes/Primitives/1x1_white"),
+                Duration = TimeSpan.FromMilliseconds(700),
+                MaxParticles = 15,
+                MinStartSize = 1f,
+                MaxStartSize = 2f,
+                MinEndSize = 0.1f,
+                MaxEndSize = 0.1f,
+                EmitterVelocitySensitivity = 0f,
+                MaxVerticalVelocity = 3f,
+                MinVerticalVelocity = 0.5f,
+                MinHorizontalVelocity = -5f,
+                MaxHorizontalVelocity = 5f,
+                // Air particles shouldn't bounce off walls/ground, they should just go through them
+                IgnoreCollisionResponses = true,
+                AffectedByLight = true
             }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);
 
             if (this.Entity != null)
@@ -284,7 +308,7 @@ namespace HammeredGame.Game.GameObjects
                     }
 
 
-                    AddParticles(gameTime);
+                    AddWindParticles(gameTime);
 
                     // Make the hammer face the direction of travel (todo: this doesn't seem to work consistently?)
                     if (Entity.LinearVelocity != BEPUutilities.Vector3.Zero)
@@ -332,6 +356,7 @@ namespace HammeredGame.Game.GameObjects
 
             this.AudioEmitter.Position = Position;
             this.windParticles.Update(gameTime);
+            this.dustParticles.Update(gameTime);
         }
 
         public void HandleInput()
@@ -402,6 +427,28 @@ namespace HammeredGame.Game.GameObjects
                 // this entity --> Also, probably a cause for issues
                 this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
             }
+
+            // We want to spawn some particles at the location of the ground. If we spawn it at the
+            // entity location at this point, it'll still be in the air (plus will spawn at the
+            // handle/origin, which is not the side that hits the ground). To solve this, we ray
+            // cast towards the ground to find the probable point of contact.
+            BEPUutilities.Ray ray = new(this.Entity.Position, BEPUutilities.Vector3.Down);
+
+            // We only want to know if the ray hits something meaningful, so we'll filter out
+            // anything that has NoSolver as its rule, or is a player or the hammer itself
+            static bool filter(BEPUphysics.BroadPhaseEntries.BroadPhaseEntry entry) {
+                return entry.CollisionRules.Personal != CollisionRule.NoSolver &&
+                    entry.Tag is not Player &&
+                    entry.Tag is not Hammer;
+            }
+
+            if (ActiveSpace.RayCast(ray, filter, out BEPUphysics.RayCastResult result))
+            {
+                for (int i = 0; i < 30; i++)
+                {
+                    dustParticles.AddParticle(result.HitData.Location.ToXNA(), Vector3.Zero);
+                }
+            }
         }
 
         public bool IsEnroute()
@@ -432,7 +479,7 @@ namespace HammeredGame.Game.GameObjects
         /// Add wind particles based on the hammer outline.
         /// </summary>
         /// <param name="gameTime"></param>
-        private void AddParticles(GameTime gameTime)
+        private void AddWindParticles(GameTime gameTime)
         {
             // Don't spawn particles if the hammer has no velocity since we can't determine which
             // direction to spawn particles in
@@ -631,6 +678,9 @@ namespace HammeredGame.Game.GameObjects
 
             windParticles.CopyShadowMapParametersFrom(Effect);
             windParticles.Draw(gameTime, view, projection, cameraPosition, lights);
+
+            dustParticles.CopyShadowMapParametersFrom(Effect);
+            dustParticles.Draw(gameTime, view, projection, cameraPosition, lights);
         }
 
         public new void UI()
