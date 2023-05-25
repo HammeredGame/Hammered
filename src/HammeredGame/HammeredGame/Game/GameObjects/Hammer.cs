@@ -111,12 +111,12 @@ namespace HammeredGame.Game.GameObjects
                 Duration = TimeSpan.FromMilliseconds(300),
                 // We spawn many small ones to make it look sorta continuous
                 MaxParticles = 500,
-                MinStartSize = 0.5f,
-                MaxStartSize = 0.5f,
+                MinStartSize = 0.2f,
+                MaxStartSize = 0.2f,
                 MinEndSize = 0.1f,
                 MaxEndSize = 0.1f,
                 // The particles get affected by the hammer velocity by a little bit
-                EmitterVelocitySensitivity = 0.4f,
+                EmitterVelocitySensitivity = 0.8f,
                 MaxVerticalVelocity = 0,
                 // Air particles shouldn't bounce off walls/ground, they should just go through them
                 IgnoreCollisionResponses = true,
@@ -452,7 +452,7 @@ namespace HammeredGame.Game.GameObjects
             for (int i = 0; i < numberParticles; i++)
             {
                 float startRadius = 2f;
-                float dispersion = 40f;
+                float dispersion = 30f;
 
                 // Determine a random angle along the circumference of a circle
                 float randomAngle = Random.Shared.NextSingle() * MathHelper.TwoPi;
