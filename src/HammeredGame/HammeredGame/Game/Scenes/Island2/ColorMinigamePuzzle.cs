@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media; 
+using Microsoft.Xna.Framework.Media;
 
 namespace HammeredGame.Game.Scenes.Island2
 {
@@ -26,11 +26,13 @@ namespace HammeredGame.Game.Scenes.Island2
         private ColorPlateState state = ColorPlateState.ZeroSuccess;
         private bool withinDoorInteractTrigger;
 
+        private Vector3 movingLaserOffsetFromBase;
+
         public ColorMinigamePuzzle(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
             bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/bgm4_4x");
-            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
         protected override async Task LoadSceneContent(IProgress<int> progress)
@@ -102,7 +104,9 @@ namespace HammeredGame.Game.Scenes.Island2
                 }
             }
 
-            MoveLaserLoop();
+            // Set the moving laser's original movement and the offset to the base
+            Get<Laser>("moving_laser").Entity.LinearVelocity = new(0, 0, 30);
+            movingLaserOffsetFromBase = Get<Laser>("moving_laser").Position - Get<Wall>("moving_base").Position;
 
             Get<PressurePlate>("maze_pp_A").OnTrigger += async (_, _) =>
             {
@@ -176,33 +180,35 @@ namespace HammeredGame.Game.Scenes.Island2
             };
         }
 
-        private async void MoveLaserLoop()
-        {
-            // Continuously move the moving-laser
-            Vector3 offsetFromBase = Get<Laser>("moving_laser").Position - Get<Wall>("moving_base").Position;
-
-            Get<Laser>("moving_laser").Position = new Vector3(-151.500f, -14.400f, -255f);
-            TweenTimeline tweenTimeline = Tweening.NewTimeline();
-            tweenTimeline
-                .AddFloat(Get<Laser>("moving_laser").Entity.LinearVelocity.Z, f =>
-                {
-                    Get<Laser>("moving_laser").Entity.LinearVelocity = new(0, 0, f);
-                    Get<Wall>("moving_base").Position = Get<Laser>("moving_laser").Position - offsetFromBase;
-                })
-                .AddFrame(0, -20)
-                .AddFrame(2999, -20)
-                .AddFrame(3000, 20)
-                .AddFrame(5999, 20);
-            tweenTimeline.Loop = true;
-        }
-
-        public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
+        public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
 
+            MovingLaserUpdate();
             //MazeUpdate();
             FourPlatesUpdate();
             DoorHintIfWithinVicinity();
+        }
+
+        /// <summary>
+        /// If the moving laser has hit its ends, reverse its direction. Otherwise, update the laser
+        /// base position to follow the laser.
+        /// </summary>
+        private void MovingLaserUpdate()
+        {
+            Laser laser = Get<Laser>("moving_laser");
+            Wall laserBase = Get<Wall>("moving_base");
+
+            if (laser.Position.Z >= -260f)
+            {
+                laser.Entity.LinearVelocity = new(0, 0, -30);
+            }
+            else if (laser.Position.Z <= -310f)
+            {
+                laser.Entity.LinearVelocity = new(0, 0, 30);
+            }
+
+            laserBase.Position = laser.Position - movingLaserOffsetFromBase;
         }
 
         //private void MazeUpdate()
