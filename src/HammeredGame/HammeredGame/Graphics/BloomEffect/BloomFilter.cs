@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace HammeredGame.Graphics
+namespace HammeredGame.Graphics.BloomEffect
 {
     /// MIT License
     ///
@@ -603,23 +603,23 @@ namespace HammeredGame.Graphics
             }
 
             bloomRenderTarget2DMip0 = new RenderTarget2D(graphicsDevice,
-                (int)(width),
-                (int)(height), false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
+                width,
+                height, false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
             bloomRenderTarget2DMip1 = new RenderTarget2D(graphicsDevice,
-                (int)(width / 2),
-                (int)(height / 2), false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                width / 2,
+                height / 2, false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             bloomRenderTarget2DMip2 = new RenderTarget2D(graphicsDevice,
-                (int)(width / 4),
-                (int)(height / 4), false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                width / 4,
+                height / 4, false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             bloomRenderTarget2DMip3 = new RenderTarget2D(graphicsDevice,
-                (int)(width / 8),
-                (int)(height / 8), false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                width / 8,
+                height / 8, false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             bloomRenderTarget2DMip4 = new RenderTarget2D(graphicsDevice,
-                (int)(width / 16),
-                (int)(height / 16), false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                width / 16,
+                height / 16, false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             bloomRenderTarget2DMip5 = new RenderTarget2D(graphicsDevice,
-                (int)(width / 32),
-                (int)(height / 32), false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                width / 32,
+                height / 32, false, renderTargetFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
         }
 
         /// <summary>
