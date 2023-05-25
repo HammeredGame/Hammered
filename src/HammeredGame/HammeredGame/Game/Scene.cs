@@ -119,7 +119,7 @@ namespace HammeredGame.Game
         /// </summary>
         /// <param name="progress"></param>
         /// <returns></returns>
-        protected async virtual Task LoadSceneContent(IProgress<int> progress) {}
+        protected virtual Task LoadSceneContent(IProgress<int> progress) { return Task.CompletedTask; }
 
         /// <summary>
         /// Script that is called during the first Update() after the scene has fully finished

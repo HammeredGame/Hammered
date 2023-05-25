@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media; 
+using Microsoft.Xna.Framework.Media;
 
 namespace HammeredGame.Game.Scenes.Island2
 {
@@ -30,7 +30,7 @@ namespace HammeredGame.Game.Scenes.Island2
         {
             Song bgMusic;
             bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/bgm4_4x");
-            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
         protected override async Task LoadSceneContent(IProgress<int> progress)
@@ -104,42 +104,42 @@ namespace HammeredGame.Game.Scenes.Island2
 
             MoveLaserLoop();
 
-            Get<PressurePlate>("maze_pp_A").OnTrigger += async (_, _) =>
+            Get<PressurePlate>("maze_pp_A").OnTrigger += (_, _) =>
             {
                 var maze_laser_A = Get<Laser>("maze_laser_A");
                 maze_laser_A.SetLaserScale(0f);
                 maze_laser_A.Deactivated = true;
             };
 
-            Get<PressurePlate>("maze_pp_A").OnTriggerEnd += async (_, _) =>
+            Get<PressurePlate>("maze_pp_A").OnTriggerEnd += (_, _) =>
             {
                 var maze_laser_A = Get<Laser>("maze_laser_A");
                 maze_laser_A.ReturnToDefaultLength();
                 maze_laser_A.Deactivated = false;
             };
 
-            Get<PressurePlate>("maze_pp_B").OnTrigger += async (_, _) =>
+            Get<PressurePlate>("maze_pp_B").OnTrigger += (_, _) =>
             {
                 var maze_laser_B = Get<Laser>("maze_laser_B");
                 maze_laser_B.SetLaserScale(0f);
                 maze_laser_B.Deactivated = true;
             };
 
-            Get<PressurePlate>("maze_pp_B").OnTriggerEnd += async (_, _) =>
+            Get<PressurePlate>("maze_pp_B").OnTriggerEnd += (_, _) =>
             {
                 var maze_laser_B = Get<Laser>("maze_laser_B");
                 maze_laser_B.ReturnToDefaultLength();
                 maze_laser_B.Deactivated = false;
             };
 
-            Get<PressurePlate>("maze_pp_C").OnTrigger += async (_, _) =>
+            Get<PressurePlate>("maze_pp_C").OnTrigger += (_, _) =>
             {
                 var maze_laser_C = Get<Laser>("maze_laser_C");
                 maze_laser_C.SetLaserScale(0f);
                 maze_laser_C.Deactivated = true;
             };
 
-            Get<PressurePlate>("maze_pp_C").OnTriggerEnd += async (_, _) =>
+            Get<PressurePlate>("maze_pp_C").OnTriggerEnd += (_, _) =>
             {
                 var maze_laser_C = Get<Laser>("maze_laser_C");
                 maze_laser_C.ReturnToDefaultLength();
@@ -147,14 +147,14 @@ namespace HammeredGame.Game.Scenes.Island2
             };
 
             CancellationTokenSource doorInteractTokenSource = new();
-            Get<TriggerObject>("hub_door_interact_trigger").OnTrigger += async (_, _) =>
+            Get<TriggerObject>("hub_door_interact_trigger").OnTrigger += (_, _) =>
             {
                 doorInteractTokenSource = new();
                 ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
                 withinDoorInteractTrigger = true;
             };
 
-            Get<TriggerObject>("hub_door_interact_trigger").OnTriggerEnd += async (_, _) =>
+            Get<TriggerObject>("hub_door_interact_trigger").OnTriggerEnd += (_, _) =>
             {
                 doorInteractTokenSource.Cancel();
                 withinDoorInteractTrigger = false;
@@ -176,7 +176,7 @@ namespace HammeredGame.Game.Scenes.Island2
             };
         }
 
-        private async void MoveLaserLoop()
+        private void MoveLaserLoop()
         {
             // Continuously move the moving-laser
             Vector3 offsetFromBase = Get<Laser>("moving_laser").Position - Get<Wall>("moving_base").Position;
@@ -196,7 +196,7 @@ namespace HammeredGame.Game.Scenes.Island2
             tweenTimeline.Loop = true;
         }
 
-        public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
+        public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
 
