@@ -128,7 +128,7 @@ namespace HammeredGame.Game.Scenes.Island1
 
 
             doorInteractTokenSource = new();
-            Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
+            Get<TriggerObject>("door_interact_trigger").OnTrigger += (_, _) =>
             {
                 if (!openedKeyDoor)
                 {
@@ -138,7 +138,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 }
             };
 
-            Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += async (_, _) =>
+            Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += (_, _) =>
             {
                 doorInteractTokenSource.Cancel();
                 withinDoorInteractTrigger = false;

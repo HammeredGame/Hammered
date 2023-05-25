@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media; 
+using Microsoft.Xna.Framework.Media;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -26,7 +26,7 @@ namespace HammeredGame.Game.Scenes.Island1
         {
             Song bgMusic;
             bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/BGM_V2_4x");
-            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
         protected override async Task LoadSceneContent(IProgress<int> progress)
@@ -88,7 +88,7 @@ namespace HammeredGame.Game.Scenes.Island1
             };
 
             doorInteractTokenSource = new();
-            Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
+            Get<TriggerObject>("door_interact_trigger").OnTrigger += (_, _) =>
             {
                 if (!openedKeyDoor)
                 {
@@ -98,7 +98,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 }
             };
 
-            Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += async (_, _) =>
+            Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += (_, _) =>
             {
                 doorInteractTokenSource.Cancel();
                 withinDoorInteractTrigger = false;
