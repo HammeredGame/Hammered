@@ -242,8 +242,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     fallDustParticles.AddParticle(Position + alongTree + alongPerpendicular, Entity.LinearVelocity.ToXNA());
                 }
 
-                box.Width *= 1.2f;
-                box.Length *= 1.2f;
+                //box.Width *= 1.2f;
+                //box.Length *= 1.2f;
                 //this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
             }
 

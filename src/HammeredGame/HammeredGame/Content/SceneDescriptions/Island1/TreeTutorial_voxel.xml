@@ -1225,9 +1225,9 @@
     <rotation>0.000 0.000 -0.700 0.714</rotation>
     <scale>1.000</scale>
     <body type="box">
-      <width>24.883</width>
+      <width>12.000</width>
       <height>35.000</height>
-      <length>24.883</length>
+      <length>12.000</length>
       <shift_graphic>0.000 2.955 0.000</shift_graphic>
     </body>
   </object>
