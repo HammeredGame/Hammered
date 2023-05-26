@@ -153,7 +153,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                         Entity.Position += 10f * fallDirection;
                         isFalling = true;
-                        Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+                        //tree_sfx[3].Play();
+                        Services.GetService<AudioManager>().Play3DSound("Audio/balanced/tree_crash_bm", false, this.AudioEmitter, 1);
                     }
                 }
 
@@ -193,7 +194,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                         Entity.Position += 10f * fallDirection;
                         isFalling = true;
-                        Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+
+                        Services.GetService<AudioManager>().Play3DSound("Audio/tree_crash_bm", false, this.AudioEmitter, 1);
                     }
                 }
 

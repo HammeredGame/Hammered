@@ -22,6 +22,126 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Audio/balanced/bgm2_4x_b.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/bgm2_4x_b.mp3
+
+#begin Audio/balanced/bgm2_amb.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/bgm2_amb.mp3
+
+#begin Audio/balanced/bgm4_4x_b.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/bgm4_4x_b.mp3
+
+#begin Audio/balanced/bgm4_4x.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/bgm4_4x.mp3
+
+#begin Audio/balanced/bgm5_4x.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/bgm5_4x.mp3
+
+#begin Audio/balanced/buzz_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/buzz_b.wav
+
+#begin Audio/balanced/catch_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/catch_b.wav
+
+#begin Audio/balanced/door_close.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/door_close.wav
+
+#begin Audio/balanced/door_open.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/door_open.wav
+
+#begin Audio/balanced/fast_whoosh_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/fast_whoosh_b.wav
+
+#begin Audio/balanced/hammer_drop_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/hammer_drop_b.wav
+
+#begin Audio/balanced/hammer_fly_m.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/hammer_fly_m.wav
+
+#begin Audio/balanced/launch_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/launch_b.wav
+
+#begin Audio/balanced/loud_fly.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/loud_fly.wav
+
+#begin Audio/balanced/new_launch_b.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/new_launch_b.wav
+
+#begin Audio/balanced/pied_bm.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/pied_bm.wav
+
+#begin Audio/balanced/quiet_foot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/quiet_foot.wav
+
+#begin Audio/balanced/soft_step.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/soft_step.wav
+
+#begin Audio/balanced/tree_crash .wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/tree_crash .wav
+
+#begin Audio/balanced/tree_crash_bm.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/tree_crash_bm.wav
+
 #begin Audio/BGM_V1.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
