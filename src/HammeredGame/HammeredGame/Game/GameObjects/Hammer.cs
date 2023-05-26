@@ -114,8 +114,8 @@ namespace HammeredGame.Game.GameObjects
                 Duration = TimeSpan.FromMilliseconds(300),
                 // We spawn many small ones to make it look sorta continuous
                 MaxParticles = 500,
-                MinStartSize = 0.3f,
-                MaxStartSize = 0.3f,
+                MinStartSize = 0.4f,
+                MaxStartSize = 0.4f,
                 MinEndSize = 0.1f,
                 MaxEndSize = 0.1f,
                 // The particles get affected by the hammer velocity by a little bit
@@ -455,7 +455,7 @@ namespace HammeredGame.Game.GameObjects
 
         public bool IsEnroute()
         {
-            
+
             //sound effect instance to try and manipulate the pitch, but not working
             if (hammerState == HammerState.Enroute)
             {
@@ -502,7 +502,7 @@ namespace HammeredGame.Game.GameObjects
             for (int i = 0; i < numberParticles; i++)
             {
                 float startRadius = 2f;
-                float dispersion = 30f;
+                float dispersion = 10f;
 
                 // Determine a random angle along the circumference of a circle
                 float randomAngle = Random.Shared.NextSingle() * MathHelper.TwoPi;
