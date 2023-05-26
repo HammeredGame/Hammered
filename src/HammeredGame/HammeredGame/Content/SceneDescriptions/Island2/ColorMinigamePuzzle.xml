@@ -1888,7 +1888,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="moving_base">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>-157.300 -15.334 -264.333</position>
+    <position>-157.300 -14.400 -259.667</position>
     <rotation>0.000 1.000 0.000 0.000</rotation>
     <scale>1.000</scale>
     <body type="box">
