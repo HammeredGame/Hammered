@@ -8,6 +8,8 @@ using Myra.Graphics2D.UI;
 using Pleasing;
 using Microsoft.Xna.Framework.Content;
 using System;
+using Microsoft.Xna.Framework.Media;
+
 
 namespace HammeredGame.Game.Screens
 {
@@ -42,6 +44,11 @@ namespace HammeredGame.Game.Screens
 
         public override void LoadContent()
         {
+
+            Song bgMusic;
+            bgMusic = GameServices.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm5_4x");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(bgMusic);
             base.LoadContent();
 
             whiteRectangle = new Texture2D(ScreenManager.GraphicsDevice, 1, 1);
