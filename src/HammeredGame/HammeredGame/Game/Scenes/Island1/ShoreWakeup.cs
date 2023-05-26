@@ -18,7 +18,7 @@ namespace HammeredGame.Game.Scenes.Island1
         public ShoreWakeup(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_4x_b");
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_amb");
             MediaPlayer.IsRepeating = true; 
             MediaPlayer.Play(bgMusic);
         }
