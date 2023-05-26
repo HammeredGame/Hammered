@@ -100,17 +100,17 @@ namespace HammeredGame.Core
 
                 // If the screen is drawn in some amount (even mid-transition), then mark it as
                 // having stolen focus from the rest of the stack, unless it passes through focus
-                if (screen.State != ScreenState.Hidden)
+                if (screen.State != ScreenState.Hidden && !screen.PassesFocusThrough)
                 {
-                    if (!screen.PassesFocusThrough)
-                    {
                         hasFocus = false;
-                    }
+                }
 
-                    if (!screen.IsPartial)
-                    {
-                        isCoveredByNonPartialScreen = true;
-                    }
+                // If the screen is fully drawn and is not partial, then mark it as covering any
+                // later screens. If it's still mid-transition though, even non-partial screens may
+                // be partial.
+                if (screen.State == ScreenState.Active && !screen.IsPartial)
+                {
+                    isCoveredByNonPartialScreen = true;
                 }
             }
         }

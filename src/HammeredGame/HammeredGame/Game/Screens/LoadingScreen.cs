@@ -31,7 +31,7 @@ namespace HammeredGame.Game.Screens
 
         public LoadingScreen()
         {
-            IsPartial = true;
+            IsPartial = false;
             PassesFocusThrough = false;
         }
 
