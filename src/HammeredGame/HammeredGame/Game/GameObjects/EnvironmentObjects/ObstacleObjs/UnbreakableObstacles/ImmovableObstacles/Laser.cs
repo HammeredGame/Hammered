@@ -134,7 +134,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             timeDelay -= gameTime.ElapsedGameTime;
             if (timeDelay < TimeSpan.Zero)
             {
-                Services.GetService<AudioManager>().Play3DSound("Audio/buzz", false, this.AudioEmitter, laserScale / laserDefaultScale);
+                Services.GetService<AudioManager>().Play3DSound("Audio/balanced/buzz_b", false, this.AudioEmitter, laserScale / laserDefaultScale);
                 timeDelay += TimeSpan.FromSeconds(1.15f);
                 //Services.GetService<AudioManager>().Play3DSound("Audio/retro", false, this.AudioEmitter, laserScale/laserDefaultScale);
                 //timeDelay += TimeSpan.FromSeconds(2f);

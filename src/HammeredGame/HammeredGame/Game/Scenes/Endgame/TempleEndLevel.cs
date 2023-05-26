@@ -7,6 +7,8 @@ using Microsoft.Xna.Framework;
 using Pleasing;
 using System.Threading.Tasks;
 using System;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media; 
 
 namespace HammeredGame.Game.Scenes.Endgame
 {
@@ -15,7 +17,12 @@ namespace HammeredGame.Game.Scenes.Endgame
         private bool ended = false;
 
         public TempleEndLevel(GameServices services, GameScreen screen) : base(services, screen)
-        { }
+        {
+            Song bgMusic;
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_4x_b");
+            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.Play(bgMusic);
+        }
 
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
