@@ -339,6 +339,30 @@
 #begin ControlPrompts/Xbox.xmat
 /copy:ControlPrompts/Xbox.xmat
 
+#begin Credits/gtc-logo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Credits/gtc-logo.png
+
+#begin Credits/monogame-logo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Credits/monogame-logo.png
+
 #begin Effects/Backgrounds/Stripe.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -485,6 +509,9 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:foliage_texture.png
+
+#begin Fonts/Barlow-Bold.ttf
+/copy:Fonts/Barlow-Bold.ttf
 
 #begin Fonts/Barlow-Medium.ttf
 /copy:Fonts/Barlow-Medium.ttf
@@ -1545,6 +1572,9 @@
 
 #begin SceneDescriptions/Island2/ColorMinigamePuzzle.xml
 /copy:SceneDescriptions/Island2/ColorMinigamePuzzle.xml
+
+#begin SceneDescriptions/Test/ImmediatelyCredits.xml
+/copy:SceneDescriptions/Test/ImmediatelyCredits.xml
 
 #begin SceneDescriptions/Test/JustHammer.xml
 /copy:SceneDescriptions/Test/JustHammer.xml

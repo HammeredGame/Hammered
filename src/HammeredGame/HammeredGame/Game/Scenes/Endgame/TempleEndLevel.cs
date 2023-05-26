@@ -53,18 +53,35 @@ namespace HammeredGame.Game.Scenes.Endgame
             if (Get<PressurePlate>("temple_pressure_plate").IsActivated() && !ended)
             {
                 ended = true;
-                Hammer hammer = Get<Hammer>("hammer");
-                hammer.DropHammer();
-                hammer.Entity.Gravity = new BEPUutilities.Vector3(0, 50f, 0);
-                //await ParentGameScreen.ShowDialogueAndWait("(The hammer was sucked into the clouds)");
-                //await ParentGameScreen.ShowDialogueAndWait("(You hear Thor sounding happy! He'll send you home!");
+                Get<Hammer>("hammer").InputEnabled = false;
+
                 await ParentGameScreen.ShowDialogueAndWait("Dear friend, ");
                 await ParentGameScreen.ShowDialogueAndWait(
                     "Thank you /n for bringing me the hammer back :)");
+                await Services.GetService<ScriptUtils>().WaitMilliseconds(500);
                 await ParentGameScreen.ShowDialogueAndWait("Same time next week?");
+
+                Hammer hammer = Get<Hammer>("hammer");
+                hammer.DropHammer();
+                hammer.Entity.Gravity = new BEPUutilities.Vector3(0, 50f, 0);
+
+                // Allow time to awe at the hammer flying up.
                 await Services.GetService<ScriptUtils>().WaitSeconds(2);
-                await ParentGameScreen.ShowDialogueAndWait("The End! (for now)");
-                Get<Hammer>("hammer").InputEnabled = false;
+
+                // Show credits
+                ParentGameScreen.ScreenManager.AddScreen(new CreditRollScreen()
+                {
+                     FinishedFunc = () =>
+                     {
+                         // When credits finished, delete the last save scene
+                         Services.GetService<UserSettings>().LastSaveScene = null;
+                         Services.GetService<UserSettings>().Save();
+
+                         // And return to the title screen
+                         ParentGameScreen.ExitScreen(true);
+                         Services.GetService<HammeredGame>().InitTitleScreen();
+                     }
+                });
             }
         }
 
