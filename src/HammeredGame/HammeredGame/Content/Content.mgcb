@@ -28,11 +28,29 @@
 /processorParam:Quality=Best
 /build:Audio/balanced/bgm2_4x_b.mp3
 
+#begin Audio/balanced/bgm2_amb.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/bgm2_amb.mp3
+
 #begin Audio/balanced/bgm4_4x_b.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
 /processorParam:Quality=Best
 /build:Audio/balanced/bgm4_4x_b.mp3
+
+#begin Audio/balanced/bgm4_4x.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/bgm4_4x.mp3
+
+#begin Audio/balanced/bgm5_4x.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/bgm5_4x.mp3
 
 #begin Audio/balanced/buzz_b.wav
 /importer:WavImporter
@@ -105,12 +123,6 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/balanced/quiet_foot.wav
-
-#begin Audio/balanced/soft_step.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/balanced/soft_step.wav
 
 #begin Audio/balanced/soft_step.wav
 /importer:WavImporter
