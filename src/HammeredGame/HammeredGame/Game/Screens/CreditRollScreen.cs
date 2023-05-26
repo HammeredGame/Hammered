@@ -79,15 +79,24 @@ namespace HammeredGame.Game.Screens
             // Key people
             creditsPanel.AddChild(Credit("Producer", "Yuto Takano"));
             creditsPanel.AddChild(Credit("Co-Producer", "Audrey Leong"));
-            creditsPanel.AddChild(Credit("Game Design", "names"));
-            creditsPanel.AddChild(Credit("Programmers", "Sid", "Audrey", "Marie", "Andrew", "Konstantinos", "Yuto"));
-            creditsPanel.AddChild(Credit("3D Modeling", "Andrew", "Marie"));
-            creditsPanel.AddChild(Credit("Music", "Audrey"));
-            creditsPanel.AddChild(Credit("Sound Effects", "Audrey"));
+            creditsPanel.AddChild(Credit("Level Designer", "Andrew Dobis"));
+            creditsPanel.AddChild(Credit("Artist", "Marie Jaillot"));
+            creditsPanel.AddChild(Credit("Tech Lead", "Siddharth Menon"));
+            creditsPanel.AddChild(Credit("Composer", "Audrey Leong"));
+            creditsPanel.AddChild(Credit("Sound Engineer", "Audrey Leong"));
+            creditsPanel.AddChild(Credit("Written by", "Konstantinos Stavratis"));
+            creditsPanel.AddChild(Credit("Programmers", "Siddharth Menon", "Audrey", "Marie Jaillot", "Andrew Dobis", "Konstantinos Stavratis", "Yuto"));
+            creditsPanel.AddChild(Credit("3D Modeling", "Andrew Dobis", "Marie Jaillot"));
 
             // External Testers
             creditsPanel.AddChild(Heading("Testers"));
-            creditsPanel.AddChild(Credit("QA Tester", "i forgot", "how their names", "are spelt"));
+            creditsPanel.AddChild(Credit("QA Tester",
+                "Steven Wang",
+                "Samuel Simko",
+                "Roxana Stiuca",
+                "Boyko Borisov",
+                "Oana Rosca",
+                "Saikiran Akkapaka"));
 
             // Software special thanks (licenses will be in a separate screen if required)
             creditsPanel.AddChild(Heading("Software"));
@@ -95,6 +104,8 @@ namespace HammeredGame.Game.Screens
             creditsPanel.AddChild(SmallText(@"
 ZapSplat
 (zapsplat.com)
+Additional Samples by Avery Berman
+(empoweredmusicproducer.com)
 Kenney UI Audio pack
 (https://kenney.nl/assets/ui-audio)
 Universal UI/Menu Soundpack
