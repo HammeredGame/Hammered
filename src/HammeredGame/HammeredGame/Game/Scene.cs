@@ -53,6 +53,8 @@ namespace HammeredGame.Game
 
         public bool SceneStarted { get; private set; } = false;
 
+        public Exception LoadError;
+
         /// <summary>
         /// Any debug objects shown as representations of bounding boxes. This list is updated in this.UpdateDebugObjects().
         /// </summary>
