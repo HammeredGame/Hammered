@@ -3,6 +3,7 @@ using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Settings;
 using HammeredGame.Core;
+using HammeredGame.Game.Checkpoints;
 using HammeredGame.Game.PathPlanning.Grid;
 using HammeredGame.Game.Screens;
 using HammeredGame.Graphics;
@@ -79,6 +80,8 @@ namespace HammeredGame.Game
         /// </summary>
         public Space Space;
 
+        public SceneCheckpointManager CheckpointManager;
+
         /// <summary>
         /// The game services that all objects in the scene and any scripts can access.
         /// </summary>
@@ -93,6 +96,7 @@ namespace HammeredGame.Game
         {
             this.Services = services;
             this.ParentGameScreen = screen;
+            this.CheckpointManager = new(this);
         }
 
         /// <summary>
@@ -111,6 +115,8 @@ namespace HammeredGame.Game
             EntityDebugDrawer = new EntityDebugDrawer(Services.GetService<GraphicsDevice>(), Services.GetService<ContentManager>());
 
             await LoadSceneContent(progress);
+
+            CheckpointManager.LoadContent();
 
             // Mark the scene as loaded and ready to be Update()-ed.
             IsLoaded = true;
