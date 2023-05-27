@@ -44,7 +44,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         /* Provisionally
         */
         private Door correspondingDoor;
-        private bool keyPickedUp = false;
+        public bool IsCollected = false;
 
         //private List<SoundEffect> chime;
 
@@ -96,7 +96,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
                     correspondingDoor?.SetKeyFound(true);
                     this.Visible = false;
                     this.ActiveSpace.Remove(this.Entity);
-                    keyPickedUp = true;
+                    IsCollected = true;
 
                     Services.GetService<AudioManager>().Play3DSound("Audio/ding", false, this.AudioEmitter, 1);
                     //chime[4].Play();
@@ -105,7 +105,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
             }
         }
 
-        public bool IsPickedUp() => keyPickedUp;
+        public bool IsPickedUp() => IsCollected;
 
         //public override void TouchingPlayer(Player player)
         //{
