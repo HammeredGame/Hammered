@@ -14,9 +14,14 @@ namespace HammeredGame.Game.Screens
     /// </summary>
     internal class PauseScreen : AbstractMenuScreen
     {
-        public Action ContinueMethod;
-        public Action RestartMethod;
-        public Action QuitMethod;
+        public Action OnExit;
+
+        private readonly GameScreen parentGameScreen;
+
+        public PauseScreen(GameScreen parentGameScreen)
+        {
+            this.parentGameScreen = parentGameScreen;
+        }
 
         public override void LoadMenuWidgets()
         {
@@ -24,7 +29,7 @@ namespace HammeredGame.Game.Screens
 
             MenuHeaderText = "PAUSED";
 
-            int oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 10;
+            int oneLineHeight = ScreenManager.GraphicsDevice.Viewport.Height / 12;
 
             Label menuItemContinue = new()
             {
@@ -35,7 +40,23 @@ namespace HammeredGame.Game.Screens
             // Keep screen contents loaded since the Pause Screen will be re-added again
             menuItemContinue.TouchUp += (s, a) =>
             {
-                ContinueMethod?.Invoke();
+                OnExit?.Invoke();
+                ExitScreen(alsoUnloadContent: false);
+            };
+
+            Label menuItemRestartCheckpoint = new()
+            {
+                Text = "Restart Checkpoint",
+                Id = "_menuItemRestartCheckpoint",
+                Font = BarlowFont.GetFont(oneLineHeight),
+                Enabled = parentGameScreen.CurrentScene?.CheckpointManager.CheckpointExists() == true
+            };
+            menuItemRestartCheckpoint.TouchUp += (s, a) =>
+            {
+                parentGameScreen.CurrentScene.CheckpointManager.LoadLastCheckpoint();
+
+                OnExit?.Invoke();
+                // Keep screen contents loaded since the Pause Screen will be re-added again
                 ExitScreen(alsoUnloadContent: false);
             };
 
@@ -43,11 +64,15 @@ namespace HammeredGame.Game.Screens
             {
                 Text = "Restart Level",
                 Id = "_menuItemRestartLevel",
-                Font = BarlowFont.GetFont(oneLineHeight)
+                Font = BarlowFont.GetFont(oneLineHeight),
+                Enabled = parentGameScreen.CurrentScene != null
             };
             menuItemRestartLevel.TouchUp += (s, a) =>
             {
-                RestartMethod?.Invoke();
+                parentGameScreen.CurrentScene.CheckpointManager.ResetAllCheckpoints();
+                parentGameScreen.InitializeLevel(parentGameScreen.CurrentScene.GetType().FullName);
+
+                OnExit?.Invoke();
                 // Keep screen contents loaded since the Pause Screen will be re-added again
                 ExitScreen(alsoUnloadContent: false);
             };
@@ -71,11 +96,23 @@ namespace HammeredGame.Game.Screens
             };
             menuItemQuitToTitle.TouchUp += (s, a) =>
             {
-                QuitMethod?.Invoke();
+                // Specifies the callback function when Quit To Title is called. We also need to
+                // specify the Restart Level callback, but this is done just before each time the
+                // screen is added to the manager, since we need the name of the currently active level.
+
+                // Save the last scene
+                GameServices.GetService<UserSettings>().LastSaveScene = parentGameScreen.CurrentScene.GetType().FullName;
+                GameServices.GetService<UserSettings>().Save();
+
+                // Ask the main game class to recreate the title screen, since it needs to
+                // assign handlers that we don't have access to
+                GameServices.GetService<HammeredGame>().InitTitleScreen();
+                OnExit?.Invoke();
                 ExitScreen(alsoUnloadContent: true);
+                parentGameScreen.ExitScreen(true);
             };
 
-            MenuWidgets = new List<Widget>() { menuItemContinue, menuItemRestartLevel, menuItemOptions, menuItemQuitToTitle };
+            MenuWidgets = new List<Widget>() { menuItemContinue, menuItemRestartCheckpoint, menuItemRestartLevel, menuItemOptions, menuItemQuitToTitle };
         }
 
         public override void Update(GameTime gameTime)
@@ -83,7 +120,11 @@ namespace HammeredGame.Game.Screens
             // Update screen state and HasFocus so we can use it
             base.Update(gameTime);
 
-            // Do nothing if the screen doesn't have focus.
+            // Update the menu item enabled states depending on the current scene state
+            Desktop.GetWidgetByID("_menuItemRestartCheckpoint").Enabled = parentGameScreen.CurrentScene?.CheckpointManager.CheckpointExists() == true;
+            Desktop.GetWidgetByID("_menuItemRestartLevel").Enabled = parentGameScreen.CurrentScene != null;
+
+            // Do nothing more if the screen doesn't have focus.
             if (!HasFocus) return;
 
             Input input = GameServices.GetService<Input>();
@@ -91,7 +132,7 @@ namespace HammeredGame.Game.Screens
             // Back out of pause menu without unloading content
             if (UserAction.Pause.Pressed(input) || UserAction.Back.Pressed(input))
             {
-                ContinueMethod?.Invoke();
+                OnExit?.Invoke();
                 ExitScreen(alsoUnloadContent: false);
             }
         }

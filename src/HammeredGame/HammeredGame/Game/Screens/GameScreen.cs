@@ -26,7 +26,7 @@ namespace HammeredGame.Game.Screens
     public class GameScreen : Screen
     {
         // Current active game scene.
-        private Scene currentScene;
+        public Scene CurrentScene;
 
         // Pause screen is always loaded, see LoadContent().
         private PauseScreen pauseScreen;
@@ -41,14 +41,14 @@ namespace HammeredGame.Game.Screens
         //private AudioListener listener = new AudioListener();
         //private AudioEmitter emitter = new AudioEmitter();
 
-        private string currentSceneName;
+        private readonly string scenePendingLoad;
 
         private GameRenderer gameRenderer;
 
         public GameScreen(string startScene)
         {
             // Don't load the scene yet, since it's expensive. Do it in LoadContent()
-            currentSceneName = startScene;
+            scenePendingLoad = startScene;
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace HammeredGame.Game.Screens
             loadingScreen = new LoadingScreen();
             ScreenManager.PreloadScreen(loadingScreen);
 
-            InitializeLevel(currentSceneName);
+            InitializeLevel(scenePendingLoad);
 
             //MediaPlayer.IsRepeating = true;
             //MediaPlayer.Play(bgMusic);
@@ -103,25 +103,7 @@ namespace HammeredGame.Game.Screens
             // Preload the pause screen, so that adding the pause screen to the screen stack doesn't
             // call LoadContent every time (which lags because it has to loads fonts and create the
             // UI layout)
-            pauseScreen = new PauseScreen
-            {
-                QuitMethod = () =>
-                {
-                    // Specifies the callback function when Quit To Title is called. We also need to
-                    // specify the Restart Level callback, but this is done just before each time the
-                    // screen is added to the manager, since we need the name of the currently active level.
-
-                    // Save the last scene
-                    GameServices.GetService<UserSettings>().LastSaveScene = currentSceneName;
-                    GameServices.GetService<UserSettings>().Save();
-
-                    ExitScreen(true);
-
-                    // Ask the main game class to recreate the title screen, since it needs to
-                    // assign handlers that we don't have access to
-                    GameServices.GetService<HammeredGame>().InitTitleScreen();
-                }
-            };
+            pauseScreen = new PauseScreen(this);
             ScreenManager.PreloadScreen(pauseScreen);
 
             promptsScreen = new ControlPromptsScreen();
@@ -160,8 +142,6 @@ namespace HammeredGame.Game.Screens
             promptsScreen?.ClearAllPrompts();
             dialoguesScreen?.ClearAllDialogues();
 
-            currentSceneName = sceneToLoad;
-
             // Reset the progress so that there isn't a flash of 100 from the previous use
             loadingScreen.ResetProgress();
             ScreenManager.AddScreen(loadingScreen);
@@ -178,7 +158,7 @@ namespace HammeredGame.Game.Screens
                     // asynchronous thread of its own.
                     await GameServices.GetService<ScriptUtils>().WaitNextUpdate();
 
-                    currentScene = temporaryScene;
+                    CurrentScene = temporaryScene;
 
                     // If the LoadContentAsync failed with an exception, it will get silently
                     // swallowed unless we check for it here. We can't re-throw it, since
@@ -187,7 +167,7 @@ namespace HammeredGame.Game.Screens
                     // out of later.
                     if (t.IsFaulted)
                     {
-                        currentScene.LoadError = t.Exception.InnerException;
+                        CurrentScene.LoadError = t.Exception.InnerException;
                     }
 
                     loadingScreen.ExitScreen(false);
@@ -222,31 +202,26 @@ namespace HammeredGame.Game.Screens
         {
             base.Update(gameTime);
 
-            if (currentScene == null) return;
+            if (CurrentScene == null) return;
 
             // Rethrow the asynchronous load exception if it exists
-            if (currentScene.LoadError != null)
+            if (CurrentScene.LoadError != null)
             {
-                ExceptionDispatchInfo.Capture(currentScene.LoadError).Throw();
+                ExceptionDispatchInfo.Capture(CurrentScene.LoadError).Throw();
             }
 
-            if (!currentScene.IsLoaded) return;
+            if (!CurrentScene.IsLoaded) return;
 
             Input input = GameServices.GetService<Input>();
 
             if (HasFocus && UserAction.Pause.Pressed(input))
             {
                 isPaused = true;
-                pauseScreen.RestartMethod = () =>
-                {
-                    isPaused = false;
-                    InitializeLevel(currentSceneName);
-                };
-                pauseScreen.ContinueMethod = () => isPaused = false;
+                pauseScreen.OnExit = () => isPaused = false;
                 ScreenManager.AddScreen(pauseScreen);
             }
 
-            currentScene.Update(gameTime, HasFocus, isPaused);
+            CurrentScene.Update(gameTime, HasFocus, isPaused);
         }
 
         /// <summary>
@@ -258,9 +233,9 @@ namespace HammeredGame.Game.Screens
         {
             base.Draw(gameTime);
 
-            if (currentScene == null || !currentScene.IsLoaded) return;
+            if (CurrentScene == null || !CurrentScene.IsLoaded) return;
 
-            gameRenderer.DrawScene(gameTime, currentScene);
+            gameRenderer.DrawScene(gameTime, CurrentScene);
             gameRenderer.PostProcess();
             gameRenderer.CopyOutputTo(ScreenManager.MainRenderTarget);
         }
@@ -270,16 +245,16 @@ namespace HammeredGame.Game.Screens
         /// </summary>
         public override void UI()
         {
-            if (currentScene == null) return;
+            if (CurrentScene == null) return;
 
             // Show a scene switcher dropdown, with the list of all scene class names in this assembly
             ImGui.Text("Current Loaded Scene: ");
             ImGui.SameLine();
-            if (ImGui.BeginCombo("##scene", currentScene.GetType().Name))
+            if (ImGui.BeginCombo("##scene", CurrentScene.GetType().Name))
             {
                 foreach (string fqn in Scene.GetAllSceneFQNs())
                 {
-                    if (ImGui.Selectable(fqn, fqn == currentScene.GetType().FullName))
+                    if (ImGui.Selectable(fqn, fqn == CurrentScene.GetType().FullName))
                     {
                         Task.Factory.StartNew(async () =>
                         {
@@ -293,7 +268,7 @@ namespace HammeredGame.Game.Screens
             ImGui.Separator();
 
             // Show the scene's UI within the same window
-            currentScene.UI();
+            CurrentScene.UI();
 
             ImGui.Begin("Graphics");
             gameRenderer.UI();

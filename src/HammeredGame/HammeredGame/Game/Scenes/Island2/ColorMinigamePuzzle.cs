@@ -1,5 +1,4 @@
 ﻿using BEPUphysics.CollisionRuleManagement;
-using BEPUphysics.Constraints.SolverGroups;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
@@ -8,16 +7,15 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immovabl
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Scenes.Endgame;
-using HammeredGame.Game.Scenes.Island1;
 using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
-using Pleasing;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island2
 {
@@ -35,6 +33,7 @@ namespace HammeredGame.Game.Scenes.Island2
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
+
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
             await base.LoadSceneContent(progress);
@@ -188,7 +187,26 @@ namespace HammeredGame.Game.Scenes.Island2
                     await ParentGameScreen.ShowDialogueAndWait("Don't forget to bring the hammer with you!");
                 }
             };
+
+            // Set up checkpoints
+            CheckpointSetup();
         }
+
+        /// <summary>
+        /// Setup checkpoint trigger handlers for the level.
+        /// </summary>
+        public void CheckpointSetup()
+        {
+            // Filter all trigger objects that are named checkpoint_* and add handlers to save checkpoints
+            GameObjects
+                .Where(i => i.Key.StartsWith("checkpoint_") && i.Value is TriggerObject)
+                .ToList()
+                .ForEach(i =>
+                {
+                    (i.Value as TriggerObject).OnTrigger += (_, _) => CheckpointManager.SaveCheckpoint(i.Key);
+                });
+        }
+
         public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
