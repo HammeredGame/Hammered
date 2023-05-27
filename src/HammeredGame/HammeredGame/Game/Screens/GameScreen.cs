@@ -15,6 +15,7 @@ using HammeredGame.Graphics;
 using ImMonoGame.Thing;
 using System.Threading.Tasks;
 using System.IO;
+using System.Runtime.ExceptionServices;
 
 namespace HammeredGame.Game.Screens
 {
@@ -169,15 +170,8 @@ namespace HammeredGame.Game.Screens
             temporaryScene
                 // Pass a progress reporting function to retrieve the asynchronous progress
                 .LoadContentAsync(progress: loadingScreen.ReportProgress)
-                .ContinueWith(async t => {
-                    if (t.Exception != null)
-                    {
-                        t.Exception.Handle(e =>
-                        {
-                            System.Diagnostics.Debug.WriteLine(e);
-                            return true;
-                        });
-                    }
+                .ContinueWith(async t =>
+                {
                     // Make sure we run in the next update synchronously since we will be
                     // overwriting currentScene and also removing the loading screen (which we don't
                     // want to do in a Draw). This is necessary because .ContinueWith can run in an
@@ -185,6 +179,17 @@ namespace HammeredGame.Game.Screens
                     await GameServices.GetService<ScriptUtils>().WaitNextUpdate();
 
                     currentScene = temporaryScene;
+
+                    // If the LoadContentAsync failed with an exception, it will get silently
+                    // swallowed unless we check for it here. We can't re-throw it, since
+                    // ContinueWith is still in a different thread and its exceptions will still not
+                    // propagate to the main thread. So we set a field on the scene that we'll read
+                    // out of later.
+                    if (t.IsFaulted)
+                    {
+                        currentScene.LoadError = t.Exception.InnerException;
+                    }
+
                     loadingScreen.ExitScreen(false);
                 });
         }
@@ -217,7 +222,15 @@ namespace HammeredGame.Game.Screens
         {
             base.Update(gameTime);
 
-            if (currentScene == null || !currentScene.IsLoaded) return;
+            if (currentScene == null) return;
+
+            // Rethrow the asynchronous load exception if it exists
+            if (currentScene.LoadError != null)
+            {
+                ExceptionDispatchInfo.Capture(currentScene.LoadError).Throw();
+            }
+
+            if (!currentScene.IsLoaded) return;
 
             Input input = GameServices.GetService<Input>();
 
