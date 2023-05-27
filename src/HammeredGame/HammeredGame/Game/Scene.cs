@@ -565,6 +565,12 @@ namespace HammeredGame.Game
 
                     foreach ((string key, GameObject gameObject) in workingCopy)
                     {
+                        // Select the first item by default
+                        if (objectListCurrentSelection == null)
+                        {
+                            objectListCurrentSelection = key;
+                        }
+
                         // Show a Selectable item, that is highlighted if the current selection
                         // matches this one. This Selectable is also a draggable item.
                         if (ImGui.Selectable($"{key}: {gameObject.GetType().Name}", objectListCurrentSelection == key))
