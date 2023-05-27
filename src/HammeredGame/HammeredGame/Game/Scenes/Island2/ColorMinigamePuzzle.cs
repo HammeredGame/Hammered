@@ -102,7 +102,17 @@ namespace HammeredGame.Game.Scenes.Island2
                 {
                     waterBounds.Entity.CollisionInformation.CollisionRules.Group = waterBoundsGroup;
                 }
+
+                // Check for walls in the scene
+                var wall = gO as Wall;
+                if (wall != null)
+                {
+                    this.UpdateSceneGrid(wall, false, 0.9);
+                }
             }
+
+            this.UpdateSceneGrid(Get<Door>("pp_door"), false, 0.9);
+            this.UpdateSceneGrid(Get<Door>("pp_door1"), false, 0.9);
 
             // Set the moving laser's original movement and the offset to the base
             Get<Laser>("moving_laser").Entity.LinearVelocity = new(0, 0, 30);
