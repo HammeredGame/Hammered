@@ -187,24 +187,6 @@ namespace HammeredGame.Game.Scenes.Island2
                     await ParentGameScreen.ShowDialogueAndWait("Don't forget to bring the hammer with you!");
                 }
             };
-
-            // Set up checkpoints
-            CheckpointSetup();
-        }
-
-        /// <summary>
-        /// Setup checkpoint trigger handlers for the level.
-        /// </summary>
-        public void CheckpointSetup()
-        {
-            // Filter all trigger objects that are named checkpoint_* and add handlers to save checkpoints
-            GameObjects
-                .Where(i => i.Key.StartsWith("checkpoint_") && i.Value is TriggerObject)
-                .ToList()
-                .ForEach(i =>
-                {
-                    (i.Value as TriggerObject).OnTrigger += (_, _) => CheckpointManager.SaveCheckpoint(i.Key);
-                });
         }
 
         public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)

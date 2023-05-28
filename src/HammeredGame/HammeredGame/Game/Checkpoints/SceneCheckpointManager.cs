@@ -1,7 +1,13 @@
-﻿using HammeredGame.Game.GameObjects;
+﻿using BEPUphysics.Entities.Prefabs;
+using HammeredGame.Core;
+using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using SoftCircuits.Collections;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
@@ -20,9 +26,12 @@ namespace HammeredGame.Game.Checkpoints
         // The last checkpoint that was saved.
         private Checkpoint checkpoint;
 
-        public SceneCheckpointManager(Scene scene)
+        private readonly GameServices services;
+
+        public SceneCheckpointManager(Scene scene, GameServices services)
         {
             this.scene = scene;
+            this.services = services;
         }
 
         /// <summary>
@@ -194,6 +203,42 @@ namespace HammeredGame.Game.Checkpoints
                     key.Rotation = checkpoint.KeyStates[uniqueName].Rotation;
                     key.Visible = checkpoint.KeyStates[uniqueName].Visible;
                     key.IsCollected = checkpoint.KeyStates[uniqueName].Collected;
+                }
+            }
+
+            // Exclusively for rocks, there could be saved objects that do not exist in the scene,
+            // or vice versa, due to the mechanic of being able to spawn new rocks. We handle this
+            // by either deleting objects from the scene or adding new objects at the bottom of the hierarchy.
+            //
+            // First, if there are rocks in the scene that aren't in the checkpoint, delete them.
+            // Since we do destructive operations while looping, we have to use a copy.
+            OrderedDictionary<string, GameObject> workingCopy = new();
+            workingCopy.AddRange(scene.GameObjects as IEnumerable<KeyValuePair<string, GameObject>>);
+
+            foreach ((string uniqueName, GameObject gameObject) in workingCopy) {
+                if (gameObject is MoveBlock rock && !checkpoint.RockStates.ContainsKey(uniqueName))
+                {
+                    scene.Remove(uniqueName);
+                }
+            }
+
+            // If there are rocks in the checkpoint that aren't in the scene, add them by creating
+            // rocks with hardcoded sizes and bounding boxes. This works for our current scenes but
+            // is brittle.
+            foreach ((string uniqueName, RockState rockState) in checkpoint.RockStates)
+            {
+                if (scene.Get<MoveBlock>(uniqueName) == null)
+                {
+                    // This hardcodes the model and texture and offsets and EVERYTHING!!!
+                    //
+                    // Ideally we want to restore everything that was saved, but that involves a
+                    // more complex data structure involving entity types, sizes, and so on, which
+                    // then overlaps a lot with the XML logic which currently isn't possible to abstract.
+                    ContentManager cm = services.GetService<ContentManager>();
+                    MoveBlock rock = new(services, cm.Load<Model>("Meshes/Rock/rock"), cm.Load<Texture2D>("Meshes/Rock/rock_albedo"), rockState.Position, rockState.Rotation, rockState.Scale, new Box(rockState.Position.ToBepu(), 10, 10, 10, 10000));
+                    rock.EntityModelOffset = new(0, -3, 0);
+                    rock.Visible = rockState.Visible;
+                    scene.GameObjects.Add(uniqueName, rock);
                 }
             }
         }
