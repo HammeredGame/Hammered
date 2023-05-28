@@ -41,19 +41,25 @@ namespace HammeredGame.Game.Checkpoints
         /// <param name="name">The unique name of a checkpoint</param>
         public async void SaveCheckpoint(string name)
         {
-            // We don't want to save the same checkpoint twice in a row. We do allow saving the same
-            // checkpoint if you've saved a different one in between. This is arguably better than
-            // the alternative of ignoring the second save attempt, because you can create annoying
-            // situations like "attempt puzzle 1 halfway (checkpoint 1) -> go back -> enter puzzle 2
-            // (checkpoint 2) and solve it -> come back (checkpoint 1 ignored) and get soft locked
-            // in puzzle 1 -> try to restart from last checkpoint, which is before clearing puzzle 2".
-            if (checkpoint != null && checkpoint.Name == name) return;
+            // We don't want to save the same checkpoint twice in a row. We also don't want to save
+            // any checkpoints that we have saved before. This is done by keeping track of all
+            // cumulative checkpoints throughout the level. This is a design choice, and the other
+            // option would be to allow saving the same checkpoint as long as there is a different
+            // one in between.
+            if (checkpoint != null && (checkpoint.Name == name || checkpoint.PreviousCheckpointNames.Contains(name))) return;
 
             // Create a new checkpoint reference object
             Checkpoint newCheckpoint = new()
             {
                 Name = name
             };
+
+            // Add the previous checkpoint names to the new checkpoint so we don't save the same ones.
+            if (checkpoint != null)
+            {
+                newCheckpoint.PreviousCheckpointNames.AddRange(checkpoint.PreviousCheckpointNames);
+                newCheckpoint.PreviousCheckpointNames.Add(checkpoint.Name);
+            }
 
             // Populate the checkpoint with player state and all rock, tree, key states.
             foreach ((string uniqueName, GameObject gameObject) in scene.GameObjects)
