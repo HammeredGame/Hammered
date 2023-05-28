@@ -148,7 +148,9 @@ namespace HammeredGame.Game.Screens
             // Reset the progress so that there isn't a flash of 100 from the previous use
             loadingScreen.ResetProgress();
             ScreenManager.AddScreen(loadingScreen);
-            CurrentScene.CheckpointManager.ResetAllCheckpoints();
+
+            // Reset checkpoints for the scene we're leaving from
+            CurrentScene?.CheckpointManager.ResetAllCheckpoints();
 
             Scene temporaryScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
 
@@ -165,15 +167,16 @@ namespace HammeredGame.Game.Screens
 
                     CurrentScene = temporaryScene;
 
-                    // Apply or reset checkpoints
+                    // Delete any existing checkpoints for the scene we're loading. We'd like this
+                    // happen if we're loading the next scene as part of a playthrough, but if we're
+                    // continuing a previous checkpoint, we definitely wouldn't want to reset it.
                     if (resetAllCheckpoints)
                     {
                         CurrentScene.CheckpointManager.ResetAllCheckpoints();
                     }
-                    else
-                    {
-                        CurrentScene.CheckpointManager.ApplyLastCheckpoint();
-                    }
+
+                    // Apply any checkpoint for the scene we're loading anew
+                    CurrentScene.CheckpointManager.ApplyLastCheckpoint();
 
                     // If the LoadContentAsync failed with an exception, it will get silently
                     // swallowed unless we check for it here. We can't re-throw it, since
