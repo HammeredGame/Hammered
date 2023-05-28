@@ -4,6 +4,7 @@ using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Settings;
 using HammeredGame.Core;
 using HammeredGame.Game.Checkpoints;
+using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.PathPlanning.Grid;
 using HammeredGame.Game.Screens;
 using HammeredGame.Graphics;
@@ -96,7 +97,7 @@ namespace HammeredGame.Game
         {
             this.Services = services;
             this.ParentGameScreen = screen;
-            this.CheckpointManager = new(this);
+            this.CheckpointManager = new(this, services);
         }
 
         /// <summary>
@@ -119,9 +120,25 @@ namespace HammeredGame.Game
             // Load any saved checkpoint
             CheckpointManager.LoadContent();
             CheckpointManager.ApplyLastCheckpoint();
+            CheckpointTriggersSetup();
 
             // Mark the scene as loaded and ready to be Update()-ed.
             IsLoaded = true;
+        }
+
+        /// <summary>
+        /// Setup checkpoint trigger handlers for the level.
+        /// </summary>
+        private void CheckpointTriggersSetup()
+        {
+            // Filter all trigger objects that are named checkpoint_* and add handlers to save checkpoints
+            GameObjects
+                .Where(i => i.Key.StartsWith("checkpoint_") && i.Value is TriggerObject)
+                .ToList()
+                .ForEach(i =>
+                {
+                    (i.Value as TriggerObject).OnTrigger += (_, _) => CheckpointManager.SaveCheckpoint(i.Key);
+                });
         }
 
         /// <summary>
