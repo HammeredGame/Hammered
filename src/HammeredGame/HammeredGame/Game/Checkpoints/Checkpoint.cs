@@ -39,6 +39,7 @@ namespace HammeredGame.Game.Checkpoints
     public record Checkpoint
     {
         public string Name;
+        public List<string> PreviousCheckpointNames = new();
         public PlayerState PlayerState;
         public Dictionary<string, RockState> RockStates = new();
         public Dictionary<string, TreeState> TreeStates = new();
