@@ -73,6 +73,15 @@ namespace HammeredGame.Game.Checkpoints
                         InputEnabled = player.InputEnabled
                     };
                 }
+                else if (gameObject is Hammer hammer)
+                {
+                    newCheckpoint.HammerState = new HammerState
+                    {
+                        Position = hammer.Position,
+                        Rotation = hammer.Rotation,
+                        Dropped = !hammer.IsEnroute() && !hammer.IsWithCharacter()
+                    };
+                }
                 else if (gameObject is MoveBlock rock)
                 {
                     newCheckpoint.RockStates.Add(uniqueName, new RockState
@@ -178,6 +187,12 @@ namespace HammeredGame.Game.Checkpoints
                     player.Position = checkpoint.PlayerState.Position;
                     player.Rotation = checkpoint.PlayerState.Rotation;
                     player.InputEnabled = checkpoint.PlayerState.InputEnabled;
+                }
+                else if (gameObject is Hammer hammer)
+                {
+                    hammer.Position = checkpoint.HammerState.Position;
+                    hammer.Rotation = checkpoint.HammerState.Rotation;
+                    if (checkpoint.HammerState.Dropped) hammer.DropHammer();
                 }
                 else if (gameObject is MoveBlock rock)
                 {
