@@ -55,6 +55,21 @@ namespace HammeredGame.Game.Scenes.Island3
             Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
 
             // Set laser to desired length within level
+            Get<Laser>("start_laser_1").SetLaserDefaultScale(20.0f);
+            Get<Laser>("start_laser_2").SetLaserDefaultScale(20.0f);
+            Get<Laser>("start_laser_3").SetLaserDefaultScale(20.0f);
+            Get<Laser>("start_laser_4").SetLaserDefaultScale(20.0f);
+
+            Get<Laser>("left_corner_laser_1").SetLaserDefaultScale(20.0f);
+            Get<Laser>("left_corner_laser_2").SetLaserDefaultScale(20.0f);
+
+            Get<Laser>("botright_laser_1").SetLaserDefaultScale(20.0f);
+            Get<Laser>("botright_laser_2").SetLaserDefaultScale(21.0f);
+
+            Get<Laser>("topright_laser_1").SetLaserDefaultScale(25.0f);
+            Get<Laser>("topright_laser_2").SetLaserDefaultScale(25.0f);
+            Get<Laser>("topright_laser_3").SetLaserDefaultScale(20.0f);
+            Get<Laser>("topright_laser_4").SetLaserDefaultScale(20.0f);
 
             CollisionGroup laserGroup = new CollisionGroup();
             rockGroup = new CollisionGroup();
