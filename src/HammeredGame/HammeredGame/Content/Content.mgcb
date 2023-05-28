@@ -1693,6 +1693,9 @@
 #begin SceneDescriptions/Island2/ColorMinigamePuzzle.xml
 /copy:SceneDescriptions/Island2/ColorMinigamePuzzle.xml
 
+#begin SceneDescriptions/Ornamental/GameTitleScene.xml
+/copy:SceneDescriptions/Ornamental/GameTitleScene.xml
+
 #begin SceneDescriptions/Test/ImmediatelyCredits.xml
 /copy:SceneDescriptions/Test/ImmediatelyCredits.xml
 
