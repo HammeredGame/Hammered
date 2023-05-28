@@ -20,7 +20,7 @@ namespace HammeredGame.Game.Scenes.Island1
         public TreeTutorial(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_4x_b");
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/trees_bgm2");
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
