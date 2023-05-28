@@ -79,7 +79,7 @@ namespace HammeredGame.Game.Scenes.Island1
                     //await ParentGameScreen.ShowDialogueAndWait("(You found polaroid photos of yourself together with\na handsome god-like man)");
                     //await ParentGameScreen.ShowDialogueAndWait("(The man is holding a hammer that looks just like\nthe one in your hand)");
                     //await ParentGameScreen.ShowDialogueAndWait("Is that... Thor? And this... his hammer?\nI need to give it back to him!");
-                    ParentGameScreen.InitializeLevel(typeof(LaserTutorial).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(LaserTutorial).FullName, true);
                 }
                 else
                 {

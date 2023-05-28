@@ -1,5 +1,4 @@
 ﻿using BEPUphysics.CollisionRuleManagement;
-using BEPUphysics.Constraints.SolverGroups;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
@@ -8,16 +7,15 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immovabl
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Scenes.Endgame;
-using HammeredGame.Game.Scenes.Island1;
 using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
-using Pleasing;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Scenes.Island2
 {
@@ -35,6 +33,7 @@ namespace HammeredGame.Game.Scenes.Island2
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
+
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
             await base.LoadSceneContent(progress);
@@ -181,7 +180,7 @@ namespace HammeredGame.Game.Scenes.Island2
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
-                    ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName, true);
                 }
                 else
                 {
@@ -189,6 +188,7 @@ namespace HammeredGame.Game.Scenes.Island2
                 }
             };
         }
+
         public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
