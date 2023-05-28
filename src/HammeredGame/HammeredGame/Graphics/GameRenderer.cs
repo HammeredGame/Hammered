@@ -1,6 +1,7 @@
 ﻿using BEPUphysics.OtherSpaceStages;
 using HammeredGame.Game;
 using HammeredGame.Game.GameObjects.EnvironmentObjects;
+using HammeredGame.Graphics.BloomEffect;
 using HammeredGame.Graphics.ForwardRendering;
 using ImGuiNET;
 using ImMonoGame.Thing;

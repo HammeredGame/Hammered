@@ -1,5 +1,4 @@
 ﻿using BEPUphysics.CollisionRuleManagement;
-using BEPUphysics.Constraints.SolverGroups;
 using HammeredGame.Core;
 using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EmptyGameObjects;
@@ -8,16 +7,15 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immovabl
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Scenes.Endgame;
-using HammeredGame.Game.Scenes.Island1;
 using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
-using Pleasing;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media; 
 
 namespace HammeredGame.Game.Scenes.Island2
 {
@@ -26,13 +24,16 @@ namespace HammeredGame.Game.Scenes.Island2
         private ColorPlateState state = ColorPlateState.ZeroSuccess;
         private bool withinDoorInteractTrigger;
 
+        private Vector3 movingLaserOffsetFromBase;
+
         public ColorMinigamePuzzle(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/bgm4_4x");
-            MediaPlayer.IsRepeating = true; 
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm4_4x");
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
+
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
             await base.LoadSceneContent(progress);
@@ -100,46 +101,58 @@ namespace HammeredGame.Game.Scenes.Island2
                 {
                     waterBounds.Entity.CollisionInformation.CollisionRules.Group = waterBoundsGroup;
                 }
+
+                // Check for walls in the scene
+                var wall = gO as Wall;
+                if (wall != null)
+                {
+                    this.UpdateSceneGrid(wall, false, 0.9);
+                }
             }
 
-            MoveLaserLoop();
+            this.UpdateSceneGrid(Get<Door>("pp_door"), false, 0.9);
+            this.UpdateSceneGrid(Get<Door>("pp_door1"), false, 0.9);
 
-            Get<PressurePlate>("maze_pp_A").OnTrigger += async (_, _) =>
+            // Set the moving laser's original movement and the offset to the base
+            Get<Laser>("moving_laser").Entity.LinearVelocity = new(0, 0, 30);
+            movingLaserOffsetFromBase = Get<Laser>("moving_laser").Position - Get<Wall>("moving_base").Position;
+
+            Get<PressurePlate>("maze_pp_A").OnTrigger += (_, _) =>
             {
                 var maze_laser_A = Get<Laser>("maze_laser_A");
                 maze_laser_A.SetLaserScale(0f);
                 maze_laser_A.Deactivated = true;
             };
 
-            Get<PressurePlate>("maze_pp_A").OnTriggerEnd += async (_, _) =>
+            Get<PressurePlate>("maze_pp_A").OnTriggerEnd += (_, _) =>
             {
                 var maze_laser_A = Get<Laser>("maze_laser_A");
                 maze_laser_A.ReturnToDefaultLength();
                 maze_laser_A.Deactivated = false;
             };
 
-            Get<PressurePlate>("maze_pp_B").OnTrigger += async (_, _) =>
+            Get<PressurePlate>("maze_pp_B").OnTrigger += (_, _) =>
             {
                 var maze_laser_B = Get<Laser>("maze_laser_B");
                 maze_laser_B.SetLaserScale(0f);
                 maze_laser_B.Deactivated = true;
             };
 
-            Get<PressurePlate>("maze_pp_B").OnTriggerEnd += async (_, _) =>
+            Get<PressurePlate>("maze_pp_B").OnTriggerEnd += (_, _) =>
             {
                 var maze_laser_B = Get<Laser>("maze_laser_B");
                 maze_laser_B.ReturnToDefaultLength();
                 maze_laser_B.Deactivated = false;
             };
 
-            Get<PressurePlate>("maze_pp_C").OnTrigger += async (_, _) =>
+            Get<PressurePlate>("maze_pp_C").OnTrigger += (_, _) =>
             {
                 var maze_laser_C = Get<Laser>("maze_laser_C");
                 maze_laser_C.SetLaserScale(0f);
                 maze_laser_C.Deactivated = true;
             };
 
-            Get<PressurePlate>("maze_pp_C").OnTriggerEnd += async (_, _) =>
+            Get<PressurePlate>("maze_pp_C").OnTriggerEnd += (_, _) =>
             {
                 var maze_laser_C = Get<Laser>("maze_laser_C");
                 maze_laser_C.ReturnToDefaultLength();
@@ -147,14 +160,14 @@ namespace HammeredGame.Game.Scenes.Island2
             };
 
             CancellationTokenSource doorInteractTokenSource = new();
-            Get<TriggerObject>("hub_door_interact_trigger").OnTrigger += async (_, _) =>
+            Get<TriggerObject>("hub_door_interact_trigger").OnTrigger += (_, _) =>
             {
                 doorInteractTokenSource = new();
                 ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
                 withinDoorInteractTrigger = true;
             };
 
-            Get<TriggerObject>("hub_door_interact_trigger").OnTriggerEnd += async (_, _) =>
+            Get<TriggerObject>("hub_door_interact_trigger").OnTriggerEnd += (_, _) =>
             {
                 doorInteractTokenSource.Cancel();
                 withinDoorInteractTrigger = false;
@@ -167,7 +180,7 @@ namespace HammeredGame.Game.Scenes.Island2
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
-                    ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName, true);
                 }
                 else
                 {
@@ -176,33 +189,35 @@ namespace HammeredGame.Game.Scenes.Island2
             };
         }
 
-        private async void MoveLaserLoop()
-        {
-            // Continuously move the moving-laser
-            Vector3 offsetFromBase = Get<Laser>("moving_laser").Position - Get<Wall>("moving_base").Position;
-
-            Get<Laser>("moving_laser").Position = new Vector3(-151.500f, -14.400f, -255f);
-            TweenTimeline tweenTimeline = Tweening.NewTimeline();
-            tweenTimeline
-                .AddFloat(Get<Laser>("moving_laser").Entity.LinearVelocity.Z, f =>
-                {
-                    Get<Laser>("moving_laser").Entity.LinearVelocity = new(0, 0, f);
-                    Get<Wall>("moving_base").Position = Get<Laser>("moving_laser").Position - offsetFromBase;
-                })
-                .AddFrame(0, -20)
-                .AddFrame(2999, -20)
-                .AddFrame(3000, 20)
-                .AddFrame(5999, 20);
-            tweenTimeline.Loop = true;
-        }
-
-        public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
+        public override void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
 
+            MovingLaserUpdate();
             //MazeUpdate();
             FourPlatesUpdate();
             DoorHintIfWithinVicinity();
+        }
+
+        /// <summary>
+        /// If the moving laser has hit its ends, reverse its direction. Otherwise, update the laser
+        /// base position to follow the laser.
+        /// </summary>
+        private void MovingLaserUpdate()
+        {
+            Laser laser = Get<Laser>("moving_laser");
+            Wall laserBase = Get<Wall>("moving_base");
+
+            if (laser.Position.Z >= -260f)
+            {
+                laser.Entity.LinearVelocity = new(0, 0, -30);
+            }
+            else if (laser.Position.Z <= -310f)
+            {
+                laser.Entity.LinearVelocity = new(0, 0, 30);
+            }
+
+            laserBase.Position = laser.Position - movingLaserOffsetFromBase;
         }
 
         //private void MazeUpdate()

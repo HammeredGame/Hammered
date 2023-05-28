@@ -47,8 +47,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         public enum MBGroundState
         {
-            Ground, 
-            Water, 
+            Ground,
+            Water,
             Tree,
             MoveBlock
         }
@@ -68,7 +68,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 this.SetStationary();
 
                 // Setting base kinetic friction and higher gravitational force
-                // These settings are meant to help the rock stay on the ground 
+                // These settings are meant to help the rock stay on the ground
                 // when moving, while still moving as desired along the hammer's direction
                 // TODO: these settings may need tweaking
                 this.Entity.Material.KineticFriction = 0.5f;
@@ -77,12 +77,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 //this.Entity.LinearDamping = 0f;
 
                 this.ActiveSpace.Add(this.Entity);
-                
+
                 this.Entity.CollisionInformation.Events.InitialCollisionDetected += this.Events_InitialCollisionDetected;
                 this.Entity.CollisionInformation.Events.PairTouching += this.Events_PairTouching;
 
                 this.AudioEmitter = new AudioEmitter();
-                this.AudioEmitter.Position = this.Position; 
+                this.AudioEmitter.Position = this.Position;
             }
 
             MblockState = MBState.Stationary;
@@ -156,7 +156,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         this.MgroundState = MBGroundState.Ground;
                     }
                 }
-                if (other.Tag is Water) 
+                if (other.Tag is Water)
                 {
                     if (this.MgroundState != MBGroundState.Water)
                     {
@@ -172,27 +172,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             {
                 // If in water, do nothing with the block - the block is
                 // essentially submerged and cannot move anymore
-
-                // TODO: Once the MoveBlock is set to the InWater state,
-                // there may need to be some checks that allow the player
-                // to walk over the rock to cross the water (similar to the tree maybe?)
-                if (other.Tag is Player)
-                {
-                    var player = other.Tag as Player;
-
-                    if (player.StandingOn != PlayerOnSurfaceState.OnRock)
-                    {
-                        float maxY = player.Entity.Position.Y;
-                        foreach (var contact in pair.Contacts)
-                        {
-                            BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
-                            maxY = Math.Max(maxY, pointOfContact.Y);
-                        }
-
-                        player.StandingOn = PlayerOnSurfaceState.OnRock;
-                        player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).Height, player.Entity.Position.Z);
-                    }
-                }
 
                 if (other.Tag is MoveBlock)
                 {
@@ -243,7 +222,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         // A player or blocking obstacle will stop the movable block
                         this.SetStationary();
                     }
-                    
+
                     if (other.Tag is MoveBlock)
                     {
                         // If hitting another stationary MoveBlock, set that one to move in the
@@ -259,13 +238,13 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                         }
 
                     }
-                    
+
                     //if (other.Tag is PressurePlate)
                     //{
                     //    System.Console.WriteLine("MoveBlock hit pressure plate\n");
                     //}
                 }
-                
+
             }
             else
             {

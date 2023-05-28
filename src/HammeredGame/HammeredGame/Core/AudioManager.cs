@@ -13,6 +13,7 @@ namespace HammeredGame.Core
         readonly string[] soundNames =
         {
             //combination of self-recored foley and sounds from zapsplat.com
+            //bgmusic chord progressions and inspirationg from Avery Berman royalty free music 
             "Audio/stereo_step",
             "Audio/hammer_drop",
             "Audio/lohi_whoosh",
@@ -34,6 +35,20 @@ namespace HammeredGame.Core
             "Audio/glow",
             "Audio/blip",
             "Audio/retro",
+            "Audio/balanced/buzz_b",
+            "Audio/balanced/hammer_drop_b",
+            "Audio/balanced/new_launch_b",
+            "Audio/balanced/tree_crash ",
+            "Audio/balanced/fast_whoosh_b",
+            "Audio/balanced/catch_b",
+            "Audio/balanced/pied_bm",
+            "Audio/balanced/tree_crash_bm",
+            "Audio/balanced/hammer_fly_m",
+            "Audio/balanced/loud_fly",
+            "Audio/balanced/quiet_foot",
+            "Audio/balanced/soft_step",
+            "Audio/balanced/door_close",
+            "Audio/balanced/door_open"
         };
 
         //public AudioListener Listener
