@@ -1,9 +1,9 @@
 <scene>
   <camera mode="follow">
-    <follow_distance>611.000</follow_distance>
+    <follow_distance>268.000</follow_distance>
     <follow_angle_v>0.480</follow_angle_v>
-    <follow_angle_h>206.366</follow_angle_h>
-    <target>-18.274 -12.839 -96.685</target>
+    <follow_angle_h>256.678</follow_angle_h>
+    <target>-21.353 -12.839 -91.244</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.425</fov>
   </camera>
@@ -51,8 +51,8 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture>Meshes/Character/character_diffuse</texture>
-    <position>-18.274 -12.839 -96.685</position>
-    <rotation>0.000 0.645 0.000 0.764</rotation>
+    <position>-21.353 -12.839 -91.244</position>
+    <rotation>0.000 -0.725 0.000 -0.689</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
@@ -62,11 +62,2078 @@
       <shift_graphic>0.000 -8.900 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds">
+    <model />
+    <position>210.000 -20.000 60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds1">
+    <model />
+    <position>200.000 -20.000 60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds2">
+    <model />
+    <position>190.000 -20.000 60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds3">
+    <model />
+    <position>180.000 -20.000 60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds4">
+    <model />
+    <position>170.000 -20.000 60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds5">
+    <model />
+    <position>160.000 -20.000 60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds6">
+    <model />
+    <position>160.000 -20.000 70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds7">
+    <model />
+    <position>160.000 -20.000 80.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds8">
+    <model />
+    <position>160.000 -20.000 90.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds9">
+    <model />
+    <position>160.000 -20.000 100.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds10">
+    <model />
+    <position>160.000 -20.000 110.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds11">
+    <model />
+    <position>160.000 -20.000 120.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds12">
+    <model />
+    <position>170.000 -20.000 120.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds13">
+    <model />
+    <position>180.000 -20.000 120.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds14">
+    <model />
+    <position>190.000 -20.000 120.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds15">
+    <model />
+    <position>200.000 -20.000 120.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="botright_waterbounds16">
+    <model />
+    <position>210.000 -20.000 120.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds">
+    <model />
+    <position>230.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds1">
+    <model />
+    <position>240.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds2">
+    <model />
+    <position>250.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds3">
+    <model />
+    <position>260.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds4">
+    <model />
+    <position>270.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds5">
+    <model />
+    <position>270.000 -20.000 150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds6">
+    <model />
+    <position>270.000 -20.000 160.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds7">
+    <model />
+    <position>270.000 -20.000 170.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds8">
+    <model />
+    <position>270.000 -20.000 180.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds9">
+    <model />
+    <position>270.000 -20.000 130.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds10">
+    <model />
+    <position>270.000 -20.000 120.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds11">
+    <model />
+    <position>270.000 -20.000 110.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds12">
+    <model />
+    <position>270.000 -20.000 100.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds13">
+    <model />
+    <position>270.000 -20.000 90.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds14">
+    <model />
+    <position>270.000 -20.000 80.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds15">
+    <model />
+    <position>270.000 -20.000 70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds16">
+    <model />
+    <position>270.000 -20.000 60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds17">
+    <model />
+    <position>270.000 -20.000 50.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds18">
+    <model />
+    <position>270.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds19">
+    <model />
+    <position>270.000 -20.000 30.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds20">
+    <model />
+    <position>270.000 -20.000 20.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds21">
+    <model />
+    <position>270.000 -20.000 10.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds22">
+    <model />
+    <position>270.000 -20.000 0.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds23">
+    <model />
+    <position>260.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds24">
+    <model />
+    <position>250.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds25">
+    <model />
+    <position>240.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds26">
+    <model />
+    <position>230.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds27">
+    <model />
+    <position>280.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds28">
+    <model />
+    <position>290.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds29">
+    <model />
+    <position>300.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds30">
+    <model />
+    <position>310.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds31">
+    <model />
+    <position>320.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds32">
+    <model />
+    <position>330.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds33">
+    <model />
+    <position>340.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds34">
+    <model />
+    <position>350.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds35">
+    <model />
+    <position>360.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds36">
+    <model />
+    <position>370.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds37">
+    <model />
+    <position>380.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds38">
+    <model />
+    <position>390.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds39">
+    <model />
+    <position>400.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds40">
+    <model />
+    <position>410.000 -20.000 40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds41">
+    <model />
+    <position>410.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds42">
+    <model />
+    <position>400.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds43">
+    <model />
+    <position>390.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds44">
+    <model />
+    <position>380.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds45">
+    <model />
+    <position>370.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds46">
+    <model />
+    <position>360.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds47">
+    <model />
+    <position>350.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds48">
+    <model />
+    <position>340.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds49">
+    <model />
+    <position>330.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds50">
+    <model />
+    <position>320.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds51">
+    <model />
+    <position>310.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds52">
+    <model />
+    <position>300.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds53">
+    <model />
+    <position>290.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds54">
+    <model />
+    <position>280.000 -20.000 140.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds55">
+    <model />
+    <position>370.000 -20.000 180.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds56">
+    <model />
+    <position>370.000 -20.000 170.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds57">
+    <model />
+    <position>370.000 -20.000 160.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds58">
+    <model />
+    <position>370.000 -20.000 150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds59">
+    <model />
+    <position>370.000 -20.000 130.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds60">
+    <model />
+    <position>370.000 -20.000 120.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds61">
+    <model />
+    <position>370.000 -20.000 110.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds62">
+    <model />
+    <position>370.000 -20.000 100.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds63">
+    <model />
+    <position>370.000 -20.000 90.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds64">
+    <model />
+    <position>370.000 -20.000 80.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds65">
+    <model />
+    <position>370.000 -20.000 70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds66">
+    <model />
+    <position>370.000 -20.000 60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds67">
+    <model />
+    <position>370.000 -20.000 50.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds68">
+    <model />
+    <position>370.000 -20.000 30.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds69">
+    <model />
+    <position>370.000 -20.000 20.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds70">
+    <model />
+    <position>370.000 -20.000 10.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="midright_waterbounds71">
+    <model />
+    <position>370.000 -20.000 0.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds">
+    <model />
+    <position>430.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds1">
+    <model />
+    <position>440.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds2">
+    <model />
+    <position>450.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds3">
+    <model />
+    <position>460.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds4">
+    <model />
+    <position>470.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds5">
+    <model />
+    <position>480.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds6">
+    <model />
+    <position>480.000 -20.000 -60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds7">
+    <model />
+    <position>480.000 -20.000 -50.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds8">
+    <model />
+    <position>480.000 -20.000 -40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds9">
+    <model />
+    <position>480.000 -20.000 -30.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds10">
+    <model />
+    <position>480.000 -20.000 -20.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds11">
+    <model />
+    <position>550.000 -20.000 -20.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds12">
+    <model />
+    <position>550.000 -20.000 -30.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds13">
+    <model />
+    <position>550.000 -20.000 -40.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds14">
+    <model />
+    <position>550.000 -20.000 -50.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds15">
+    <model />
+    <position>550.000 -20.000 -60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds16">
+    <model />
+    <position>550.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds17">
+    <model />
+    <position>560.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds18">
+    <model />
+    <position>570.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds19">
+    <model />
+    <position>580.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds20">
+    <model />
+    <position>590.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds21">
+    <model />
+    <position>600.000 -20.000 -70.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds22">
+    <model />
+    <position>600.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds23">
+    <model />
+    <position>590.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds24">
+    <model />
+    <position>580.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds25">
+    <model />
+    <position>570.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds26">
+    <model />
+    <position>560.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds27">
+    <model />
+    <position>550.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds28">
+    <model />
+    <position>550.000 -20.000 -160.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds29">
+    <model />
+    <position>550.000 -20.000 -170.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds30">
+    <model />
+    <position>550.000 -20.000 -180.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds31">
+    <model />
+    <position>550.000 -20.000 -190.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds32">
+    <model />
+    <position>550.000 -20.000 -200.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds33">
+    <model />
+    <position>480.000 -20.000 -200.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds34">
+    <model />
+    <position>480.000 -20.000 -190.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds35">
+    <model />
+    <position>480.000 -20.000 -180.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds36">
+    <model />
+    <position>480.000 -20.000 -170.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds37">
+    <model />
+    <position>480.000 -20.000 -160.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds38">
+    <model />
+    <position>480.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds39">
+    <model />
+    <position>470.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds40">
+    <model />
+    <position>460.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds41">
+    <model />
+    <position>450.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds42">
+    <model />
+    <position>440.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="topmid_waterbounds43">
+    <model />
+    <position>430.000 -20.000 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds">
+    <model />
+    <position>280.000 -20.000 -220.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds1">
+    <model />
+    <position>280.000 -20.000 -230.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds2">
+    <model />
+    <position>280.000 -20.000 -240.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds3">
+    <model />
+    <position>280.000 -20.000 -250.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds4">
+    <model />
+    <position>280.000 -20.000 -260.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds5">
+    <model />
+    <position>280.000 -20.000 -270.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds6">
+    <model />
+    <position>270.000 -20.000 -270.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds7">
+    <model />
+    <position>260.000 -20.000 -270.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds8">
+    <model />
+    <position>250.000 -20.000 -270.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds9">
+    <model />
+    <position>240.000 -20.000 -270.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds10">
+    <model />
+    <position>230.000 -20.000 -270.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds11">
+    <model />
+    <position>230.000 -20.000 -340.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds12">
+    <model />
+    <position>240.000 -20.000 -340.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds13">
+    <model />
+    <position>250.000 -20.000 -340.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds14">
+    <model />
+    <position>260.000 -20.000 -340.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds15">
+    <model />
+    <position>270.000 -20.000 -340.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds16">
+    <model />
+    <position>280.000 -20.000 -340.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds17">
+    <model />
+    <position>280.000 -20.000 -350.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds18">
+    <model />
+    <position>280.000 -20.000 -360.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds19">
+    <model />
+    <position>280.000 -20.000 -370.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds20">
+    <model />
+    <position>280.000 -20.000 -380.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.WaterBoundsObject" id="leftmid_waterbounds21">
+    <model />
+    <position>280.000 -20.000 -390.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>10.000</width>
+      <height>20.000</height>
+      <length>10.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject">
+    <model />
+    <position>12.700 -12.000 -255.700</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>5.000</width>
+      <height>20.000</height>
+      <length>285.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject1">
+    <model />
+    <position>12.700 -12.000 66.200</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>5.000</width>
+      <height>20.000</height>
+      <length>285.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject2">
+    <model />
+    <position>-10.300 -12.000 -113.000</position>
+    <rotation>0.000 0.710 0.000 0.704</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>5.000</width>
+      <height>20.000</height>
+      <length>50.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject3">
+    <model />
+    <position>-10.300 -12.000 -77.800</position>
+    <rotation>0.000 0.710 0.000 0.704</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>5.000</width>
+      <height>20.000</height>
+      <length>50.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
-    <position>-18.038 -16.350 -94.034</position>
-    <rotation>0.882 -0.425 0.173 0.105</rotation>
+    <position>-20.525 -16.338 -88.743</position>
+    <rotation>-0.885 0.435 -0.100 -0.135</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>
@@ -535,7 +2602,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="start_rock_1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>60.001 -16.663 -73.832</position>
+    <position>60.001 -16.695 -74.727</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -616,7 +2683,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="left_corner_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>104.904 -16.648 -377.000</position>
+    <position>104.937 -16.648 -377.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -630,7 +2697,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="left_corner_rock2">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>130.001 -20.019 -266.138</position>
+    <position>129.999 -16.695 -266.180</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -774,7 +2841,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="leftmid_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>250.000 -16.662 -247.851</position>
+    <position>250.001 -17.040 -247.850</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -788,7 +2855,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="leftmid_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>253.551 -16.648 -374.570</position>
+    <position>253.584 -16.648 -374.570</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -1075,7 +3142,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_top_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>510.804 -16.624 164.864</position>
+    <position>510.804 -16.648 164.864</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -1102,7 +3169,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_mid_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>250.001 -20.057 23.192</position>
+    <position>250.001 -20.599 23.191</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -1116,7 +3183,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_mid_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>393.651 -16.672 20.001</position>
+    <position>393.651 -16.674 20.001</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -1130,7 +3197,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_mid_rock2">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>390.000 -19.883 160.000</position>
+    <position>390.000 -20.254 160.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -1144,7 +3211,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_mid_rock3">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>239.598 -16.686 160.000</position>
+    <position>239.567 -16.650 160.019</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -1153,6 +3220,175 @@
       <length>10.000</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_1">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 -373.600</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 -327.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_2">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 -289.500</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_3">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 -249.500</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_4">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 -201.900</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_5">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 -153.700</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_6">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 -105.900</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_7">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 -58.100</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_8">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 -9.600</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_9">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 38.200</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_10">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 75.600</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_11">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 123.300</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="top_walls_12">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>610.500 -6.600 171.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.210</scale>
+    <body type="box">
+      <width>7.500</width>
+      <height>39.600</height>
+      <length>49.100</length>
+      <shift_graphic>0.000 -13.500 18.100</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.ImmovableInteractables.PressurePlate" id="pressureplate_end_0">
@@ -2510,7 +4746,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="topright_laser_base2">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>606.700 -12.200 1.300</position>
+    <position>600.200 -12.200 2.700</position>
     <rotation>0.000 0.397 0.000 0.918</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -2555,14 +4791,14 @@
     <body type="box">
       <width>14.200</width>
       <height>20.000</height>
-      <length>240.000</length>
+      <length>221.318</length>
       <shift_graphic>0.000 0.000 5.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="topright_laser_2">
     <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture>Meshes/Laser/LaserMaterial</texture>
-    <position>601.600 -12.534 7.000</position>
+    <position>595.900 -10.434 7.900</position>
     <rotation>0.000 -0.358 0.000 0.934</rotation>
     <scale>0.180</scale>
     <body type="box">
