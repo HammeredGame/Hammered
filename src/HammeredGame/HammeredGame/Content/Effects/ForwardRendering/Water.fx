@@ -202,7 +202,7 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
     // We multiply by two (arbitrary) to add a kind of shininess and transparency
     // of water that can't just be expressed by the specular attribute (idk, it
     // looked nice)
-    output.Color = 2 * CalculateLightingContributions(normal, input.SunSpacePosition, input.WorldSpacePosition, CameraPosition);
+    output.Color = CalculateLightingContributions(normal, input.SunSpacePosition, input.WorldSpacePosition, CameraPosition);
 
     // Multiply all the lighting so far by the texture color. If there is no
     // texture, this will result in a multiplication by zero, thus black.
