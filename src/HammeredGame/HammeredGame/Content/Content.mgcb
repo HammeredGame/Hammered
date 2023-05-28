@@ -124,6 +124,12 @@
 /processorParam:Quality=Best
 /build:Audio/balanced/quiet_foot.wav
 
+#begin Audio/balanced/shore_bgm2.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/shore_bgm2.mp3
+
 #begin Audio/balanced/soft_step.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -141,6 +147,18 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/balanced/tree_crash_bm.wav
+
+#begin Audio/balanced/trees_bgm2.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/trees_bgm2.mp3
+
+#begin Audio/balanced/waves_bgm4.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/balanced/waves_bgm4.mp3
 
 #begin Audio/BGM_V1.mp3
 /importer:Mp3Importer
