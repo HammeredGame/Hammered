@@ -19,7 +19,7 @@ namespace HammeredGame.Game.Scenes.Island1
         {
             Song bgMusic;
             bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_amb");
-            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
 
@@ -133,7 +133,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
                     hammerPromptTokenSource.Cancel();
-                    ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName, true);
                 }
                 else
                 {

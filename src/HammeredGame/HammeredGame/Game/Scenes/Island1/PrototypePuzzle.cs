@@ -157,7 +157,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
                     await ParentGameScreen.ShowDialogueAndWait("Phewww, that was tough...!");
-                    ParentGameScreen.InitializeLevel(typeof(ColorMinigamePuzzle).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(ColorMinigamePuzzle).FullName, true);
                 }
                 else
                 {

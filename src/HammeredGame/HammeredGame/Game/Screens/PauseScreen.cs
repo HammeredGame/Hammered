@@ -69,8 +69,7 @@ namespace HammeredGame.Game.Screens
             };
             menuItemRestartLevel.TouchUp += (s, a) =>
             {
-                parentGameScreen.CurrentScene.CheckpointManager.ResetAllCheckpoints();
-                parentGameScreen.InitializeLevel(parentGameScreen.CurrentScene.GetType().FullName);
+                parentGameScreen.InitializeLevel(parentGameScreen.CurrentScene.GetType().FullName, true);
 
                 OnExit?.Invoke();
                 // Keep screen contents loaded since the Pause Screen will be re-added again

@@ -180,7 +180,7 @@ namespace HammeredGame.Game.Scenes.Island2
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
-                    ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName, true);
                 }
                 else
                 {
