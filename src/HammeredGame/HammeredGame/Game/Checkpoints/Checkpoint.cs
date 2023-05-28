@@ -10,6 +10,13 @@ namespace HammeredGame.Game.Checkpoints
         public bool InputEnabled;
     }
 
+    public struct HammerState
+    {
+        public Vector3 Position;
+        public Quaternion Rotation;
+        public bool Dropped;
+    }
+
     public struct RockState
     {
         public Vector3 Position;
@@ -41,6 +48,7 @@ namespace HammeredGame.Game.Checkpoints
         public string Name;
         public List<string> PreviousCheckpointNames = new();
         public PlayerState PlayerState;
+        public HammerState HammerState;
         public Dictionary<string, RockState> RockStates = new();
         public Dictionary<string, TreeState> TreeStates = new();
         public Dictionary<string, KeyState> KeyStates = new();
