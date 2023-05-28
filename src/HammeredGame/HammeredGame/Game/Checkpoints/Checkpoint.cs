@@ -43,6 +43,5 @@ namespace HammeredGame.Game.Checkpoints
         public Dictionary<string, RockState> RockStates = new();
         public Dictionary<string, TreeState> TreeStates = new();
         public Dictionary<string, KeyState> KeyStates = new();
-        public Dictionary<string, object> CustomSceneContext = new();
     }
 }
