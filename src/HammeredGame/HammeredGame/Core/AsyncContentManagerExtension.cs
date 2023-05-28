@@ -171,9 +171,16 @@ namespace HammeredGame.Core
                 return (T)asset;
             }
 
-            // Here is the difference to the default Load method, we await an asynchronous read
-            result = await contentManager.ReadAssetAsync<T>(assetName, null);
-            loadedAssets[key] = result;
+            try
+            {
+                // Here is the difference to the default Load method, we await an asynchronous read
+                result = await contentManager.ReadAssetAsync<T>(assetName, null);
+                loadedAssets[key] = result;
+            }
+            catch (Exception e)
+            {
+                throw new ContentLoadException("Failed to load asset (typo? has it been added to the pipeline?): " + assetName, e);
+            }
             return result;
         }
 

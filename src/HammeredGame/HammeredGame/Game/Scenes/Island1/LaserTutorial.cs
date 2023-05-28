@@ -9,7 +9,7 @@ using HammeredGame.Game.Screens;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media; 
+using Microsoft.Xna.Framework.Media;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -18,8 +18,8 @@ namespace HammeredGame.Game.Scenes.Island1
         public LaserTutorial(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/BGM_V2_4x");
-            MediaPlayer.IsRepeating = true; 
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_4x_b");
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
         protected override async Task LoadSceneContent(IProgress<int> progress)
@@ -109,7 +109,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 {
                     await ParentGameScreen.ShowDialogueAndWait("That was surprisingly easy...!");
                     await ParentGameScreen.ShowDialogueAndWait("I hope the next one is also like that.");
-                    ParentGameScreen.InitializeLevel(typeof(PrototypePuzzle).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(PrototypePuzzle).FullName, true);
                 }
                 else
                 {

@@ -3,6 +3,8 @@ using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Settings;
 using HammeredGame.Core;
+using HammeredGame.Game.Checkpoints;
+using HammeredGame.Game.GameObjects.EmptyGameObjects;
 using HammeredGame.Game.PathPlanning.Grid;
 using HammeredGame.Game.Screens;
 using HammeredGame.Graphics;
@@ -53,6 +55,8 @@ namespace HammeredGame.Game
 
         public bool SceneStarted { get; private set; } = false;
 
+        public Exception LoadError;
+
         /// <summary>
         /// Any debug objects shown as representations of bounding boxes. This list is updated in this.UpdateDebugObjects().
         /// </summary>
@@ -77,6 +81,8 @@ namespace HammeredGame.Game
         /// </summary>
         public Space Space;
 
+        public SceneCheckpointManager CheckpointManager;
+
         /// <summary>
         /// The game services that all objects in the scene and any scripts can access.
         /// </summary>
@@ -91,6 +97,7 @@ namespace HammeredGame.Game
         {
             this.Services = services;
             this.ParentGameScreen = screen;
+            this.CheckpointManager = new(this, services);
         }
 
         /// <summary>
@@ -110,8 +117,27 @@ namespace HammeredGame.Game
 
             await LoadSceneContent(progress);
 
+            // Load any saved checkpoint
+            CheckpointManager.LoadContent();
+            CheckpointTriggersSetup();
+
             // Mark the scene as loaded and ready to be Update()-ed.
             IsLoaded = true;
+        }
+
+        /// <summary>
+        /// Setup checkpoint trigger handlers for the level.
+        /// </summary>
+        private void CheckpointTriggersSetup()
+        {
+            // Filter all trigger objects that are named checkpoint_* and add handlers to save checkpoints
+            GameObjects
+                .Where(i => i.Key.StartsWith("checkpoint_") && i.Value is TriggerObject)
+                .ToList()
+                .ForEach(i =>
+                {
+                    (i.Value as TriggerObject).OnTrigger += (_, _) => CheckpointManager.SaveCheckpoint(i.Key);
+                });
         }
 
         /// <summary>
@@ -119,7 +145,7 @@ namespace HammeredGame.Game
         /// </summary>
         /// <param name="progress"></param>
         /// <returns></returns>
-        protected async virtual Task LoadSceneContent(IProgress<int> progress) {}
+        protected virtual Task LoadSceneContent(IProgress<int> progress) { return Task.CompletedTask; }
 
         /// <summary>
         /// Script that is called during the first Update() after the scene has fully finished
@@ -563,6 +589,12 @@ namespace HammeredGame.Game
 
                     foreach ((string key, GameObject gameObject) in workingCopy)
                     {
+                        // Select the first item by default
+                        if (objectListCurrentSelection == null)
+                        {
+                            objectListCurrentSelection = key;
+                        }
+
                         // Show a Selectable item, that is highlighted if the current selection
                         // matches this one. This Selectable is also a draggable item.
                         if (ImGui.Selectable($"{key}: {gameObject.GetType().Name}", objectListCurrentSelection == key))

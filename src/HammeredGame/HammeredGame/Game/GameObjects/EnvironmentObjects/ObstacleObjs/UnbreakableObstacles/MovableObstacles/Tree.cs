@@ -60,7 +60,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
     {
         // Any Unbreakable Obstacle specific variables go here
         private bool treeFallen = false;
-        private bool playerOnTree;
 
         private Model fallenLog;
         private Texture2D logTexture;
@@ -154,7 +153,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                         Entity.Position += 10f * fallDirection;
                         isFalling = true;
-                        Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+                        //tree_sfx[3].Play();
+                        Services.GetService<AudioManager>().Play3DSound("Audio/balanced/tree_crash_bm", false, this.AudioEmitter, 1);
                     }
                 }
 
@@ -194,31 +194,11 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                         Entity.Position += 10f * fallDirection;
                         isFalling = true;
-                        Services.GetService<AudioManager>().Play3DSound("Audio/tree_fall", false, this.AudioEmitter, 1);
+
+                        Services.GetService<AudioManager>().Play3DSound("Audio/tree_crash_bm", false, this.AudioEmitter, 1);
                     }
                 }
 
-            }
-
-            // If tree is fallen, player can walk on top of the tree
-            // Currently designed as: player's Y = maxY + bbox width
-            // maxY calculated as the max of either player's current Y or
-            // the contact position's Y
-            if (other.Tag is Player && treeFallen)
-            {
-                var player = other.Tag as Player;
-                if (player.StandingOn != PlayerOnSurfaceState.OnTree)
-                {
-                    float maxY = player.Entity.Position.Y;
-                    foreach (var contact in pair.Contacts)
-                    {
-                        BEPUutilities.Vector3 pointOfContact = contact.Contact.Position;
-                        maxY = Math.Max(maxY, pointOfContact.Y);
-                    }
-
-                    player.StandingOn = PlayerOnSurfaceState.OnTree;
-                    player.Entity.Position = new BEPUutilities.Vector3(player.Entity.Position.X, maxY + (this.Entity as Box).HalfWidth, player.Entity.Position.Z);
-                }
             }
 
             // If tree is fallen, move block can slide on top of the tree
@@ -246,6 +226,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         public void SetTreeFallen(bool treeFallen)
         {
             this.treeFallen = treeFallen;
+
+            // No need to do anything like swap models or spawn particles if we're setting to false
+            if (!treeFallen) return;
+
             if (this.Entity is Box box)
             {
                 // Spawn particles to simulate some dust clouds so we can hide the tree model swapping
@@ -262,8 +246,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     fallDustParticles.AddParticle(Position + alongTree + alongPerpendicular, Entity.LinearVelocity.ToXNA());
                 }
 
-                box.Width *= 1.2f;
-                box.Length *= 1.2f;
+                //box.Width *= 1.2f;
+                //box.Length *= 1.2f;
                 //this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
             }
 
@@ -289,11 +273,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
             // Update the particles
             fallDustParticles.Update(gameTime);
-        }
-
-        public bool IsPlayerOn()
-        {
-            return this.playerOnTree;
         }
 
         /// <summary>

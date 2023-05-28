@@ -35,7 +35,7 @@ namespace HammeredGame.Game.Scenes.Island1
         public PrototypePuzzle(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/BGM_V2_4x");
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_4x_b");
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
@@ -128,7 +128,7 @@ namespace HammeredGame.Game.Scenes.Island1
 
 
             doorInteractTokenSource = new();
-            Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
+            Get<TriggerObject>("door_interact_trigger").OnTrigger += (_, _) =>
             {
                 if (!openedKeyDoor)
                 {
@@ -138,7 +138,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 }
             };
 
-            Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += async (_, _) =>
+            Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += (_, _) =>
             {
                 doorInteractTokenSource.Cancel();
                 withinDoorInteractTrigger = false;
@@ -157,7 +157,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
                     await ParentGameScreen.ShowDialogueAndWait("Phewww, that was tough...!");
-                    ParentGameScreen.InitializeLevel(typeof(ColorMinigamePuzzle).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(ColorMinigamePuzzle).FullName, true);
                 }
                 else
                 {
@@ -222,6 +222,7 @@ namespace HammeredGame.Game.Scenes.Island1
                     // Spawn New Rock, if the number of active rocks is less than 2
                     if (GetNumActiveRocks() < 2)
                     {
+                        Get<Player>("player1").InputEnabled = false;
                         var template_rock = Get<MoveBlock>("rock1");
                         // Generate a new name for the object
                         string name = GenerateUniqueNameWithPrefix(template_rock.GetType().Name.ToLower());
@@ -281,6 +282,7 @@ namespace HammeredGame.Game.Scenes.Island1
                         await ParentGameScreen.ShowDialogueAndWait("A new rock appeared!");
 
                         Camera.SetFollowTarget(Get<Player>("player1"));
+                        Get<Player>("player1").InputEnabled = true;
                         Camera.FieldOfView = oldFov;
                         Camera.FollowDistance = oldFollowDistance;
                     }
@@ -301,6 +303,7 @@ namespace HammeredGame.Game.Scenes.Island1
                     {
                         Get<Door>("door_key").OpenDoor();
                         openedKeyDoor = true;
+                        CheckpointManager.SaveCheckpoint("checkpoint_just_after_opening_door");
                         doorInteractTokenSource.Cancel();
                     }
                     else

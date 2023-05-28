@@ -95,7 +95,10 @@ namespace HammeredGame.Game.GameObjects
         private Quaternion rotationWhenHeldByPlayer = new Quaternion(0.050f, 0.250f, 0.576f, 0.777f);
 
         // Wind cutting trails
-        private ParticleSystem windParticles;
+        private readonly ParticleSystem windParticles;
+
+        // Dust particles when the hammer is dropped
+        private readonly ParticleSystem dustParticles;
 
         private TimeSpan lastVibrationTimestamp;
 
@@ -111,16 +114,37 @@ namespace HammeredGame.Game.GameObjects
                 Duration = TimeSpan.FromMilliseconds(300),
                 // We spawn many small ones to make it look sorta continuous
                 MaxParticles = 500,
-                MinStartSize = 0.5f,
-                MaxStartSize = 0.5f,
+                MinStartSize = 0.4f,
+                MaxStartSize = 0.4f,
                 MinEndSize = 0.1f,
                 MaxEndSize = 0.1f,
                 // The particles get affected by the hammer velocity by a little bit
-                EmitterVelocitySensitivity = 0.4f,
+                EmitterVelocitySensitivity = 0.8f,
                 MaxVerticalVelocity = 0,
                 // Air particles shouldn't bounce off walls/ground, they should just go through them
                 IgnoreCollisionResponses = true,
                 AffectedByLight = false
+            }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);
+
+
+            dustParticles = new(new ParticleSettings()
+            {
+                Model = Services.GetService<ContentManager>().Load<Model>("Meshes/Primitives/unit_icosphere"),
+                Texture = Services.GetService<ContentManager>().Load<Texture2D>("Meshes/Primitives/1x1_white"),
+                Duration = TimeSpan.FromMilliseconds(700),
+                MaxParticles = 15,
+                MinStartSize = 1f,
+                MaxStartSize = 2f,
+                MinEndSize = 0.1f,
+                MaxEndSize = 0.1f,
+                EmitterVelocitySensitivity = 0f,
+                MaxVerticalVelocity = 3f,
+                MinVerticalVelocity = 0.5f,
+                MinHorizontalVelocity = -5f,
+                MaxHorizontalVelocity = 5f,
+                // Air particles shouldn't bounce off walls/ground, they should just go through them
+                IgnoreCollisionResponses = true,
+                AffectedByLight = true
             }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);
 
             if (this.Entity != null)
@@ -211,8 +235,6 @@ namespace HammeredGame.Game.GameObjects
         // Update function (called every tick)
         public override void Update(GameTime gameTime, bool screenHasFocus)
         {
-            OldPosition = this.Position;
-
             // Ensure hammer follows/sticks with the player,
             // if hammer has not yet been dropped / if hammer is not being called back
             if (hammerState == HammerState.WithCharacter && player != null)
@@ -256,6 +278,7 @@ namespace HammeredGame.Game.GameObjects
                     float distanceBetweenCurrentAndNext = currentToNextPosition.Length();
                     currentToNextPosition.Normalize();
                     // If the two points are too far apart
+                    Vector3 oldPosition = Position;
                     if (distanceBetweenCurrentAndNext > 1.5) // Hard to find the "magic value" to achieve both natural turn smoothing and stability...
                     {
                         if (route.Count() > 0)
@@ -283,12 +306,21 @@ namespace HammeredGame.Game.GameObjects
                             this.UpdateQuadraticBezierCurve();
                     }
 
-
-                    AddParticles(gameTime);
-
                     // Make the hammer face the direction of travel (todo: this doesn't seem to work consistently?)
                     if (Entity.LinearVelocity != BEPUutilities.Vector3.Zero)
                     {
+                        // Only add particles if there's a velocity (to avoid showing particles on a
+                        // scripted teleport for example). We adjust the number of particles based
+                        // on the distance from the position at the previous frame. This is a
+                        // workaround because we can't use LinearVelocity (only represents accurate
+                        // velocity for straight line paths) and we can't use currentHammerSpeed
+                        // (also only for straight line paths), and BezierCurveVelocity seems to
+                        // inaccurately return extremely small values too.
+                        //
+                        // The log function is used to scale the distance down to a reasonable
+                        // amount that is good on both low speeds and high speeds.
+                        AddWindParticles(gameTime, (int)(Math.Log((Position - OldPosition).Length()) * 50));
+
                         // Find the direction of travel, and a perpendicular vector to it
                         Vector3 towardTravel = Vector3.Normalize(Entity.LinearVelocity.ToXNA());
                         // Why is it named "tangent", even though it's perpendicular?
@@ -332,6 +364,8 @@ namespace HammeredGame.Game.GameObjects
 
             this.AudioEmitter.Position = Position;
             this.windParticles.Update(gameTime);
+            this.dustParticles.Update(gameTime);
+            OldPosition = this.Position;
         }
 
         public void HandleInput()
@@ -357,6 +391,8 @@ namespace HammeredGame.Game.GameObjects
             {
                 hammerState = HammerState.Enroute;
                 OnSummon?.Invoke(this, null);
+                Services.GetService<AudioManager>().Play3DSound("Audio/balanced/loud_fly", false, this.AudioEmitter, 1);
+
 
                 this.currentHammerSpeed = 0f;
 
@@ -378,7 +414,7 @@ namespace HammeredGame.Game.GameObjects
             hammerState = HammerState.Dropped;
 
             //hammer_sfx[1].Play();
-            Services.GetService<AudioManager>().Play3DSound("Audio/hammer_drop", false, this.AudioEmitter, 1);
+            Services.GetService<AudioManager>().Play3DSound("Audio/balanced/hammer_drop_b", false, this.AudioEmitter, 1);
 
             //audioManager.Play3DSound("Audio/hammer_drop", false);
 
@@ -402,17 +438,40 @@ namespace HammeredGame.Game.GameObjects
                 // this entity --> Also, probably a cause for issues
                 this.Entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
             }
+
+            // We want to spawn some particles at the location of the ground. If we spawn it at the
+            // entity location at this point, it'll still be in the air (plus will spawn at the
+            // handle/origin, which is not the side that hits the ground). To solve this, we ray
+            // cast towards the ground to find the probable point of contact.
+            BEPUutilities.Ray ray = new(this.Entity.Position, BEPUutilities.Vector3.Down);
+
+            // We only want to know if the ray hits something meaningful, so we'll filter out
+            // anything that has NoSolver as its rule, or is a player or the hammer itself
+            static bool filter(BEPUphysics.BroadPhaseEntries.BroadPhaseEntry entry) {
+                return entry.CollisionRules.Personal != CollisionRule.NoSolver &&
+                    entry.Tag is not Player &&
+                    entry.Tag is not Hammer;
+            }
+
+            if (ActiveSpace.RayCast(ray, filter, out BEPUphysics.RayCastResult result))
+            {
+                for (int i = 0; i < 30; i++)
+                {
+                    dustParticles.AddParticle(result.HitData.Location.ToXNA(), Vector3.Zero);
+                }
+            }
         }
 
         public bool IsEnroute()
         {
+
             //sound effect instance to try and manipulate the pitch, but not working
             if (hammerState == HammerState.Enroute)
             {
                 //SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
                 //whoosh.Play();
 
-                Services.GetService<AudioManager>().Play3DSound("Audio/lohi_whoosh", false, this.AudioEmitter, 1);
+                Services.GetService<AudioManager>().Play3DSound("Audio/balanced/catch_b", false, this.AudioEmitter, 1);
 
             }
             return hammerState == HammerState.Enroute;
@@ -432,7 +491,8 @@ namespace HammeredGame.Game.GameObjects
         /// Add wind particles based on the hammer outline.
         /// </summary>
         /// <param name="gameTime"></param>
-        private void AddParticles(GameTime gameTime)
+        /// <param name="numberParticles">Number of particles to spawn</param>
+        private void AddWindParticles(GameTime gameTime, int numberParticles)
         {
             // Don't spawn particles if the hammer has no velocity since we can't determine which
             // direction to spawn particles in
@@ -446,13 +506,10 @@ namespace HammeredGame.Game.GameObjects
             Vector3 tangent = Vector3.Cross(normal, new Vector3(-normal.Z, normal.X, normal.Y));
             Vector3 bitangent = Vector3.Cross(tangent, normal);
 
-            // Spawn a variable number of particles based on its speed
-            int numberParticles = (int)(Entity.LinearVelocity.Length() / 10f);
-
             for (int i = 0; i < numberParticles; i++)
             {
                 float startRadius = 2f;
-                float dispersion = 40f;
+                float dispersion = 10f;
 
                 // Determine a random angle along the circumference of a circle
                 float randomAngle = Random.Shared.NextSingle() * MathHelper.TwoPi;
@@ -461,7 +518,12 @@ namespace HammeredGame.Game.GameObjects
                 // Since the position property of the hammer is located at the bottom of the handle,
                 // but we're moving the hammer head-first in the direction of travel, we should
                 // offset the air particles by the whole height.
-                Vector3 offset = (Entity as Box).Height * normal;
+                //
+                // We also offset the particles negatively by a random amount along the normal
+                // vector between the current position and the position at the previous frame, so
+                // that we don't get visual "circular bursts" of particles, but rather a continuous
+                // particle stream.
+                Vector3 offset = ((Entity as Box).Height - (Random.Shared.NextSingle() * (Position - OldPosition).Length())) * normal;
 
                 // The position is the hammer's position plus the random unit vector multiplied by the
                 // starting radius.
@@ -604,7 +666,7 @@ namespace HammeredGame.Game.GameObjects
             //this.Entity.LinearVelocity = temp;
         }
 
-        private void UpdateQuadraticBezierVelocity()
+        private Vector3 UpdateQuadraticBezierVelocity()
         {
             // The following scheme is WRONG.
             // Two more thought came to mind:
@@ -613,16 +675,17 @@ namespace HammeredGame.Game.GameObjects
             // I couldn't make it work.
             var distanceOfCurrentFromEnd = (p2 - this.Entity.Position).Length();
             var distanceOfCenterFromEnd = (p2 - pc).Length();
+            float tempT;
             if (distanceOfCurrentFromEnd > distanceOfCenterFromEnd) // The point has not reached the center point (t=0.5) yet.
             {
-                t = (float)((1 - (pc - this.Entity.Position).Length() + distanceOfCenterFromEnd) / CurveLength);
+                tempT = (float)((1 - (pc - this.Entity.Position).Length() + distanceOfCenterFromEnd) / CurveLength);
             }
             else
             {
-                t = (float)(0.5 + distanceOfCurrentFromEnd / CurveLength);
+                tempT = (float)(0.5 + distanceOfCurrentFromEnd / CurveLength);
             }
 
-            this.Entity.LinearVelocity = BezierQuadraticSpline.QuadraticBezierVelocity(p0, p1, p2, t);
+            return BezierQuadraticSpline.QuadraticBezierVelocity(p0, p1, p2, tempT).ToXNA();
         }
 
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
@@ -631,6 +694,9 @@ namespace HammeredGame.Game.GameObjects
 
             windParticles.CopyShadowMapParametersFrom(Effect);
             windParticles.Draw(gameTime, view, projection, cameraPosition, lights);
+
+            dustParticles.CopyShadowMapParametersFrom(Effect);
+            dustParticles.Draw(gameTime, view, projection, cameraPosition, lights);
         }
 
         public new void UI()
