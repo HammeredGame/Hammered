@@ -118,6 +118,34 @@ namespace HammeredGame.Game.Scenes.Island3
             this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
 
 
+            Get<PressurePlate>("start_pressureplate1").OnTrigger += (_, _) =>
+            {
+                var start_laser_1 = Get<Laser>("start_laser_1");
+                start_laser_1.SetLaserScale(0f);
+                start_laser_1.Deactivated = true;
+            };
+
+            Get<PressurePlate>("start_pressureplate1").OnTriggerEnd += (_, _) =>
+            {
+                var start_laser_1 = Get<Laser>("start_laser_1");
+                start_laser_1.ReturnToDefaultLength();
+                start_laser_1.Deactivated = false;
+            };
+
+            Get<PressurePlate>("start_pressureplate2").OnTrigger += (_, _) =>
+            {
+                var start_laser_2 = Get<Laser>("start_laser_2");
+                start_laser_2.SetLaserScale(0f);
+                start_laser_2.Deactivated = true;
+            };
+
+            Get<PressurePlate>("start_pressureplate2").OnTriggerEnd += (_, _) =>
+            {
+                var start_laser_2 = Get<Laser>("start_laser_2");
+                start_laser_2.ReturnToDefaultLength();
+                start_laser_2.Deactivated = false;
+            };
+
             //doorInteractTokenSource = new();
             //Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
             //{
@@ -160,6 +188,85 @@ namespace HammeredGame.Game.Scenes.Island3
         public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
+
+            // Handle Pressure Plate logic
+
+            // Start section
+            var start_pressureplate_1 = Get<PressurePlate>("start_pressureplate1");
+            var start_pressureplate_2 = Get<PressurePlate>("start_pressureplate2");
+            var start_pressureplate_3 = Get<PressurePlate>("start_pressureplate3");
+
+            if (start_pressureplate_1.IsActivated() && start_pressureplate_2.IsActivated())
+            {
+                var start_laser_4 = Get<Laser>("start_laser_4");
+                start_laser_4.SetLaserScale(0f);
+                start_laser_4.Deactivated = true;
+            }
+            else
+            {
+                var start_laser_4 = Get<Laser>("start_laser_4");
+                start_laser_4.ReturnToDefaultLength();
+                start_laser_4.Deactivated = false;
+            }
+
+            if (start_pressureplate_1.IsActivated() && start_pressureplate_2.IsActivated() && start_pressureplate_3.IsActivated())
+            {
+                var start_laser_3 = Get<Laser>("start_laser_3");
+                start_laser_3.SetLaserScale(0f);
+                start_laser_3.Deactivated = true;
+            }
+            else
+            {
+                var start_laser_3 = Get<Laser>("start_laser_3");
+                start_laser_3.ReturnToDefaultLength();
+                start_laser_3.Deactivated = false;
+            }
+
+            // Mid Left Section
+            var midleft_pressureplate_1 = Get<PressurePlate>("five_pp_pressureplate_1");
+            var midleft_pressureplate_2 = Get<PressurePlate>("five_pp_pressureplate_2");
+            var midleft_pressureplate_3 = Get<PressurePlate>("five_pp_pressureplate_3");
+            var midleft_pressureplate_4 = Get<PressurePlate>("five_pp_pressureplate_4");
+            var midleft_pressureplate_5 = Get<PressurePlate>("five_pp_pressureplate_5");
+
+            if (midleft_pressureplate_1.IsActivated() && midleft_pressureplate_2.IsActivated() && 
+                midleft_pressureplate_3.IsActivated() && midleft_pressureplate_4.IsActivated() &&
+                midleft_pressureplate_5.IsActivated())
+            {
+                Get<Door>("five_pp_key_door_1").OpenDoor();
+                Get<Door>("five_pp_key_door_2").OpenDoor();
+                Get<Door>("five_pp_key_door_3").OpenDoor();
+                Get<Door>("five_pp_key_door_4").OpenDoor();
+            }
+            else
+            {
+                Get<Door>("five_pp_key_door_1").CloseDoor();
+                Get<Door>("five_pp_key_door_2").CloseDoor();
+                Get<Door>("five_pp_key_door_3").CloseDoor();
+                Get<Door>("five_pp_key_door_4").CloseDoor();
+            }
+
+            // Top Mid Section
+            var topmid_pressureplate_1 = Get<PressurePlate>("pressureplate_fourcorner_1");
+            var topmid_pressureplate_2 = Get<PressurePlate>("pressureplate_fourcorner_2");
+            var topmid_pressureplate_3 = Get<PressurePlate>("pressureplate_fourcorner_3");
+            var topmid_pressureplate_4 = Get<PressurePlate>("pressureplate_fourcorner_4");
+
+            if (topmid_pressureplate_1.IsActivated() && topmid_pressureplate_2.IsActivated() &&
+                topmid_pressureplate_3.IsActivated() && topmid_pressureplate_4.IsActivated())
+            {
+                Get<Door>("four_corner_door_1").OpenDoor();
+                Get<Door>("four_corner_door_2").OpenDoor();
+                Get<Door>("four_corner_door_3").OpenDoor();
+                Get<Door>("four_corner_door_4").OpenDoor();
+            }
+            else
+            {
+                Get<Door>("four_corner_door_1").CloseDoor();
+                Get<Door>("four_corner_door_2").CloseDoor();
+                Get<Door>("four_corner_door_3").CloseDoor();
+                Get<Door>("four_corner_door_4").CloseDoor();
+            }
         }
     }
 }
