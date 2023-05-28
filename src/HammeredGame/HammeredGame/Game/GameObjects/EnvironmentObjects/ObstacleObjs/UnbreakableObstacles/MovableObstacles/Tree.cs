@@ -226,6 +226,10 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         public void SetTreeFallen(bool treeFallen)
         {
             this.treeFallen = treeFallen;
+
+            // No need to do anything like swap models or spawn particles if we're setting to false
+            if (!treeFallen) return;
+
             if (this.Entity is Box box)
             {
                 // Spawn particles to simulate some dust clouds so we can hide the tree model swapping

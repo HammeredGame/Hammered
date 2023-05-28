@@ -229,6 +229,12 @@ PixelShaderOutput MainShadingPS(MainShadingVSOutput input)
     // texture, this will result in a multiplication by zero, thus black.
     output.Color *= textureColor;
 
+    // Keep within 0-1 so we don't cause Bloom to go crazy on non-specular diffuse surfaces with many lights
+    if (MaterialHasSpecular == false)
+    {
+        output.Color = saturate(output.Color);
+    }
+
     // Keep alpha at 1 since the value would otherwise be a mess from the
     // various lighting components that didn't care about alpha.
     output.Color.a = 1;
