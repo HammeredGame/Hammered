@@ -116,7 +116,9 @@ namespace HammeredGame.Game
 
             await LoadSceneContent(progress);
 
+            // Load any saved checkpoint
             CheckpointManager.LoadContent();
+            CheckpointManager.ApplyLastCheckpoint();
 
             // Mark the scene as loaded and ready to be Update()-ed.
             IsLoaded = true;

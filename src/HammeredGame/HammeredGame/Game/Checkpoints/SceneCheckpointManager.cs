@@ -1,17 +1,23 @@
-﻿using HammeredGame.Core;
-using HammeredGame.Game.GameObjects;
+﻿using HammeredGame.Game.GameObjects;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.CollectibleInteractables;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
 namespace HammeredGame.Game.Checkpoints
 {
+    /// <summary>
+    /// The SceneCheckpoint Manager is responsible for saving new checkpoints in a scene, and
+    /// loading the last available checkpoint. It maintains the last checkpoint in memory, but
+    /// also writes it to and loads from the disk for persistence.
+    /// </summary>
     public class SceneCheckpointManager
     {
+        // The scene that this checkpoint manager is responsible for.
         private readonly Scene scene;
+
+        // The last checkpoint that was saved.
         private Checkpoint checkpoint;
 
         public SceneCheckpointManager(Scene scene)
@@ -19,16 +25,28 @@ namespace HammeredGame.Game.Checkpoints
             this.scene = scene;
         }
 
+        /// <summary>
+        /// Save the state of the player, all rocks, all trees, and all keys as a checkpoint, and
+        /// write it to disk as well.
+        /// </summary>
+        /// <param name="name">The unique name of a checkpoint</param>
         public async void SaveCheckpoint(string name)
         {
-            // We don't want to save the same checkpoint twice in a row.
+            // We don't want to save the same checkpoint twice in a row. We do allow saving the same
+            // checkpoint if you've saved a different one in between. This is arguably better than
+            // the alternative of ignoring the second save attempt, because you can create annoying
+            // situations like "attempt puzzle 1 halfway (checkpoint 1) -> go back -> enter puzzle 2
+            // (checkpoint 2) and solve it -> come back (checkpoint 1 ignored) and get soft locked
+            // in puzzle 1 -> try to restart from last checkpoint, which is before clearing puzzle 2".
             if (checkpoint != null && checkpoint.Name == name) return;
 
+            // Create a new checkpoint reference object
             Checkpoint newCheckpoint = new()
             {
                 Name = name
             };
 
+            // Populate the checkpoint with player state and all rock, tree, key states.
             foreach ((string uniqueName, GameObject gameObject) in scene.GameObjects)
             {
                 if (gameObject is Player player)
@@ -74,22 +92,32 @@ namespace HammeredGame.Game.Checkpoints
             }
             checkpoint = newCheckpoint;
 
-            // Save the checkpoint to disk.
+            // Attempt to write the checkpoint to disk
             try
             {
                 string contents = JsonSerializer.Serialize(checkpoint, new JsonSerializerOptions()
                 {
                     WriteIndented = true,
+
+                    // JSON Serializer by default only serializes properties (those with get;set;
+                    // defined). We want to serialize all fields and can't be bothered to add
+                    // get;set; to all of them so we tell JSON Serializer to serialize fields as well.
                     IncludeFields = true
                 });
+
+                // Write to a file separate for each scene
                 await File.WriteAllTextAsync($"checkpoint_{scene.GetType().FullName}.json", contents);
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine($"Checkpoint file checkpoint.json couldn't be saved: {e.Message}");
+                System.Diagnostics.Debug.WriteLine($"Checkpoint file checkpoint_{scene.GetType().FullName}.json couldn't be saved: {e.Message}");
             }
         }
 
+        /// <summary>
+        /// Load the last checkpoint from disk into memory, without applying it to the scene. Use
+        /// <see cref="ApplyLastCheckpoint"/> after this to apply it if necessary.
+        /// </summary>
         public void LoadContent()
         {
             try
@@ -99,8 +127,6 @@ namespace HammeredGame.Game.Checkpoints
                 {
                     IncludeFields = true
                 });
-
-                LoadLastCheckpoint();
             }
             catch
             {
@@ -108,12 +134,18 @@ namespace HammeredGame.Game.Checkpoints
             }
         }
 
+        /// <summary>
+        /// Whether or not a checkpoint exists for this scene.
+        /// </summary>
         public bool CheckpointExists()
         {
             return checkpoint != null;
         }
 
-        public void LoadLastCheckpoint()
+        /// <summary>
+        /// Revert to the last saved checkpoint by applying all saved game state.
+        /// </summary>
+        public void ApplyLastCheckpoint()
         {
             // If there isn't one in memory, we can't do anything. Even ones that are saved to disk
             // are loaded into memory on startup, so when the variable is null it really means we
@@ -123,7 +155,7 @@ namespace HammeredGame.Game.Checkpoints
                 return;
             }
 
-            // Load the checkpoint into the scene.
+            // Load the checkpoint into the scene by setting states on objects that match the name.
             foreach ((string uniqueName, GameObject gameObject) in scene.GameObjects)
             {
                 if (gameObject is Player player)
@@ -134,6 +166,9 @@ namespace HammeredGame.Game.Checkpoints
                 }
                 else if (gameObject is MoveBlock rock)
                 {
+                    // Ignore if the checkpoint doesn't have a state for this rock
+                    if (!checkpoint.RockStates.ContainsKey(uniqueName)) continue;
+
                     rock.Position = checkpoint.RockStates[uniqueName].Position;
                     rock.Rotation = checkpoint.RockStates[uniqueName].Rotation;
                     rock.Scale = checkpoint.RockStates[uniqueName].Scale;
@@ -141,6 +176,9 @@ namespace HammeredGame.Game.Checkpoints
                 }
                 else if (gameObject is Tree tree)
                 {
+                    // Ignore if the checkpoint doesn't have a state for this tree
+                    if (!checkpoint.TreeStates.ContainsKey(uniqueName)) continue;
+
                     tree.Position = checkpoint.TreeStates[uniqueName].Position;
                     tree.Rotation = checkpoint.TreeStates[uniqueName].Rotation;
                     tree.Scale = checkpoint.TreeStates[uniqueName].Scale;
@@ -149,6 +187,9 @@ namespace HammeredGame.Game.Checkpoints
                 }
                 else if (gameObject is Key key)
                 {
+                    // Ignore if the checkpoint doesn't have a state for this key
+                    if (!checkpoint.KeyStates.ContainsKey(uniqueName)) continue;
+
                     key.Position = checkpoint.KeyStates[uniqueName].Position;
                     key.Rotation = checkpoint.KeyStates[uniqueName].Rotation;
                     key.Visible = checkpoint.KeyStates[uniqueName].Visible;
@@ -157,6 +198,9 @@ namespace HammeredGame.Game.Checkpoints
             }
         }
 
+        /// <summary>
+        /// Reset all checkpoints for this scene, deleting the checkpoint file from disk as well.
+        /// </summary>
         public void ResetAllCheckpoints()
         {
             checkpoint = null;
