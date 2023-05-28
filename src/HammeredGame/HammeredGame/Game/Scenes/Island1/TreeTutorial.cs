@@ -10,7 +10,7 @@ using Pleasing;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media; 
+using Microsoft.Xna.Framework.Media;
 
 
 namespace HammeredGame.Game.Scenes.Island1
@@ -21,7 +21,7 @@ namespace HammeredGame.Game.Scenes.Island1
         {
             Song bgMusic;
             bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_4x_b");
-            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
         protected override async Task LoadSceneContent(IProgress<int> progress)
@@ -98,7 +98,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 {
                     //await ParentGameScreen.ShowDialogueAndWait("(Huh, you found some traffic cones)");
                     //await ParentGameScreen.ShowDialogueAndWait("(Did you bring them here yesterday?)");
-                    ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName);
+                    ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName, true);
                 }
                 else
                 {

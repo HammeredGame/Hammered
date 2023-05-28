@@ -119,7 +119,6 @@ namespace HammeredGame.Game
 
             // Load any saved checkpoint
             CheckpointManager.LoadContent();
-            CheckpointManager.ApplyLastCheckpoint();
             CheckpointTriggersSetup();
 
             // Mark the scene as loaded and ready to be Update()-ed.

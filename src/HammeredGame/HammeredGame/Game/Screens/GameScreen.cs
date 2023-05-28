@@ -95,7 +95,7 @@ namespace HammeredGame.Game.Screens
             loadingScreen = new LoadingScreen();
             ScreenManager.PreloadScreen(loadingScreen);
 
-            InitializeLevel(scenePendingLoad);
+            InitializeLevel(scenePendingLoad, false);
 
             //MediaPlayer.IsRepeating = true;
             //MediaPlayer.Play(bgMusic);
@@ -136,7 +136,10 @@ namespace HammeredGame.Game.Screens
         /// all visible UI as well and show only the UIs relevant to the new objects.
         /// </summary>
         /// <param name="sceneToLoad"></param>
-        public void InitializeLevel(string sceneToLoad)
+        /// <param name="resetAllCheckpoints">
+        /// Whether to reset any existing checkpoints for the scene to load
+        /// </param>
+        public void InitializeLevel(string sceneToLoad, bool resetAllCheckpoints)
         {
             // Clear all prompts and dialogues shown on screen and remaining in queue
             promptsScreen?.ClearAllPrompts();
@@ -145,6 +148,8 @@ namespace HammeredGame.Game.Screens
             // Reset the progress so that there isn't a flash of 100 from the previous use
             loadingScreen.ResetProgress();
             ScreenManager.AddScreen(loadingScreen);
+            CurrentScene.CheckpointManager.ResetAllCheckpoints();
+
             Scene temporaryScene = (Scene)Activator.CreateInstance(Type.GetType(sceneToLoad), GameServices, this);
 
             temporaryScene
@@ -159,6 +164,16 @@ namespace HammeredGame.Game.Screens
                     await GameServices.GetService<ScriptUtils>().WaitNextUpdate();
 
                     CurrentScene = temporaryScene;
+
+                    // Apply or reset checkpoints
+                    if (resetAllCheckpoints)
+                    {
+                        CurrentScene.CheckpointManager.ResetAllCheckpoints();
+                    }
+                    else
+                    {
+                        CurrentScene.CheckpointManager.ApplyLastCheckpoint();
+                    }
 
                     // If the LoadContentAsync failed with an exception, it will get silently
                     // swallowed unless we check for it here. We can't re-throw it, since
@@ -259,7 +274,7 @@ namespace HammeredGame.Game.Screens
                         Task.Factory.StartNew(async () =>
                         {
                             await GameServices.GetService<ScriptUtils>().WaitNextUpdate();
-                            InitializeLevel(fqn);
+                            InitializeLevel(fqn, true);
                         });
                     }
                 }
