@@ -23,6 +23,7 @@ namespace HammeredGame.Game.Scenes.Island1
             bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/trees_bgm2");
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
+            
         }
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
@@ -98,6 +99,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 {
                     //await ParentGameScreen.ShowDialogueAndWait("(Huh, you found some traffic cones)");
                     //await ParentGameScreen.ShowDialogueAndWait("(Did you bring them here yesterday?)");
+
                     ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName, true);
                 }
                 else

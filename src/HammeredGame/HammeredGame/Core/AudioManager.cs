@@ -48,7 +48,8 @@ namespace HammeredGame.Core
             "Audio/balanced/quiet_foot",
             "Audio/balanced/soft_step",
             "Audio/balanced/door_close",
-            "Audio/balanced/door_open"
+            "Audio/balanced/door_open",
+            "Audio/balanced/victory"
         };
 
         //public AudioListener Listener
