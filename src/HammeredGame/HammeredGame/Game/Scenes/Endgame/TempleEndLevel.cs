@@ -8,7 +8,7 @@ using Pleasing;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media; 
+using Microsoft.Xna.Framework.Media;
 
 namespace HammeredGame.Game.Scenes.Endgame
 {
@@ -20,7 +20,7 @@ namespace HammeredGame.Game.Scenes.Endgame
         {
             Song bgMusic;
             bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm6_4x");
-            MediaPlayer.IsRepeating = true; 
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
 
@@ -72,10 +72,19 @@ namespace HammeredGame.Game.Scenes.Endgame
                 hammer.DropHammer();
                 hammer.Entity.Gravity = new BEPUutilities.Vector3(0, 50f, 0);
 
+                // todo: have some wrapper class for mediaplayer that allows fading etc
+                float oldVolume = MediaPlayer.Volume;
+                Tweening.Tween((f) => MediaPlayer.Volume = f, MediaPlayer.Volume, 0f, 500, Easing.Linear, LerpFunctions.Float);
+                await Services.GetService<ScriptUtils>().WaitMilliseconds(500);
+
+                Get<Player>("player1").InputEnabled = false;
+                Get<Player>("player1").ShowVictoryStars();
+
                 // Allow time to awe at the hammer flying up.
                 await Services.GetService<ScriptUtils>().WaitSeconds(2);
 
                 // Show credits
+                Tweening.Tween((f) => MediaPlayer.Volume = f, 0f, oldVolume, 3000, Easing.Linear, LerpFunctions.Float);
                 ParentGameScreen.ScreenManager.AddScreen(new CreditRollScreen()
                 {
                      FinishedFunc = () =>
