@@ -34,6 +34,8 @@ namespace HammeredGame.Game.Screens
         private Color backgroundColor = Color.Transparent;
         private TweenTimeline transitionTimeline;
 
+        float oldVolume;
+
         public Action FinishedFunc;
 
         public CreditRollScreen()
@@ -349,12 +351,18 @@ Universal UI/Menu Soundpack
                 transitionTimeline
                     .AddColor(this, nameof(backgroundColor))
                     .AddFrame(1500, Color.White, Easing.Linear);
+                oldVolume = MediaPlayer.Volume;
+                transitionTimeline
+                    .AddProperty(oldVolume, (f) => MediaPlayer.Volume = f, LerpFunctions.Float)
+                    .AddFrame(0, MediaPlayer.Volume)
+                    .AddFrame(1000, 0f, Easing.Linear);
             }
             // This function is called only until the first frame where the timeline is stopped, so
             // on that frame, we'll call any callbacks and return true to indicate we're done.
             if (transitionTimeline.State == TweenState.Stopped)
             {
                 FinishedFunc?.Invoke();
+                MediaPlayer.Volume = oldVolume;
                 return true;
             }
             return false;
