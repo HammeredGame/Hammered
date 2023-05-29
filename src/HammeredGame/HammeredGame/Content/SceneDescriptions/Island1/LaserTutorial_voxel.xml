@@ -2,10 +2,10 @@
   <camera mode="follow">
     <follow_distance>275.000</follow_distance>
     <follow_angle_v>0.480</follow_angle_v>
-    <follow_angle_h>-176.856</follow_angle_h>
-    <target>53.289 -12.854 -228.355</target>
+    <follow_angle_h>-183.096</follow_angle_h>
+    <target>74.547 -12.855 -219.314</target>
     <up>0.000 1.000 0.000</up>
-    <fov>0.425</fov>
+    <fov>0.445</fov>
   </camera>
   <uniform_grid>
     <bottom_left_close>0.000 -27.000 -300.000</bottom_left_close>
@@ -14,18 +14,18 @@
   </uniform_grid>
   <lights>
     <sun>
-      <color>1.000 1.000 0.875</color>
+      <color>1.000 1.000 1.000</color>
       <direction>-0.366 0.889 0.275</direction>
-      <intensity>1.000</intensity>
+      <intensity>1.360</intensity>
     </sun>
     <directional>
-      <color>1.000 0.700 0.600</color>
+      <color>1.000 0.694 0.600</color>
       <direction>0.200 0.970 0.000</direction>
       <intensity>0.400</intensity>
     </directional>
     <ambient>
-      <color>1.000 0.800 0.700</color>
-      <intensity>0.10</intensity>
+      <color>1.000 0.800 0.694</color>
+      <intensity>0.100</intensity>
     </ambient>
   </lights>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.SkyboxObject" id="sky">
@@ -65,8 +65,8 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture>Meshes/Character/character_diffuse</texture>
-    <position>53.297 -12.854 -228.344</position>
-    <rotation>0.000 -0.696 0.000 0.718</rotation>
+    <position>74.547 -12.855 -219.314</position>
+    <rotation>0.000 0.660 0.000 -0.752</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
@@ -1639,8 +1639,8 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
-    <position>52.592 -16.777 -231.121</position>
-    <rotation>-0.183 -0.219 0.842 -0.458</rotation>
+    <position>73.549 -16.343 -221.719</position>
+    <rotation>0.041 0.167 -0.899 0.403</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>
@@ -1720,7 +1720,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>417.411 -16.613 -237.430</position>
+    <position>417.411 -16.656 -237.430</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.750</scale>
     <body type="box">
@@ -1734,7 +1734,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="moveblock2">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>176.127 -16.616 -239.304</position>
+    <position>176.127 -16.656 -239.304</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.750</scale>
     <body type="box">
@@ -1748,7 +1748,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="moveblock3">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>281.000 -16.612 -229.000</position>
+    <position>280.683 -16.634 -232.772</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.750</scale>
     <body type="box">
@@ -1762,7 +1762,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="moveblock4">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>281.125 -16.613 -249.000</position>
+    <position>281.111 -16.656 -248.810</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.750</scale>
     <body type="box">
@@ -1776,7 +1776,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="moveblock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>323.365 -25.074 -56.479</position>
+    <position>323.368 -26.347 -56.479</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.750</scale>
     <body type="box">
@@ -1790,7 +1790,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="moveblock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>412.500 -16.619 -67.477</position>
+    <position>412.501 -16.660 -67.477</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.750</scale>
     <body type="box">
@@ -1941,23 +1941,10 @@
       <shift_graphic>0.000 2.955 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree9">
-    <model>Meshes/Trees/tree_alt</model>
-    <texture>Meshes/Trees/tree_alt_albedo</texture>
-    <position>80.000 -25.000 -40.000</position>
-    <rotation>0.000 0.237 0.000 0.972</rotation>
-    <scale>1.000</scale>
-    <body type="box">
-      <width>10.000</width>
-      <height>35.000</height>
-      <length>10.000</length>
-      <shift_graphic>0.000 2.955 0.000</shift_graphic>
-    </body>
-  </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree10">
     <model>Meshes/Trees/tree_alt</model>
     <texture>Meshes/Trees/tree_alt_albedo</texture>
-    <position>100.000 -25.000 -50.000</position>
+    <position>60.000 -25.000 -60.000</position>
     <rotation>0.000 0.237 0.000 0.972</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -1970,7 +1957,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="tree11">
     <model>Meshes/Trees/tree_alt</model>
     <texture>Meshes/Trees/tree_alt_albedo</texture>
-    <position>85.000 -25.000 -60.000</position>
+    <position>55.000 -25.000 -80.000</position>
     <rotation>0.000 0.237 0.000 0.972</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -2136,667 +2123,446 @@
       <shift_graphic>0.000 2.955 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall_2">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>312.000 -10.000 -255.000</position>
-    <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>0.750</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>25.000</height>
-      <length>33.000</length>
-      <shift_graphic>0.000 -9.730 11.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>312.000 -10.000 -225.000</position>
-    <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>0.750</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>25.000</height>
-      <length>33.000</length>
-      <shift_graphic>0.000 -9.730 11.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall1">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>300.000 -15.000 -210.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall2">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>280.000 -15.000 -210.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall3">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>270.000 -15.000 -210.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall4">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>190.000 -15.000 -210.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>196.800 -16.600 -210.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall5">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>300.000 -15.000 -271.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall6">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>280.000 -15.000 -271.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall7">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>257.000 -15.000 -271.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall8">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>234.000 -15.000 -271.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall9">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>211.000 -15.000 -271.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall10">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>188.000 -15.000 -271.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall11">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>168.000 -15.000 -271.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall12">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>148.000 -15.000 -271.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall13">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>140.000 -10.000 -225.000</position>
-    <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>0.750</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>25.000</height>
-      <length>33.000</length>
-      <shift_graphic>0.000 -9.730 11.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall14">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>140.000 -10.000 -255.000</position>
-    <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>0.750</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>25.000</height>
-      <length>33.000</length>
-      <shift_graphic>0.000 -9.730 11.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall15">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>148.000 -15.000 -210.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>157.500 -16.600 -210.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall16">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall6">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>168.000 -15.000 -210.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall19">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>312.000 -10.000 -165.000</position>
+    <position>140.200 -16.600 -227.900</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>0.750</scale>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>25.000</height>
-      <length>33.000</length>
-      <shift_graphic>0.000 -9.730 11.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall20">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall7">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>312.000 -10.000 -145.000</position>
+    <position>140.200 -16.600 -253.800</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>0.750</scale>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>25.000</height>
-      <length>33.000</length>
-      <shift_graphic>0.000 -9.730 11.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall21">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall8">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>300.000 -15.000 -180.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>157.000 -16.600 -271.300</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall22">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall9">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>280.000 -15.000 -180.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>196.700 -16.600 -271.300</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall23">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall10">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>270.000 -15.000 -180.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>236.400 -16.600 -271.300</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall25">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall11">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>300.000 -15.000 -130.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>276.000 -16.600 -271.300</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall26">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall5">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>280.000 -15.000 -130.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>294.200 -16.600 -271.300</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall27">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>257.000 -15.000 -130.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall30">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>188.000 -15.000 -180.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall31">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>168.000 -15.000 -180.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall32">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>148.000 -15.000 -180.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall35">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>148.000 -15.000 -130.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall36">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>168.000 -15.000 -130.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall37">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>188.000 -15.000 -130.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall38">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>210.000 -15.000 -130.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall41">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>300.000 -15.000 -100.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall42">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>280.000 -15.000 -100.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall43">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>270.000 -15.000 -100.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall44">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>250.000 -15.000 -100.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall45">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>300.000 -15.000 -37.500</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall46">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>280.000 -15.000 -37.500</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall47">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>257.000 -15.000 -37.500</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall48">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>234.000 -15.000 -37.500</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall49">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>211.000 -15.000 -37.500</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall50">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>188.000 -15.000 -37.500</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall51">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>168.000 -15.000 -37.500</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall52">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>148.000 -15.000 -37.500</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
-    <body type="box">
-      <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
-    </body>
-  </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall53">
-    <model>Meshes/Walls/stone_wall</model>
-    <texture>Meshes/Walls/stone</texture>
-    <position>140.000 -10.000 -54.000</position>
+    <position>311.400 -16.600 -253.400</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>0.750</scale>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>25.000</height>
-      <length>33.000</length>
-      <shift_graphic>0.000 -9.730 11.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall54">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall1">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>140.000 -10.000 -84.000</position>
+    <position>311.400 -16.600 -227.600</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>0.750</scale>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>25.000</height>
-      <length>33.000</length>
-      <shift_graphic>0.000 -9.730 11.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall55">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall2">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>148.000 -15.000 -100.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>294.100 -16.600 -210.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall56">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall3">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>168.000 -15.000 -100.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>264.500 -16.600 -210.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall57">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="middle_wall12">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>188.000 -15.000 -100.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>264.500 -16.600 -180.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="wall58">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="middle_wall8">
     <model>Meshes/Walls/stone_wall</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>210.000 -15.000 -100.000</position>
-    <rotation>0.000 0.700 0.000 0.714</rotation>
-    <scale>0.600</scale>
+    <position>292.700 -16.600 -180.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
     <body type="box">
       <width>6.000</width>
-      <height>19.000</height>
-      <length>24.300</length>
-      <shift_graphic>0.000 -7.000 9.000</shift_graphic>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="middle_wall">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>197.000 -16.600 -180.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="middle_wall1">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>157.600 -16.600 -180.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="middle_wall2">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>157.600 -16.600 -129.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="middle_wall3">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>197.300 -16.600 -129.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="middle_wall4">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>263.600 -16.600 -129.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="middle_wall5">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>293.200 -16.600 -129.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="middle_wall6">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>310.700 -16.600 -146.300</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="middle_wall7">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>310.700 -16.600 -163.100</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>293.200 -16.600 -101.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall1">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>263.200 -16.600 -101.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall2">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>197.400 -16.600 -101.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall3">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>158.100 -16.600 -101.000</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall4">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>140.500 -16.600 -83.800</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall5">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>140.500 -16.600 -56.200</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall6">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>158.100 -16.600 -38.600</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall7">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>197.600 -16.600 -38.600</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall8">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>236.900 -16.600 -38.600</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall9">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>276.400 -16.600 -38.600</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="right_wall10">
+    <model>Meshes/Walls/stone_wall</model>
+    <texture>Meshes/Walls/stone</texture>
+    <position>292.300 -16.600 -38.600</position>
+    <rotation>0.000 0.707 0.000 0.708</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>6.000</width>
+      <height>30.000</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 -12.280 15.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="end_trigger">
@@ -2835,6 +2601,214 @@
       <width>1.000</width>
       <height>1.000</height>
       <length>1.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>89.600 -21.700 -66.400</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.360</scale>
+    <body type="box">
+      <width>49.700</width>
+      <height>6.400</height>
+      <length>57.166</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch1">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>99.600 -21.700 -246.400</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.330</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>2.500</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch2">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>69.600 -21.700 -196.400</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.310</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>4.400</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch3">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>99.600 -21.700 -206.400</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.380</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>4.700</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch9">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>209.600 -21.700 -226.400</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.380</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>4.700</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch10">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>219.600 -21.700 -56.400</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.380</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>4.700</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch11">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>179.600 -21.700 -76.400</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.380</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>4.700</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch4">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>169.500 -21.700 -154.200</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.760</scale>
+    <body type="box">
+      <width>58.300</width>
+      <height>2.500</height>
+      <length>46.200</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="tulips">
+    <model>flowers</model>
+    <texture>flowers_texture</texture>
+    <position>55.000 -21.500 -220.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.950</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>5.300</height>
+      <length>30.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="tulips1">
+    <model>flowers</model>
+    <texture>flowers_texture</texture>
+    <position>155.000 -21.500 -250.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.950</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>5.300</height>
+      <length>30.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="tulips2">
+    <model>flowers</model>
+    <texture>flowers_texture</texture>
+    <position>355.000 -21.500 -250.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.920</scale>
+    <body type="box">
+      <width>32.957</width>
+      <height>6.800</height>
+      <length>41.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="tulips3">
+    <model>flowers</model>
+    <texture>flowers_texture</texture>
+    <position>355.000 -21.500 -60.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.920</scale>
+    <body type="box">
+      <width>30.000</width>
+      <height>6.800</height>
+      <length>40.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch5">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>450.000 -21.700 -150.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.760</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>4.800</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch6">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>430.000 -21.700 -260.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.760</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>5.000</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch7">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>370.000 -21.700 -120.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.760</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>6.000</height>
+      <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch8">
+    <model>grass</model>
+    <texture>grass_texture</texture>
+    <position>350.000 -21.700 -170.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.550</scale>
+    <body type="box">
+      <width>20.000</width>
+      <height>5.000</height>
+      <length>20.000</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
