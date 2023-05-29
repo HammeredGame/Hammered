@@ -19,7 +19,7 @@ namespace HammeredGame.Game.Scenes.Endgame
         public TempleEndLevel(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_4x_b");
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm6_4x");
             MediaPlayer.IsRepeating = true; 
             MediaPlayer.Play(bgMusic);
         }
