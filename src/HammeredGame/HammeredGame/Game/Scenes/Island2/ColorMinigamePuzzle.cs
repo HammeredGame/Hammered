@@ -270,50 +270,67 @@ namespace HammeredGame.Game.Scenes.Island2
             // The four colored pressure plates are a state machine that you have to press in the
             // right order. Any bad press will revert the state back to zero. After a successful
             // completion, the pressure plates won't respond anymore and door will stay open.
-            if (Get<PressurePlate>("pressureplate_P").IsActivated() && state != ColorPlateState.Complete)
+            // As a reminder, the correct sequence of pressure plates is Purple -> Blue -> Yellow/Orange -> Green
+
+            // WARNING: The current version of the code is not scalable and is very dependent on the order
+            // upon which the if statements are called (which is fine for the sequential state machine that is here).
+            // Best coding practices are NOT followed!
+            if (state != ColorPlateState.Complete)
             {
-                if (state == ColorPlateState.ZeroSuccess || state == ColorPlateState.OneSuccess)
+                if (Get<PressurePlate>("pressureplate_P").IsActivated())
                 {
-                    state = ColorPlateState.OneSuccess;
+                    if (state == ColorPlateState.ZeroSuccess)
+                    {
+                        ActivatePressurePlate(Get<PressurePlate>("pressureplate_P"));
+                        state = ColorPlateState.OneSuccess;
+                    }
                 }
-                else
+                if (Get<PressurePlate>("pressureplate_B").IsActivated())
                 {
-                    state = ColorPlateState.ZeroSuccess;
+                    if (state == ColorPlateState.OneSuccess ||
+                        state == ColorPlateState.TwoSuccess ||
+                        state == ColorPlateState.ThreeSuccess)
+                    {
+                        ActivatePressurePlate(Get<PressurePlate>("pressureplate_B"));
+                        state = ColorPlateState.TwoSuccess;
+                    }
+                    else
+                    {
+                        DeactivatePressurePlate(Get<PressurePlate>("pressureplate_P"));
+                        state = ColorPlateState.ZeroSuccess;
+                    }
                 }
-            }
-            else if (Get<PressurePlate>("pressureplate_B").IsActivated() && state != ColorPlateState.Complete)
-            {
-                if (state == ColorPlateState.OneSuccess || state == ColorPlateState.TwoSuccess)
+                if (Get<PressurePlate>("pressureplate_Y").IsActivated())
                 {
-                    state = ColorPlateState.TwoSuccess;
+                    if (state == ColorPlateState.TwoSuccess || state == ColorPlateState.ThreeSuccess)
+                    {
+                        ActivatePressurePlate(Get<PressurePlate>("pressureplate_Y"));
+                        state = ColorPlateState.ThreeSuccess;
+                    }
+                    else
+                    {
+                        DeactivatePressurePlate(Get<PressurePlate>("pressureplate_P"));
+                        DeactivatePressurePlate(Get<PressurePlate>("pressureplate_B"));
+                        state = ColorPlateState.ZeroSuccess;
+                    }
                 }
-                else
+                if (Get<PressurePlate>("pressureplate_G").IsActivated())
                 {
-                    state = ColorPlateState.ZeroSuccess;
-                }
-            }
-            else if (Get<PressurePlate>("pressureplate_Y").IsActivated() && state != ColorPlateState.Complete)
-            {
-                if (state == ColorPlateState.TwoSuccess || state == ColorPlateState.ThreeSuccess)
-                {
-                    state = ColorPlateState.ThreeSuccess;
-                }
-                else
-                {
-                    state = ColorPlateState.ZeroSuccess;
-                }
-            }
-            else if (Get<PressurePlate>("pressureplate_G").IsActivated() && state != ColorPlateState.Complete)
-            {
-                if (state == ColorPlateState.ThreeSuccess)
-                {
-                    state = ColorPlateState.Complete;
-                    Get<Door>("pp_door").OpenDoor();
-                    Get<Door>("pp_door1").OpenDoor();
-                }
-                else
-                {
-                    state = ColorPlateState.ZeroSuccess;
+                    if (state == ColorPlateState.ThreeSuccess)
+                    {
+                        state = ColorPlateState.Complete;
+                        Get<Door>("pp_door").OpenDoor();
+                        Get<Door>("pp_door1").OpenDoor();
+                    }
+                    else
+                    {
+                        state = ColorPlateState.ZeroSuccess;
+                    }
+                    // In case of success, the "locking" mechanic is no longer needed. (if True).
+                    // In case of failure, all pressure plates are reverted to normal (if False).
+                    DeactivatePressurePlate(Get<PressurePlate>("pressureplate_P"));
+                    DeactivatePressurePlate(Get<PressurePlate>("pressureplate_B"));
+                    DeactivatePressurePlate(Get<PressurePlate>("pressureplate_Y"));
                 }
             }
         }
@@ -337,6 +354,18 @@ namespace HammeredGame.Game.Scenes.Island2
                     }
                 }
             }
+        }
+
+        private static void ActivatePressurePlate(PressurePlate pp)
+        {
+            pp.SetActivated(true);
+            pp.lockActivationState = true;
+        }
+
+        private static void DeactivatePressurePlate(PressurePlate pp)
+        {
+            pp.lockActivationState = false;
+            pp.SetActivated(false);
         }
     }
 }
