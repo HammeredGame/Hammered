@@ -14,13 +14,13 @@ namespace HammeredGame.Core
         {
             //combination of self-recored foley and sounds from zapsplat.com
             //bgmusic chord progressions and inspirationg from Avery Berman royalty free music 
-            "Audio/stereo_step",
-            "Audio/hammer_drop",
+            //"Audio/stereo_step",
+            //"Audio/hammer_drop",
             "Audio/lohi_whoosh",
-            "Audio/tree_fall",
+            //"Audio/tree_fall",
             "Audio/ding",
-            "Audio/door_close1",
-            "Audio/door_open1",
+            //"Audio/door_close1",
+            //"Audio/door_open1",
             //"Audio/new_laser",
             "Audio/rock_water",
             "Audio/short_roll",
@@ -31,10 +31,10 @@ namespace HammeredGame.Core
             // selection_confirm: CC BY 4.0 (attribution required, modification indication required)
             // Universal UI/Menu Soundpack (https://ellr.itch.io/universal-ui-soundpack)
             "Audio/UI/selection_confirm",
-            "Audio/buzz",
-            "Audio/glow",
-            "Audio/blip",
-            "Audio/retro",
+            //"Audio/buzz",
+            //"Audio/glow",
+            //"Audio/blip",
+            //"Audio/retro",
             "Audio/balanced/buzz_b",
             "Audio/balanced/hammer_drop_b",
             "Audio/balanced/new_launch_b",
