@@ -83,8 +83,8 @@ namespace HammeredGame.Game.Scenes.Ornamental
             // ...until the hammer is retrieved from the player (i.e. the hammer has travelled to the player).
             // Revert camera to normal: normal viewing distance and following the player.
             Camera.SetFollowTarget(Get<TriggerObject>("final_camera_focus"));
-            Camera.FollowAngleHorizontal = -94.263f;
-            Camera.FollowAngleVertical = 1.491f;
+            //Camera.FollowAngleHorizontal = -94.263f;
+            //Camera.FollowAngleVertical = 1.491f;
 
             float finalCameraDistance = 743f;
             // Interpolate the camera distance
