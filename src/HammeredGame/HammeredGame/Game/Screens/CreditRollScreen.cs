@@ -92,7 +92,7 @@ namespace HammeredGame.Game.Screens
             creditsPanel.AddChild(Credit("Composer", "Audrey Leong"));
             creditsPanel.AddChild(Credit("Sound Engineer", "Audrey Leong"));
             creditsPanel.AddChild(Credit("Written by", "Konstantinos Stavratis"));
-            creditsPanel.AddChild(Credit("Programmers", "Siddharth Menon", "Audrey", "Marie Jaillot", "Andrew Dobis", "Konstantinos Stavratis", "Yuto"));
+            creditsPanel.AddChild(Credit("Programmers", "Siddharth Menon", "Audrey Leong", "Marie Jaillot", "Andrew Dobis", "Konstantinos Stavratis", "Yuto Takano"));
             creditsPanel.AddChild(Credit("3D Modeling", "Andrew Dobis", "Marie Jaillot"));
 
             // External Testers
