@@ -113,11 +113,12 @@ namespace HammeredGame.Game.Screens
         {
             // Draw the hammer image behind, assuming width > height and drawing to a square aligned
             // to the right side of the screen
-            int squareSize = ScreenManager.GraphicsDevice.Viewport.Height;
+            int imageHeight = ScreenManager.GraphicsDevice.Viewport.Height;
+            int imageWidth = (int)((float)imageHeight / (float)hammerImage.Height * (float)hammerImage.Width);
             GameServices.GetService<SpriteBatch>().Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
             GameServices.GetService<SpriteBatch>().Draw(
                 hammerImage,
-                new Rectangle(ScreenManager.GraphicsDevice.Viewport.Width - squareSize, 0, squareSize, squareSize),
+                new Rectangle(ScreenManager.GraphicsDevice.Viewport.Width - imageWidth, 0, imageWidth, imageHeight),
                 new Color(1f, 1f, 1f, HammerImageOpacity));
             GameServices.GetService<SpriteBatch>().End();
 
