@@ -138,6 +138,9 @@ namespace HammeredGame.Game.GameObjects
                 MinVerticalVelocity = 30f,
                 MaxVerticalVelocity = 30f,
 
+                MinStartRotation = Quaternion.Identity,
+                MaxStartRotation = Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2),
+
                 // Affected a bit by gravity
                 Gravity = ActiveSpace.ForceUpdater.Gravity * 0.5f
             }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);
