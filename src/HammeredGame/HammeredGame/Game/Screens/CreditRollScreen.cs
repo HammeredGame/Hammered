@@ -99,6 +99,9 @@ namespace HammeredGame.Game.Screens
             creditsPanel.AddChild(Credit("Programmers", "Siddharth Menon", "Audrey Leong", "Marie Jaillot", "Andrew Dobis", "Konstantinos Stavratis", "Yuto Takano"));
             creditsPanel.AddChild(Credit("3D Modeling", "Andrew Dobis", "Marie Jaillot"));
 
+            creditsPanel.AddChild(Heading("Trailer Cast"));
+            creditsPanel.AddChild(Credit("Thor", "Morten Borup Pertersen"));
+
             // External Testers
             creditsPanel.AddChild(Heading("Testers"));
             creditsPanel.AddChild(Credit("QA Tester",
