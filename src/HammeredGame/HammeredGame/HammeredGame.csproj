@@ -9,6 +9,32 @@
     <VersionSuffix>beta</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup>
+    <BeautySharedRuntimeMode>False</BeautySharedRuntimeMode>
+    <!-- beauty into sub-directory, default is libs, quote with "" if contains space  -->
+    <BeautyLibsDir Condition="$(BeautySharedRuntimeMode) == 'True'">../libraries</BeautyLibsDir>
+    <BeautyLibsDir Condition="$(BeautySharedRuntimeMode) != 'True'">./libraries</BeautyLibsDir>
+    <!-- dlls that you don't want to be moved or can not be moved -->
+    <BeautyExcludes>SDL2*;libSDL2*;sdl2*;soft_oal*;openal*;MonoGame.Framework*</BeautyExcludes>
+    <!-- dlls that end users never needed, so hide them -->
+    <!-- <BeautyHiddens>hostfxr;hostpolicy;*.deps.json;*.runtimeconfig*.json</BeautyHiddens> -->
+    <!-- set to True if you want to disable -->
+    <DisableBeauty>False</DisableBeauty>
+    <!-- set to False if you want to beauty on build -->
+    <BeautyOnPublishOnly>False</BeautyOnPublishOnly>
+    <!-- set to True if you want to allow 3rd debuggers(like dnSpy) debugs the app -->
+    <BeautyEnableDebugging>False</BeautyEnableDebugging>
+    <!-- the patch can reduce the file count -->
+    <!-- set to False if you want to disable -->
+    <!-- SCD Mode Feature Only -->
+    <BeautyUsePatch>True</BeautyUsePatch>
+    <!-- <BeautyAfterTasks></BeautyAfterTasks> -->
+    <!-- valid values: Error|Detail|Info -->
+    <BeautyLogLevel>Info</BeautyLogLevel>
+    <!-- set to a repo mirror if you have troble in connecting github -->
+    <!-- <BeautyGitCDN>https://gitee.com/liesauer/HostFXRPatcher</BeautyGitCDN> -->
+    <!-- <BeautyGitTree>master</BeautyGitTree> -->
+  </PropertyGroup>
+  <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -34,6 +60,7 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="Myra" Version="1.4.5" />
     <PackageReference Include="NativeFileDialogSharp" Version="0.6.0-alpha" />
+    <PackageReference Include="nulastudio.NetBeauty" Version="2.1.3.3" />
     <PackageReference Include="OptimizedPriorityQueue" Version="5.1.0" />
     <PackageReference Include="SoftCircuits.OrderedDictionary" Version="3.0.1" />
   </ItemGroup>
