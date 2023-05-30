@@ -316,14 +316,14 @@ Universal UI/Menu Soundpack
                 transitionTimeline = Tweening.NewTimeline();
                 transitionTimeline
                     .AddColor(this, nameof(backgroundColor))
-                    .AddFrame(500, Color.Black, Easing.Linear);
+                    .AddFrame(1000, Color.Black, Easing.Linear);
                 transitionTimeline
                     .AddFloat(desktop, nameof(desktop.Opacity))
                     .AddFrame(0, 0)
-                    .AddFrame(500, 0)
-                    .AddFrame(1000, 1, Easing.Linear)
-                    .AddFrame(3000, 1, Easing.Linear)
-                    .AddFrame(3500, 0, Easing.Linear);
+                    .AddFrame(1000, 0)
+                    .AddFrame(1500, 1, Easing.Linear)
+                    .AddFrame(3500, 1, Easing.Linear)
+                    .AddFrame(4000, 0, Easing.Linear);
             }
 
             // This function is called only until the first frame where the timeline is stopped, so
