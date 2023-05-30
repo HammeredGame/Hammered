@@ -62,6 +62,9 @@ namespace HammeredGame.Core.Particles
         public float MinEndSize = 100;
         public float MaxEndSize = 100;
 
+        public Quaternion MinStartRotation = Quaternion.Identity;
+        public Quaternion MaxStartRotation = Quaternion.Identity;
+
         // Whether to ignore collision responses for particles when interacting with the surrounding environment.
         public bool IgnoreCollisionResponses = false;
 

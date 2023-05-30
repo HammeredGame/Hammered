@@ -174,7 +174,7 @@ namespace HammeredGame.Core.Particles
             for (int i = firstActiveParticle; i != firstInactiveParticle;)
             {
                 // We create the world matrix using the scale and world-space translation
-                instanceTransforms[instanceTransformIndex] = Matrix.CreateScale(particles[i].Size) * Matrix.CreateTranslation(particles[i].Entity.Position.ToXNA());
+                instanceTransforms[instanceTransformIndex] = Matrix.CreateScale(particles[i].Size) * particles[i].Entity.OrientationMatrix.ToXNA() * Matrix.CreateTranslation(particles[i].Entity.Position.ToXNA());
 
                 i = (i + 1) % settings.MaxParticles;
                 instanceTransformIndex++;
@@ -297,6 +297,7 @@ namespace HammeredGame.Core.Particles
             {
                 Position = position.ToBepu(),
                 LinearVelocity = velocity.ToBepu(),
+                Orientation = Quaternion.Slerp(settings.MinStartRotation, settings.MaxStartRotation, (float)random.NextDouble()).ToBepu(),
                 Tag = "Particle"
             };
 
