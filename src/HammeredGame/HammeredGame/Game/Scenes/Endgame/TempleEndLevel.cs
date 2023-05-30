@@ -81,7 +81,7 @@ namespace HammeredGame.Game.Scenes.Endgame
                 Get<Player>("player1").ShowVictoryStars();
 
                 // Allow time to awe at the hammer flying up.
-                await Services.GetService<ScriptUtils>().WaitSeconds(2);
+                await Services.GetService<ScriptUtils>().WaitSeconds(3);
 
                 // Show credits
                 Tweening.Tween((f) => MediaPlayer.Volume = f, 0f, oldVolume, 3000, Easing.Linear, LerpFunctions.Float);

@@ -115,7 +115,7 @@ namespace HammeredGame.Game.Scenes.Island1
 
                     Get<Player>("player1").InputEnabled = false;
                     Get<Player>("player1").ShowVictoryStars();
-                    await Services.GetService<ScriptUtils>().WaitSeconds(1);
+                    await Services.GetService<ScriptUtils>().WaitSeconds(2);
                     Tweening.Tween((f) => MediaPlayer.Volume = f, 0f, oldVolume, 3000, Easing.Linear, LerpFunctions.Float);
 
                     await ParentGameScreen.ShowDialogueAndWait("That was surprisingly easy...!");
