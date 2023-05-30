@@ -2,6 +2,7 @@
 using HammeredGame.Core;
 using HammeredGame.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Myra;
 using Myra.Graphics2D;
@@ -33,6 +34,8 @@ namespace HammeredGame.Game.Screens
         private Texture2D whiteRectangle;
 
         private SpriteBatch spriteBatch;
+
+        private readonly AudioEmitter audioEmitter = new();
 
         public OnScreenDialogueScreen()
         {
@@ -152,12 +155,14 @@ namespace HammeredGame.Game.Screens
                     {
                         (_, TaskCompletionSource taskCompletionSource) = dialogueQueue.Dequeue();
                         taskCompletionSource.SetResult();
+                        GameServices.GetService<AudioManager>().Play3DSound("Audio/UI/selection_confirm", false, audioEmitter, 1);
                     }
                     // Otherwise, show the whole dialogue and make the user press confirm again to
                     // move on
                     else
                     {
                         dialogueLabel.Text = dialogueQueue.Peek().Item1;
+                        GameServices.GetService<AudioManager>().Play3DSound("Audio/UI/selection_confirm", false, audioEmitter, 1);
                     }
                 }
                 else
