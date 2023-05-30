@@ -48,6 +48,8 @@ namespace HammeredGame.Core
         public bool FullScreen { get; set; } = true;
         public bool Borderless { get; set; } = true;
 
+        public bool InvertCameraControls { get; set; } = false;
+
         // TODO: LastSaveScene is not a setting value but a game context or save state. Perhaps it
         // should be a different data structure, but it's just this single string so for now it's
         // placed within settings.
