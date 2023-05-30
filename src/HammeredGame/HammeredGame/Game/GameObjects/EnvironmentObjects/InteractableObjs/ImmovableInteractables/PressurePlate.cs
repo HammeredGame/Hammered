@@ -35,6 +35,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         private EnvironmentObject triggerObject;
         private bool playerOn = false, hammerOn = false;
         private bool pressureActivated = false;
+        /// <value>
+        /// <c>lockActivationState</c>
+        /// False: disallows any change of state (i.e. activated or not activated) from any external calls.
+        /// True: alteration the state of the pressure plate is permitted.
+        /// </value>
+        public bool lockActivationState = false;
 
         public event EventHandler OnTrigger;
         public event EventHandler OnTriggerEnd;
@@ -169,6 +175,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
         {
             // Check if this is changing the state or not
             if (activate == pressureActivated) return;
+            // The pressure plate is not allowed to change its state as long as the lock is "placed".
+            if (lockActivationState) return;
 
             if (activate) OnTrigger?.Invoke(this, null);
             if (!activate) OnTriggerEnd?.Invoke(this, null);
