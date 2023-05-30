@@ -75,8 +75,11 @@ namespace HammeredGame.Game.Screens
             {
                 Text = "Credits",
                 Id = "_menuItemCredits",
-                Font = BarlowFont.GetFont(oneLineHeight),
-                Enabled = false
+                Font = BarlowFont.GetFont(oneLineHeight)
+            };
+            menuItemCredits.TouchUp += (s, a) =>
+            {
+                ScreenManager.AddScreen(new CreditRollScreen(false));
             };
 
             Label menuItemQuitToDesktop = new()

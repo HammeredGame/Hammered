@@ -33,15 +33,17 @@ namespace HammeredGame.Game.Screens
 
         private Color backgroundColor = Color.Transparent;
         private TweenTimeline transitionTimeline;
+        private readonly bool showTheEnd;
 
         float oldVolume;
 
         public Action FinishedFunc;
 
-        public CreditRollScreen()
+        public CreditRollScreen(bool showTheEnd = true)
         {
             IsPartial = false;
             PassesFocusThrough = false;
+            this.showTheEnd = showTheEnd;
         }
 
         public override void LoadContent()
@@ -317,13 +319,16 @@ Universal UI/Menu Soundpack
                 transitionTimeline
                     .AddColor(this, nameof(backgroundColor))
                     .AddFrame(1000, Color.Black, Easing.Linear);
-                transitionTimeline
-                    .AddFloat(desktop, nameof(desktop.Opacity))
-                    .AddFrame(0, 0)
-                    .AddFrame(1000, 0)
-                    .AddFrame(1500, 1, Easing.Linear)
-                    .AddFrame(3500, 1, Easing.Linear)
-                    .AddFrame(4000, 0, Easing.Linear);
+                if (showTheEnd)
+                {
+                    transitionTimeline
+                        .AddFloat(desktop, nameof(desktop.Opacity))
+                        .AddFrame(0, 0)
+                        .AddFrame(1000, 0)
+                        .AddFrame(1500, 1, Easing.Linear)
+                        .AddFrame(3500, 1, Easing.Linear)
+                        .AddFrame(4000, 0, Easing.Linear);
+                }
             }
 
             // This function is called only until the first frame where the timeline is stopped, so
@@ -362,6 +367,7 @@ Universal UI/Menu Soundpack
             if (transitionTimeline.State == TweenState.Stopped)
             {
                 FinishedFunc?.Invoke();
+                MediaPlayer.Stop();
                 MediaPlayer.Volume = oldVolume;
                 return true;
             }
