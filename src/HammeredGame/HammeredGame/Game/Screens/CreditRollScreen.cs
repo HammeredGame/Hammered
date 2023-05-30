@@ -9,7 +9,8 @@ using Pleasing;
 using Microsoft.Xna.Framework.Content;
 using System;
 using Microsoft.Xna.Framework.Media;
-
+using System.Reflection;
+using System.Diagnostics;
 
 namespace HammeredGame.Game.Screens
 {
@@ -139,6 +140,10 @@ Universal UI/Menu Soundpack
             creditsPanel.AddChild(Image("Credits/gtc-logo", 0.2f));
             creditsPanel.AddChild(LineSpacing());
             creditsPanel.AddChild(SmallText("The Game Programming Lab course at ETH Zurich for providing us\nwith the opportunity to make this game."));
+
+            creditsPanel.AddChild(LineSpacing());
+            creditsPanel.AddChild(LineSpacing());
+            creditsPanel.AddChild(SmallText("Hammered v" + (FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location).ProductVersion ?? "Unknown version") + " is presented to you by the Hammered Team"));
 
             scrollingCredits.Content = creditsPanel;
 
