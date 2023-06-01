@@ -157,17 +157,17 @@ namespace HammeredGame.Game.Scenes.Island3
             this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
 
             // Set the moving lasers' original movements and the offsets to the base
-            //Get<Laser>("left_corner_laser_1").Entity.LinearVelocity = new(0, 0, 30);
-            //leftCornerLaser1OffsetFromBase = Get<Laser>("left_corner_laser_1").Position - Get<Wall>("left_corner_laser_1_base").Position;
+            Get<Laser>("left_corner_laser_1").Entity.LinearVelocity = new(0, 0, 30);
+            leftCornerLaser1OffsetFromBase = Get<Laser>("left_corner_laser_1").Position - Get<Wall>("left_corner_laser_1_base").Position;
 
-            //Get<Laser>("left_corner_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
-            //leftCornerLaser2OffsetFromBase = Get<Laser>("left_corner_laser_2").Position - Get<Wall>("left_corner_laser_2_base").Position;
+            Get<Laser>("left_corner_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
+            leftCornerLaser2OffsetFromBase = Get<Laser>("left_corner_laser_2").Position - Get<Wall>("left_corner_laser_2_base").Position;
 
-            //Get<Laser>("mid_laser_1").Entity.LinearVelocity = new(0, 0, 30);
-            //midLaser1OffsetFromBase = Get<Laser>("mid_laser_1").Position - Get<Wall>("mid_laser_base1").Position;
+            Get<Laser>("mid_laser_1").Entity.LinearVelocity = new(0, 0, 30);
+            midLaser1OffsetFromBase = Get<Laser>("mid_laser_1").Position - Get<Wall>("mid_laser_base1").Position;
 
-            //Get<Laser>("mid_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
-            //midLaser2OffsetFromBase = Get<Laser>("mid_laser_2").Position - Get<Wall>("mid_laser_base2").Position;
+            Get<Laser>("mid_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
+            midLaser2OffsetFromBase = Get<Laser>("mid_laser_2").Position - Get<Wall>("mid_laser_base2").Position;
 
             // Pressure plate interactions
 
@@ -514,21 +514,21 @@ namespace HammeredGame.Game.Scenes.Island3
         {
             base.Update(gameTime, screenHasFocus, isPaused);
 
-            //MovingLaserUpdate("left_corner_laser_1", "left_corner_laser_1_base", 2, -350f, -260f, leftCornerLaser1OffsetFromBase);
-            //MovingLaserUpdate("left_corner_laser_2", "left_corner_laser_2_base", 0, 53f, 205f, leftCornerLaser2OffsetFromBase);
+            MovingLaserUpdate("left_corner_laser_1", "left_corner_laser_1_base", 2, -350f, -260f, leftCornerLaser1OffsetFromBase);
+            MovingLaserUpdate("left_corner_laser_2", "left_corner_laser_2_base", 0, 53f, 205f, leftCornerLaser2OffsetFromBase);
 
-            //MovingLaserUpdate("mid_laser_1", "mid_laser_base1", 2, -190f, -134f, midLaser1OffsetFromBase);
-            //MovingLaserUpdate("mid_laser_2", "mid_laser_base2", 0, 350f, 410f, midLaser2OffsetFromBase);
+            MovingLaserUpdate("mid_laser_1", "mid_laser_base1", 2, -190f, -134f, midLaser1OffsetFromBase);
+            MovingLaserUpdate("mid_laser_2", "mid_laser_base2", 0, 350f, 410f, midLaser2OffsetFromBase);
 
-            DoorHintIfWithinVicinity("starttomid_door", withinStartTopTrigger, new List<Key>{ Get<Key>("start_key")/*, Get<Key>("mid_key")*/ });
+            DoorHintIfWithinVicinity("starttomid_door", withinStartTopTrigger, new List<Key>{ Get<Key>("start_key"), Get<Key>("mid_key") });
             DoorHintIfWithinVicinity("starttoleftbot_door", withinStartLeftTrigger, new List<Key> { Get<Key>("start_key"), Get<Key>("left_corner_key") });
             DoorHintIfWithinVicinity("starttorightbot_door", withinStartRightTrigger, new List<Key> { Get<Key>("start_key"), Get<Key>("bottom_right_key") });
             DoorHintIfWithinVicinity("leftbottoleftmid_door", withinBotLeftTrigger, new List<Key> { Get<Key>("left_corner_key"), Get<Key>("five_pp_key") });
             DoorHintIfWithinVicinity("rightbottorightmid_door", withinBotRightTrigger, new List<Key> { Get<Key>("bottom_right_key"), Get<Key>("right_mid_key") });
 
-            DoorHintIfWithinVicinity("midtotopmid_door", withinMidTopTrigger, new List<Key> { Get<Key>("four_corner_key")/*, Get<Key>("mid_key")*/ });
-            DoorHintIfWithinVicinity("midtoleftmid_door", withinMidLeftTrigger, new List<Key> { Get<Key>("five_pp_key")/*, Get<Key>("mid_key")*/ });
-            DoorHintIfWithinVicinity("midtorightmid_door", withinMidRightTrigger, new List<Key> { Get<Key>("right_mid_key")/*, Get<Key>("mid_key")*/ });
+            DoorHintIfWithinVicinity("midtotopmid_door", withinMidTopTrigger, new List<Key> { Get<Key>("four_corner_key"), Get<Key>("mid_key") });
+            DoorHintIfWithinVicinity("midtoleftmid_door", withinMidLeftTrigger, new List<Key> { Get<Key>("five_pp_key"), Get<Key>("mid_key") });
+            DoorHintIfWithinVicinity("midtorightmid_door", withinMidRightTrigger, new List<Key> { Get<Key>("right_mid_key"), Get<Key>("mid_key") });
             DoorHintIfWithinVicinity("leftmidtoend_door", withinLeftMidTrigger, new List<Key> { Get<Key>("five_pp_key") });
             DoorHintIfWithinVicinity("rigthmidtorighttop_door", withinRightMidTrigger, new List<Key> { Get<Key>("right_mid_key"), Get<Key>("right_top_key1") });
 
