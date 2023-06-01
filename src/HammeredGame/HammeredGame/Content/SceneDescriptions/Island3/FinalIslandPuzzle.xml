@@ -2,14 +2,14 @@
   <camera mode="follow">
     <follow_distance>268.000</follow_distance>
     <follow_angle_v>0.480</follow_angle_v>
-    <follow_angle_h>269.041</follow_angle_h>
-    <target>-13.128 -12.839 -93.909</target>
+    <follow_angle_h>256.758</follow_angle_h>
+    <target>-16.364 -12.839 -95.394</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.425</fov>
   </camera>
   <uniform_grid>
-    <bottom_left_close>0.000 -30.000 -500.000</bottom_left_close>
-    <top_right_away>800.000 50.000 500.000</top_right_away>
+    <bottom_left_close>-100.000 -30.000 -500.000</bottom_left_close>
+    <top_right_away>700.000 50.000 500.000</top_right_away>
     <side_length>10.000</side_length>
   </uniform_grid>
   <lights>
@@ -51,8 +51,8 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture>Meshes/Character/character_diffuse</texture>
-    <position>-13.128 -12.839 -93.909</position>
-    <rotation>0.000 0.652 0.000 0.758</rotation>
+    <position>-16.364 -12.839 -95.394</position>
+    <rotation>0.000 -0.854 0.000 -0.521</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
@@ -2288,8 +2288,8 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
-    <position>-12.803 -16.083 -91.384</position>
-    <rotation>0.886 -0.422 0.165 0.097</rotation>
+    <position>-14.806 -16.192 -93.486</position>
+    <rotation>-0.897 0.398 0.049 -0.187</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>
@@ -2514,6 +2514,45 @@
     <model>Meshes/Trees/tree</model>
     <texture>Meshes/Trees/tree_albedo</texture>
     <position>236.200 -24.000 60.900</position>
+    <rotation>0.000 -0.110 0.000 0.994</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>12.000</width>
+      <height>35.000</height>
+      <length>12.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="topmid_tree">
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
+    <position>566.800 -24.000 -165.700</position>
+    <rotation>0.000 -0.110 0.000 0.994</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>12.000</width>
+      <height>35.000</height>
+      <length>12.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="topmid_tree1">
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
+    <position>452.200 -24.000 -132.300</position>
+    <rotation>0.000 -0.110 0.000 0.994</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>12.000</width>
+      <height>35.000</height>
+      <length>12.000</length>
+      <shift_graphic>0.000 2.955 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.Tree" id="topmid_tree2">
+    <model>Meshes/Trees/tree</model>
+    <texture>Meshes/Trees/tree_albedo</texture>
+    <position>592.200 -24.000 -86.800</position>
     <rotation>0.000 -0.110 0.000 0.994</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -2758,13 +2797,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="start_rock_1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>60.001 -16.695 -74.727</position>
+    <position>60.001 -16.633 -74.727</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -2772,13 +2811,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="start_rock_2">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>80.237 -16.648 -24.071</position>
+    <position>80.237 -16.643 -24.071</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -2812,13 +2851,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="bottom_right_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>39.364 -16.648 13.196</position>
+    <position>39.364 -16.632 13.196</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -2839,13 +2878,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="left_corner_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>104.937 -16.648 -377.000</position>
+    <position>104.937 -16.619 -377.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -2853,13 +2892,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="left_corner_rock2">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>129.999 -16.695 -266.180</position>
+    <position>129.999 -16.632 -266.180</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -2997,13 +3036,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="leftmid_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>250.001 -20.868 -248.065</position>
+    <position>250.082 -16.664 -248.749</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -3011,13 +3050,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="leftmid_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>253.584 -16.648 -374.570</position>
+    <position>253.584 -16.632 -374.570</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -3038,13 +3077,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="mid_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>281.805 -19.806 -90.001</position>
+    <position>281.251 -16.643 -90.204</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -3052,13 +3091,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="mid_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>282.565 -16.648 -118.407</position>
+    <position>282.565 -16.619 -118.407</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -3183,13 +3222,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="mid_top_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>573.420 -16.744 -90.000</position>
+    <position>573.019 -16.632 -88.796</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -3197,13 +3236,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="mid_top_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>563.351 -16.656 -120.001</position>
+    <position>563.351 -16.643 -120.001</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -3367,13 +3406,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_top_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>510.804 -16.630 164.864</position>
+    <position>510.804 -16.632 164.864</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -3394,13 +3433,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_mid_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>250.001 -21.429 23.191</position>
+    <position>250.001 -21.138 23.191</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -3408,13 +3447,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_mid_rock1">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>393.636 -16.727 20.000</position>
+    <position>393.636 -16.632 20.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -3422,13 +3461,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_mid_rock2">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>390.000 -16.000 160.000</position>
+    <position>390.000 -16.663 160.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -3436,13 +3475,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_mid_rock3">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>239.512 -16.656 160.007</position>
+    <position>239.512 -16.663 160.007</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.500</scale>
+    <scale>1.000</scale>
     <body type="box">
-      <width>10.000</width>
+      <width>7.500</width>
       <height>10.000</height>
-      <length>10.000</length>
+      <length>7.500</length>
       <mass>10000.000</mass>
       <shift_graphic>0.000 -3.000 0.000</shift_graphic>
     </body>
@@ -4906,7 +4945,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="mid_laser_base1">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>230.800 -12.200 -165.900</position>
+    <position>230.800 -12.200 -153.400</position>
     <rotation>0.000 1.000 0.000 0.000</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -4919,7 +4958,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="mid_laser_base2">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>404.100 -12.200 -12.600</position>
+    <position>361.600 -12.200 -12.600</position>
     <rotation>0.000 0.701 0.000 -0.713</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -4932,7 +4971,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="mid_laser_1">
     <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture>Meshes/Laser/LaserMaterial</texture>
-    <position>234.700 -12.034 -163.700</position>
+    <position>234.700 -12.034 -151.200</position>
     <rotation>0.000 0.705 0.000 0.709</rotation>
     <scale>0.180</scale>
     <body type="box">
@@ -4945,7 +4984,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="mid_laser_2">
     <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture>Meshes/Laser/LaserMaterial</texture>
-    <position>404.100 -12.034 -16.700</position>
+    <position>361.600 -12.034 -16.700</position>
     <rotation>0.000 -1.000 0.000 -0.027</rotation>
     <scale>0.180</scale>
     <body type="box">
@@ -5114,7 +5153,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="left_corner_laser_1_base">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>17.600 -12.200 -270.000</position>
+    <position>17.600 -12.200 -275.500</position>
     <rotation>0.000 1.000 0.000 0.000</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -5127,7 +5166,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="left_corner_laser_2_base">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>182.000 -12.200 -398.200</position>
+    <position>104.500 -12.200 -398.200</position>
     <rotation>0.000 0.710 0.000 0.704</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -5140,7 +5179,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="left_corner_laser_1">
     <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture>Meshes/Laser/LaserMaterial</texture>
-    <position>22.500 -12.034 -270.000</position>
+    <position>22.500 -12.034 -275.500</position>
     <rotation>0.000 0.705 0.000 0.709</rotation>
     <scale>0.180</scale>
     <body type="box">
@@ -5153,13 +5192,13 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="left_corner_laser_2">
     <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture>Meshes/Laser/LaserMaterial</texture>
-    <position>182.500 -12.234 -392.700</position>
+    <position>105.000 -12.234 -392.700</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>0.180</scale>
     <body type="box">
       <width>20.000</width>
       <height>20.000</height>
-      <length>175.000</length>
+      <length>15.594</length>
       <shift_graphic>0.000 0.000 -2.850</shift_graphic>
     </body>
   </object>
