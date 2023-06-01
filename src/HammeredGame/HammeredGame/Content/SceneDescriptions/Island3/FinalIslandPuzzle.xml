@@ -3422,7 +3422,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_mid_rock2">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>390.000 -26.618 160.000</position>
+    <position>390.000 -16.000 160.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
