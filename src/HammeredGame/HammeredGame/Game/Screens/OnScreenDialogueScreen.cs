@@ -2,6 +2,7 @@
 using HammeredGame.Core;
 using HammeredGame.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Myra;
 using Myra.Graphics2D;
@@ -33,6 +34,8 @@ namespace HammeredGame.Game.Screens
         private Texture2D whiteRectangle;
 
         private SpriteBatch spriteBatch;
+
+        private readonly AudioEmitter audioEmitter = new();
 
         public OnScreenDialogueScreen()
         {
@@ -152,12 +155,14 @@ namespace HammeredGame.Game.Screens
                     {
                         (_, TaskCompletionSource taskCompletionSource) = dialogueQueue.Dequeue();
                         taskCompletionSource.SetResult();
+                        GameServices.GetService<AudioManager>().Play3DSound("Audio/UI/selection_confirm", false, audioEmitter, 1);
                     }
                     // Otherwise, show the whole dialogue and make the user press confirm again to
                     // move on
                     else
                     {
                         dialogueLabel.Text = dialogueQueue.Peek().Item1;
+                        GameServices.GetService<AudioManager>().Play3DSound("Audio/UI/selection_confirm", false, audioEmitter, 1);
                     }
                 }
                 else
@@ -176,13 +181,17 @@ namespace HammeredGame.Game.Screens
                     if (dialogueLabel.Text != dialogueQueue.Peek().Item1)
                     {
                         // Number of matching characters from last frame
-                        int matchingCharacters = dialogueLabel.Text.TakeWhile((c, i) =>i < dialogueQueue.Peek().Item1.Length && dialogueQueue.Peek().Item1[i] == c).Count();
+                        int matchingCharacters = dialogueLabel.Text.TakeWhile((c, i) => i < dialogueQueue.Peek().Item1.Length && dialogueQueue.Peek().Item1[i] == c).Count();
 
                         // Show one more character. This will never be out of bounds because if
                         // matchingCharacters + 1 is out of bounds, then matchingCharacters ==
                         // dialogueQueue.Peek().Item1.Length, which means the whole dialogue is
                         // already shown.
                         dialogueLabel.Text = dialogueQueue.Peek().Item1.Substring(0, matchingCharacters + 1);
+                        if (dialogueQueue.Peek().Item1.Length > matchingCharacters + 1)
+                        {
+                            dialogueLabel.Text += "/c[#00000000]" + dialogueQueue.Peek().Item1.Substring(matchingCharacters + 1);
+                        }
                     }
 
                     // In any case, if a dialogue is shown, update the prompt image just in case the

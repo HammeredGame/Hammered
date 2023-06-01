@@ -18,7 +18,7 @@ namespace HammeredGame.Game.Scenes.Island1
         public ShoreWakeup(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_amb");
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/shore_bgm2");
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
@@ -133,6 +133,16 @@ namespace HammeredGame.Game.Scenes.Island1
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
                     hammerPromptTokenSource.Cancel();
+
+                    // todo: have some wrapper class for mediaplayer that allows fading etc
+                    float oldVolume = MediaPlayer.Volume;
+                    Tweening.Tween((f) => MediaPlayer.Volume = f, MediaPlayer.Volume, 0f, 500, Easing.Linear, LerpFunctions.Float);
+                    await Services.GetService<ScriptUtils>().WaitMilliseconds(500);
+
+                    Get<Player>("player1").InputEnabled = false;
+                    Get<Player>("player1").ShowVictoryStars();
+                    await Services.GetService<ScriptUtils>().WaitSeconds(3);
+                    Tweening.Tween((f) => MediaPlayer.Volume = f, 0f, oldVolume, 3000, Easing.Linear, LerpFunctions.Float);
                     ParentGameScreen.InitializeLevel(typeof(TreeTutorial).FullName, true);
                 }
                 else

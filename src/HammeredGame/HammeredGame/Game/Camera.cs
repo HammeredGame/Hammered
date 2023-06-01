@@ -265,7 +265,7 @@ namespace HammeredGame.Game
                 // horizontal input between [-1, 1]
                 float horizontalInput = UserAction.CameraMovement.GetValue(services.GetService<Input>()).X;
 
-                FollowAngleHorizontal += 0.04f * horizontalInput;
+                FollowAngleHorizontal -= (services.GetService<UserSettings>().InvertCameraControls ? -1 : 1) * 0.04f * horizontalInput;
 
                 if (horizontalInput > 0)
                 {

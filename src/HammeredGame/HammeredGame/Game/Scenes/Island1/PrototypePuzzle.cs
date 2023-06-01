@@ -18,6 +18,7 @@ using HammeredGame.Game.Scenes.Endgame;
 using HammeredGame.Game.Scenes.Island2;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
+using Pleasing;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -156,6 +157,16 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
+                    // todo: have some wrapper class for mediaplayer that allows fading etc
+                    float oldVolume = MediaPlayer.Volume;
+                    Tweening.Tween((f) => MediaPlayer.Volume = f, MediaPlayer.Volume, 0f, 500, Easing.Linear, LerpFunctions.Float);
+                    await Services.GetService<ScriptUtils>().WaitMilliseconds(500);
+
+                    Get<Player>("player1").InputEnabled = false;
+                    Get<Player>("player1").ShowVictoryStars();
+                    await Services.GetService<ScriptUtils>().WaitSeconds(2);
+                    Tweening.Tween((f) => MediaPlayer.Volume = f, 0f, oldVolume, 3000, Easing.Linear, LerpFunctions.Float);
+
                     await ParentGameScreen.ShowDialogueAndWait("Phewww, that was tough...!");
                     ParentGameScreen.InitializeLevel(typeof(ColorMinigamePuzzle).FullName, true);
                 }

@@ -13,13 +13,14 @@ namespace HammeredGame.Core.Particles
     /// <summary>
     /// ParticleSystem is a class for simple CPU-side particle systems. This means that performance
     /// is likely to be suboptimal for large numbers of particles, although a few dozen shouldn't be
-    /// a problem. Performing particle update logic within the GPU would be better (and it would be
-    /// even better if all particles were rendered with one call to Draw with instances geometry),
-    /// but understanding vertex/index buffer complications (especially with Models) was too
-    /// difficult, and also we can reuse bepuphysics if we're on the CPU to do updates and collisions.
+    /// a problem. Performing particle update logic within the GPU would be better, but on the plus
+    /// side, we can reuse bepuphysics if we're on the CPU to do updates and collisions.
     /// <para/>
     /// A lot of the code is based on the Particle3D sample from the Monogame-Samples repository
     /// originally created by Microsoft and now maintained by CartBlanche (https://github.com/CartBlanche/MonoGame-Samples/tree/master/Particle3DSample).
+    /// <para/>
+    /// It has been modified to make things simpler where possible, to use bepuphysics for
+    /// collision, and to use hardware instancing for rendering the same mesh multiple times.
     /// </summary>
     public class ParticleSystem
     {
@@ -165,7 +166,7 @@ namespace HammeredGame.Core.Particles
 
             // Create an array of instance world-space transform matrices that we'll send to the GPU
             // for instancing with a single mesh. The size of this changes whenever a new particle
-            // is added or retired, so it's recreated on each Draw call.
+            // is added or retired, so the array is recreated on each Draw call.
             Matrix[] instanceTransforms = new Matrix[numberParticles];
 
             // Go through the active particles and populate the instance transform array
@@ -173,14 +174,14 @@ namespace HammeredGame.Core.Particles
             for (int i = firstActiveParticle; i != firstInactiveParticle;)
             {
                 // We create the world matrix using the scale and world-space translation
-                instanceTransforms[instanceTransformIndex] = Matrix.CreateScale(particles[i].Size) * Matrix.CreateTranslation(particles[i].Entity.Position.ToXNA());
+                instanceTransforms[instanceTransformIndex] = Matrix.CreateScale(particles[i].Size) * particles[i].Entity.OrientationMatrix.ToXNA() * Matrix.CreateTranslation(particles[i].Entity.Position.ToXNA());
 
                 i = (i + 1) % settings.MaxParticles;
                 instanceTransformIndex++;
             }
 
             // If there is nothing to render, stop here to avoid sending zero-buffers to the GPU and
-            // causing errors.s
+            // causing errors.
             if (instanceTransforms.Length == 0)
                 return;
 
@@ -291,16 +292,17 @@ namespace HammeredGame.Core.Particles
 
             // Set up a small sphere as the physics entity (it could've been anything), and give it
             // the position and velocity as specified. We give it a very small but explicit mass to
-            // make it a dynamic object (so it doesn't push around things like having infinite mass).
+            // make it a dynamic object (so it doesn't push around things like if it had infinite mass).
             particles[firstInactiveParticle].Entity = new Sphere(position.ToBepu(), 0.1f, 0.01f)
             {
                 Position = position.ToBepu(),
                 LinearVelocity = velocity.ToBepu(),
+                Orientation = Quaternion.Slerp(settings.MinStartRotation, settings.MaxStartRotation, (float)random.NextDouble()).ToBepu(),
                 Tag = "Particle"
             };
 
             // Pass the particle to the collision information so we can pattern match and ignore
-            // particle collisions from certain objects.
+            // collisions with particles within certain objects (like pressure plates).
             particles[firstInactiveParticle].Entity.CollisionInformation.Tag = particles[firstInactiveParticle];
 
             // If we should ignore physics collision responses, set the solver to NoSolver. This

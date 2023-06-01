@@ -3,7 +3,7 @@
     <follow_distance>275.000</follow_distance>
     <follow_angle_v>0.371</follow_angle_v>
     <follow_angle_h>-158.662</follow_angle_h>
-    <target>76.434 -12.855 -166.491</target>
+    <target>64.721 -12.855 -161.017</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.425</fov>
   </camera>
@@ -14,17 +14,17 @@
   </uniform_grid>
   <lights>
     <sun>
-      <color>1.000 0.800 0.694</color>
+      <color>0.988 0.867 0.769</color>
       <direction>-0.172 0.916 -0.363</direction>
-      <intensity>1.000</intensity>
+      <intensity>1.640</intensity>
     </sun>
     <directional>
-      <color>1.000 0.694 0.600</color>
+      <color>1.000 0.690 0.600</color>
       <direction>0.200 0.970 0.000</direction>
       <intensity>0.400</intensity>
     </directional>
     <ambient>
-      <color>1.000 0.800 0.694</color>
+      <color>1.000 0.800 0.690</color>
       <intensity>0.100</intensity>
     </ambient>
   </lights>
@@ -51,8 +51,8 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture>Meshes/Character/character_diffuse</texture>
-    <position>76.434 -12.855 -166.491</position>
-    <rotation>0.000 -0.219 0.000 0.976</rotation>
+    <position>64.721 -12.855 -161.017</position>
+    <rotation>0.000 0.791 0.000 -0.611</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
@@ -70,7 +70,7 @@
     <scale>1.860</scale>
     <body type="box">
       <width>55.000</width>
-      <height>7.700</height>
+      <height>9.800</height>
       <length>40.000</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
@@ -88,6 +88,19 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch2">
+    <model>flowers</model>
+    <texture>flowers_texture</texture>
+    <position>375.400 -22.000 -157.600</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>2.070</scale>
+    <body type="box">
+      <width>50.000</width>
+      <height>8.900</height>
+      <length>50.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch3">
     <model>flowers</model>
     <texture>flowers_texture</texture>
@@ -101,16 +114,42 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
-  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="vegetationpatch2">
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="grass5">
     <model>grass-small</model>
     <texture>grass-small_texture</texture>
     <position>225.000 -21.700 -175.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
-    <scale>1.120</scale>
+    <scale>1.650</scale>
     <body type="box">
       <width>20.000</width>
-      <height>1.500</height>
+      <height>5.400</height>
       <length>20.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="grass6">
+    <model>grass-small</model>
+    <texture>grass-small_texture</texture>
+    <position>295.000 -21.700 -95.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.650</scale>
+    <body type="box">
+      <width>50.000</width>
+      <height>5.400</height>
+      <length>50.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObjects.VegetationPatch" id="grass7">
+    <model>grass-small</model>
+    <texture>grass-small_texture</texture>
+    <position>295.000 -21.700 -245.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.650</scale>
+    <body type="box">
+      <width>50.000</width>
+      <height>5.400</height>
+      <length>50.000</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
@@ -1170,8 +1209,8 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
-    <position>74.333 -16.051 -167.146</position>
-    <rotation>0.333 -0.306 0.837 -0.308</rotation>
+    <position>64.614 -16.305 -163.265</position>
+    <rotation>0.275 0.038 -0.853 0.443</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>

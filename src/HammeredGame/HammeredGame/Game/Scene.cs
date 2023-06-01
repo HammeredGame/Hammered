@@ -349,7 +349,8 @@ namespace HammeredGame.Game
             return nameCandidate;
         }
 
-        public void UpdateSceneGrid(GameObject gameObject, bool availability, double tightness=1.0)
+        public void UpdateSceneGrid(GameObject gameObject, bool availability,
+            double tightnessX, double tightnessY, double tightnessZ)
         {
             if (gameObject.Entity != null)
             {
@@ -368,9 +369,9 @@ namespace HammeredGame.Game
                 // just adjust the scalar multiplier 1 to something greater than 1.
                 // This could prove useful, because the size of the hammer is not currently taken into account.
                 // Ideally, the "·Repetitions" variables would also be parameterized w.r.t the dimensions of the hammer.
-                int xRepetitions = (int)(Math.Ceiling(goBox.HalfWidth / sideLength) * tightness);
-                int yRepetitions = (int)(Math.Ceiling(goBox.HalfHeight / sideLength) * tightness);
-                int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * tightness);
+                int xRepetitions = (int)(Math.Ceiling(goBox.HalfWidth / sideLength) * tightnessX);
+                int yRepetitions = (int)(Math.Ceiling(goBox.HalfHeight / sideLength) * tightnessY);
+                int zRepetitions = (int)(Math.Ceiling(goBox.HalfLength / sideLength) * tightnessZ);
                 for (int i = -xRepetitions; i <= xRepetitions; ++i)
                 {
                     for (int j = -yRepetitions; j <= yRepetitions; ++j)
@@ -388,6 +389,11 @@ namespace HammeredGame.Game
                     }
                 }
             }
+        }
+
+        public void UpdateSceneGrid(GameObject gameObject, bool availability, double tightness=1.0)
+        {
+            UpdateSceneGrid(gameObject, availability, tightness, tightness, tightness);
         }
 
         // Store all the fully qualified names for available scene classes.

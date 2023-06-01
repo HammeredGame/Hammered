@@ -123,6 +123,20 @@ namespace HammeredGame.Game.Screens
                     GameServices.GetService<HammeredGame>().SetBorderless(i);
                 });
 
+            // Camera controls inversion toggle
+            HorizontalStackPanel optionsCameraControlInversion = CreateToggleOption(
+                oneLineHeight,
+                "Invert Camera Controls",
+                settings.InvertCameraControls,
+                "Yes",
+                "No",
+                (i) =>
+                {
+                    // Update and save settings
+                    settings.InvertCameraControls = i;
+                    settings.Save();
+                });
+
             // An option at the bottom to exit
             Label menuItemBack = new()
             {
@@ -142,6 +156,7 @@ namespace HammeredGame.Game.Screens
                 disclaimerFullScreen,
                 optionsResolution,
                 optionsBorderless,
+                optionsCameraControlInversion,
                 menuItemBack
             };
         }

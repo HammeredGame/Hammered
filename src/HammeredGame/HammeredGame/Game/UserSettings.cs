@@ -42,11 +42,13 @@ namespace HammeredGame.Core
         /// The file path of this settings instance.
         /// </summary>
         private string SaveFilePath { get; set; }
-        public float MediaVolume { get; set; } = 1f;
-        public float SfxVolume { get; set; } = 0.75f;
+        public float MediaVolume { get; set; } = 0.7f;
+        public float SfxVolume { get; set; } = 0.8f;
         public Resolution Resolution { get; set; } = Resolution.Res19201080;
         public bool FullScreen { get; set; } = true;
         public bool Borderless { get; set; } = true;
+
+        public bool InvertCameraControls { get; set; } = false;
 
         // TODO: LastSaveScene is not a setting value but a game context or save state. Perhaps it
         // should be a different data structure, but it's just this single string so for now it's
