@@ -29,6 +29,9 @@ namespace HammeredGame.Game.Scenes.Island3
         private bool withinDoorInteractTrigger = false;
         private CancellationTokenSource doorInteractTokenSource;// = new();
 
+        private Vector3 leftCornerLaser1OffsetFromBase;
+        private Vector3 leftCornerLaser2OffsetFromBase;
+
         private Vector3 newSpawnRockPosition = new Vector3(257.390f, 0.000f, -187.414f);
         private CollisionGroup rockGroup;
 
@@ -70,6 +73,9 @@ namespace HammeredGame.Game.Scenes.Island3
             Get<Laser>("topright_laser_2").SetLaserDefaultScale(25.0f);
             Get<Laser>("topright_laser_3").SetLaserDefaultScale(20.0f);
             Get<Laser>("topright_laser_4").SetLaserDefaultScale(20.0f);
+
+            Get<Laser>("mid_laser_1").SetLaserDefaultScale(20.0f);
+            Get<Laser>("mid_laser_2").SetLaserDefaultScale(20.0f);
 
             CollisionGroup laserGroup = new CollisionGroup();
             rockGroup = new CollisionGroup();
@@ -116,6 +122,19 @@ namespace HammeredGame.Game.Scenes.Island3
             Vector3 floorDisableStart = new Vector3(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z);
             Vector3 floorDisableFinish = new Vector3(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
             this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
+
+            // Set the moving laser's original movement and the offset to the base
+            Get<Laser>("left_corner_laser_1").Entity.LinearVelocity = new(0, 0, 30);
+            leftCornerLaser1OffsetFromBase = Get<Laser>("left_corner_laser_1").Position - Get<Wall>("left_corner_laser_1_base").Position;
+
+            Get<Laser>("left_corner_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
+            leftCornerLaser2OffsetFromBase = Get<Laser>("left_corner_laser_2").Position - Get<Wall>("left_corner_laser_2_base").Position;
+
+            Get<Laser>("mid_laser_1").Entity.LinearVelocity = new(0, 0, 30);
+            leftCornerLaser1OffsetFromBase = Get<Laser>("mid_laser_1").Position - Get<Wall>("mid_laser_base1").Position;
+
+            Get<Laser>("mid_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
+            leftCornerLaser2OffsetFromBase = Get<Laser>("mid_laser_2").Position - Get<Wall>("mid_laser_base2").Position;
 
 
             Get<PressurePlate>("start_pressureplate1").OnTrigger += (_, _) =>
@@ -185,9 +204,54 @@ namespace HammeredGame.Game.Scenes.Island3
             //};
         }
 
+        /// <summary>
+        /// If the moving laser has hit its ends, reverse its direction. Otherwise, update the laser
+        /// base position to follow the laser.
+        /// </summary>
+        private void MovingLaserUpdate(string laserName, string laserBaseName, int axis, float minLimit, float maxLimit, Vector3 movingLaserOffsetFromBase)
+        {
+            Laser laser = Get<Laser>(laserName);
+            Wall laserBase = Get<Wall>(laserBaseName);
+
+            float comparePos = 0.0f;
+            BEPUutilities.Vector3 laserVelocity;
+            if (axis == 0)
+            {
+                comparePos = laser.Position.X;
+                laserVelocity = new(30, 0, 0);
+            }
+            else if (axis == 1)
+            {
+                comparePos = laser.Position.Y;
+                laserVelocity = new(0, 30, 0);
+            }
+            else
+            {
+                comparePos = laser.Position.Z;
+                laserVelocity = new(0, 0, 30);
+            }
+
+            if (comparePos >= maxLimit)
+            {
+                laser.Entity.LinearVelocity = -1 * laserVelocity;
+            }
+            else if (comparePos <= minLimit)
+            {
+                laser.Entity.LinearVelocity = laserVelocity;
+            }
+
+            laserBase.Position = laser.Position - movingLaserOffsetFromBase;
+        }
+
         public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
+
+            MovingLaserUpdate("left_corner_laser_1", "left_corner_laser_1_base", 2, -350f, -260f, leftCornerLaser1OffsetFromBase);
+            MovingLaserUpdate("left_corner_laser_2", "left_corner_laser_2_base", 0, 53f, 205f, leftCornerLaser2OffsetFromBase);
+
+            MovingLaserUpdate("mid_laser_1", "mid_laser_base1", 2, -190f, -134f, leftCornerLaser1OffsetFromBase);
+            MovingLaserUpdate("mid_laser_2", "mid_laser_base2", 0, 350f, 410f, leftCornerLaser2OffsetFromBase);
 
             // Handle Pressure Plate logic
 
