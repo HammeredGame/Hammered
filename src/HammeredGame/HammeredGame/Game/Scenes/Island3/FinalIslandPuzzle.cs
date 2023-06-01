@@ -25,8 +25,39 @@ namespace HammeredGame.Game.Scenes.Island3
     {
         private bool spawnedNewRock = false;
         private bool openedGoalDoor = false;
-        private bool openedKeyDoor = false;
-        private bool withinDoorInteractTrigger = false;
+
+        // Booleans for doors in bottom row
+        private bool openedStartKeyDoorTop = false;
+        private bool withinStartTopTrigger = false;
+        private bool openedStartKeyDoorLeft = false;
+        private bool withinStartLeftTrigger = false;
+        private bool openedStartKeyDoorRight = false;
+        private bool withinStartRightTrigger = false;
+
+        private bool openedBotLeftKeyDoor = false;
+        private bool withinBotLeftTrigger = false;
+        private bool openedBotRightKeyDoor = false;
+        private bool withinBotRightTrigger = false;
+
+        // Booleans for doors in middle row
+        private bool openedMidKeyDoorTop = false;
+        private bool withinMidTopTrigger = false;
+        private bool openedMidKeyDoorLeft = false;
+        private bool withinMidLeftTrigger = false;
+        private bool openedMidKeyDoorRight = false;
+        private bool withinMidRightTrigger = false;
+
+        private bool openedLeftMidKeyDoor = false;
+        private bool withinLeftMidTrigger = false;
+        private bool openedRightMidKeyDoor = false;
+        private bool withinRightMidTrigger = false;
+
+        // Booleans for doors in top row
+        private bool openedTopLeftKeyDoor = false;
+        private bool withinTopLeftTrigger = false;
+        private bool openedTopRightKeyDoor = false;
+        private bool withinTopRightTrigger = false;
+
         private CancellationTokenSource doorInteractTokenSource;// = new();
 
         private Vector3 leftCornerLaser1OffsetFromBase;
@@ -126,17 +157,17 @@ namespace HammeredGame.Game.Scenes.Island3
             this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
 
             // Set the moving lasers' original movements and the offsets to the base
-            Get<Laser>("left_corner_laser_1").Entity.LinearVelocity = new(0, 0, 30);
-            leftCornerLaser1OffsetFromBase = Get<Laser>("left_corner_laser_1").Position - Get<Wall>("left_corner_laser_1_base").Position;
+            //Get<Laser>("left_corner_laser_1").Entity.LinearVelocity = new(0, 0, 30);
+            //leftCornerLaser1OffsetFromBase = Get<Laser>("left_corner_laser_1").Position - Get<Wall>("left_corner_laser_1_base").Position;
 
-            Get<Laser>("left_corner_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
-            leftCornerLaser2OffsetFromBase = Get<Laser>("left_corner_laser_2").Position - Get<Wall>("left_corner_laser_2_base").Position;
+            //Get<Laser>("left_corner_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
+            //leftCornerLaser2OffsetFromBase = Get<Laser>("left_corner_laser_2").Position - Get<Wall>("left_corner_laser_2_base").Position;
 
-            Get<Laser>("mid_laser_1").Entity.LinearVelocity = new(0, 0, 30);
-            midLaser1OffsetFromBase = Get<Laser>("mid_laser_1").Position - Get<Wall>("mid_laser_base1").Position;
+            //Get<Laser>("mid_laser_1").Entity.LinearVelocity = new(0, 0, 30);
+            //midLaser1OffsetFromBase = Get<Laser>("mid_laser_1").Position - Get<Wall>("mid_laser_base1").Position;
 
-            Get<Laser>("mid_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
-            midLaser2OffsetFromBase = Get<Laser>("mid_laser_2").Position - Get<Wall>("mid_laser_base2").Position;
+            //Get<Laser>("mid_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
+            //midLaser2OffsetFromBase = Get<Laser>("mid_laser_2").Position - Get<Wall>("mid_laser_base2").Position;
 
             // Pressure plate interactions
 
@@ -199,16 +230,188 @@ namespace HammeredGame.Game.Scenes.Island3
                 br_laser_2.Deactivated = true;
             };
 
-            //doorInteractTokenSource = new();
-            //Get<TriggerObject>("door_interact_trigger").OnTrigger += async (_, _) =>
-            //{
-            //    if (!openedKeyDoor)
-            //    {
-            //        doorInteractTokenSource = new();
-            //        ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
-            //        withinDoorInteractTrigger = true;
-            //    }
-            //};
+            // Door Interactions
+            doorInteractTokenSource = new();
+            Get<TriggerObject>("start_door_top_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorTop)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinStartTopTrigger = true;
+                }
+            };
+            Get<TriggerObject>("start_door_top_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinStartTopTrigger = false;
+            };
+
+            Get<TriggerObject>("start_door_left_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorLeft)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinStartLeftTrigger = true;
+                }
+            };
+            Get<TriggerObject>("start_door_left_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinStartLeftTrigger = false;
+            };
+
+            Get<TriggerObject>("start_door_right_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorRight)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinStartRightTrigger = true;
+                }
+            };
+            Get<TriggerObject>("start_door_right_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinStartRightTrigger = false;
+            };
+
+            Get<TriggerObject>("botleft_door_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorTop)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinBotLeftTrigger = true;
+                }
+            };
+            Get<TriggerObject>("botleft_door_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinBotLeftTrigger = false;
+            };
+
+            Get<TriggerObject>("botright_door_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorLeft)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinBotRightTrigger = true;
+                }
+            };
+            Get<TriggerObject>("botright_door_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinBotRightTrigger = false;
+            };
+
+            Get<TriggerObject>("mid_door_top_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorTop)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinMidTopTrigger = true;
+                }
+            };
+            Get<TriggerObject>("mid_door_top_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinMidTopTrigger = false;
+            };
+
+            Get<TriggerObject>("mid_door_left_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorLeft)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinMidLeftTrigger = true;
+                }
+            };
+            Get<TriggerObject>("mid_door_left_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinMidLeftTrigger = false;
+            };
+
+            Get<TriggerObject>("mid_door_right_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorRight)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinMidRightTrigger = true;
+                }
+            };
+            Get<TriggerObject>("mid_door_right_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinMidRightTrigger = false;
+            };
+
+            Get<TriggerObject>("leftmid_door_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorTop)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinLeftMidTrigger = true;
+                }
+            };
+            Get<TriggerObject>("leftmid_door_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinLeftMidTrigger = false;
+            };
+
+            Get<TriggerObject>("rightmid_door_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorLeft)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinRightMidTrigger = true;
+                }
+            };
+            Get<TriggerObject>("rightmid_door_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinRightMidTrigger = false;
+            };
+
+            Get<TriggerObject>("topleft_door_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorTop)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinTopLeftTrigger = true;
+                }
+            };
+            Get<TriggerObject>("topleft_door_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinTopLeftTrigger = false;
+            };
+
+            Get<TriggerObject>("topright_door_trigger").OnTrigger += async (_, _) =>
+            {
+                if (!openedStartKeyDoorLeft)
+                {
+                    doorInteractTokenSource = new();
+                    ParentGameScreen.ShowPromptsFor(new List<UserAction>() { UserAction.Interact }, doorInteractTokenSource.Token);
+                    withinTopRightTrigger = true;
+                }
+            };
+            Get<TriggerObject>("topright_door_trigger").OnTriggerEnd += (_, _) =>
+            {
+                doorInteractTokenSource.Cancel();
+                withinTopRightTrigger = false;
+            };
+
 
             //Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += async (_, _) =>
             //{
@@ -277,18 +480,62 @@ namespace HammeredGame.Game.Scenes.Island3
             laserBase.Position = laser.Position - movingLaserOffsetFromBase;
         }
 
+        private async void DoorHintIfWithinVicinity(string doorName, bool withinTrigger, List<Key> possibleKeys)
+        {
+            if (withinTrigger)
+            {
+                Input inp = this.Services.GetService<Input>();
+                if (UserAction.Interact.Pressed(inp))
+                {
+                    bool haveKey = false;
+                    foreach (Key key in possibleKeys)
+                    {
+                        if (key.IsCollected && !key.IsUsed)
+                        {
+                            key.IsUsed = true;
+                            haveKey = true;
+                            break;
+                        }
+                    }
+
+                    if (haveKey)
+                    {
+                        Get<Door>(doorName).OpenDoor();
+                    }
+                    else
+                    {
+                        await ParentGameScreen.ShowDialogueAndWait("Hmm... I don't seem to have a key for this door yet...");
+                    }
+                }
+            }
+        }
+
         public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
 
-            MovingLaserUpdate("left_corner_laser_1", "left_corner_laser_1_base", 2, -350f, -260f, leftCornerLaser1OffsetFromBase);
-            MovingLaserUpdate("left_corner_laser_2", "left_corner_laser_2_base", 0, 53f, 205f, leftCornerLaser2OffsetFromBase);
+            //MovingLaserUpdate("left_corner_laser_1", "left_corner_laser_1_base", 2, -350f, -260f, leftCornerLaser1OffsetFromBase);
+            //MovingLaserUpdate("left_corner_laser_2", "left_corner_laser_2_base", 0, 53f, 205f, leftCornerLaser2OffsetFromBase);
 
-            MovingLaserUpdate("mid_laser_1", "mid_laser_base1", 2, -190f, -134f, midLaser1OffsetFromBase);
-            MovingLaserUpdate("mid_laser_2", "mid_laser_base2", 0, 350f, 410f, midLaser2OffsetFromBase);
+            //MovingLaserUpdate("mid_laser_1", "mid_laser_base1", 2, -190f, -134f, midLaser1OffsetFromBase);
+            //MovingLaserUpdate("mid_laser_2", "mid_laser_base2", 0, 350f, 410f, midLaser2OffsetFromBase);
+
+            DoorHintIfWithinVicinity("starttomid_door", withinStartTopTrigger, new List<Key>{ Get<Key>("start_key")/*, Get<Key>("mid_key")*/ });
+            DoorHintIfWithinVicinity("starttoleftbot_door", withinStartLeftTrigger, new List<Key> { Get<Key>("start_key"), Get<Key>("left_corner_key") });
+            DoorHintIfWithinVicinity("starttorightbot_door", withinStartRightTrigger, new List<Key> { Get<Key>("start_key"), Get<Key>("bottom_right_key") });
+            DoorHintIfWithinVicinity("leftbottoleftmid_door", withinBotLeftTrigger, new List<Key> { Get<Key>("left_corner_key"), Get<Key>("five_pp_key") });
+            DoorHintIfWithinVicinity("rightbottorightmid_door", withinBotRightTrigger, new List<Key> { Get<Key>("bottom_right_key"), Get<Key>("right_mid_key") });
+
+            DoorHintIfWithinVicinity("midtotopmid_door", withinMidTopTrigger, new List<Key> { Get<Key>("four_corner_key")/*, Get<Key>("mid_key")*/ });
+            DoorHintIfWithinVicinity("midtoleftmid_door", withinMidLeftTrigger, new List<Key> { Get<Key>("five_pp_key")/*, Get<Key>("mid_key")*/ });
+            DoorHintIfWithinVicinity("midtorightmid_door", withinMidRightTrigger, new List<Key> { Get<Key>("right_mid_key")/*, Get<Key>("mid_key")*/ });
+            DoorHintIfWithinVicinity("leftmidtoend_door", withinLeftMidTrigger, new List<Key> { Get<Key>("five_pp_key") });
+            DoorHintIfWithinVicinity("rigthmidtorighttop_door", withinRightMidTrigger, new List<Key> { Get<Key>("right_mid_key"), Get<Key>("right_top_key1") });
+
+            DoorHintIfWithinVicinity("topmidtoend_door", withinTopLeftTrigger, new List<Key> { Get<Key>("four_corner_key") });
+            DoorHintIfWithinVicinity("toprighttotopmid_door", withinTopRightTrigger, new List<Key> { Get<Key>("four_corner_key"), Get<Key>("right_top_key1") });
 
             // Handle Pressure Plate logic
-
             // Start section
             var start_pressureplate_1 = Get<PressurePlate>("start_pressureplate1");
             var start_pressureplate_2 = Get<PressurePlate>("start_pressureplate2");

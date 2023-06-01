@@ -45,6 +45,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Coll
         */
         private Door correspondingDoor;
         public bool IsCollected = false;
+        public bool IsUsed = false;
 
         //private List<SoundEffect> chime;
 
