@@ -625,7 +625,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="decorobject">
     <model>foliage_colored</model>
     <texture>foliage_texture</texture>
-    <position>135.000 0.500 -80.000</position>
+    <position>155.000 0.500 -120.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
   </object>
@@ -653,7 +653,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="decorobject4">
     <model>foliage_colored</model>
     <texture>foliage_texture</texture>
-    <position>120.000 0.500 -100.000</position>
+    <position>140.000 0.500 -100.000</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
   </object>
@@ -1164,7 +1164,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="bottle2">
     <model>Meshes/Decor/bottle</model>
     <texture>Meshes/Decor/bottle_texture</texture>
-    <position>112 0.246 -78.158</position>
+    <position>112.000 0.246 -78.158</position>
     <rotation>-0.546 0.795 0.167 0.204</rotation>
     <scale>1.000</scale>
   </object>
@@ -1178,7 +1178,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="bottle3">
     <model>Meshes/Decor/bottle</model>
     <texture>Meshes/Decor/bottle_texture</texture>
-    <position>119 0.500 -69</position>
+    <position>119.000 0.500 -69.000</position>
     <rotation>0.629 0.735 0.188 0.169</rotation>
     <scale>1.000</scale>
   </object>
@@ -1192,8 +1192,21 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="cup1">
     <model>Meshes/Decor/cup</model>
     <texture>Meshes/Decor/cup_texture</texture>
-    <position>119 0.400 -73</position>
+    <position>119.000 0.400 -73.000</position>
     <rotation>0.000 0.983 0.067 -0.171</rotation>
     <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="boat">
+    <model>Meshes/Boat/broken_boat</model>
+    <texture>Meshes/Boat/boat_texture</texture>
+    <position>101.800 12.700 -118.800</position>
+    <rotation>0.000 0.687 0.000 0.727</rotation>
+    <scale>1.000</scale>
+    <body type="box">
+      <width>31.700</width>
+      <height>25.100</height>
+      <length>49.500</length>
+      <shift_graphic>-31.000 -12.0 11.000</shift_graphic>
+    </body>
   </object>
 </scene>
