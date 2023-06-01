@@ -1,9 +1,12 @@
 ﻿using HammeredGame.Game;
 using Microsoft.Xna.Framework.Input;
 using Myra;
+using Myra.Assets;
 using Myra.Graphics2D.TextureAtlases;
+using Myra.Utility;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using static HammeredGame.Game.UserAction;
 
@@ -17,6 +20,8 @@ namespace HammeredGame.Core
     {
         private readonly Dictionary<InputType, TextureRegionAtlas> controlsAtlas = new();
         private readonly Input input;
+
+        private AssetManager myraAssetManager = new AssetManager(new FileAssetResolver(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)));
 
         public PromptsAssetManager(Input input)
         {
@@ -46,7 +51,7 @@ namespace HammeredGame.Core
 
             // Myra uses its own asset manager. The default one uses a File stream based
             // implementation that reads from the directory of the currently executing assembly.
-            controlsAtlas[type] = MyraEnvironment.DefaultAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/" + type.ToString() + ".xmat");
+            controlsAtlas[type] = myraAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/" + type.ToString() + ".xmat");
         }
 
         /// <summary>
@@ -62,7 +67,7 @@ namespace HammeredGame.Core
                 new Task(() =>
                 {
                     InputType activeType = input.CurrentlyActiveInput;
-                    controlsAtlas[activeType] = MyraEnvironment.DefaultAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/" + activeType + ".xmat");
+                    controlsAtlas[activeType] = myraAssetManager.Load<TextureRegionAtlas>("Content/ControlPrompts/" + activeType + ".xmat");
                 }).Start();
             }
         }

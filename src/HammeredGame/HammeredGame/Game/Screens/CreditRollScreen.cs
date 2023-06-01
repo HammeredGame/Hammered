@@ -8,6 +8,9 @@ using Myra.Graphics2D.UI;
 using Pleasing;
 using Microsoft.Xna.Framework.Content;
 using System;
+using Microsoft.Xna.Framework.Media;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace HammeredGame.Game.Screens
 {
@@ -31,17 +34,26 @@ namespace HammeredGame.Game.Screens
 
         private Color backgroundColor = Color.Transparent;
         private TweenTimeline transitionTimeline;
+        private readonly bool showTheEnd;
+
+        float oldVolume;
 
         public Action FinishedFunc;
 
-        public CreditRollScreen()
+        public CreditRollScreen(bool showTheEnd = true)
         {
             IsPartial = false;
             PassesFocusThrough = false;
+            this.showTheEnd = showTheEnd;
         }
 
         public override void LoadContent()
         {
+
+            Song bgMusic;
+            bgMusic = GameServices.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm5_4x");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(bgMusic);
             base.LoadContent();
 
             whiteRectangle = new Texture2D(ScreenManager.GraphicsDevice, 1, 1);
@@ -85,8 +97,11 @@ namespace HammeredGame.Game.Screens
             creditsPanel.AddChild(Credit("Composer", "Audrey Leong"));
             creditsPanel.AddChild(Credit("Sound Engineer", "Audrey Leong"));
             creditsPanel.AddChild(Credit("Written by", "Konstantinos Stavratis"));
-            creditsPanel.AddChild(Credit("Programmers", "Siddharth Menon", "Audrey", "Marie Jaillot", "Andrew Dobis", "Konstantinos Stavratis", "Yuto"));
+            creditsPanel.AddChild(Credit("Programmers", "Siddharth Menon", "Audrey Leong", "Marie Jaillot", "Andrew Dobis", "Konstantinos Stavratis", "Yuto Takano"));
             creditsPanel.AddChild(Credit("3D Modeling", "Andrew Dobis", "Marie Jaillot"));
+
+            creditsPanel.AddChild(Heading("Trailer Cast"));
+            creditsPanel.AddChild(Credit("Thor", "Morten Borup Pertersen"));
 
             // External Testers
             creditsPanel.AddChild(Heading("Testers"));
@@ -125,6 +140,10 @@ Universal UI/Menu Soundpack
             creditsPanel.AddChild(Image("Credits/gtc-logo", 0.2f));
             creditsPanel.AddChild(LineSpacing());
             creditsPanel.AddChild(SmallText("The Game Programming Lab course at ETH Zurich for providing us\nwith the opportunity to make this game."));
+
+            creditsPanel.AddChild(LineSpacing());
+            creditsPanel.AddChild(LineSpacing());
+            creditsPanel.AddChild(SmallText("Hammered v" + (FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location).ProductVersion ?? "Unknown version") + " is presented to you by the Hammered Team"));
 
             scrollingCredits.Content = creditsPanel;
 
@@ -307,14 +326,17 @@ Universal UI/Menu Soundpack
                 transitionTimeline = Tweening.NewTimeline();
                 transitionTimeline
                     .AddColor(this, nameof(backgroundColor))
-                    .AddFrame(500, Color.Black, Easing.Linear);
-                transitionTimeline
-                    .AddFloat(desktop, nameof(desktop.Opacity))
-                    .AddFrame(0, 0)
-                    .AddFrame(500, 0)
-                    .AddFrame(1000, 1, Easing.Linear)
-                    .AddFrame(3000, 1, Easing.Linear)
-                    .AddFrame(3500, 0, Easing.Linear);
+                    .AddFrame(1000, Color.Black, Easing.Linear);
+                if (showTheEnd)
+                {
+                    transitionTimeline
+                        .AddFloat(desktop, nameof(desktop.Opacity))
+                        .AddFrame(0, 0)
+                        .AddFrame(1000, 0)
+                        .AddFrame(1500, 1, Easing.Linear)
+                        .AddFrame(3500, 1, Easing.Linear)
+                        .AddFrame(4000, 0, Easing.Linear);
+                }
             }
 
             // This function is called only until the first frame where the timeline is stopped, so
@@ -342,12 +364,19 @@ Universal UI/Menu Soundpack
                 transitionTimeline
                     .AddColor(this, nameof(backgroundColor))
                     .AddFrame(1500, Color.White, Easing.Linear);
+                oldVolume = MediaPlayer.Volume;
+                transitionTimeline
+                    .AddProperty(oldVolume, (f) => MediaPlayer.Volume = f, LerpFunctions.Float)
+                    .AddFrame(0, MediaPlayer.Volume)
+                    .AddFrame(1000, 0f, Easing.Linear);
             }
             // This function is called only until the first frame where the timeline is stopped, so
             // on that frame, we'll call any callbacks and return true to indicate we're done.
             if (transitionTimeline.State == TweenState.Stopped)
             {
                 FinishedFunc?.Invoke();
+                MediaPlayer.Stop();
+                MediaPlayer.Volume = oldVolume;
                 return true;
             }
             return false;

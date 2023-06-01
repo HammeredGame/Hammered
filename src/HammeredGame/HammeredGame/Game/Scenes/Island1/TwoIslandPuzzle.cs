@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
+using Pleasing;
 
 namespace HammeredGame.Game.Scenes.Island1
 {
@@ -25,7 +26,7 @@ namespace HammeredGame.Game.Scenes.Island1
         public TwoIslandPuzzle(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_4x_b");
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/trees_bgm2");
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
@@ -76,9 +77,16 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
-                    //await ParentGameScreen.ShowDialogueAndWait("(You found polaroid photos of yourself together with\na handsome god-like man)");
-                    //await ParentGameScreen.ShowDialogueAndWait("(The man is holding a hammer that looks just like\nthe one in your hand)");
-                    //await ParentGameScreen.ShowDialogueAndWait("Is that... Thor? And this... his hammer?\nI need to give it back to him!");
+                    // todo: have some wrapper class for mediaplayer that allows fading etc
+                    float oldVolume = MediaPlayer.Volume;
+                    Tweening.Tween((f) => MediaPlayer.Volume = f, MediaPlayer.Volume, 0f, 500, Easing.Linear, LerpFunctions.Float);
+                    await Services.GetService<ScriptUtils>().WaitMilliseconds(500);
+
+                    Get<Player>("player1").InputEnabled = false;
+                    Get<Player>("player1").ShowVictoryStars();
+                    await Services.GetService<ScriptUtils>().WaitSeconds(3);
+                    Tweening.Tween((f) => MediaPlayer.Volume = f, 0f, oldVolume, 3000, Easing.Linear, LerpFunctions.Float);
+
                     ParentGameScreen.InitializeLevel(typeof(LaserTutorial).FullName, true);
                 }
                 else

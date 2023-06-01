@@ -4,12 +4,14 @@ using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.PositionUpdating;
 using HammeredGame.Core;
+using HammeredGame.Core.Particles;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.FloorObjects;
 using HammeredGame.Graphics;
 using ImGuiNET;
 using ImMonoGame.Thing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
@@ -107,11 +109,42 @@ namespace HammeredGame.Game.GameObjects
 
         TimeSpan timeDelay = TimeSpan.Zero;
 
+        private readonly ParticleSystem victoryStarParticles;
+
         public event EventHandler OnHammerRetrieved;
 
         // Initialize player class
         public Player(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
+            // We want a some stars when the player reaches the goal in each level!
+            victoryStarParticles = new ParticleSystem(new ParticleSettings()
+            {
+                Model = services.GetService<ContentManager>().Load<Model>("Meshes/Primitives/star"),
+                Texture = services.GetService<ContentManager>().Load<Texture2D>("key_texture"),
+                Duration = TimeSpan.FromMilliseconds(500),
+
+                MinStartSize = 1f,
+                MaxStartSize = 1f,
+
+                // They will shrink to nothing over the course of their lifetime
+                MinEndSize = 0f,
+                MaxEndSize = 0f,
+
+                // Horizontal velocity will be individually assigned to particles when they spawn
+                MinHorizontalVelocity = 0f,
+                MaxHorizontalVelocity = 0f,
+
+                // Vertical velocity will be present for all particles
+                MinVerticalVelocity = 30f,
+                MaxVerticalVelocity = 30f,
+
+                MinStartRotation = Quaternion.Identity,
+                MaxStartRotation = Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2),
+
+                // Affected a bit by gravity
+                Gravity = ActiveSpace.ForceUpdater.Gravity * 0.5f
+            }, services.GetService<GraphicsDevice>(), services.GetService<ContentManager>(), ActiveSpace);
+
             if (this.Entity != null)
             {
                 // Adding a tag to the entity, to allow us to potentially filter and
@@ -395,6 +428,8 @@ namespace HammeredGame.Game.GameObjects
             Services.GetService<AudioManager>().listener.Position = this.Position;
             Services.GetService<AudioManager>().listener.Forward = forwardDirection;
 
+            victoryStarParticles.Update(gameTime);
+
             //// Mouse based rotation (leaving this here temporarily, probably won't need this)
             #region TEMPORARY_MOUSE_BASED_ROTATION
 
@@ -532,12 +567,20 @@ namespace HammeredGame.Game.GameObjects
             return moveDirty;
         }
 
-        new public void UI()
+        /// <summary>
+        /// Show some stars! Should be called when the level is cleared :)
+        /// </summary>
+        public void ShowVictoryStars()
         {
-            base.UI();
-            ImGui.Separator();
-            ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
-            ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
+            if (Entity is Box box) {
+                victoryStarParticles.AddParticle(Position + box.Height * Vector3.Up, Vector3.Left * 30);
+                victoryStarParticles.AddParticle(Position + box.Height * Vector3.Up, Vector3.Right * 30);
+                victoryStarParticles.AddParticle(Position + box.Height * Vector3.Up, Vector3.Forward * 30);
+                victoryStarParticles.AddParticle(Position + box.Height * Vector3.Up, Vector3.Backward * 30);
+                victoryStarParticles.AddParticle(Position + box.Height * Vector3.Up, Vector3.Zero);
+
+                Services.GetService<AudioManager>().Play3DSound("Audio/balanced/victory", false, AudioEmitter, 1f);
+            }
         }
 
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection, Vector3 cameraPosition, SceneLightSetup lights)
@@ -563,6 +606,18 @@ namespace HammeredGame.Game.GameObjects
             {
                 DrawModel(gameTime, Model, view, projection, cameraPosition, Texture, lights);
             }
+
+            victoryStarParticles.CopyShadowMapParametersFrom(Effect);
+            victoryStarParticles.Draw(gameTime, view, projection, cameraPosition, lights);
         }
+
+        new public void UI()
+        {
+            base.UI();
+            ImGui.Separator();
+            ImGui.DragFloat("Base Speed", ref baseSpeed, 0.01f);
+            ImGui.DragFloat("Base Controller Speed", ref baseControllerSpeed, 0.01f);
+        }
+
     }
 }

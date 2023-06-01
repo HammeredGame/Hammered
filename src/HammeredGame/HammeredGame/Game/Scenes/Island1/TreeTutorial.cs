@@ -20,9 +20,10 @@ namespace HammeredGame.Game.Scenes.Island1
         public TreeTutorial(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm2_4x_b");
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/trees_bgm2");
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
+
         }
         protected override async Task LoadSceneContent(IProgress<int> progress)
         {
@@ -96,8 +97,16 @@ namespace HammeredGame.Game.Scenes.Island1
             {
                 if (Get<Hammer>("hammer").IsWithCharacter())
                 {
-                    //await ParentGameScreen.ShowDialogueAndWait("(Huh, you found some traffic cones)");
-                    //await ParentGameScreen.ShowDialogueAndWait("(Did you bring them here yesterday?)");
+                    // todo: have some wrapper class for mediaplayer that allows fading etc
+                    float oldVolume = MediaPlayer.Volume;
+                    Tweening.Tween((f) => MediaPlayer.Volume = f, MediaPlayer.Volume, 0f, 500, Easing.Linear, LerpFunctions.Float);
+                    await Services.GetService<ScriptUtils>().WaitMilliseconds(500);
+
+                    Get<Player>("player1").InputEnabled = false;
+                    Get<Player>("player1").ShowVictoryStars();
+                    await Services.GetService<ScriptUtils>().WaitSeconds(3);
+                    Tweening.Tween((f) => MediaPlayer.Volume = f, 0f, oldVolume, 3000, Easing.Linear, LerpFunctions.Float);
+
                     ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName, true);
                 }
                 else
