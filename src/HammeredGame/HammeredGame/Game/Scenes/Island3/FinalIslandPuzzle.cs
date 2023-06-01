@@ -31,6 +31,8 @@ namespace HammeredGame.Game.Scenes.Island3
 
         private Vector3 leftCornerLaser1OffsetFromBase;
         private Vector3 leftCornerLaser2OffsetFromBase;
+        private Vector3 midLaser1OffsetFromBase;
+        private Vector3 midLaser2OffsetFromBase;
 
         private Vector3 newSpawnRockPosition = new Vector3(257.390f, 0.000f, -187.414f);
         private CollisionGroup rockGroup;
@@ -57,7 +59,7 @@ namespace HammeredGame.Game.Scenes.Island3
             Get<Hammer>("hammer").SetOwnerPlayer(Get<Player>("player1"));
             Get<Hammer>("hammer").SetSceneUniformGrid(this.Grid);
 
-            // Set laser to desired length within level
+            // Set lasers to desired lengths within level
             Get<Laser>("start_laser_1").SetLaserDefaultScale(20.0f);
             Get<Laser>("start_laser_2").SetLaserDefaultScale(20.0f);
             Get<Laser>("start_laser_3").SetLaserDefaultScale(20.0f);
@@ -123,7 +125,7 @@ namespace HammeredGame.Game.Scenes.Island3
             Vector3 floorDisableFinish = new Vector3(this.Grid.endPoint.X, this.Grid.originPoint.Y, this.Grid.endPoint.Z);
             this.Grid.MarkRangeAs(floorDisableStart, floorDisableFinish, false);
 
-            // Set the moving laser's original movement and the offset to the base
+            // Set the moving lasers' original movements and the offsets to the base
             Get<Laser>("left_corner_laser_1").Entity.LinearVelocity = new(0, 0, 30);
             leftCornerLaser1OffsetFromBase = Get<Laser>("left_corner_laser_1").Position - Get<Wall>("left_corner_laser_1_base").Position;
 
@@ -131,19 +133,20 @@ namespace HammeredGame.Game.Scenes.Island3
             leftCornerLaser2OffsetFromBase = Get<Laser>("left_corner_laser_2").Position - Get<Wall>("left_corner_laser_2_base").Position;
 
             Get<Laser>("mid_laser_1").Entity.LinearVelocity = new(0, 0, 30);
-            leftCornerLaser1OffsetFromBase = Get<Laser>("mid_laser_1").Position - Get<Wall>("mid_laser_base1").Position;
+            midLaser1OffsetFromBase = Get<Laser>("mid_laser_1").Position - Get<Wall>("mid_laser_base1").Position;
 
             Get<Laser>("mid_laser_2").Entity.LinearVelocity = new(-30, 0, 0);
-            leftCornerLaser2OffsetFromBase = Get<Laser>("mid_laser_2").Position - Get<Wall>("mid_laser_base2").Position;
+            midLaser2OffsetFromBase = Get<Laser>("mid_laser_2").Position - Get<Wall>("mid_laser_base2").Position;
 
+            // Pressure plate interactions
 
+            // Pressure Plate 1 in Start section
             Get<PressurePlate>("start_pressureplate1").OnTrigger += (_, _) =>
             {
                 var start_laser_1 = Get<Laser>("start_laser_1");
                 start_laser_1.SetLaserScale(0f);
                 start_laser_1.Deactivated = true;
             };
-
             Get<PressurePlate>("start_pressureplate1").OnTriggerEnd += (_, _) =>
             {
                 var start_laser_1 = Get<Laser>("start_laser_1");
@@ -151,18 +154,49 @@ namespace HammeredGame.Game.Scenes.Island3
                 start_laser_1.Deactivated = false;
             };
 
+            // Pressure Plate 2 in start section
             Get<PressurePlate>("start_pressureplate2").OnTrigger += (_, _) =>
             {
                 var start_laser_2 = Get<Laser>("start_laser_2");
                 start_laser_2.SetLaserScale(0f);
                 start_laser_2.Deactivated = true;
             };
-
             Get<PressurePlate>("start_pressureplate2").OnTriggerEnd += (_, _) =>
             {
                 var start_laser_2 = Get<Laser>("start_laser_2");
                 start_laser_2.ReturnToDefaultLength();
                 start_laser_2.Deactivated = false;
+            };
+
+            // Bottom right lasers' default states
+            var br_laser_1 = Get<Laser>("botright_laser_1");
+            br_laser_1.ReturnToDefaultLength();
+            br_laser_1.Deactivated = false;
+
+            var br_laser_2 = Get<Laser>("botright_laser_2");
+            br_laser_2.SetLaserScale(0f);
+            br_laser_2.Deactivated = true;
+
+            // Bottom right pressure plate interactions
+            Get<PressurePlate>("bottom_right_pressureplate").OnTrigger += (_, _) =>
+            {
+                var br_laser_1 = Get<Laser>("botright_laser_1");
+                br_laser_1.SetLaserScale(0f);
+                br_laser_1.Deactivated = true;
+
+                var br_laser_2 = Get<Laser>("botright_laser_2");
+                br_laser_2.ReturnToDefaultLength();
+                br_laser_2.Deactivated = false;
+            };
+            Get<PressurePlate>("bottom_right_pressureplate").OnTriggerEnd += (_, _) =>
+            {
+                var br_laser_1 = Get<Laser>("botright_laser_1");
+                br_laser_1.ReturnToDefaultLength();
+                br_laser_1.Deactivated = false;
+
+                var br_laser_2 = Get<Laser>("botright_laser_2");
+                br_laser_2.SetLaserScale(0f);
+                br_laser_2.Deactivated = true;
             };
 
             //doorInteractTokenSource = new();
@@ -250,8 +284,8 @@ namespace HammeredGame.Game.Scenes.Island3
             MovingLaserUpdate("left_corner_laser_1", "left_corner_laser_1_base", 2, -350f, -260f, leftCornerLaser1OffsetFromBase);
             MovingLaserUpdate("left_corner_laser_2", "left_corner_laser_2_base", 0, 53f, 205f, leftCornerLaser2OffsetFromBase);
 
-            MovingLaserUpdate("mid_laser_1", "mid_laser_base1", 2, -190f, -134f, leftCornerLaser1OffsetFromBase);
-            MovingLaserUpdate("mid_laser_2", "mid_laser_base2", 0, 350f, 410f, leftCornerLaser2OffsetFromBase);
+            MovingLaserUpdate("mid_laser_1", "mid_laser_base1", 2, -190f, -134f, midLaser1OffsetFromBase);
+            MovingLaserUpdate("mid_laser_2", "mid_laser_base2", 0, 350f, 410f, midLaser2OffsetFromBase);
 
             // Handle Pressure Plate logic
 
