@@ -1154,4 +1154,46 @@
       <shift_graphic>0.000 2.955 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="bottle">
+    <model>Meshes/Decor/bottle</model>
+    <texture>Meshes/Decor/bottle_texture</texture>
+    <position>101.070 0.246 -68.158</position>
+    <rotation>0.063 0.971 0.000 0.230</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="bottle2">
+    <model>Meshes/Decor/bottle</model>
+    <texture>Meshes/Decor/bottle_texture</texture>
+    <position>112 0.246 -78.158</position>
+    <rotation>-0.546 0.795 0.167 0.204</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="bottle1">
+    <model>Meshes/Decor/bottle</model>
+    <texture>Meshes/Decor/bottle_texture</texture>
+    <position>98.870 0.500 -59.458</position>
+    <rotation>0.358 0.591 0.538 0.483</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="bottle3">
+    <model>Meshes/Decor/bottle</model>
+    <texture>Meshes/Decor/bottle_texture</texture>
+    <position>119 0.500 -69</position>
+    <rotation>0.629 0.735 0.188 0.169</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="cup">
+    <model>Meshes/Decor/cup</model>
+    <texture>Meshes/Decor/cup_texture</texture>
+    <position>101.170 0.546 -63.158</position>
+    <rotation>0.000 0.242 -0.655 0.716</rotation>
+    <scale>1.000</scale>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.DecorObject" id="cup1">
+    <model>Meshes/Decor/cup</model>
+    <texture>Meshes/Decor/cup_texture</texture>
+    <position>119 0.400 -73</position>
+    <rotation>0.000 0.983 0.067 -0.171</rotation>
+    <scale>1.000</scale>
+  </object>
 </scene>
