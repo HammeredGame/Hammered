@@ -148,6 +148,13 @@ namespace HammeredGame.Game.Scenes.Island3
                 {
                     waterBounds.Entity.CollisionInformation.CollisionRules.Group = waterBoundsGroup;
                 }
+
+                // Check for walls in the scene
+                var wall = gO as Wall;
+                if (wall != null)
+                {
+                    this.UpdateSceneGrid(wall, false, 0.9);
+                }
             }
 
 
