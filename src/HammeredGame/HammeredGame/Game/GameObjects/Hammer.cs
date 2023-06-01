@@ -350,10 +350,12 @@ namespace HammeredGame.Game.GameObjects
                     // calling VibtrateController on every frame is quite expensive -- so we'll use
                     // a timer and only call it every 0.5 seconds to update the shake value based on
                     // the distance to the player.
-                    if (gameTime.TotalGameTime > lastVibrationTimestamp + TimeSpan.FromSeconds(0.5f))
+                    if (gameTime.TotalGameTime > lastVibrationTimestamp + TimeSpan.FromMilliseconds(100f))
                     {
                         // Maximum 0.6 shake, scaled by the distance to the player
-                        Services.GetService<Input>().VibrateController(0.6f / Math.Max((Position - player.Position).Length(), 0.6f), 0.6f / Math.Max((Position - player.Position).Length(), 0.6f));
+                        Services.GetService<Input>().VibrateController(
+                            0.6f / Math.Max(MathF.Log((Position - player.Position).Length()), 0.6f),
+                            0.6f / Math.Max(MathF.Log((Position - player.Position).Length()), 0.6f));
                         lastVibrationTimestamp = gameTime.TotalGameTime;
                     }
 
