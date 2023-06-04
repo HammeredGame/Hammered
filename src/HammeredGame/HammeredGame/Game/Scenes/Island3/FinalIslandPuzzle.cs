@@ -180,7 +180,6 @@ namespace HammeredGame.Game.Scenes.Island3
             midLaser2OffsetFromBase = Get<Laser>("mid_laser_2").Position - Get<Wall>("mid_laser_base2").Position;
 
             // Pressure plate interactions
-
             // Pressure Plate 1 in Start section
             Get<PressurePlate>("start_pressureplate1").OnTrigger += (_, _) =>
             {
@@ -211,25 +210,15 @@ namespace HammeredGame.Game.Scenes.Island3
 
             // Bottom right lasers' default states
             var br_laser_1 = Get<Laser>("botright_laser_1");
-            br_laser_1.ReturnToDefaultLength();
-            br_laser_1.Deactivated = false;
+            br_laser_1.SetLaserScale(0f);
+            br_laser_1.Deactivated = true;
 
             var br_laser_2 = Get<Laser>("botright_laser_2");
-            br_laser_2.SetLaserScale(0f);
-            br_laser_2.Deactivated = true;
+            br_laser_2.ReturnToDefaultLength();
+            br_laser_2.Deactivated = false;
 
             // Bottom right pressure plate interactions
             Get<PressurePlate>("bottom_right_pressureplate").OnTrigger += (_, _) =>
-            {
-                var br_laser_1 = Get<Laser>("botright_laser_1");
-                br_laser_1.SetLaserScale(0f);
-                br_laser_1.Deactivated = true;
-
-                var br_laser_2 = Get<Laser>("botright_laser_2");
-                br_laser_2.ReturnToDefaultLength();
-                br_laser_2.Deactivated = false;
-            };
-            Get<PressurePlate>("bottom_right_pressureplate").OnTriggerEnd += (_, _) =>
             {
                 var br_laser_1 = Get<Laser>("botright_laser_1");
                 br_laser_1.ReturnToDefaultLength();
@@ -238,6 +227,16 @@ namespace HammeredGame.Game.Scenes.Island3
                 var br_laser_2 = Get<Laser>("botright_laser_2");
                 br_laser_2.SetLaserScale(0f);
                 br_laser_2.Deactivated = true;
+            };
+            Get<PressurePlate>("bottom_right_pressureplate").OnTriggerEnd += (_, _) =>
+            {
+                var br_laser_1 = Get<Laser>("botright_laser_1");
+                br_laser_1.SetLaserScale(0f);
+                br_laser_1.Deactivated = true;
+
+                var br_laser_2 = Get<Laser>("botright_laser_2");
+                br_laser_2.ReturnToDefaultLength();
+                br_laser_2.Deactivated = false;
             };
 
             // Door Interactions
@@ -421,18 +420,6 @@ namespace HammeredGame.Game.Scenes.Island3
                 doorInteractTokenSource.Cancel();
                 withinTopRightTrigger = false;
             };
-
-
-            //Get<TriggerObject>("door_interact_trigger").OnTriggerEnd += async (_, _) =>
-            //{
-            //    doorInteractTokenSource.Cancel();
-            //    withinDoorInteractTrigger = false;
-            //};
-
-            //await ParentGameScreen.ShowDialogueAndWait("Thor really went out of his way...");
-            //await ParentGameScreen.ShowDialogueAndWait("to make it this much harder for me?");
-            //await ParentGameScreen.ShowDialogueAndWait("Oh boy this looks tricky...");
-            //await ParentGameScreen.ShowDialogueAndWait("Hopefully I'm not going to hit rock bottom on this!");
 
             // Make sure the hammer is being carried by the player. If the player does not have the
             // hammer, they will be blocked and not allowed to continue to the next level.
