@@ -59,6 +59,8 @@ namespace HammeredGame.Game.Scenes.Island3
         private bool openedTopRightKeyDoor = false;
         private bool withinTopRightTrigger = false;
 
+        private EndPressurePlateState state = EndPressurePlateState.ZeroSuccess;
+
         private CancellationTokenSource doorInteractTokenSource;// = new();
 
         private Vector3 leftCornerLaser1OffsetFromBase;
@@ -527,6 +529,83 @@ namespace HammeredGame.Game.Scenes.Island3
             }
         }
 
+        private enum EndPressurePlateState
+        {
+            ZeroSuccess,
+            OneSuccess,
+            TwoSuccess,
+            Complete
+        }
+
+        private void EndPressurePlatesUpdate()
+        {
+            // The five pressure plates are a state machine that you have to press in the
+            // right order. Any bad press will revert the state back to zero. After a successful
+            // completion, the pressure plates won't respond anymore and door will stay open.
+            // As a reminder, the correct sequence of pressure plates is 4 -> 2 -> 0 (I think this was the proposed sequence)
+
+            // WARNING: The current version of the code is not scalable and is very dependent on the order
+            // upon which the if statements are called (which is fine for the sequential state machine that is here).
+            // Best coding practices are NOT followed!
+            if (state != EndPressurePlateState.Complete)
+            {
+                if (Get<PressurePlate>("pressureplate_end_4").IsActivated())
+                {
+                    if (state == EndPressurePlateState.ZeroSuccess)
+                    {
+                        ActivatePressurePlate(Get<PressurePlate>("pressureplate_end_4"));
+                        state = EndPressurePlateState.OneSuccess;
+                    }
+                }
+                if (Get<PressurePlate>("pressureplate_end_2").IsActivated())
+                {
+                    if (state == EndPressurePlateState.OneSuccess ||
+                        state == EndPressurePlateState.TwoSuccess)
+                    {
+                        ActivatePressurePlate(Get<PressurePlate>("pressureplate_end_2"));
+                        state = EndPressurePlateState.TwoSuccess;
+                    }
+                    else
+                    {
+                        DeactivatePressurePlate(Get<PressurePlate>("pressureplate_end_4"));
+                        state = EndPressurePlateState.ZeroSuccess;
+                    }
+                }
+                if (Get<PressurePlate>("pressureplate_end_0").IsActivated())
+                {
+                    if (state == EndPressurePlateState.TwoSuccess)
+                    {
+                        ActivatePressurePlate(Get<PressurePlate>("pressureplate_end_0"));
+                        Get<Door>("door_goal").OpenDoor();
+                        state = EndPressurePlateState.Complete;
+                    }
+                    else
+                    {
+                        DeactivatePressurePlate(Get<PressurePlate>("pressureplate_end_4"));
+                        DeactivatePressurePlate(Get<PressurePlate>("pressureplate_end_2"));
+                        state = EndPressurePlateState.ZeroSuccess;
+                    }
+
+                    // In case of success, the "locking" mechanic is no longer needed. (if True).
+                    // In case of failure, all pressure plates are reverted to normal (if False).
+                    DeactivatePressurePlate(Get<PressurePlate>("pressureplate_end_4"));
+                    DeactivatePressurePlate(Get<PressurePlate>("pressureplate_end_2"));
+                    DeactivatePressurePlate(Get<PressurePlate>("pressureplate_end_0"));
+                }
+            }
+        }
+        private static void ActivatePressurePlate(PressurePlate pp)
+        {
+            pp.SetActivated(true);
+            pp.lockActivationState = true;
+        }
+
+        private static void DeactivatePressurePlate(PressurePlate pp)
+        {
+            pp.lockActivationState = false;
+            pp.SetActivated(false);
+        }
+
         public override async void Update(GameTime gameTime, bool screenHasFocus, bool isPaused)
         {
             base.Update(gameTime, screenHasFocus, isPaused);
@@ -635,6 +714,9 @@ namespace HammeredGame.Game.Scenes.Island3
                 Get<Door>("four_corner_door_3").CloseDoor();
                 Get<Door>("four_corner_door_4").CloseDoor();
             }
+
+            // End
+            EndPressurePlatesUpdate();
         }
     }
 }
