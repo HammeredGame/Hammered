@@ -7,6 +7,7 @@ using HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immovabl
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles;
 using HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles;
 using HammeredGame.Game.Scenes.Endgame;
+using HammeredGame.Game.Scenes.Island3;
 using HammeredGame.Game.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -191,7 +192,7 @@ namespace HammeredGame.Game.Scenes.Island2
                     await Services.GetService<ScriptUtils>().WaitSeconds(2);
                     Tweening.Tween((f) => MediaPlayer.Volume = f, 0f, oldVolume, 3000, Easing.Linear, LerpFunctions.Float);
 
-                    ParentGameScreen.InitializeLevel(typeof(TempleEndLevel).FullName, true);
+                    ParentGameScreen.InitializeLevel(typeof(FinalIslandPuzzle).FullName, true);
                 }
                 else
                 {
