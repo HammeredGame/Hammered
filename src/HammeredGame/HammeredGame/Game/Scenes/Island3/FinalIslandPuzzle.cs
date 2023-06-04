@@ -557,8 +557,11 @@ namespace HammeredGame.Game.Scenes.Island3
             else
             {
                 var start_laser_4 = Get<Laser>("start_laser_4");
-                start_laser_4.ReturnToDefaultLength();
-                start_laser_4.Deactivated = false;
+                if (start_laser_4.Deactivated)
+                {
+                    start_laser_4.ReturnToDefaultLength();
+                    start_laser_4.Deactivated = false;
+                }
             }
 
             if (start_pressureplate_1.IsActivated() && start_pressureplate_2.IsActivated() && start_pressureplate_3.IsActivated())
@@ -570,8 +573,11 @@ namespace HammeredGame.Game.Scenes.Island3
             else
             {
                 var start_laser_3 = Get<Laser>("start_laser_3");
-                start_laser_3.ReturnToDefaultLength();
-                start_laser_3.Deactivated = false;
+                if (start_laser_3.Deactivated)
+                {
+                    start_laser_3.ReturnToDefaultLength();
+                    start_laser_3.Deactivated = false;
+                }
             }
 
             // Mid Left Section
