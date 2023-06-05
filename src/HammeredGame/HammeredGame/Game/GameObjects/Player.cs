@@ -246,12 +246,13 @@ namespace HammeredGame.Game.GameObjects
             }
             else if (other.Tag is Hammer)
             {
-                // If player character collides with hammer, set hammer to with character state
+                // If player character collides with hammer, set hammer to with character state and play catch sfx
                 // This should only happen when hammer is called back
                 var hammer = other.Tag as Hammer;
                 if (hammer.IsEnroute())
                 {
                     hammer.SetState(Hammer.HammerState.WithCharacter);
+                    Services.GetService<AudioManager>().Play3DSound("Audio/balanced/catch_b", false, this.AudioEmitter, 1);
                     OnHammerRetrieved?.Invoke(this, null);
                     hammer.Entity.BecomeKinematic();
                     hammer.Entity.LinearVelocity = BEPUutilities.Vector3.Zero;
