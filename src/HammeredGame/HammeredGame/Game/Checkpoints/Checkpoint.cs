@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace HammeredGame.Game.Checkpoints
@@ -27,6 +28,8 @@ namespace HammeredGame.Game.Checkpoints
 
     public struct TreeState
     {
+        public Model TreeModel;
+        public Texture2D TreeTexture;
         public Vector3 Position;
         public Quaternion Rotation;
         public float Scale;

@@ -132,7 +132,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     {
                         // Include the following line of code if you wish for the sound to be reproduced at every call.
                         //Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
-                        if (hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
+                        if (hammer.currentHammerSpeed > 0.0f && hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
                             hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                         {
                             // 1.1 if a "magical" number which allows the <c>MoveBlock</c> to keep up with the hammer.
@@ -202,7 +202,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     if (hammer.IsEnroute())
                     {
                         Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
-                        if (hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
+                        if (hammer.currentHammerSpeed > 0.0f && hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
                             hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                         {
                             var temp = hammer.Entity.LinearVelocity; temp.Normalize(); temp *= hammer.currentHammerSpeed;
