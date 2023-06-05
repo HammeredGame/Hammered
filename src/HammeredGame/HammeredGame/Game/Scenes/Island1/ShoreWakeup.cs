@@ -208,6 +208,7 @@ namespace HammeredGame.Game.Scenes.Island1
             Camera.FollowDistance = 60f;
             // Trigger player´s phone animation
             Get<Player>("player1").TriggerPhone();
+            await Services.GetService<ScriptUtils>().WaitSeconds(4);
 
             ParentGameScreen.ShowUnskippableDialogue("Hey, it's me, Thor...");
             await Services.GetService<ScriptUtils>().WaitSeconds(3);
