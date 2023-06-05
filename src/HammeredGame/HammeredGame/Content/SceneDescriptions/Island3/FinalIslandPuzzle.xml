@@ -2,8 +2,8 @@
   <camera mode="follow">
     <follow_distance>268.000</follow_distance>
     <follow_angle_v>0.480</follow_angle_v>
-    <follow_angle_h>225.363</follow_angle_h>
-    <target>-13.263 -12.839 -94.182</target>
+    <follow_angle_h>218.964</follow_angle_h>
+    <target>-20.012 -12.839 -96.928</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.425</fov>
   </camera>
@@ -51,8 +51,8 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture>Meshes/Character/character_diffuse</texture>
-    <position>-13.263 -12.839 -94.182</position>
-    <rotation>0.000 -0.831 0.000 -0.556</rotation>
+    <position>-20.012 -12.839 -96.928</position>
+    <rotation>0.000 -0.696 0.000 -0.718</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
@@ -114,6 +114,19 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_start_door_top_trigger">
+    <model />
+    <position>227.200 -12.000 -100.800</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>2.000</width>
+      <height>34.000</height>
+      <length>30.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="start_door_left_trigger">
     <model />
     <position>133.200 -12.000 -211.800</position>
@@ -124,6 +137,19 @@
       <width>45.000</width>
       <height>50.000</height>
       <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_start_door_left_trigger">
+    <model />
+    <position>133.200 -12.000 -211.800</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>45.000</width>
+      <height>50.000</height>
+      <length>2.000</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
@@ -140,6 +166,19 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_start_door_right_trigger">
+    <model />
+    <position>133.200 -12.000 -8.900</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>45.000</width>
+      <height>50.000</height>
+      <length>2.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="botleft_door_trigger">
     <model />
     <position>224.400 -12.000 -310.800</position>
@@ -147,7 +186,20 @@
     <scale>1.000</scale>
     <visibility>False</visibility>
     <body type="box">
-      <width>20.000</width>
+      <width>25.000</width>
+      <height>34.000</height>
+      <length>35.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_botleft_door_trigger1">
+    <model />
+    <position>224.400 -12.000 -310.800</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>2.000</width>
       <height>34.000</height>
       <length>35.000</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
@@ -166,6 +218,19 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_botright_door_trigger1">
+    <model />
+    <position>224.400 -12.000 89.900</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>2.000</width>
+      <height>34.000</height>
+      <length>35.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="mid_door_top_trigger">
     <model />
     <position>423.100 -12.000 -111.200</position>
@@ -174,6 +239,19 @@
     <visibility>False</visibility>
     <body type="box">
       <width>20.000</width>
+      <height>34.000</height>
+      <length>35.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_mid_door_top_trigger1">
+    <model />
+    <position>423.100 -12.000 -111.200</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>2.000</width>
       <height>34.000</height>
       <length>35.000</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
@@ -192,6 +270,19 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_mid_door_left_trigger1">
+    <model />
+    <position>326.300 -12.000 -211.800</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>45.000</width>
+      <height>50.000</height>
+      <length>2.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="mid_door_right_trigger">
     <model />
     <position>333.300 -12.000 -5.400</position>
@@ -205,6 +296,19 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_mid_door_right_trigger1">
+    <model />
+    <position>333.300 -12.000 -5.400</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>45.000</width>
+      <height>50.000</height>
+      <length>2.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="rightmid_door_trigger">
     <model />
     <position>423.100 -12.000 90.300</position>
@@ -213,6 +317,19 @@
     <visibility>False</visibility>
     <body type="box">
       <width>20.000</width>
+      <height>34.000</height>
+      <length>35.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_rightmid_door_trigger1">
+    <model />
+    <position>423.100 -12.000 90.300</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>2.000</width>
       <height>34.000</height>
       <length>35.000</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
@@ -231,6 +348,19 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_leftmid_door_trigger1">
+    <model />
+    <position>423.100 -12.000 -309.300</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>2.000</width>
+      <height>34.000</height>
+      <length>35.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="topleft_door_trigger">
     <model />
     <position>514.700 -12.000 -208.000</position>
@@ -244,6 +374,19 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_topleft_door_trigger1">
+    <model />
+    <position>514.700 -12.000 -208.000</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>45.000</width>
+      <height>50.000</height>
+      <length>2.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="topright_door_trigger">
     <model />
     <position>514.700 -12.000 -5.300</position>
@@ -254,6 +397,19 @@
       <width>45.000</width>
       <height>50.000</height>
       <length>25.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.TriggerObject" id="checkpoint_topright_door_trigger1">
+    <model />
+    <position>514.700 -12.000 -5.300</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>45.000</width>
+      <height>50.000</height>
+      <length>2.000</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
@@ -2613,8 +2769,8 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
-    <position>-11.642 -16.367 -92.036</position>
-    <rotation>-0.895 0.381 0.079 -0.219</rotation>
+    <position>-19.688 -16.171 -94.688</position>
+    <rotation>-0.879 0.432 -0.172 -0.100</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>
@@ -3709,7 +3865,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="right_mid_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>250.045 -20.317 22.782</position>
+    <position>249.147 -16.663 21.239</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -5221,7 +5377,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="mid_laser_base1">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>230.800 -12.200 -153.400</position>
+    <position>230.800 -12.200 -146.900</position>
     <rotation>0.000 1.000 0.000 0.000</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -5234,7 +5390,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="mid_laser_base2">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>361.600 -12.200 -12.600</position>
+    <position>385.100 -12.200 -12.600</position>
     <rotation>0.000 0.701 0.000 -0.713</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -5247,7 +5403,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="mid_laser_1">
     <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture>Meshes/Laser/LaserMaterial</texture>
-    <position>234.700 -12.034 -151.200</position>
+    <position>234.700 -12.034 -144.700</position>
     <rotation>0.000 0.705 0.000 0.709</rotation>
     <scale>0.180</scale>
     <body type="box">
@@ -5260,7 +5416,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="mid_laser_2">
     <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture>Meshes/Laser/LaserMaterial</texture>
-    <position>361.600 -12.034 -16.700</position>
+    <position>385.100 -12.034 -16.700</position>
     <rotation>0.000 -1.000 0.000 -0.027</rotation>
     <scale>0.180</scale>
     <body type="box">
@@ -5305,7 +5461,7 @@
     <body type="box">
       <width>20.000</width>
       <height>20.000</height>
-      <length>182.395</length>
+      <length>0.000</length>
       <shift_graphic>0.000 0.000 5.000</shift_graphic>
     </body>
   </object>
@@ -5429,7 +5585,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="left_corner_laser_1_base">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>17.600 -12.200 -275.500</position>
+    <position>17.600 -12.200 -294.000</position>
     <rotation>0.000 1.000 0.000 0.000</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -5442,7 +5598,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="left_corner_laser_2_base">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>104.500 -12.200 -398.200</position>
+    <position>144.800 -12.200 -398.200</position>
     <rotation>0.000 0.710 0.000 0.704</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -5455,26 +5611,26 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="left_corner_laser_1">
     <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture>Meshes/Laser/LaserMaterial</texture>
-    <position>22.500 -12.034 -275.500</position>
+    <position>22.500 -12.134 -294.000</position>
     <rotation>0.000 0.705 0.000 0.709</rotation>
     <scale>0.180</scale>
     <body type="box">
       <width>20.000</width>
       <height>20.000</height>
-      <length>102.878</length>
+      <length>200.000</length>
       <shift_graphic>0.000 0.000 5.000</shift_graphic>
     </body>
   </object>
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="left_corner_laser_2">
     <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture>Meshes/Laser/LaserMaterial</texture>
-    <position>105.000 -12.234 -392.700</position>
+    <position>144.100 -11.334 -392.700</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>0.180</scale>
     <body type="box">
-      <width>20.000</width>
+      <width>15.000</width>
       <height>20.000</height>
-      <length>12.520</length>
+      <length>177.320</length>
       <shift_graphic>0.000 0.000 -2.850</shift_graphic>
     </body>
   </object>
