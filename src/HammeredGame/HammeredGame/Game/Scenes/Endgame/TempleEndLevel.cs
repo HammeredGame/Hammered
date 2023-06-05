@@ -57,7 +57,7 @@ namespace HammeredGame.Game.Scenes.Endgame
         {
             base.Update(gameTime, screenHasFocus, isPaused);
 
-            if (Get<PressurePlate>("temple_pressure_plate").IsActivated() && !ended)
+            if (Get<PressurePlate>("temple_pressure_plate").IsActivated() && !ended && Get<Hammer>("hammer").IsWithCharacter())
             {
                 ended = true;
                 Get<Hammer>("hammer").InputEnabled = false;

@@ -100,14 +100,16 @@ namespace HammeredGame.Game.Scenes.Island1
                     // todo: have some wrapper class for mediaplayer that allows fading etc
                     float oldVolume = MediaPlayer.Volume;
                     Tweening.Tween((f) => MediaPlayer.Volume = f, MediaPlayer.Volume, 0f, 500, Easing.Linear, LerpFunctions.Float);
-                    await Services.GetService<ScriptUtils>().WaitMilliseconds(500);
+                    await Services.GetService<ScriptUtils>().WaitMilliseconds(300);
 
                     Get<Player>("player1").InputEnabled = false;
                     Get<Player>("player1").ShowVictoryStars();
-                    await Services.GetService<ScriptUtils>().WaitSeconds(3);
+                    await Services.GetService<ScriptUtils>().WaitSeconds(1);
+                    ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName, true);
+
+                    await Services.GetService<ScriptUtils>().WaitSeconds(2);
                     Tweening.Tween((f) => MediaPlayer.Volume = f, 0f, oldVolume, 3000, Easing.Linear, LerpFunctions.Float);
 
-                    ParentGameScreen.InitializeLevel(typeof(TwoIslandPuzzle).FullName, true);
                 }
                 else
                 {
