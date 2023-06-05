@@ -95,7 +95,7 @@ namespace HammeredGame.Game.Scenes.Island1
                 var wall = gO as Wall;
                 if (wall != null)
                 {
-                    this.UpdateSceneGrid(wall, false, 0.9);
+                    this.UpdateSceneGrid(wall, false, 0.0, 0.9, 1.0);
                 }
             }
 
