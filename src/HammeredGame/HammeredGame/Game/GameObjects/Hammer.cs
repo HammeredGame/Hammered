@@ -471,7 +471,7 @@ namespace HammeredGame.Game.GameObjects
                 //SoundEffectInstance whoosh = hammer_sfx[2].CreateInstance();
                 //whoosh.Play();
 
-                Services.GetService<AudioManager>().Play3DSound("Audio/balanced/catch_b", false, this.AudioEmitter, 1);
+                //Services.GetService<AudioManager>().Play3DSound("Audio/balanced/catch_b", false, this.AudioEmitter, 1);
 
             }
             return hammerState == HammerState.Enroute;
