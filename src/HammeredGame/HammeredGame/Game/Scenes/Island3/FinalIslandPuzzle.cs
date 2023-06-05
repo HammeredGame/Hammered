@@ -74,7 +74,7 @@ namespace HammeredGame.Game.Scenes.Island3
         public FinalIslandPuzzle(GameServices services, GameScreen screen) : base(services, screen)
         {
             Song bgMusic;
-            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/BGM_V2_4x");
+            bgMusic = services.GetService<ContentManager>().Load<Song>("Audio/balanced/bgm7_v2_4x");
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(bgMusic);
         }
