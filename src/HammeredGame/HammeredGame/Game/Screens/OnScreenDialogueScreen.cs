@@ -13,6 +13,7 @@ using Pleasing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HammeredGame.Game.Screens
@@ -52,6 +53,18 @@ namespace HammeredGame.Game.Screens
             TaskCompletionSource completionSource = new();
             dialogueQueue.Enqueue((dialogue, completionSource));
             return completionSource.Task;
+        }
+
+        /// <summary>
+        /// Show a dialogue, which is not skip-able unless <see cref="ClearAllDialogues"/>
+        /// is used. It will clear all previous dialogues. If the argument is null, it
+        /// will not display anything.
+        /// </summary>
+        /// <param name="dialogue">Forced dialogue string, or null to clear all</param>
+        public void ShowUnskippableDialogue(string dialogue)
+        {
+            ClearAllDialogues();
+            if (dialogue is not null) dialogueQueue.Enqueue((dialogue, null));
         }
 
         /// <summary>
@@ -147,8 +160,9 @@ namespace HammeredGame.Game.Screens
                 PassesFocusThrough = false;
 
                 // If the confirmation action is performed, either show the whole dialogue if it
-                // hasn't been shown yet, or dequeue the top item and call into any callbacks it had
-                if (UserAction.Confirm.Pressed(GameServices.GetService<Input>()))
+                // hasn't been shown yet, or dequeue the top item and call into any callbacks it had.
+                // But the confirmation action will only be pressable if this is a skippable dialogue.
+                if (dialogueQueue.Peek().Item2 is not null && UserAction.Confirm.Pressed(GameServices.GetService<Input>()))
                 {
                     // The currently shown dialogue matches the top of the queue, so dequeue it
                     if (dialogueLabel.Text == dialogueQueue.Peek().Item1)
@@ -194,14 +208,23 @@ namespace HammeredGame.Game.Screens
                         }
                     }
 
-                    // In any case, if a dialogue is shown, update the prompt image just in case the
-                    // input type changed Input.Prompts.GetImagesForAction() performs a lookup into
-                    // its internal asset store, but will never cause an expensive IO operation (it
-                    // will default to keyboard if atlas not found) so we're fine to perform this in
-                    // Update(). Updating the Myra UI is probably the more expensive bottleneck if
-                    // at all.
-                    List<TextureRegion> confirmButton = GameServices.GetService<Input>().Prompts.GetImagesForAction(UserAction.Confirm);
-                    dialoguePromptImage.Renderable = confirmButton[0];
+                    if (dialogueQueue.Peek().Item2 is not null)
+                    {
+                        // In any case, if a dialogue is shown (and is skippable), update the prompt image
+                        // just in case the input type changed Input.Prompts.GetImagesForAction() performs
+                        // a lookup into its internal asset store, but will never cause an expensive IO
+                        // operation (it will default to keyboard if atlas not found) so we're fine to
+                        // perform this in Update(). Updating the Myra UI is probably the more expensive
+                        // bottleneck if at all.
+                        List<TextureRegion> confirmButton = GameServices.GetService<Input>().Prompts
+                            .GetImagesForAction(UserAction.Confirm);
+                        dialoguePromptImage.Opacity = 1;
+                        dialoguePromptImage.Renderable = confirmButton[0];
+                    }
+                    else
+                    {
+                        dialoguePromptImage.Opacity = 0;
+                    }
                 }
 
                 desktop.UpdateLayout();

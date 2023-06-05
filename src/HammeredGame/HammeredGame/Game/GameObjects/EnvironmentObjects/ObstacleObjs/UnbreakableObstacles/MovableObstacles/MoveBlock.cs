@@ -132,6 +132,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                     {
                         // Include the following line of code if you wish for the sound to be reproduced at every call.
                         //Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
+
                         if (hammer.currentHammerSpeed > 0.0f && hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
                             hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                         {
@@ -212,6 +213,12 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 }
                 else if (this.MblockState == MBState.Moving)
                 {
+                    // On initial collision with hammer, the PairTouching code sets the hammer to moving.
+                    // This bit of code plays the rock moving sfx on this initial collision
+                    if (other.Tag is Hammer)
+                    {
+                        Services.GetService<AudioManager>().Play3DSound("Audio/short_roll", false, this.AudioEmitter, 1);
+                    }
 
                     // Otherwise, the only collisions we care about is if the block is already moving
                     // If so, and the colliding object is the player or another obstacle,
