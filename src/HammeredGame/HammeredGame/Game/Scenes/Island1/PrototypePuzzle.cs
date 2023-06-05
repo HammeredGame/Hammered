@@ -113,14 +113,14 @@ namespace HammeredGame.Game.Scenes.Island1
 
             Get<Door>("door_goal").SetIsGoal(true);
             this.UpdateSceneGrid(Get<Door>("door_key"), false, 0.9);
-            this.UpdateSceneGrid(Get<Door>("door_pp"), false, 0.9);
+            this.UpdateSceneGrid(Get<Door>("door_pp"), false, 0.0, 0.9, 1.0);
 
             //Get<PressurePlate>("pressureplate").SetTriggerObject(Get<Door>("door_pp"));
 
-            this.UpdateSceneGrid(Get<Wall>("wall"), false, 0.9);
-            this.UpdateSceneGrid(Get<Wall>("wall1"), false, 0.9);
-            this.UpdateSceneGrid(Get<Wall>("wall2"), false, 0.9);
-            this.UpdateSceneGrid(Get<Wall>("wall3"), false, 0.9);
+            this.UpdateSceneGrid(Get<Wall>("wall"), false, 0.0, 0.9, 1.0);
+            this.UpdateSceneGrid(Get<Wall>("wall1"), false, 0.0, 0.9, 1.0);
+            this.UpdateSceneGrid(Get<Wall>("wall2"), false, 0.0, 0.9, 1.0);
+            this.UpdateSceneGrid(Get<Wall>("wall3"), false, 0.0, 0.9, 1.0);
 
             // Insert any limitations on the paths the hammer may travel by calling functions from the <c>UniformGrid</c> instance.
             Vector3 floorDisableStart = new Vector3(this.Grid.originPoint.X, this.Grid.originPoint.Y, this.Grid.originPoint.Z);

@@ -8,9 +8,9 @@
     <fov>0.425</fov>
   </camera>
   <uniform_grid>
-    <bottom_left_close>0.000 -30.000 -500.000</bottom_left_close>
-    <top_right_away>800.000 50.000 500.000</top_right_away>
-    <side_length>10.000</side_length>
+    <bottom_left_close>10.000 -30.000 -500.000</bottom_left_close>
+    <top_right_away>500.000 20.000 -20.000</top_right_away>
+    <side_length>5.000</side_length>
   </uniform_grid>
   <lights>
     <sun>
