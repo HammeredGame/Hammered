@@ -212,6 +212,17 @@ namespace HammeredGame.Game.Screens
         }
 
         /// <summary>
+        /// Show a dialogue that must be cleared with <see cref="ClearAllDialogues"/>. It
+        /// force-displays over any previously ongoing dialogues. If the argument string is
+        /// null, the current dialogue will be cleared.
+        /// </summary>
+        /// <param name="dialogue"></param>
+        public void ShowUnskippableDialogue(string dialogue)
+        {
+            dialoguesScreen.ShowUnskippableDialogue(dialogue);
+        }
+
+        /// <summary>
         /// Called on every game update loop. The interval at this function is called is not
         /// constant, so use the gameTime argument to make sure speeds appear natural.
         /// </summary>

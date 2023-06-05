@@ -47,7 +47,9 @@ namespace HammeredGame.Game.Scenes.Island1
             await WakeupCutScene();
 
             // Show a small dialogue
-            await ParentGameScreen.ShowDialogueAndWait("...Where am I?");
+            ParentGameScreen.ShowUnskippableDialogue("...Where am I?");
+            await Services.GetService<ScriptUtils>().WaitSeconds(3);
+            ParentGameScreen.ShowUnskippableDialogue(null);
             
             await PhoneCutScene();
 
@@ -207,10 +209,15 @@ namespace HammeredGame.Game.Scenes.Island1
             // Trigger player´s phone animation
             Get<Player>("player1").TriggerPhone();
             
-            await ParentGameScreen.ShowDialogueAndWait("Hey, it's me, Thor...");
-            await ParentGameScreen.ShowDialogueAndWait("I can't find my Hammer...I think I forgot it on the boat last night.");
-            await ParentGameScreen.ShowDialogueAndWait("Would you bring it back?");
-            await ParentGameScreen.ShowDialogueAndWait("Don't worry, it's really not THAT heavy...");
+            ParentGameScreen.ShowUnskippableDialogue("Hey, it's me, Thor...");
+            await Services.GetService<ScriptUtils>().WaitSeconds(3);
+            ParentGameScreen.ShowUnskippableDialogue("I can't find my Hammer...I think I forgot it on the boat last night.");
+            await Services.GetService<ScriptUtils>().WaitSeconds(3);
+            ParentGameScreen.ShowUnskippableDialogue("Would you bring it back?");
+            await Services.GetService<ScriptUtils>().WaitSeconds(3);
+            ParentGameScreen.ShowUnskippableDialogue("Don't worry, it's really not THAT heavy...");
+            await Services.GetService<ScriptUtils>().WaitSeconds(3);
+            ParentGameScreen.ShowUnskippableDialogue(null);
 
             Get<Player>("player1").TriggerEndPhone();
 
