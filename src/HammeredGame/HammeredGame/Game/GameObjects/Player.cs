@@ -83,7 +83,9 @@ namespace HammeredGame.Game.GameObjects
         private Vector3 player_vel;
         private bool previously_moving = false;
         private bool waking_up = false;
+        private bool on_the_phone = false;
         private TimeSpan wakeup_time_passed = TimeSpan.Zero;
+        private TimeSpan phone_time_passed = TimeSpan.Zero;
 
         public enum PlayerOnSurfaceState
         {
@@ -305,6 +307,20 @@ namespace HammeredGame.Game.GameObjects
             Animations.SetClip(clip_wakeup);
         }
 
+        public void TriggerPhone()
+        {
+            on_the_phone = true;
+            var clip_phone = Animations.Clips[key: "Armature|phone"];
+            Animations.SetClip(clip_phone);
+        }
+
+        public void TriggerEndPhone()
+        {
+            on_the_phone = false;
+            var clip_idle = Animations.Clips[key: "Armature|idle"];
+            Animations.SetClip(clip_idle);
+        }
+
         // Update (called every tick)
         public override void Update(GameTime gameTime, bool screenHasFocus)
         {
@@ -421,6 +437,9 @@ namespace HammeredGame.Game.GameObjects
                     Animations.SetClip(clip_idle);
                 }
 
+            } else if(on_the_phone)
+            {
+                Animations.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
             } else
             {
                 Animations.Update(gameTime.ElapsedGameTime * 1.2f, true, Matrix.Identity);
