@@ -113,6 +113,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.InteractableObjs.Immo
             if (otherEntityInformation != null)
             {
                 if (other.Tag is EmptyGameObject) return;
+                if (other.Tag is Particle) return;
 
                 // Check if there are no other non-static-mesh objects colliding with the pressure plate.
                 // If there are no other collisions, only then should the pressure plate be deactivated
