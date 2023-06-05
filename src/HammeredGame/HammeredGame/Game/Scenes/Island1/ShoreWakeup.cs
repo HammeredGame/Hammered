@@ -51,6 +51,8 @@ namespace HammeredGame.Game.Scenes.Island1
             await Services.GetService<ScriptUtils>().WaitSeconds(3);
             ParentGameScreen.ShowUnskippableDialogue(null);
 
+            await PhoneCutScene();
+
             // Enable player input now that the wake up animation has finished playing
             Get<Player>("player1").InputEnabled = true;
 
@@ -197,6 +199,29 @@ namespace HammeredGame.Game.Scenes.Island1
 
             // Wait until player is up to start prompts
             await Services.GetService<ScriptUtils>().WaitMilliseconds((int)Get<Player>("player1").Animations.CurrentClip.Duration.TotalMilliseconds - 200);
+            Camera.FollowDistance = originalDistance;
+        }
+
+        private async Task PhoneCutScene()
+        {
+            float originalDistance = Camera.FollowDistance;
+            Camera.FollowDistance = 60f;
+            // Trigger player´s phone animation
+            Get<Player>("player1").TriggerPhone();
+            await Services.GetService<ScriptUtils>().WaitSeconds(4);
+
+            ParentGameScreen.ShowUnskippableDialogue("Hey, it's me, Thor...");
+            await Services.GetService<ScriptUtils>().WaitSeconds(3);
+            ParentGameScreen.ShowUnskippableDialogue("I can't find my Hammer...\nI think I forgot it on the boat last night.");
+            await Services.GetService<ScriptUtils>().WaitSeconds(4);
+            ParentGameScreen.ShowUnskippableDialogue("Could you bring it back?");
+            await Services.GetService<ScriptUtils>().WaitSeconds(3);
+            ParentGameScreen.ShowUnskippableDialogue("Don't worry, it's really not THAT heavy...");
+            await Services.GetService<ScriptUtils>().WaitSeconds(3);
+            ParentGameScreen.ShowUnskippableDialogue(null);
+
+            Get<Player>("player1").TriggerEndPhone();
+
             Camera.FollowDistance = originalDistance;
         }
     }
