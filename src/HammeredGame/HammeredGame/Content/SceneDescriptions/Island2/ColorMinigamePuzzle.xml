@@ -2,8 +2,8 @@
   <camera mode="follow">
     <follow_distance>268.000</follow_distance>
     <follow_angle_v>0.450</follow_angle_v>
-    <follow_angle_h>-164.178</follow_angle_h>
-    <target>51.571 -12.839 -12.976</target>
+    <follow_angle_h>-162.698</follow_angle_h>
+    <target>48.779 -12.839 -19.766</target>
     <up>0.000 1.000 0.000</up>
     <fov>0.375</fov>
   </camera>
@@ -19,12 +19,12 @@
       <intensity>1.660</intensity>
     </sun>
     <directional>
-      <color>1.000 0.698 0.600</color>
+      <color>1.000 0.694 0.600</color>
       <direction>0.200 0.970 0.000</direction>
       <intensity>0.400</intensity>
     </directional>
     <ambient>
-      <color>1.000 0.800 0.698</color>
+      <color>1.000 0.800 0.694</color>
       <intensity>0.100</intensity>
     </ambient>
   </lights>
@@ -93,8 +93,8 @@
   <object type="HammeredGame.Game.GameObjects.Player" id="player1">
     <model>Meshes/Character/player-animated-hammer</model>
     <texture>Meshes/Character/character_diffuse</texture>
-    <position>51.571 -12.839 -12.976</position>
-    <rotation>0.000 0.987 0.000 0.159</rotation>
+    <position>48.779 -12.839 -19.766</position>
+    <rotation>0.000 -0.999 0.000 0.037</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>5.000</width>
@@ -107,8 +107,8 @@
   <object type="HammeredGame.Game.GameObjects.Hammer" id="hammer">
     <model>Meshes/Hammer/hammer</model>
     <texture>Meshes/Hammer/hammer_Texture</texture>
-    <position>53.755 -16.084 -12.629</position>
-    <rotation>0.838 -0.309 -0.334 0.301</rotation>
+    <position>51.503 -16.397 -20.589</position>
+    <rotation>-0.683 0.208 0.565 -0.414</rotation>
     <scale>1.000</scale>
     <body type="box">
       <width>4.700</width>
@@ -442,6 +442,19 @@
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
     </body>
   </object>
+  <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject49">
+    <model />
+    <position>86.000 -15.000 -217.400</position>
+    <rotation>0.000 0.000 0.000 1.000</rotation>
+    <scale>1.000</scale>
+    <visibility>False</visibility>
+    <body type="box">
+      <width>20.000</width>
+      <height>20.000</height>
+      <length>5.000</length>
+      <shift_graphic>0.000 0.000 0.000</shift_graphic>
+    </body>
+  </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject25">
     <model />
     <position>-84.000 -15.000 -214.000</position>
@@ -704,12 +717,12 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject45">
     <model />
-    <position>254.200 -15.000 -217.200</position>
+    <position>240.500 -15.000 -217.200</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <visibility>False</visibility>
     <body type="box">
-      <width>32.000</width>
+      <width>70.000</width>
       <height>20.000</height>
       <length>5.000</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
@@ -717,7 +730,7 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject46">
     <model />
-    <position>219.300 -15.000 -319.500</position>
+    <position>219.300 -15.000 -318.500</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.000</scale>
     <visibility>False</visibility>
@@ -730,12 +743,12 @@
   </object>
   <object type="HammeredGame.Game.GameObjects.EmptyGameObjects.BoundsObject" id="boundsobject47">
     <model />
-    <position>167.900 -15.000 -285.200</position>
+    <position>167.900 -15.000 -267.700</position>
     <rotation>0.000 0.710 0.000 0.704</rotation>
     <scale>1.000</scale>
     <visibility>False</visibility>
     <body type="box">
-      <width>70.000</width>
+      <width>100.000</width>
       <height>20.000</height>
       <length>5.000</length>
       <shift_graphic>0.000 0.000 0.000</shift_graphic>
@@ -1454,7 +1467,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="maze_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>357.028 -16.629 -107.333</position>
+    <position>357.028 -16.627 -107.333</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>1.500</scale>
     <body type="box">
@@ -1651,7 +1664,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.MovableObstacles.MoveBlock" id="purple_rock">
     <model>Meshes/Rock/rock</model>
     <texture>Meshes/Rock/rock_albedo</texture>
-    <position>-139.687 -15.114 -119.444</position>
+    <position>-139.687 -15.122 -119.444</position>
     <rotation>0.000 0.000 0.000 1.000</rotation>
     <scale>2.000</scale>
     <body type="box">
@@ -1887,7 +1900,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Wall" id="moving_base">
     <model>Meshes/Laser/laserbase</model>
     <texture>Meshes/Walls/stone</texture>
-    <position>-157.300 -14.400 -280.167</position>
+    <position>-157.300 -14.400 -308.167</position>
     <rotation>0.000 1.000 0.000 0.000</rotation>
     <scale>1.000</scale>
     <body type="box">
@@ -1900,7 +1913,7 @@
   <object type="HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.UnbreakableObstacles.ImmovableObstacles.Laser" id="moving_laser">
     <model>Meshes/Primitives/unit_size_plane_y_up</model>
     <texture>Meshes/Laser/LaserMaterial</texture>
-    <position>-151.500 -14.400 -280.167</position>
+    <position>-151.500 -14.400 -308.167</position>
     <rotation>0.000 0.707 0.000 0.708</rotation>
     <scale>0.150</scale>
     <body type="box">
@@ -2024,7 +2037,7 @@
     <body type="box">
       <width>15.000</width>
       <height>15.000</height>
-      <length>97.187</length>
+      <length>90.694</length>
       <shift_graphic>0.000 0.000 4.860</shift_graphic>
     </body>
   </object>
