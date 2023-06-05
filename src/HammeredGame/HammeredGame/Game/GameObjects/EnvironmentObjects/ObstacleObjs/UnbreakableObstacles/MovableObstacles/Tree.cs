@@ -61,6 +61,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         // Any Unbreakable Obstacle specific variables go here
         private bool treeFallen = false;
 
+        private Model defaultTreeModel;
+        private Texture2D defaultTreeTexture;
         private Model fallenLog;
         private Texture2D logTexture;
         private bool isFalling = false;
@@ -73,6 +75,9 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         {
             fallenLog = services.GetService<ContentManager>().Load<Model>("Meshes/Trees/trunk");
             logTexture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Trees/trunk_texture");
+            defaultTreeModel = Model;
+            defaultTreeTexture = Texture;
+
             this.AudioEmitter = new AudioEmitter();
             this.AudioEmitter.Position = this.Position;
 
@@ -227,10 +232,8 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         {
             this.treeFallen = treeFallen;
 
-            // No need to do anything like swap models or spawn particles if we're setting to false
-            if (!treeFallen) return;
-
-            if (this.Entity is Box box)
+            // Only spawn particles if we're setting tree fallen to true
+            if (treeFallen && this.Entity is Box box)
             {
                 // Spawn particles to simulate some dust clouds so we can hide the tree model swapping
                 for (int i = 0; i < 25; i++) {
@@ -252,8 +255,16 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
             }
 
             // Swap models
-            this.Model = fallenLog;
-            this.Texture = logTexture;
+            if (treeFallen)
+            {
+                this.Model = fallenLog;
+                this.Texture = logTexture;
+            }
+            else
+            {
+                this.Model = defaultTreeModel;
+                this.Texture = defaultTreeTexture;
+            }
         }
 
         public bool IsTreeFallen()
