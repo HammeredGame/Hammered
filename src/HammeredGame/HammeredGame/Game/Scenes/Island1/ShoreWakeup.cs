@@ -47,7 +47,9 @@ namespace HammeredGame.Game.Scenes.Island1
             await WakeupCutScene();
 
             // Show a small dialogue
-            await ParentGameScreen.ShowDialogueAndWait("...Where am I?");
+            ParentGameScreen.ShowUnskippableDialogue("...Where am I?");
+            await Services.GetService<ScriptUtils>().WaitSeconds(3);
+            ParentGameScreen.ShowUnskippableDialogue(null);
 
             // Enable player input now that the wake up animation has finished playing
             Get<Player>("player1").InputEnabled = true;
