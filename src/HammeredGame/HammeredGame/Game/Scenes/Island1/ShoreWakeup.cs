@@ -209,8 +209,6 @@ namespace HammeredGame.Game.Scenes.Island1
             // Trigger player´s phone animation
             Get<Player>("player1").TriggerPhone();
             await Services.GetService<ScriptUtils>().WaitSeconds(4);
-
-            await Services.GetService<ScriptUtils>().WaitSeconds(4);
             ParentGameScreen.ShowUnskippableDialogue("Hey, it's me, Thor...");
             await Services.GetService<ScriptUtils>().WaitSeconds(3);
             ParentGameScreen.ShowUnskippableDialogue("I can't find my Hammer...\nI think I forgot it on the boat last night.");
