@@ -61,8 +61,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
         // Any Unbreakable Obstacle specific variables go here
         private bool treeFallen = false;
 
-        public Model DefaultTreeModel;
-        public Texture2D DefaultTreeTexture;
         private Model fallenLog;
         private Texture2D logTexture;
         private bool isFalling = false;
@@ -73,8 +71,6 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
         public Tree(GameServices services, Model model, Texture2D t, Vector3 pos, Quaternion rotation, float scale, Entity entity) : base(services, model, t, pos, rotation, scale, entity)
         {
-            this.DefaultTreeModel = model;
-            this.DefaultTreeTexture = t;
             fallenLog = services.GetService<ContentManager>().Load<Model>("Meshes/Trees/trunk");
             logTexture = services.GetService<ContentManager>().Load<Texture2D>("Meshes/Trees/trunk_texture");
             this.AudioEmitter = new AudioEmitter();
@@ -142,7 +138,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
                 if (hammer.IsEnroute())
                 {
                     // TODO: de-duplicate the same exact code in Events_PairTouching and Events_InitialCollisionDetected
-                    if (hammer.currentHammerSpeed > 0.0f && hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
+                    if (hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
                             hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                     {
                         fallDirection = hammer.Entity.LinearVelocity;
@@ -182,7 +178,7 @@ namespace HammeredGame.Game.GameObjects.EnvironmentObjects.ObstacleObjs.Unbreaka
 
                 if (hammer.IsEnroute())
                 {
-                    if (hammer.currentHammerSpeed > 0.0f && hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
+                    if (hammer.Entity.LinearVelocity.Length() > hammer.currentHammerSpeed - 1f &&
                             hammer.Entity.LinearVelocity.Length() < hammer.currentHammerSpeed + 1f)
                     {
                         // Determine the direction of the fall as the hammer's direction
