@@ -48,6 +48,8 @@ namespace HammeredGame.Game.Scenes.Island1
 
             // Show a small dialogue
             await ParentGameScreen.ShowDialogueAndWait("...Where am I?");
+            
+            await PhoneCutScene();
 
             // Enable player input now that the wake up animation has finished playing
             Get<Player>("player1").InputEnabled = true;
@@ -195,6 +197,23 @@ namespace HammeredGame.Game.Scenes.Island1
 
             // Wait until player is up to start prompts
             await Services.GetService<ScriptUtils>().WaitMilliseconds((int)Get<Player>("player1").Animations.CurrentClip.Duration.TotalMilliseconds - 200);
+            Camera.FollowDistance = originalDistance;
+        }
+
+        private async Task PhoneCutScene()
+        {
+            float originalDistance = Camera.FollowDistance;
+            Camera.FollowDistance = 60f;
+            // Trigger player´s phone animation
+            Get<Player>("player1").TriggerPhone();
+            
+            await ParentGameScreen.ShowDialogueAndWait("Hey, it's me, Thor...");
+            await ParentGameScreen.ShowDialogueAndWait("I can't find my Hammer...I think I forgot it on the boat last night.");
+            await ParentGameScreen.ShowDialogueAndWait("Would you bring it back?");
+            await ParentGameScreen.ShowDialogueAndWait("Don't worry, it's really not THAT heavy...");
+
+            Get<Player>("player1").TriggerEndPhone();
+
             Camera.FollowDistance = originalDistance;
         }
     }
