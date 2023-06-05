@@ -96,8 +96,6 @@ namespace HammeredGame.Game.Checkpoints
                 {
                     newCheckpoint.TreeStates.Add(uniqueName, new TreeState
                     {
-                        TreeModel = tree.DefaultTreeModel,
-                        TreeTexture = tree.DefaultTreeTexture,
                         Position = tree.Position,
                         Rotation = tree.Rotation,
                         Scale = tree.Scale,
@@ -211,8 +209,6 @@ namespace HammeredGame.Game.Checkpoints
                     // Ignore if the checkpoint doesn't have a state for this tree
                     if (!checkpoint.TreeStates.ContainsKey(uniqueName)) continue;
 
-                    tree.Model = checkpoint.TreeStates[uniqueName].TreeModel;
-                    tree.Texture = checkpoint.TreeStates[uniqueName].TreeTexture;
                     tree.Position = checkpoint.TreeStates[uniqueName].Position;
                     tree.Rotation = checkpoint.TreeStates[uniqueName].Rotation;
                     tree.Scale = checkpoint.TreeStates[uniqueName].Scale;
