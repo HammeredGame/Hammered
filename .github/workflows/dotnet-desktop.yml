@@ -57,7 +57,6 @@ jobs:
 
     env:
       Solution_Name: HammeredGame.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: src\HammeredGame\HammeredGame\HammeredGame.csproj                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       Wap_Project_Directory: src\HammeredGame    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
       Wap_Project_Path: src\HammeredGame\HammeredGame\HammeredGame.csproj                 # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
 
@@ -76,10 +75,6 @@ jobs:
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
-
-    # Execute all unit tests in the solution
-    - name: Execute unit tests
-      run: dotnet test
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
