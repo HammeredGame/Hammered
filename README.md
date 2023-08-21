@@ -56,3 +56,11 @@ Server have been immensely helpful in finding the path to a solution. Thank you.
 
 Finally, we’d like to thank the Game Technology Center for providing us with this wonderful
 opportunity.
+
+## Licenses
+
+The music in this repository is released under the CC-BY-4.0 License, with attribution to
+Audrey Leong. Please see [LICENSE.MUSIC](./LICENSE.MUSIC) for more information.
+
+All code and otherwise unspecified parts of the repository is released under the GNU GPLv3
+License. Please see [LICENSE](./LICENSE) for more information.
