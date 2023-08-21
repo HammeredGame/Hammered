@@ -1,6 +1,7 @@
-Note that music assets are defined as files matching the glob pattern of
-"src/HammeredGame/HammeredGame/Content/Audio/**/*.mp3". The CC BY 4.0
-LICENSE applies only to music assets. 
+Note that assets are defined as images, audio and 3D models located
+within the "src/HammeredGame/HammeredGame/Content" directory. The
+CC BY 4.0 LICENSE applies to those assets, and only where the license
+is otherwise unspecified.
 
 Attribution 4.0 International
 

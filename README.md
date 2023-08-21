@@ -59,8 +59,8 @@ opportunity.
 
 ## Licenses
 
-The music in this repository is released under the CC-BY-4.0 License, with attribution to
-Audrey Leong. Please see [LICENSE.MUSIC](./LICENSE.MUSIC) for more information.
+The assets (music, images/textures, models) in this repository are released under
+the CC-BY-4.0 License. Please see [LICENSE.ASSETS](./LICENSE.ASSETS) for more information.
 
 All code and otherwise unspecified parts of the repository is released under the GNU GPLv3
 License. Please see [LICENSE](./LICENSE) for more information.
