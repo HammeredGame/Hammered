@@ -15,7 +15,7 @@ Your player wakes up on an island, with hazy memories of yesterday. Next to you 
 Master your ability to use the magical hammer in creative ways to get around obstacles in each puzzle level and aim for the exit. Laugh and embrace the story and narrative provided on this magical archipelago where godly magic is apparently everywhere. Come on, immerse yourself in the world of Hammered!
 
 
-![Hammered Screenshot Banner](https://github.com/HammeredGame/Hammered/assets/60749079/49943193-aa66-495c-8a3b-5a6f977aeb64)
+![Hammered Screenshot Banner](./banner.png)
 
 
 ## Features
