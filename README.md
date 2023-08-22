@@ -42,8 +42,10 @@ Additionally, _Hammered_ has the following built from scratch:
 ## Acknowledgements
 
 We’d like to thank the many friends who playtested our game and discovered the many hilarious
-cheats and physics bugs that we initially had: Boyko, Oana, Roxana, Saikiran, Samuel and
-Steven. Thank you also to Morten for casting Thor in our final game trailer, it was awesome.
+cheats and physics bugs that we initially had: Boyko, Oana, Roxana, Saikiran, Samuel, Steven,
+and the kind members of the [University of Edinburgh GameDev Society](https://comp-soc.com/sigs/gamedevsig)
+who gave us remote feedback.
+Thank you also to Morten for casting Thor in our final game trailer, it was awesome.
 
 We’d also like to offer [Studio Gobo](https://www.studiogobo.com/) our deepest gratitude for
 playtesting our game and giving us valuable feedback.
