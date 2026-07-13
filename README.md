@@ -4,7 +4,7 @@
 
 *ETH Zürich Game Programming Lab 2023 Project*
 
-Team: Andrew Dobis, Marie Jaillot, Audrey Leong, Siddharth Menon, Konstantinos Stavratis, and Yuto Takano
+Team: Amelia Dobis, Marie Jaillot, Audrey Leong, Siddharth Menon, Konstantinos Stavratis, and Yuto Takano
 
 ## About
 
